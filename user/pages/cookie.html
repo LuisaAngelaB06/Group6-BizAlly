@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookies Management - AlliTrack</title>
+    <link rel="stylesheet" href="../css/cookie.css">
+</head>
+
+<body>
+    <div class="legal-container">
+        <div class="legal-header">
+            <h1>Cookies Management</h1>
+            <p>Last Updated: January 2025</p>
+        </div>
+
+        <div class="legal-content">
+            <div class="section">
+                <h2>1. What Are Cookies?</h2>
+                <p>Cookies are small text files that are stored on your device when you visit our website. They help us
+                    provide you with a better experience by remembering your preferences and understanding how you use
+                    our services.</p>
+            </div>
+
+            <div class="section">
+                <h2>2. Types of Cookies We Use</h2>
+                <table class="cookie-table">
+                    <thead>
+                        <tr>
+                            <th>Cookie Type</th>
+                            <th>Purpose</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Essential Cookies</strong></td>
+                            <td>Required for basic website functionality and security</td>
+                            <td>Session</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Functional Cookies</strong></td>
+                            <td>Remember your preferences and settings</td>
+                            <td>1 Year</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Analytics Cookies</strong></td>
+                            <td>Help us understand how visitors use our site</td>
+                            <td>2 Years</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Performance Cookies</strong></td>
+                            <td>Monitor website performance and user experience</td>
+                            <td>1 Year</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>3. Cookie Management</h2>
+                <p>You can control and manage cookies in various ways. Please note that removing or blocking cookies may
+                    impact your user experience.</p>
+
+                <div class="cookie-controls">
+                    <h3>Your Cookie Preferences</h3>
+                    <div class="cookie-toggle">
+                        <input type="checkbox" id="essential" checked disabled>
+                        <label for="essential"><strong>Essential Cookies</strong> (Required - Cannot be
+                            disabled)</label>
+                    </div>
+                    <div class="cookie-toggle">
+                        <input type="checkbox" id="functional" checked>
+                        <label for="functional"><strong>Functional Cookies</strong> - Remember your preferences</label>
+                    </div>
+                    <div class="cookie-toggle">
+                        <input type="checkbox" id="analytics" checked>
+                        <label for="analytics"><strong>Analytics Cookies</strong> - Help us improve our services</label>
+                    </div>
+                    <div class="cookie-toggle">
+                        <input type="checkbox" id="performance" checked>
+                        <label for="performance"><strong>Performance Cookies</strong> - Monitor site performance</label>
+                    </div>
+                    <button onclick="savePreferences()"
+                        style="background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-top: 10px;">Save
+                        Preferences</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>4. Browser Controls</h2>
+                <p>Most web browsers allow you to control cookies through their settings preferences. However, limiting
+                    cookies may affect the functionality of our website.</p>
+                <p><strong>To manage cookies in your browser:</strong></p>
+                <ul>
+                    <li><strong>Chrome:</strong> Settings → Privacy and Security → Cookies</li>
+                    <li><strong>Firefox:</strong> Options → Privacy & Security → Cookies</li>
+                    <li><strong>Safari:</strong> Preferences → Privacy → Cookies</li>
+                    <li><strong>Edge:</strong> Settings → Privacy and Services → Cookies</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>5. Updates to This Policy</h2>
+                <p>We may update this Cookies Management policy from time to time. We will notify you of any changes by
+                    posting the new policy on this page and updating the "Last Updated" date.</p>
+            </div>
+
+            <a href="../pages/index.html" class="back-button">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        function savePreferences() {
+            const functional = document.getElementById('functional').checked;
+            const analytics = document.getElementById('analytics').checked;
+            const performance = document.getElementById('performance').checked;
+
+            // In a real implementation, you would save these preferences
+            localStorage.setItem('cookiePreferences', JSON.stringify({
+                functional,
+                analytics,
+                performance,
+                timestamp: new Date().toISOString()
+            }));
+
+            alert('Cookie preferences saved successfully!');
+        }
+
+        // Load saved preferences
+        document.addEventListener('DOMContentLoaded', function () {
+            const saved = localStorage.getItem('cookiePreferences');
+            if (saved) {
+                const preferences = JSON.parse(saved);
+                document.getElementById('functional').checked = preferences.functional;
+                document.getElementById('analytics').checked = preferences.analytics;
+                document.getElementById('performance').checked = preferences.performance;
+            }
+        });
+    </script>
+</body>
+
+</html>
