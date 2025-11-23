@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - AlliTrack</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/header-footer.css" />
+    <link rel="stylesheet" href="../css/contact-us.css" />
+    <style>
+        .error-message {
+            color: #dc2626;
+            font-size: 0.9rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .form-input.error, .form-textarea.error, .form-select.error {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        /* Footer Mobile Responsiveness */
+        @media (max-width: 600px) {
+            .footer-inner {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 12px;
+            }
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .footer-actions {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header" role="banner">
+        <div class="container header-inner">
+            <div class="brand">AlliTrack</div>
+            <nav class="primary-nav" role="navigation" aria-label="Primary navigation" data-visible="false">
+                <ul id="nav-menu" class="nav-list">
+                    <li><a href="../pages/index.html" class="nav-link">Home</a></li>
+                    <li><a href="../pages/about.html" class="nav-link">About</a></li>
+                    <li><a href="../pages/services.html" class="nav-link">Services</a></li>
+                    <li><a href="../pages/contact-us.html" class="nav-link active">Contact</a></li>
+                    <li><a href="../pages/ticket.html" class="nav-link">Submit Ticket</a></li>
+                    <li><a href="../pages/login.html" class="nav-link btn-login">Login</a></li>
+                </ul>
+            </nav>
+            <button class="mobile-toggle" id="mobile-toggle" aria-controls="nav-menu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="sr-only">Toggle menu</span>
+                <i class="fa-solid fa-bars" aria-hidden="true"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="contact-hero">
+                <div class="hero-content">
+                    <h1>Get in Touch</h1>
+                    <p>We're here to help you streamline your support ticket management. Reach out to us with any questions or concerns.</p>
+                </div>
+            </section>
+
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h2 style="margin-top: 0; margin-bottom: 30px; color: #111827;">Contact Information</h2>
+                    <div class="contact-method">
+                        <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div class="contact-details">
+                            <h3>Visit Our Office</h3>
+                            <p>Business Alliance Inc.</p>
+                            <p>Unit 204 K-Juan Building,</p>
+                            <p>1st Street cor. T. Gener St.,</p>
+                            <p>Kamuning, Quezon City, Philippines</p>
+                        </div>
+                    </div>
+                    <div class="contact-method">
+                        <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                        <div class="contact-details">
+                            <h3>Call Us</h3>
+                            <p>General Inquiries</p>
+                            <a href="tel:+63-917-152-4105" class="contact-link">+63 (917) 152-4105</a>
+                        </div>
+                    </div>
+                    <div class="contact-method">
+                        <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                        <div class="contact-details">
+                            <h3>Email Us</h3>
+                            <p>General Support</p>
+                            <a href="mailto:support@alli-track.com" class="contact-link">support@alli-track.com</a>
+                            <p style="margin-top: 8px;">Sales Inquiries</p>
+                            <a href="mailto:sales.businessalliance@gmail.com" class="contact-link">sales.businessalliance@gmail.com</a>
+                        </div>
+                    </div>
+                    <div class="office-hours">
+                        <h3>Office Hours</h3>
+                        <ul class="hours-list">
+                            <li><span class="day">Monday - Friday</span><span class="time">9:00 AM - 6:00 PM PST</span></li>
+                            <li><span class="day">Saturday</span><span class="time">10:00 AM - 4:00 PM PST</span></li>
+                            <li><span class="day">Sunday</span><span class="time">Closed</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="contact-form">
+                    <h2 style="margin-top: 0; margin-bottom: 30px; color: #111827;">Send Us a Message</h2>
+                    <div id="success-message" class="success-message">
+                        <i class="fas fa-check-circle"></i> Thank you! Your message has been sent successfully.
+                    </div>
+
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Full Name *</label>
+                            <input type="text" id="name" name="name" class="form-input" placeholder="Enter your full name" required maxlength="50" pattern="^[A-Za-z\s'\-]{2,50}$" title="Name should only contain letters, spaces, apostrophes, or hyphens, and be 2–50 characters long.">
+                            <div class="error-message" id="name-error">Please enter a valid name (letters only, 2–50 characters).</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email address" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$" title="Enter a valid email address (e.g., name@example.com).">
+                            <div class="error-message" id="email-error">Please enter a valid email address.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contact" class="form-label">Contact Number *</label>
+                            <input type="tel" id="contact" name="contact" class="form-input" placeholder="Enter your contact number" required inputmode="numeric" pattern="^(\+?\d{1,3}[- ]?)?\d{10,12}$" title="Enter a valid contact number (10–12 digits, optional +country code).">
+                            <div class="error-message" id="contact-error">Please enter a valid contact number (10–12 digits).</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="company" class="form-label">Company</label>
+                            <input type="text" id="company" name="company" class="form-input" placeholder="Enter your company name" maxlength="100">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject" class="form-label">Subject *</label>
+                            <select id="subject" name="subject" class="form-select" required>
+                                <option value="">Select a subject</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="sales">Sales Question</option>
+                                <option value="support">Technical Support</option>
+                                <option value="partnership">Partnership</option>
+                            </select>
+                            <div class="error-message" id="subject-error">Please select a subject.</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message" class="form-label">Message *</label>
+                            <textarea id="message" name="message" class="form-textarea" placeholder="Tell us how we can help you..." required></textarea>
+                            <div class="error-message" id="message-error">Please enter your message.</div>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3860.503452208195!2d121.03384457489496!3d14.627339276421873!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b709eb6a5ae5%3A0x9a3eef1602bcba21!2sBusiness%20Alliance%20Inc!5e0!3m2!1sen!2sph!4v1762430505760!5m2!1sen!2sph" width="100%" height="300" style="border:0;border-radius: 12px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer" role="contentinfo">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <strong class="brand-strong">AlliTrack</strong>
+                <div class="footer-note">© 2025 AlliTrack · Business Alliance Inc. · All Rights Reserved</div>
+                <div class="footer-links">
+                    <a href="../pages/privacy.html" class="footer-link">Privacy Statement</a>
+                    <span class="footer-separator">|</span>
+                    <a href="../pages/cookie.html" class="footer-link">Cookies Management</a>
+                    <span class="footer-separator">|</span>
+                    <a href="../pages/terms.html" class="footer-link">Terms of Service</a>
+                </div>
+            </div>
+
+            <div class="footer-actions">
+                <div class="follow">Follow us</div>
+                <div class="socials">
+                    <a href="#" aria-label="LinkedIn" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61558917757365" aria-label="Facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="mailto:sales.businessalliance@gmail.com" aria-label="Email" title="Email"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ===== Form Validation =====
+        const form = document.getElementById('contact-form');
+        const fields = ['name', 'email', 'contact', 'subject', 'message'];
+
+        function showError(field, message) {
+            const input = document.getElementById(field);
+            const errorDiv = document.getElementById(`${field}-error`);
+            input.classList.add('error');
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = message;
+        }
+
+        function clearError(field) {
+            const input = document.getElementById(field);
+            const errorDiv = document.getElementById(`${field}-error`);
+            input.classList.remove('error');
+            errorDiv.style.display = 'none';
+        }
+
+        document.getElementById('contact').addEventListener('input', function () {
+            this.value = this.value.replace(/[^0-9+]/g, '');
+        });
+
+        fields.forEach(field => {
+            document.getElementById(field).addEventListener('input', () => clearError(field));
+        });
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            let isValid = true;
+            fields.forEach(field => {
+                const input = document.getElementById(field);
+                if (!input.checkValidity()) {
+                    showError(field, input.title || 'This field is required.');
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) return;
+
+            const successMessage = document.getElementById('success-message');
+            successMessage.style.display = 'block';
+            this.reset();
+
+            setTimeout(() => successMessage.style.display = 'none', 5000);
+        });
+
+        // ===== Mobile Navigation Script (same as homepage) =====
+        (function () {
+            const btn = document.getElementById('mobile-toggle');
+            const nav = document.querySelector('.primary-nav');
+            const body = document.body;
+
+            if (!btn || !nav) return;
+
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'mobile-overlay';
+            document.body.appendChild(overlay);
+
+            function openMobileMenu() {
+                nav.classList.add('open');
+                nav.setAttribute('data-visible', 'true');
+                btn.setAttribute('aria-expanded', 'true');
+                btn.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
+                overlay.classList.add('active');
+                body.classList.add('no-scroll');
+            }
+
+            function closeMobileMenu() {
+                nav.classList.remove('open');
+                nav.setAttribute('data-visible', 'false');
+                btn.setAttribute('aria-expanded', 'false');
+                btn.innerHTML = '<i class="fa-solid fa-bars" aria-hidden="true"></i>';
+                overlay.classList.remove('active');
+                body.classList.remove('no-scroll');
+            }
+
+            function toggleMobileMenu() {
+                nav.classList.contains('open') ? closeMobileMenu() : openMobileMenu();
+            }
+
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                toggleMobileMenu();
+            });
+
+            overlay.addEventListener('click', closeMobileMenu);
+
+            const navLinks = nav.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.addEventListener('click', closeMobileMenu));
+
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape' && nav.classList.contains('open')) closeMobileMenu();
+            });
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 780 && nav.classList.contains('open')) closeMobileMenu();
+            });
+
+            document.addEventListener('click', e => {
+                if (nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)) {
+                    closeMobileMenu();
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
