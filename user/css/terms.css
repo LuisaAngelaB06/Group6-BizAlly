@@ -1,0 +1,97 @@
+        :root {
+            --accent: #0d6efd;
+            --accent-2: #0056d2;
+            --bg: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+            --muted: #6b7280;
+            --card-bg: #ffffff;
+            --radius: 12px;
+            --shadow-sm: 0 6px 20px rgba(16, 24, 40, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
+            color: #111827;
+            line-height: 1.6;
+        }
+
+        .legal-container {
+            max-width: 800px;
+            margin: 100px auto 50px;
+            padding: 0 20px;
+        }
+
+        .legal-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .legal-header h1 {
+            color: var(--accent);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .legal-content {
+            background: white;
+            padding: 40px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            color: var(--accent);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 5px;
+        }
+
+        .highlight-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .back-button:hover {
+            background: var(--accent-2);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 780px) {
+            .legal-container {
+                margin: 80px auto 30px;
+            }
+
+            .legal-content {
+                padding: 20px;
+            }
+
+            .legal-header h1 {
+                font-size: 2rem;
+            }
+        }
