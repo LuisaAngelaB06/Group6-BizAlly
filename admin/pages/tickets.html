@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Tickets - AlliTrack</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../css/header-sidebar.css" />
+    <link rel="stylesheet" href="../css/tickets.css" />
+
+</head>
+
+<body>
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">AT</div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle">Admin Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../pages/index-admin.html" data-section="dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
+                    <div class="nav-section">Tickets</div>
+                    <a href="../pages/tickets.html" class="active" data-section="tickets"><i class="fas fa-ticket-alt"></i> All Tickets</a>
+                    <div class="nav-section">Management</div>
+                    <a href="#" data-section="users"><i class="fas fa-users"></i> Users & Roles</a>
+                    <a href="#" data-section="teams"><i class="fas fa-user-friends"></i> Teams</a>
+                    <a href="#" data-section="reports"><i class="fas fa-file-alt"></i> Reports</a>
+                    <div class="nav-section">System</div>
+                    <a href="#" data-section="integration"><i class="fas fa-plug"></i> Integration</a>
+                    <a href="#" data-section="settings"><i class="fas fa-gear"></i> System Settings</a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main -->
+            <main class="main">
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="searchInput" placeholder="Search tickets, users, IDs..." aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div style="font-weight:700">Admin User</div>
+                            <div style="font-size:.82rem;color:var(--muted)">Administrator</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar">AJ</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="#">Profile</a>
+                            <a href="#">Settings</a>
+                            <a href="#">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <section class="content">
+                    <!-- Ticket Controls -->
+                    <div class="ticket-controls">
+                        <div class="controls-left">
+                            <h1 class="page-title">All Tickets</h1>
+                            <div class="ticket-count">Showing <span id="ticketCount">0</span> tickets</div>
+                        </div>
+                        <div class="controls-right">
+                            <div class="filter-group">
+                                <label for="statusFilter">Status:</label>
+                                <select id="statusFilter" class="filter-select">
+                                    <option value="all">All Status</option>
+                                    <option value="Open">Open</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Resolved">Resolved</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="priorityFilter">Priority:</label>
+                                <select id="priorityFilter" class="filter-select">
+                                    <option value="all">All Priority</option>
+                                    <option value="High">High</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Low">Low</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tickets Table -->
+                    <div class="tickets-table-container">
+                        <table class="tickets-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Subject</th>
+                                    <th>Requester</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                    <th>Date Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ticketsTbody">
+                                <!-- Tickets will be populated here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Tickets Overview Chart -->
+                    <div class="dashboard-grid">
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <h3>Tickets Overview</h3>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="ticketChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div>Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Edit Status Modal -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Update Ticket</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Update ticket: <strong id="modalTicketId"></strong></p>
+                
+                <div class="modal-section">
+                    <h4>Status</h4>
+                    <div class="status-options">
+                        <button class="status-option" data-status="Open">Open</button>
+                        <button class="status-option" data-status="In Progress">In Progress</button>
+                        <button class="status-option" data-status="Resolved">Resolved</button>
+                    </div>
+                </div>
+
+                <div class="modal-section">
+                    <h4>Priority</h4>
+                    <div class="priority-options">
+                        <button class="priority-option" data-priority="High">High</button>
+                        <button class="priority-option" data-priority="Medium">Medium</button>
+                        <button class="priority-option" data-priority="Low">Low</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample ticket data
+        let tickets = [
+            { id: "#142", subject: "Login issue", requester: "John D.", status: "Open", priority: "High", date: "2025-11-24" },
+            { id: "#141", subject: "Payment failure", requester: "Jane S.", status: "In Progress", priority: "Medium", date: "2025-11-23" },
+            { id: "#140", subject: "Feature request", requester: "Mike R.", status: "Resolved", priority: "Low", date: "2025-11-23" },
+            { id: "#139", subject: "Password reset", requester: "Sarah L.", status: "Open", priority: "Medium", date: "2025-11-22" },
+            { id: "#138", subject: "Bug report", requester: "Alex K.", status: "In Progress", priority: "High", date: "2025-11-22" },
+            { id: "#137", subject: "Account verification", requester: "Tom B.", status: "Resolved", priority: "Low", date: "2025-11-21" },
+            { id: "#136", subject: "API integration", requester: "Emma W.", status: "Open", priority: "High", date: "2025-11-21" },
+            { id: "#135", subject: "UI feedback", requester: "Chris M.", status: "Resolved", priority: "Low", date: "2025-11-20" }
+        ];
+
+        // DOM Elements
+        const ticketsTbody = document.getElementById("ticketsTbody");
+        const searchInput = document.getElementById("searchInput");
+        const statusFilter = document.getElementById("statusFilter");
+        const priorityFilter = document.getElementById("priorityFilter");
+        const ticketCount = document.getElementById("ticketCount");
+        const statusModal = document.getElementById("statusModal");
+        const modalTicketId = document.getElementById("modalTicketId");
+        const closeModal = document.querySelector(".close");
+        const statusOptions = document.querySelectorAll(".status-option");
+        const priorityOptions = document.querySelectorAll(".priority-option");
+
+        let currentEditingTicket = null;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTickets(tickets);
+            setupEventListeners();
+            initializeChart();
+        });
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Search functionality
+            searchInput.addEventListener('input', handleSearch);
+            
+            // Filter functionality
+            statusFilter.addEventListener('change', handleFilter);
+            priorityFilter.addEventListener('change', handleFilter);
+            
+            // Modal functionality
+            closeModal.addEventListener('click', closeStatusModal);
+            
+            // Status options
+            statusOptions.forEach(option => {
+                option.addEventListener('click', handleStatusUpdate);
+            });
+            
+            // Priority options
+            priorityOptions.forEach(option => {
+                option.addEventListener('click', handlePriorityUpdate);
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === statusModal) {
+                    closeStatusModal();
+                }
+            });
+            
+            // Account dropdown (from original code)
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
+
+            accountBtn.addEventListener("click", () => {
+                accountMenu.classList.toggle("show");
+                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            window.addEventListener("click", (e) => {
+                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+        }
+
+        // Render tickets to the table
+        function renderTickets(ticketsToRender) {
+            ticketsTbody.innerHTML = '';
+            
+            ticketsToRender.forEach(ticket => {
+                const tr = document.createElement("tr");
+                
+                // Determine badge class based on status
+                let badgeClass = '';
+                if (ticket.status === "Open") badgeClass = "b-open";
+                else if (ticket.status === "In Progress") badgeClass = "b-progress";
+                else if (ticket.status === "Resolved") badgeClass = "b-resolved";
+                
+                // Determine priority class
+                let priorityClass = '';
+                if (ticket.priority === "High") priorityClass = "priority-high";
+                else if (ticket.priority === "Medium") priorityClass = "priority-medium";
+                else if (ticket.priority === "Low") priorityClass = "priority-low";
+                
+                tr.innerHTML = `
+                    <td>${ticket.id}</td>
+                    <td>${ticket.subject}</td>
+                    <td>${ticket.requester}</td>
+                    <td><span class="badge ${badgeClass}">${ticket.status}</span></td>
+                    <td class="${priorityClass}">${ticket.priority}</td>
+                    <td>${ticket.date}</td>
+                    <td>
+                        <button class="btn-edit" data-id="${ticket.id}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </td>
+                `;
+                
+                ticketsTbody.appendChild(tr);
+            });
+            
+            // Add event listeners to edit buttons
+            document.querySelectorAll('.btn-edit').forEach(button => {
+                button.addEventListener('click', function() {
+                    const ticketId = this.getAttribute('data-id');
+                    openStatusModal(ticketId);
+                });
+            });
+            
+            // Update ticket count
+            ticketCount.textContent = ticketsToRender.length;
+        }
+
+        // Handle search functionality
+        function handleSearch() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            const filteredTickets = tickets.filter(ticket => {
+                return ticket.id.toLowerCase().includes(searchTerm) ||
+                       ticket.subject.toLowerCase().includes(searchTerm) ||
+                       ticket.requester.toLowerCase().includes(searchTerm);
+            });
+            
+            applyFilters(filteredTickets);
+        }
+
+        // Handle filter changes
+        function handleFilter() {
+            applyFilters(tickets);
+        }
+
+        // Apply both status and priority filters
+        function applyFilters(ticketsToFilter) {
+            const statusValue = statusFilter.value;
+            const priorityValue = priorityFilter.value;
+            
+            let filteredTickets = ticketsToFilter;
+            
+            if (statusValue !== 'all') {
+                filteredTickets = filteredTickets.filter(ticket => ticket.status === statusValue);
+            }
+            
+            if (priorityValue !== 'all') {
+                filteredTickets = filteredTickets.filter(ticket => ticket.priority === priorityValue);
+            }
+            
+            renderTickets(filteredTickets);
+        }
+
+        // Open status modal
+        function openStatusModal(ticketId) {
+            currentEditingTicket = ticketId;
+            modalTicketId.textContent = ticketId;
+            
+            // Highlight current status and priority
+            const ticket = tickets.find(t => t.id === ticketId);
+            if (ticket) {
+                // Remove active class from all options
+                statusOptions.forEach(opt => opt.classList.remove('active'));
+                priorityOptions.forEach(opt => opt.classList.remove('active'));
+                
+                // Add active class to current status
+                const currentStatusOption = Array.from(statusOptions).find(opt => 
+                    opt.getAttribute('data-status') === ticket.status
+                );
+                if (currentStatusOption) {
+                    currentStatusOption.classList.add('active');
+                }
+                
+                // Add active class to current priority
+                const currentPriorityOption = Array.from(priorityOptions).find(opt => 
+                    opt.getAttribute('data-priority') === ticket.priority
+                );
+                if (currentPriorityOption) {
+                    currentPriorityOption.classList.add('active');
+                }
+            }
+            
+            statusModal.style.display = 'block';
+        }
+
+        // Close status modal
+        function closeStatusModal() {
+            statusModal.style.display = 'none';
+            currentEditingTicket = null;
+        }
+
+        // Handle status update
+        function handleStatusUpdate(event) {
+            const newStatus = event.target.getAttribute('data-status');
+            
+            // Update the ticket in our data
+            const ticketIndex = tickets.findIndex(ticket => ticket.id === currentEditingTicket);
+            if (ticketIndex !== -1) {
+                tickets[ticketIndex].status = newStatus;
+                
+                // Update active state
+                statusOptions.forEach(opt => opt.classList.remove('active'));
+                event.target.classList.add('active');
+                
+                // Re-render tickets
+                applyFilters(tickets);
+            }
+        }
+
+        // Handle priority update
+        function handlePriorityUpdate(event) {
+            const newPriority = event.target.getAttribute('data-priority');
+            
+            // Update the ticket in our data
+            const ticketIndex = tickets.findIndex(ticket => ticket.id === currentEditingTicket);
+            if (ticketIndex !== -1) {
+                tickets[ticketIndex].priority = newPriority;
+                
+                // Update active state
+                priorityOptions.forEach(opt => opt.classList.remove('active'));
+                event.target.classList.add('active');
+                
+                // Re-render tickets
+                applyFilters(tickets);
+            }
+        }
+
+        // Initialize chart
+        function initializeChart() {
+            const ctx = document.getElementById("ticketChart").getContext("2d");
+            const chart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: ["Nov 18", "Nov 19", "Nov 20", "Nov 21", "Nov 22", "Nov 23", "Nov 24"],
+                    datasets: [{
+                        label: "Resolved Tickets",
+                        data: [10, 12, 9, 15, 18, 11, 14],
+                        borderColor: "#3B82F6",
+                        backgroundColor: "rgba(59,130,246,0.1)",
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true },
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

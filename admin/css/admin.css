@@ -1,16 +1,4 @@
-.main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-.content {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
+/* Dashboard Cards */
 .cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -42,12 +30,14 @@
     margin-top: 8px;
 }
 
+/* Grid Layout */
 .grid-two {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 18px;
 }
 
+/* Panels (Table + Chart + Activity Feed Containers) */
 .panel {
     background: var(--surface);
     border-radius: 12px;
@@ -55,6 +45,7 @@
     box-shadow: var(--shadow-sm);
 }
 
+/* Table */
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -134,18 +125,4 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-}
-
-/* Footer */
-.site-footer {
-    margin-top: 14px;
-    padding: 18px;
-    border-radius: 12px;
-    background: var(--surface);
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.92rem;
-    color: var(--muted);
 }
