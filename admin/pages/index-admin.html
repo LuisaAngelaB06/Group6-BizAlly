@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AlliTrack · Admin Dashboard</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../css/header-sidebar.css" />
+    <link rel="stylesheet" href="../css/admin.css" />
+</head>
+
+<body>
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">AT</div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle">Admin Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="#" class="active" data-section="dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
+                    <div class="nav-section">Tickets</div>
+                    <a href="#" data-section="tickets"><i class="fas fa-ticket-alt"></i> All Tickets</a>
+                    <div class="nav-section">Management</div>
+                    <a href="#" data-section="users"><i class="fas fa-users"></i> Users & Roles</a>
+                    <a href="#" data-section="teams"><i class="fas fa-user-friends"></i> Teams</a>
+                    <a href="#" data-section="reports"><i class="fas fa-file-alt"></i> Reports</a>
+                    <div class="nav-section">System</div>
+                    <a href="#" data-section="integration"><i class="fas fa-plug"></i> Integration</a>
+                    <a href="#" data-section="settings"><i class="fas fa-gear"></i> System Settings</a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main -->
+            <main class="main">
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..." aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div style="font-weight:700">Admin User</div>
+                            <div style="font-size:.82rem;color:var(--muted)">Administrator</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar">AJ</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="#">Profile</a>
+                            <a href="#">Settings</a>
+                            <a href="#">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <section class="content" aria-live="polite">
+                    <!-- Cards -->
+                    <div class="cards">
+                        <div class="card" style="display:flex;flex-direction:column;gap:8px">
+                            <h3>Tickets</h3>
+                            <div class="value" id="totalTickets">142</div>
+                            <div style="color:var(--muted);font-size:.92rem">Total tickets logged</div>
+                        </div>
+                        <div class="card">
+                            <h3>Pending</h3>
+                            <div class="value" id="pendingTickets">24</div>
+                            <div style="color:var(--muted);font-size:.92rem">Tickets pending action</div>
+                        </div>
+                        <div class="card">
+                            <h3>Resolved</h3>
+                            <div class="value" id="resolvedTickets">118</div>
+                            <div style="color:var(--muted);font-size:.92rem">Resolved in selected period</div>
+                        </div>
+                    </div>
+
+                    <!-- Grid Two -->
+                    <div class="grid-two">
+                        <!-- Left: Table + Chart -->
+                        <div>
+                            <div class="panel" style="margin-bottom:16px">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                                    <div style="display:flex;flex-direction:column">
+                                        <div style="font-weight:700;font-size:1.05rem">Recent Tickets</div>
+                                        <div style="font-size:.86rem;color:var(--muted)">Latest issues and statuses</div>
+                                    </div>
+                                    <div style="display:flex;gap:8px;align-items:center">
+                                        <select id="statusFilter" style="padding:8px;border-radius:8px;border:1px solid #eef2ff">
+                                            <option value="all">All</option>
+                                            <option value="open">Open</option>
+                                            <option value="in-progress">In Progress</option>
+                                            <option value="resolved">Resolved</option>
+                                        </select>
+                                        <button class="btn" id="refreshBtn" title="Refresh data"><i class="fas fa-sync-alt"></i></button>
+                                    </div>
+                                </div>
+
+                                <div style="overflow:auto;max-height:320px">
+                                    <table class="table" aria-describedby="recent tickets table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">ID</th>
+                                                <th scope="col">Subject</th>
+                                                <th scope="col">Requester</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Priority</th>
+                                                <th scope="col">Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ticketsTbody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="panel chart-card">
+                                <div style="display:flex;justify-content:space-between;align-items:center">
+                                    <div style="font-weight:700">Resolution Trends</div>
+                                    <div style="font-size:.9rem;color:var(--muted)">Last 7 days</div>
+                                </div>
+                                <canvas id="ticketChart" aria-label="Ticket resolution trends chart" role="img"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Right: Activity feed -->
+                        <div class="panel">
+                            <div style="font-weight:700;margin-bottom:12px">Activity Feed</div>
+                            <div class="activity" id="activityFeed"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div>Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Dropdown toggle
+        const accountBtn = document.getElementById("accountBtn");
+        const accountMenu = document.getElementById("accountMenu");
+
+        accountBtn.addEventListener("click", () => {
+            accountMenu.classList.toggle("show");
+            accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+        });
+
+        window.addEventListener("click", (e) => {
+            if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                accountMenu.classList.remove("show");
+                accountBtn.setAttribute("aria-expanded", false);
+            }
+        });
+
+        // Sample ticket table data
+        const tickets = [
+            { id: "#142", subject: "Login issue", requester: "John D.", status: "Open", priority: "High", date: "2025-11-24" },
+            { id: "#141", subject: "Payment failure", requester: "Jane S.", status: "In Progress", priority: "Medium", date: "2025-11-23" },
+            { id: "#140", subject: "Feature request", requester: "Mike R.", status: "Resolved", priority: "Low", date: "2025-11-23" },
+        ];
+
+        const tbody = document.getElementById("ticketsTbody");
+        tickets.forEach(t => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${t.id}</td>
+                            <td>${t.subject}</td>
+                            <td>${t.requester}</td>
+                            <td><span class="badge ${t.status === "Open" ? "b-open" : t.status === "In Progress" ? "b-progress" : "b-resolved"}">${t.status}</span></td>
+                            <td>${t.priority}</td>
+                            <td>${t.date}</td>`;
+            tbody.appendChild(tr);
+        });
+
+        // Activity feed sample
+        const feed = [
+            { icon: "fas fa-user-plus", text: "New user registered: Alice M." },
+            { icon: "fas fa-ticket-alt", text: "Ticket #141 marked as in progress." },
+            { icon: "fas fa-check-circle", text: "Ticket #140 resolved by Admin User." },
+        ];
+        const activityFeed = document.getElementById("activityFeed");
+        feed.forEach(a => {
+            const div = document.createElement("div");
+            div.className = "act-item";
+            div.innerHTML = `<div class="act-icon"><i class="${a.icon}"></i></div><div class="act-text">${a.text}</div>`;
+            activityFeed.appendChild(div);
+        });
+
+        // Chart
+        const ctx = document.getElementById("ticketChart").getContext("2d");
+        const chart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: ["Nov 18", "Nov 19", "Nov 20", "Nov 21", "Nov 22", "Nov 23", "Nov 24"],
+                datasets: [{
+                    label: "Resolved Tickets",
+                    data: [10, 12, 9, 15, 18, 11, 14],
+                    borderColor: "#3B82F6",
+                    backgroundColor: "rgba(59,130,246,0.1)",
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true },
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
