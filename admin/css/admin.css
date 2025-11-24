@@ -1,0 +1,151 @@
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: transform .18s var(--ease), box-shadow .18s var(--ease);
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #071233;
+}
+
+.card .value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+.grid-two {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 18px;
+}
+
+.panel {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.table th,
+.table td {
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid #eef2ff;
+}
+
+.table th {
+    font-weight: 700;
+    color: #081130;
+    background: transparent;
+    font-size: 0.9rem;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.82rem;
+}
+
+.b-open {
+    background: rgba(255, 193, 7, 0.14);
+    color: #b38700;
+}
+
+.b-progress {
+    background: rgba(59, 130, 246, 0.10);
+    color: var(--accent);
+}
+
+.b-resolved {
+    background: rgba(34, 197, 94, 0.10);
+    color: #16a34a;
+}
+
+/* Activity Feed */
+.activity {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.act-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.act-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: rgba(59, 130, 246, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+}
+
+.act-text {
+    font-size: 0.95rem;
+    color: #0f172a;
+}
+
+/* Chart */
+.chart-card {
+    height: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Footer */
+.site-footer {
+    margin-top: 14px;
+    padding: 18px;
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.92rem;
+    color: var(--muted);
+}
