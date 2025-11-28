@@ -10,7 +10,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="../css/header-sidebar.css" />
     <link rel="stylesheet" href="../css/tickets.css" />
-
 </head>
 
 <body>
@@ -26,16 +25,27 @@
                     </div>
                 </div>
                 <nav class="nav">
-                    <a href="../pages/index-admin.html" data-section="dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
+                    <a href="../pages/index-admin.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
                     <div class="nav-section">Tickets</div>
-                    <a href="../pages/tickets.html" class="active" data-section="tickets"><i class="fas fa-ticket-alt"></i> All Tickets</a>
+                    <a href="../pages/tickets.html" class="active" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> All Tickets
+                    </a>
                     <div class="nav-section">Management</div>
-                    <a href="#" data-section="users"><i class="fas fa-users"></i> Users & Roles</a>
-                    <a href="#" data-section="teams"><i class="fas fa-user-friends"></i> Teams</a>
-                    <a href="#" data-section="reports"><i class="fas fa-file-alt"></i> Reports</a>
+                    <a href="../pages/users-roles.html" data-section="users">
+                        <i class="fas fa-users"></i> Users & Roles
+                    </a>
+                    <a href="../pages/reports.html" data-section="reports">
+                        <i class="fas fa-file-alt"></i> Reports
+                    </a>
                     <div class="nav-section">System</div>
-                    <a href="#" data-section="integration"><i class="fas fa-plug"></i> Integration</a>
-                    <a href="#" data-section="settings"><i class="fas fa-gear"></i> System Settings</a>
+                    <a href="#" data-section="integration">
+                        <i class="fas fa-plug"></i> Integration
+                    </a>
+                    <a href="../pages/settings.html" data-section="settings">
+                        <i class="fas fa-gear"></i> System Settings
+                    </a>
                 </nav>
                 <div class="sidebar-footer">
                     <div class="version">v1.2.0</div>
@@ -45,6 +55,7 @@
 
             <!-- Main -->
             <main class="main">
+                <!-- Header -->
                 <header class="header">
                     <div class="search" role="search" aria-label="Search Tickets">
                         <i class="fas fa-search" style="opacity:.6"></i>
@@ -130,6 +141,7 @@
                     </div>
                 </section>
 
+                <!-- Footer -->
                 <footer class="site-footer">
                     <div>&copy; 2025 Business Alliance Inc.</div>
                     <div>Dashboard Template</div>
@@ -232,7 +244,7 @@
                 }
             });
             
-            // Account dropdown (from original code)
+            // Account dropdown
             const accountBtn = document.getElementById("accountBtn");
             const accountMenu = document.getElementById("accountMenu");
 
@@ -434,5 +446,4 @@
         }
     </script>
 </body>
-
 </html>

@@ -142,11 +142,6 @@
 }
 
 /* Action Buttons */
-.action-buttons {
-    display: flex;
-    gap: 8px;
-}
-
 .btn-edit {
     padding: 6px 12px;
     background: rgba(59, 130, 246, 0.1);
