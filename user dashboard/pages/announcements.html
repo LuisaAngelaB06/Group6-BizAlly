@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Announcements - AlliTrack</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/sidebar-header.css" />
+    <link rel="stylesheet" href="../css/announcements.css" />
+</head>
+
+<body>
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">AT</div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle">User Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../pages/index-user.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+
+                    <div class="nav-section">Support</div>
+                    <a href="../pages/my-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> My Tickets
+                    </a>
+                    <a href="../pages/notifications.html" data-section="notifications">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <a href="../pages/submit-ticket.html" data-section="submit-ticket">
+                        <i class="fas fa-plus-circle"></i> Submit a Ticket
+                    </a>
+
+                    <div class="nav-section">Management</div>
+                    <a href="../pages/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> Preferences
+                    </a>
+                    <a href="../pages/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                    </a>
+                    <a href="../pages/announcements.html" class="active" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> Announcements
+                    </a>
+
+                    <div class="nav-section">System</div>
+                    <a href="../pages/account-security.html" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> Account Security
+                    </a>
+                    <a href="../pages/system-information.html" data-section="system-information">
+                        <i class="fas fa-info-circle"></i> System Information
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search announcements..." aria-label="Search announcements" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div style="font-weight:700">User</div>
+                            <div style="font-size:.82rem;color:var(--muted)">User</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar">AJ</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="#">Profile</a>
+                            <a href="#">Settings</a>
+                            <a href="#">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Announcements Content -->
+                <div class="content">
+                    <div class="announcements-content">
+                        <!-- Header with Container -->
+                        <div class="announcements-header-container">
+                            <div class="announcements-header">
+                                <h1><i class="fas fa-bullhorn"></i> Announcements</h1>
+                                <div class="announcements-controls">
+                                    <div class="filter-group">
+                                        <button class="filter-btn active" data-filter="all">All</button>
+                                        <button class="filter-btn" data-filter="notice">Company Notices</button>
+                                        <button class="filter-btn" data-filter="maintenance">Maintenance</button>
+                                        <button class="filter-btn" data-filter="feature">New Features</button>
+                                        <button class="filter-btn" data-filter="unread">Unread</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Statistics -->
+                        <div class="announcement-stats">
+                            <div class="stat-card">
+                                <div class="stat-icon icon-notice">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-count" id="totalAnnouncements">12</div>
+                                    <div class="stat-label">Total Announcements</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon icon-maintenance">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-count" id="unreadCount">3</div>
+                                    <div class="stat-label">Unread Announcements</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon icon-feature">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-count" id="featureCount">5</div>
+                                    <div class="stat-label">New Features</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Announcements Grid -->
+                        <div class="announcements-grid" id="announcementsContainer">
+                            <!-- Announcements will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div>Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Sample announcement data
+        const announcements = [
+            {
+                id: 1,
+                type: "notice",
+                title: "Quarterly Company Meeting Schedule",
+                message: "We're excited to announce the schedule for our upcoming quarterly company meetings. All team members are required to attend their respective department meetings. The meetings will cover Q1 performance reviews and Q2 strategic planning.",
+                category: "Company Notice",
+                priority: "medium",
+                date: "2025-03-20T10:00:00",
+                unread: true,
+                details: [
+                    "IT Department: March 25, 2025 - 10:00 AM",
+                    "Support Team: March 26, 2025 - 2:00 PM",
+                    "All Hands: March 27, 2025 - 3:00 PM"
+                ],
+                author: "HR Department"
+            },
+            {
+                id: 2,
+                type: "maintenance",
+                title: "Scheduled System Maintenance",
+                message: "We will be performing essential system maintenance to improve performance and security. The maintenance window is scheduled for this weekend. During this time, the system may be temporarily unavailable.",
+                category: "Maintenance Alert",
+                priority: "high",
+                date: "2025-03-18T14:30:00",
+                unread: true,
+                details: [
+                    "Date: March 22, 2025",
+                    "Time: 2:00 AM - 6:00 AM UTC",
+                    "Impact: System may be temporarily unavailable",
+                    "Contact: support@allitrack.com for emergencies"
+                ],
+                author: "System Administration"
+            },
+            {
+                id: 3,
+                type: "feature",
+                title: "New Reporting Dashboard Released",
+                message: "We're thrilled to announce the release of our new advanced reporting dashboard! This update includes enhanced analytics, customizable reports, and real-time data visualization to help you make better decisions.",
+                category: "New Feature",
+                priority: "medium",
+                date: "2025-03-15T09:15:00",
+                unread: false,
+                details: [
+                    "Custom report builder",
+                    "Real-time analytics",
+                    "Export to PDF/Excel",
+                    "Scheduled reporting"
+                ],
+                author: "Product Team"
+            },
+            {
+                id: 4,
+                type: "notice",
+                title: "Updated Remote Work Policy",
+                message: "Effective immediately, we're updating our remote work policy to provide more flexibility while maintaining productivity standards. Please review the new guidelines in the employee handbook.",
+                category: "Company Notice",
+                priority: "medium",
+                date: "2025-03-12T16:45:00",
+                unread: false,
+                details: [
+                    "Flexible working hours",
+                    "Required weekly check-ins",
+                    "Updated equipment policies",
+                    "Security protocols"
+                ],
+                author: "HR Department"
+            },
+            {
+                id: 5,
+                type: "maintenance",
+                title: "Database Optimization Complete",
+                message: "The recent database optimization has been successfully completed. Users should experience improved system performance and faster response times when accessing ticket history and reports.",
+                category: "Maintenance Update",
+                priority: "medium",
+                date: "2025-03-10T11:20:00",
+                unread: false,
+                details: [
+                    "Improved query performance",
+                    "Reduced loading times",
+                    "Enhanced data integrity",
+                    "Better backup efficiency"
+                ],
+                author: "Technical Team"
+            },
+            {
+                id: 6,
+                type: "feature",
+                title: "Mobile App Update Available",
+                message: "A new version of the AlliTrack mobile app is now available in the app stores. This update includes bug fixes, performance improvements, and new notification features.",
+                category: "New Feature",
+                priority: "medium",
+                date: "2025-03-08T13:10:00",
+                unread: false,
+                details: [
+                    "Push notification enhancements",
+                    "Offline ticket viewing",
+                    "Improved camera integration",
+                    "Battery optimization"
+                ],
+                author: "Mobile Development Team"
+            },
+            {
+                id: 7,
+                type: "notice",
+                title: "Holiday Schedule - Memorial Day",
+                message: "Please be advised that our offices will be closed on Memorial Day, May 26th, 2025. Emergency support will remain available through our on-call team.",
+                category: "Company Notice",
+                priority: "medium",
+                date: "2025-03-05T08:30:00",
+                unread: false,
+                details: [
+                    "Office closed: May 26, 2025",
+                    "Emergency support available",
+                    "Normal operations resume May 27",
+                    "Contact: emergency@allitrack.com"
+                ],
+                author: "Administration"
+            },
+            {
+                id: 8,
+                type: "feature",
+                title: "Enhanced Security Features",
+                message: "We've implemented new security features including two-factor authentication and enhanced password requirements to better protect your account and data.",
+                category: "New Feature",
+                priority: "high",
+                date: "2025-03-01T15:45:00",
+                unread: false,
+                details: [
+                    "Two-factor authentication",
+                    "Enhanced password requirements",
+                    "Session management",
+                    "Security notifications"
+                ],
+                author: "Security Team"
+            }
+        ];
+
+        // DOM elements
+        const announcementsContainer = document.getElementById('announcementsContainer');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const searchInput = document.getElementById('q');
+        const totalAnnouncementsEl = document.getElementById('totalAnnouncements');
+        const unreadCountEl = document.getElementById('unreadCount');
+        const featureCountEl = document.getElementById('featureCount');
+
+        // Format date function
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Format relative time
+        function formatRelativeTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInMs = now - date;
+            const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+            const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+            const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+            
+            if (diffInMinutes < 1) {
+                return 'Just now';
+            } else if (diffInMinutes < 60) {
+                return `${diffInMinutes} min ago`;
+            } else if (diffInHours < 24) {
+                return `${diffInHours} hr ago`;
+            } else if (diffInDays === 1) {
+                return 'Yesterday';
+            } else if (diffInDays < 7) {
+                return `${diffInDays} days ago`;
+            } else {
+                return formatDate(dateString);
+            }
+        }
+
+        // Get icon class based on announcement type
+        function getIconClass(type) {
+            switch(type) {
+                case 'notice':
+                    return 'icon-notice';
+                case 'maintenance':
+                    return 'icon-maintenance';
+                case 'feature':
+                    return 'icon-feature';
+                case 'urgent':
+                    return 'icon-urgent';
+                default:
+                    return 'icon-notice';
+            }
+        }
+
+        // Get icon based on announcement type
+        function getIcon(type) {
+            switch(type) {
+                case 'notice':
+                    return 'fas fa-building';
+                case 'maintenance':
+                    return 'fas fa-tools';
+                case 'feature':
+                    return 'fas fa-star';
+                case 'urgent':
+                    return 'fas fa-exclamation-triangle';
+                default:
+                    return 'fas fa-bullhorn';
+            }
+        }
+
+        // Get category class based on type
+        function getCategoryClass(type) {
+            switch(type) {
+                case 'notice':
+                    return 'category-notice';
+                case 'maintenance':
+                    return 'category-maintenance';
+                case 'feature':
+                    return 'category-feature';
+                case 'urgent':
+                    return 'category-urgent';
+                default:
+                    return 'category-notice';
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            const total = announcements.length;
+            const unread = announcements.filter(a => a.unread).length;
+            const features = announcements.filter(a => a.type === 'feature').length;
+            
+            totalAnnouncementsEl.textContent = total;
+            unreadCountEl.textContent = unread;
+            featureCountEl.textContent = features;
+        }
+
+        // Render announcements
+        function renderAnnouncements(announcementsToRender) {
+            announcementsContainer.innerHTML = '';
+            
+            if (announcementsToRender.length === 0) {
+                announcementsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bullhorn"></i>
+                        <h3>No announcements found</h3>
+                        <p>Try adjusting your filters or check back later for updates</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            announcementsToRender.forEach(announcement => {
+                const announcementElement = document.createElement('div');
+                announcementElement.className = `announcement-card ${announcement.unread ? 'unread' : ''}`;
+                
+                let detailsHtml = '';
+                if (announcement.details && announcement.details.length > 0) {
+                    detailsHtml = `
+                        <div class="announcement-details">
+                            ${announcement.details.map(detail => `
+                                <div class="detail-item">
+                                    <div class="detail-icon">
+                                        <i class="fas fa-circle"></i>
+                                    </div>
+                                    <div class="detail-content">${detail}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                announcementElement.innerHTML = `
+                    <div class="announcement-header">
+                        <div class="announcement-type">
+                            <div class="announcement-icon ${getIconClass(announcement.type)}">
+                                <i class="${getIcon(announcement.type)}"></i>
+                            </div>
+                            <div>
+                                <div class="announcement-title">${announcement.title}</div>
+                                <div class="announcement-meta">
+                                    <div class="announcement-category ${getCategoryClass(announcement.type)}">
+                                        ${announcement.category}
+                                    </div>
+                                    ${announcement.priority === 'high' ? `
+                                        <div class="announcement-priority priority-high">
+                                            <i class="fas fa-exclamation-circle"></i> High Priority
+                                        </div>
+                                    ` : ''}
+                                    <div class="announcement-date">
+                                        <i class="far fa-clock"></i>
+                                        ${formatRelativeTime(announcement.date)}
+                                    </div>
+                                    <div class="announcement-date">
+                                        <i class="far fa-user"></i>
+                                        ${announcement.author}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="announcement-content">
+                        <div class="announcement-message">${announcement.message}</div>
+                        ${detailsHtml}
+                    </div>
+                    <div class="announcement-actions">
+                        ${announcement.unread ? `
+                            <button class="action-btn" data-id="${announcement.id}" data-action="mark-read">
+                                <i class="fas fa-check"></i> Mark as Read
+                            </button>
+                        ` : ''}
+                        <button class="action-btn" data-id="${announcement.id}" data-action="view">
+                            <i class="fas fa-eye"></i> View Details
+                        </button>
+                        <button class="action-btn" data-id="${announcement.id}" data-action="share">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                    </div>
+                `;
+                announcementsContainer.appendChild(announcementElement);
+            });
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const announcementId = parseInt(this.getAttribute('data-id'));
+                    const action = this.getAttribute('data-action');
+                    
+                    if (action === 'mark-read') {
+                        markAsRead(announcementId);
+                    } else if (action === 'view') {
+                        viewAnnouncement(announcementId);
+                    } else if (action === 'share') {
+                        shareAnnouncement(announcementId);
+                    }
+                });
+            });
+        }
+
+        // Filter announcements
+        function filterAnnouncements(filter) {
+            let filteredAnnouncements = [...announcements];
+            
+            switch(filter) {
+                case 'unread':
+                    filteredAnnouncements = filteredAnnouncements.filter(a => a.unread);
+                    break;
+                case 'notice':
+                    filteredAnnouncements = filteredAnnouncements.filter(a => a.type === 'notice');
+                    break;
+                case 'maintenance':
+                    filteredAnnouncements = filteredAnnouncements.filter(a => a.type === 'maintenance');
+                    break;
+                case 'feature':
+                    filteredAnnouncements = filteredAnnouncements.filter(a => a.type === 'feature');
+                    break;
+                case 'all':
+                default:
+                    // No filtering needed
+                    break;
+            }
+            
+            // Apply search filter
+            if (searchInput.value.trim() !== '') {
+                const searchTerm = searchInput.value.toLowerCase();
+                filteredAnnouncements = filteredAnnouncements.filter(announcement => 
+                    announcement.title.toLowerCase().includes(searchTerm) ||
+                    announcement.message.toLowerCase().includes(searchTerm) ||
+                    announcement.category.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Sort by date (newest first)
+            filteredAnnouncements.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            renderAnnouncements(filteredAnnouncements);
+        }
+
+        // Mark announcement as read
+        function markAsRead(id) {
+            const announcement = announcements.find(a => a.id === id);
+            if (announcement) {
+                announcement.unread = false;
+                updateStats();
+                filterAnnouncements(getActiveFilter());
+            }
+        }
+
+        // View announcement details
+        function viewAnnouncement(id) {
+            const announcement = announcements.find(a => a.id === id);
+            if (announcement) {
+                // In a real app, this would show a detailed view or modal
+                alert(`Viewing announcement: ${announcement.title}\n\n${announcement.message}`);
+                
+                // Mark as read when viewed
+                if (announcement.unread) {
+                    markAsRead(id);
+                }
+            }
+        }
+
+        // Share announcement
+        function shareAnnouncement(id) {
+            const announcement = announcements.find(a => a.id === id);
+            if (announcement) {
+                // In a real app, this would open a share dialog
+                alert(`Sharing announcement: ${announcement.title}`);
+            }
+        }
+
+        // Get active filter
+        function getActiveFilter() {
+            const activeBtn = document.querySelector('.filter-btn.active');
+            return activeBtn ? activeBtn.getAttribute('data-filter') : 'all';
+        }
+
+        // Event listeners
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterAnnouncements(this.getAttribute('data-filter'));
+            });
+        });
+
+        searchInput.addEventListener('input', () => filterAnnouncements(getActiveFilter()));
+
+        // Account Dropdown Functionality
+        const accountBtn = document.getElementById("accountBtn");
+        const accountMenu = document.getElementById("accountMenu");
+
+        if (accountBtn && accountMenu) {
+            accountBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                accountMenu.classList.toggle("show");
+                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close dropdown when pressing Escape key
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+        }
+
+        // Initial render
+        updateStats();
+        filterAnnouncements('all');
+    </script>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>My Tickets - AlliTrack</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/sidebar-header.css" />
+    <link rel="stylesheet" href="../css/my-tickets.css" />
+</head>
+
+<body>
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">AT</div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle">User Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../pages/index-user.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+
+                    <div class="nav-section">Support</div>
+                    <a href="../pages/my-tickets.html" class="active" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> My Tickets
+                    </a>
+                    <a href="../pages/notifications.html" data-section="notifications">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <a href="../pages/submit-ticket.html" data-section="submit-ticket">
+                        <i class="fas fa-plus-circle"></i> Submit a Ticket
+                    </a>
+
+                    <div class="nav-section">Management</div>
+                    <a href="../pages/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> Preferences
+                    </a>
+                    <a href="../pages/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                    </a>
+                    <a href="../pages/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> Announcements
+                    </a>
+
+                    <div class="nav-section">System</div>
+                    <a href="../pages/account-security.html" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> Account Security
+                    </a>
+                    <a href="../pages/system-information.html" data-section="system-information">
+                        <i class="fas fa-info-circle"></i> System Information
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..." aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div style="font-weight:700">User</div>
+                            <div style="font-size:.82rem;color:var(--muted)">User</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar">AJ</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="#">Profile</a>
+                            <a href="#">Settings</a>
+                            <a href="#">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- My Tickets Content -->
+                <div class="content">
+                    <div class="tickets-content">
+                        <!-- Header with Container -->
+                        <div class="tickets-header-container">
+                            <div class="tickets-header">
+                                <h1><i class="fas fa-ticket-alt"></i> My Tickets</h1>
+                                <div class="tickets-controls">
+                                    <div class="filter-group">
+                                        <select class="filter-select" id="statusFilter">
+                                            <option value="all">All Status</option>
+                                            <option value="open">Open</option>
+                                            <option value="pending">Pending</option>
+                                            <option value="resolved">Resolved</option>
+                                            <option value="closed">Closed</option>
+                                        </select>
+                                        
+                                        <select class="filter-select" id="priorityFilter">
+                                            <option value="all">All Priority</option>
+                                            <option value="low">Low</option>
+                                            <option value="medium">Medium</option>
+                                            <option value="high">High</option>
+                                            <option value="critical">Critical</option>
+                                        </select>
+                                        
+                                        <select class="filter-select" id="sortFilter">
+                                            <option value="newest">Newest First</option>
+                                            <option value="oldest">Oldest First</option>
+                                            <option value="updated">Latest Update</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tickets-grid" id="ticketsContainer">
+                            <!-- Tickets will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div>Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Sample ticket data
+        const tickets = [
+            {
+                id: "TKT-4587",
+                title: "Login authentication issue",
+                description: "Unable to login to the system with correct credentials. Getting 'Invalid credentials' error even though password is correct.",
+                status: "open",
+                priority: "high",
+                createdAt: "2025-03-15T10:30:00",
+                updatedAt: "2025-03-16T14:20:00",
+                assignee: { name: "John Smith", initials: "JS" },
+                category: "Authentication"
+            },
+            {
+                id: "TKT-4219",
+                title: "Dashboard not loading properly",
+                description: "Dashboard widgets are not loading correctly on mobile devices. Some charts are cut off and data is not displaying properly.",
+                status: "resolved",
+                priority: "medium",
+                createdAt: "2025-03-10T09:15:00",
+                updatedAt: "2025-03-14T16:45:00",
+                assignee: { name: "Sarah Johnson", initials: "SJ" },
+                category: "UI/UX"
+            },
+            {
+                id: "TKT-4392",
+                title: "Email notifications not being sent",
+                description: "System is not sending email notifications for ticket updates and status changes. Checked spam folder and email settings.",
+                status: "pending",
+                priority: "critical",
+                createdAt: "2025-03-12T14:20:00",
+                updatedAt: "2025-03-16T11:30:00",
+                assignee: { name: "Mike Davis", initials: "MD" },
+                category: "Notifications"
+            },
+            {
+                id: "TKT-4125",
+                title: "Report generation slow",
+                description: "Generating monthly reports takes more than 5 minutes. This is significantly slower than before the last update.",
+                status: "closed",
+                priority: "low",
+                createdAt: "2025-02-28T11:45:00",
+                updatedAt: "2025-03-05T09:10:00",
+                assignee: { name: "Emily Wilson", initials: "EW" },
+                category: "Performance"
+            },
+            {
+                id: "TKT-4673",
+                title: "Unable to upload large files",
+                description: "Getting error when trying to upload files larger than 10MB. The system should support up to 50MB according to documentation.",
+                status: "open",
+                priority: "medium",
+                createdAt: "2025-03-17T08:50:00",
+                updatedAt: "2025-03-17T08:50:00",
+                assignee: { name: "Alex Brown", initials: "AB" },
+                category: "File Management"
+            }
+        ];
+
+        // DOM elements
+        const ticketsContainer = document.getElementById('ticketsContainer');
+        const statusFilter = document.getElementById('statusFilter');
+        const priorityFilter = document.getElementById('priorityFilter');
+        const sortFilter = document.getElementById('sortFilter');
+        const searchInput = document.getElementById('q');
+
+        // Format date function
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        // Format relative time
+        function formatRelativeTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInMs = now - date;
+            const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+            
+            if (diffInDays === 0) {
+                return 'Today';
+            } else if (diffInDays === 1) {
+                return 'Yesterday';
+            } else if (diffInDays < 7) {
+                return `${diffInDays} days ago`;
+            } else {
+                return formatDate(dateString);
+            }
+        }
+
+        // Render tickets
+        function renderTickets(ticketsToRender) {
+            ticketsContainer.innerHTML = '';
+            
+            if (ticketsToRender.length === 0) {
+                ticketsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-ticket-alt"></i>
+                        <h3>No tickets found</h3>
+                        <p>Try adjusting your filters or search terms</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            ticketsToRender.forEach(ticket => {
+                const ticketElement = document.createElement('div');
+                ticketElement.className = 'ticket-card';
+                ticketElement.innerHTML = `
+                    <div class="ticket-header">
+                        <div>
+                            <div class="ticket-title">${ticket.title}</div>
+                            <div class="ticket-id">${ticket.id}</div>
+                        </div>
+                        <div class="ticket-status status-${ticket.status}">${ticket.status}</div>
+                    </div>
+                    <div class="ticket-meta">
+                        <span class="ticket-priority priority-${ticket.priority}">
+                            <i class="fas fa-flag"></i> ${ticket.priority}
+                        </span>
+                        <div class="ticket-meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>Created: ${formatDate(ticket.createdAt)}</span>
+                        </div>
+                        <div class="ticket-meta-item">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Updated: ${formatRelativeTime(ticket.updatedAt)}</span>
+                        </div>
+                        <div class="ticket-meta-item">
+                            <i class="fas fa-tag"></i>
+                            <span>${ticket.category}</span>
+                        </div>
+                    </div>
+                    <div class="ticket-description">${ticket.description}</div>
+                    <div class="ticket-footer">
+                        <div class="ticket-assignee">
+                            <div class="assignee-avatar">${ticket.assignee.initials}</div>
+                            <div class="assignee-name">${ticket.assignee.name}</div>
+                        </div>
+                        <div class="ticket-actions">
+                            <button class="ticket-action-btn">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="ticket-action-btn">
+                                <i class="fas fa-comment"></i> Comment
+                            </button>
+                        </div>
+                    </div>
+                `;
+                ticketsContainer.appendChild(ticketElement);
+            });
+        }
+
+        // Filter and sort tickets
+        function filterAndSortTickets() {
+            let filteredTickets = [...tickets];
+            
+            // Apply status filter
+            if (statusFilter.value !== 'all') {
+                filteredTickets = filteredTickets.filter(ticket => ticket.status === statusFilter.value);
+            }
+            
+            // Apply priority filter
+            if (priorityFilter.value !== 'all') {
+                filteredTickets = filteredTickets.filter(ticket => ticket.priority === priorityFilter.value);
+            }
+            
+            // Apply search filter
+            if (searchInput.value.trim() !== '') {
+                const searchTerm = searchInput.value.toLowerCase();
+                filteredTickets = filteredTickets.filter(ticket => 
+                    ticket.title.toLowerCase().includes(searchTerm) ||
+                    ticket.id.toLowerCase().includes(searchTerm) ||
+                    ticket.description.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Apply sorting
+            switch (sortFilter.value) {
+                case 'oldest':
+                    filteredTickets.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                    break;
+                case 'updated':
+                    filteredTickets.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+                    break;
+                case 'newest':
+                default:
+                    filteredTickets.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    break;
+            }
+            
+            renderTickets(filteredTickets);
+        }
+
+        // Event listeners
+        statusFilter.addEventListener('change', filterAndSortTickets);
+        priorityFilter.addEventListener('change', filterAndSortTickets);
+        sortFilter.addEventListener('change', filterAndSortTickets);
+        searchInput.addEventListener('input', filterAndSortTickets);
+
+        // Account Dropdown Functionality
+        const accountBtn = document.getElementById("accountBtn");
+        const accountMenu = document.getElementById("accountMenu");
+
+        if (accountBtn && accountMenu) {
+            accountBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                accountMenu.classList.toggle("show");
+                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close dropdown when pressing Escape key
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+        }
+
+        // Initial render
+        renderTickets(tickets);
+    </script>
+</body>
+</html>

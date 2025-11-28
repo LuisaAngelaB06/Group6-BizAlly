@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Profile Settings - AlliTrack</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/sidebar-header.css" />
+    <link rel="stylesheet" href="../css/profile-settings.css" />
+</head>
+<body>
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">AT</div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle">User Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../pages/index-user.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+
+                    <div class="nav-section">Support</div>
+                    <a href="../pages/my-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> My Tickets
+                    </a>
+                    <a href="../pages/notifications.html" data-section="notifications">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <a href="../pages/submit-ticket.html" data-section="submit-ticket">
+                        <i class="fas fa-plus-circle"></i> Submit a Ticket
+                    </a>
+
+                    <div class="nav-section">Management</div>
+                    <a href="../pages/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> Preferences
+                    </a>
+                    <a href="../pages/profile-settings.html" class="active" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                    </a>
+                    <a href="../pages/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> Announcements
+                    </a>
+
+                    <div class="nav-section">System</div>
+                    <a href="../pages/account-security.html" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> Account Security
+                    </a>
+                    <a href="../pages/system-information.html" data-section="system-information">
+                        <i class="fas fa-info-circle"></i> System Information
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..." aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div style="font-weight:700">User</div>
+                            <div style="font-size:.82rem;color:var(--muted)">User</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar">AJ</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="#">Profile</a>
+                            <a href="#">Settings</a>
+                            <a href="#">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Profile Settings Content -->
+                <div class="content">
+                    <div class="profile-content">
+                        <!-- Header with Container -->
+                        <div class="profile-header-container">
+                            <div class="profile-header">
+                                <h1><i class="fas fa-user-cog"></i> Profile Settings</h1>
+                            </div>
+                        </div>
+
+                        <!-- Success Message -->
+                        <div class="success-message" id="successMessage">
+                            <div class="success-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="success-text">Profile updated successfully!</div>
+                        </div>
+
+                        <!-- Profile Settings Form -->
+                        <form class="profile-container" id="profileForm">
+                            <!-- Profile Photo Section -->
+                            <div class="profile-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title">Profile Photo</h2>
+                                        <p class="section-description">Update your profile picture</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="profile-photo-section">
+                                    <div class="profile-photo" id="profilePhoto">
+                                        <div id="profileInitials">AJ</div>
+                                        <img id="profileImage" style="display: none;" alt="Profile Photo">
+                                        <div class="profile-photo-overlay">
+                                            <i class="fas fa-camera"></i>
+                                        </div>
+                                    </div>
+                                    <div class="profile-photo-info">
+                                        <div class="profile-photo-title">Your Profile Picture</div>
+                                        <div class="profile-photo-description">
+                                            Upload a new photo. JPG, GIF or PNG. Max size 5MB.
+                                        </div>
+                                        <div class="photo-actions">
+                                            <button type="button" class="btn btn-primary" onclick="document.getElementById('photoUpload').click()">
+                                                <i class="fas fa-upload"></i> Upload Photo
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" onclick="removePhoto()">
+                                                <i class="fas fa-times"></i> Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="file" id="photoUpload" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
+                            </div>
+
+                            <!-- Personal Information -->
+                            <div class="profile-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title">Personal Information</h2>
+                                        <p class="section-description">Update your basic profile information</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="profile-form">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label" for="firstName">
+                                                First Name <span class="required">*</span>
+                                            </label>
+                                            <input 
+                                                type="text" 
+                                                id="firstName" 
+                                                class="form-input" 
+                                                placeholder="Enter your first name"
+                                                value="Admin"
+                                                required
+                                            />
+                                            <div class="form-error" id="firstNameError">Please enter your first name</div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="form-label" for="lastName">
+                                                Last Name <span class="required">*</span>
+                                            </label>
+                                            <input 
+                                                type="text" 
+                                                id="lastName" 
+                                                class="form-input" 
+                                                placeholder="Enter your last name"
+                                                value="User"
+                                                required
+                                            />
+                                            <div class="form-error" id="lastNameError">Please enter your last name</div>
+                                        </div>
+                                        
+                                        <div class="form-group full-width">
+                                            <label class="form-label" for="email">
+                                                Email Address <span class="required">*</span>
+                                            </label>
+                                            <input 
+                                                type="email" 
+                                                id="email" 
+                                                class="form-input" 
+                                                placeholder="Enter your email address"
+                                                value="admin.user@allitrack.com"
+                                                required
+                                            />
+                                            <div class="form-error" id="emailError">Please enter a valid email address</div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="form-label" for="phone">
+                                                <i class="fas fa-phone"></i> Phone Number
+                                            </label>
+                                            <input 
+                                                type="tel" 
+                                                id="phone" 
+                                                class="form-input" 
+                                                placeholder="Enter your phone number"
+                                                value="+1 (555) 123-4567"
+                                            />
+                                            <div class="form-hint">Optional</div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="form-label" for="department">
+                                                <i class="fas fa-building"></i> Department
+                                            </label>
+                                            <input 
+                                                type="text" 
+                                                id="department" 
+                                                class="form-input" 
+                                                placeholder="Enter your department"
+                                                value="IT Support"
+                                            />
+                                            <div class="form-hint">Optional</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Change Password -->
+                            <div class="profile-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title">Change Password</h2>
+                                        <p class="section-description">Update your password to keep your account secure</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="profile-form">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label" for="currentPassword">
+                                                Current Password <span class="required">*</span>
+                                            </label>
+                                            <input 
+                                                type="password" 
+                                                id="currentPassword" 
+                                                class="form-input" 
+                                                placeholder="Enter current password"
+                                            />
+                                            <div class="form-error" id="currentPasswordError">Please enter your current password</div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="form-label" for="newPassword">
+                                                New Password <span class="required">*</span>
+                                            </label>
+                                            <input 
+                                                type="password" 
+                                                id="newPassword" 
+                                                class="form-input" 
+                                                placeholder="Enter new password"
+                                            />
+                                            <div class="password-strength" id="passwordStrength">
+                                                <div class="strength-bar">
+                                                    <div class="strength-fill"></div>
+                                                </div>
+                                                <div class="strength-text">Password strength</div>
+                                            </div>
+                                            <div class="form-error" id="newPasswordError">Please enter a new password</div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="form-label" for="confirmPassword">
+                                                Confirm Password <span class="required">*</span>
+                                            </label>
+                                            <input 
+                                                type="password" 
+                                                id="confirmPassword" 
+                                                class="form-input" 
+                                                placeholder="Confirm new password"
+                                            />
+                                            <div class="form-error" id="confirmPasswordError">Passwords do not match</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-hint">
+                                        <i class="fas fa-info-circle"></i> Password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div>Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const profileForm = document.getElementById('profileForm');
+        const successMessage = document.getElementById('successMessage');
+        const profilePhoto = document.getElementById('profilePhoto');
+        const profileImage = document.getElementById('profileImage');
+        const profileInitials = document.getElementById('profileInitials');
+        const newPasswordInput = document.getElementById('newPassword');
+        const passwordStrength = document.getElementById('passwordStrength');
+
+        // Load saved profile data
+        function loadProfileData() {
+            const savedProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            
+            if (savedProfile.firstName) {
+                document.getElementById('firstName').value = savedProfile.firstName;
+                document.getElementById('lastName').value = savedProfile.lastName;
+                document.getElementById('email').value = savedProfile.email;
+                document.getElementById('phone').value = savedProfile.phone || '';
+                document.getElementById('department').value = savedProfile.department || '';
+                
+                // Update profile photo if exists
+                if (savedProfile.photo) {
+                    profileImage.src = savedProfile.photo;
+                    profileImage.style.display = 'block';
+                    profileInitials.style.display = 'none';
+                }
+                
+                // Update header avatar
+                updateHeaderAvatar(savedProfile.firstName, savedProfile.lastName, savedProfile.photo);
+            }
+        }
+
+        // Update header avatar
+        function updateHeaderAvatar(firstName, lastName, photo) {
+            const headerAvatar = document.querySelector('.header .avatar');
+            if (headerAvatar) {
+                if (photo) {
+                    headerAvatar.innerHTML = `<img src="${photo}" alt="${firstName} ${lastName}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+                } else {
+                    const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+                    headerAvatar.textContent = initials;
+                }
+            }
+        }
+
+        // Handle photo upload
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Validate file type and size
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please select a valid image file (JPG, PNG, or GIF)');
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    profileImage.src = e.target.result;
+                    profileImage.style.display = 'block';
+                    profileInitials.style.display = 'none';
+                    
+                    // Save to localStorage
+                    const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+                    profile.photo = e.target.result;
+                    localStorage.setItem('userProfile', JSON.stringify(profile));
+                    
+                    // Update header avatar
+                    updateHeaderAvatar(
+                        document.getElementById('firstName').value,
+                        document.getElementById('lastName').value,
+                        e.target.result
+                    );
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Remove profile photo
+        function removePhoto() {
+            profileImage.style.display = 'none';
+            profileInitials.style.display = 'block';
+            
+            // Remove from localStorage
+            const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            delete profile.photo;
+            localStorage.setItem('userProfile', JSON.stringify(profile));
+            
+            // Update header avatar
+            updateHeaderAvatar(
+                document.getElementById('firstName').value,
+                document.getElementById('lastName').value,
+                null
+            );
+        }
+
+        // Password strength checker
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            
+            if (password.length >= 8) strength++;
+            if (password.match(/[a-z]/)) strength++;
+            if (password.match(/[A-Z]/)) strength++;
+            if (password.match(/[0-9]/)) strength++;
+            if (password.match(/[^a-zA-Z0-9]/)) strength++;
+            
+            // Update strength indicator
+            passwordStrength.className = 'password-strength';
+            const strengthFill = passwordStrength.querySelector('.strength-fill');
+            const strengthText = passwordStrength.querySelector('.strength-text');
+            
+            if (password.length === 0) {
+                strengthText.textContent = 'Password strength';
+            } else if (strength <= 2) {
+                passwordStrength.classList.add('strength-weak');
+                strengthText.textContent = 'Weak password';
+            } else if (strength <= 4) {
+                passwordStrength.classList.add('strength-medium');
+                strengthText.textContent = 'Medium strength';
+            } else {
+                passwordStrength.classList.add('strength-strong');
+                strengthText.textContent = 'Strong password';
+            }
+        }
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+            
+            // Reset errors
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.classList.remove('show');
+            });
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.classList.remove('error');
+            });
+            
+            // Validate required fields
+            const requiredFields = ['firstName', 'lastName', 'email'];
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field);
+                if (!input.value.trim()) {
+                    document.getElementById(field + 'Error').classList.add('show');
+                    input.classList.add('error');
+                    isValid = false;
+                }
+            });
+            
+            // Validate email format
+            const email = document.getElementById('email');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email.value && !emailRegex.test(email.value)) {
+                document.getElementById('emailError').classList.add('show');
+                email.classList.add('error');
+                isValid = false;
+            }
+            
+            // Validate password change if any password field is filled
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (currentPassword || newPassword || confirmPassword) {
+                if (!currentPassword) {
+                    document.getElementById('currentPasswordError').classList.add('show');
+                    document.getElementById('currentPassword').classList.add('error');
+                    isValid = false;
+                }
+                
+                if (!newPassword) {
+                    document.getElementById('newPasswordError').classList.add('show');
+                    document.getElementById('newPassword').classList.add('error');
+                    isValid = false;
+                }
+                
+                if (newPassword !== confirmPassword) {
+                    document.getElementById('confirmPasswordError').classList.add('show');
+                    document.getElementById('confirmPassword').classList.add('error');
+                    isValid = false;
+                }
+                
+                // Validate password strength
+                if (newPassword && newPassword.length < 8) {
+                    document.getElementById('newPasswordError').textContent = 'Password must be at least 8 characters long';
+                    document.getElementById('newPasswordError').classList.add('show');
+                    document.getElementById('newPassword').classList.add('error');
+                    isValid = false;
+                }
+            }
+            
+            return isValid;
+        }
+
+        // Form submission
+        profileForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (validateForm()) {
+                saveProfile();
+            }
+        });
+
+        function saveProfile() {
+            // Collect profile data
+            const profileData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                department: document.getElementById('department').value,
+                photo: profileImage.style.display === 'block' ? profileImage.src : null
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('userProfile', JSON.stringify(profileData));
+            
+            // Update header avatar
+            updateHeaderAvatar(profileData.firstName, profileData.lastName, profileData.photo);
+            
+            // Show success message
+            successMessage.classList.add('show');
+            
+            // Hide success message after 3 seconds
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 3000);
+            
+            console.log('Profile saved:', profileData);
+        }
+
+        function resetForm() {
+            // Reset to original values
+            document.getElementById('firstName').value = 'Admin';
+            document.getElementById('lastName').value = 'User';
+            document.getElementById('email').value = 'admin.user@allitrack.com';
+            document.getElementById('phone').value = '+1 (555) 123-4567';
+            document.getElementById('department').value = 'IT Support';
+            
+            // Clear password fields
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            
+            // Reset photo
+            removePhoto();
+            
+            // Reset errors
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.classList.remove('show');
+            });
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.classList.remove('error');
+            });
+            
+            // Reset password strength
+            passwordStrength.className = 'password-strength';
+            passwordStrength.querySelector('.strength-text').textContent = 'Password strength';
+        }
+
+        // Event listeners
+        newPasswordInput.addEventListener('input', (e) => {
+            checkPasswordStrength(e.target.value);
+        });
+
+        // Account Dropdown Functionality
+        const accountBtn = document.getElementById("accountBtn");
+        const accountMenu = document.getElementById("accountMenu");
+
+        if (accountBtn && accountMenu) {
+            accountBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                accountMenu.classList.toggle("show");
+                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close dropdown when pressing Escape key
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+        }
+
+        // Load profile data when page loads
+        document.addEventListener('DOMContentLoaded', loadProfileData);
+    </script>
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Notifications - AlliTrack</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/sidebar-header.css" />
+    <link rel="stylesheet" href="../css/notification.css" />
+</head>
+
+<body>
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">AT</div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle">User Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../pages/index-user.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+
+                    <div class="nav-section">Support</div>
+                    <a href="../pages/my-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> My Tickets
+                    </a>
+                    <a href="../pages/notifications.html" class="active" data-section="notifications">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <a href="../pages/submit-ticket.html" data-section="submit-ticket">
+                        <i class="fas fa-plus-circle"></i> Submit a Ticket
+                    </a>
+
+                    <div class="nav-section">Management</div>
+                    <a href="../pages/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> Preferences
+                    </a>
+                    <a href="../pages/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                    </a>
+                    <a href="../pages/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> Announcements
+                    </a>
+
+                    <div class="nav-section">System</div>
+                    <a href="../pages/account-security.html" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> Account Security
+                    </a>
+                    <a href="../pages/system-information.html" data-section="system-information">
+                        <i class="fas fa-info-circle"></i> System Information
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search notifications..." aria-label="Search notifications" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div style="font-weight:700">User</div>
+                            <div style="font-size:.82rem;color:var(--muted)">User</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar">AJ</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="#">Profile</a>
+                            <a href="#">Settings</a>
+                            <a href="#">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Notifications Content -->
+                <div class="content">
+                    <div class="notifications-content">
+                        <!-- Header with Container -->
+                        <div class="notifications-header-container">
+                            <div class="notifications-header">
+                                <h1><i class="fas fa-bell"></i> Notifications</h1>
+                                <div class="notifications-controls">
+                                    <div class="filter-group">
+                                        <button class="filter-btn active" data-filter="all">All</button>
+                                        <button class="filter-btn" data-filter="unread">Unread</button>
+                                        <button class="filter-btn" data-filter="ticket">Ticket Updates</button>
+                                        <button class="filter-btn" data-filter="system">System</button>
+                                    </div>
+                                    <button class="mark-all-read" id="markAllRead">
+                                        <i class="fas fa-check-double"></i> Mark All as Read
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="notifications-stats">
+                            <div class="stat-card">
+                                <div class="stat-icon icon-update">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-count" id="totalNotifications">12</div>
+                                    <div class="stat-label">Total Notifications</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon icon-message">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-count" id="unreadCount">5</div>
+                                    <div class="stat-label">Unread Notifications</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon icon-resolved">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-count" id="ticketUpdates">8</div>
+                                    <div class="stat-label">Ticket Updates</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="notifications-grid" id="notificationsContainer">
+                            <!-- Notifications will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div>Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Sample notification data
+        const notifications = [
+            {
+                id: 1,
+                type: "ticket-update",
+                title: "Ticket Updated",
+                message: "Your ticket #TKT-4587 has been updated by support agent Sarah Johnson.",
+                ticketId: "TKT-4587",
+                ticketTitle: "Login authentication issue",
+                time: "2025-03-17T14:30:00",
+                unread: true,
+                badge: "ticket"
+            },
+            {
+                id: 2,
+                type: "new-message",
+                title: "New Message from Support",
+                message: "You have received a new message regarding your ticket #TKT-4392 about email notifications.",
+                ticketId: "TKT-4392",
+                ticketTitle: "Email notifications not being sent",
+                time: "2025-03-17T11:15:00",
+                unread: true,
+                badge: "urgent"
+            },
+            {
+                id: 3,
+                type: "ticket-resolved",
+                title: "Ticket Resolved",
+                message: "Your ticket #TKT-4219 has been resolved and closed by the support team.",
+                ticketId: "TKT-4219",
+                ticketTitle: "Dashboard not loading properly",
+                time: "2025-03-16T16:45:00",
+                unread: false,
+                badge: "ticket"
+            },
+            {
+                id: 4,
+                type: "system-alert",
+                title: "System Maintenance",
+                message: "Scheduled system maintenance will occur on March 20, 2025 from 2:00 AM to 4:00 AM UTC.",
+                time: "2025-03-16T10:20:00",
+                unread: true,
+                badge: "system"
+            },
+            {
+                id: 5,
+                type: "ticket-closed",
+                title: "Ticket Closed",
+                message: "Your ticket #TKT-4125 has been closed as the issue has been resolved.",
+                ticketId: "TKT-4125",
+                ticketTitle: "Report generation slow",
+                time: "2025-03-15T09:10:00",
+                unread: false,
+                badge: "ticket"
+            },
+            {
+                id: 6,
+                type: "new-message",
+                title: "New Message from Support",
+                message: "Support agent Mike Davis has requested additional information for ticket #TKT-4673.",
+                ticketId: "TKT-4673",
+                ticketTitle: "Unable to upload large files",
+                time: "2025-03-14T15:30:00",
+                unread: false,
+                badge: "ticket"
+            },
+            {
+                id: 7,
+                type: "ticket-update",
+                title: "Priority Changed",
+                message: "The priority of your ticket #TKT-4392 has been changed to Critical.",
+                ticketId: "TKT-4392",
+                ticketTitle: "Email notifications not being sent",
+                time: "2025-03-14T13:45:00",
+                unread: false,
+                badge: "urgent"
+            },
+            {
+                id: 8,
+                type: "system-alert",
+                title: "New Feature Available",
+                message: "The new reporting dashboard is now available. Check it out in the Reports section.",
+                time: "2025-03-13T08:30:00",
+                unread: false,
+                badge: "system"
+            }
+        ];
+
+        // DOM elements
+        const notificationsContainer = document.getElementById('notificationsContainer');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const markAllReadBtn = document.getElementById('markAllRead');
+        const searchInput = document.getElementById('q');
+        const totalNotificationsEl = document.getElementById('totalNotifications');
+        const unreadCountEl = document.getElementById('unreadCount');
+        const ticketUpdatesEl = document.getElementById('ticketUpdates');
+
+        // Format date function
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        // Format relative time
+        function formatRelativeTime(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInMs = now - date;
+            const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+            const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+            const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+            
+            if (diffInMinutes < 1) {
+                return 'Just now';
+            } else if (diffInMinutes < 60) {
+                return `${diffInMinutes} min ago`;
+            } else if (diffInHours < 24) {
+                return `${diffInHours} hr ago`;
+            } else if (diffInDays === 1) {
+                return 'Yesterday';
+            } else if (diffInDays < 7) {
+                return `${diffInDays} days ago`;
+            } else {
+                return formatDate(dateString);
+            }
+        }
+
+        // Get icon class based on notification type
+        function getIconClass(type) {
+            switch(type) {
+                case 'ticket-update':
+                    return 'icon-update';
+                case 'new-message':
+                    return 'icon-message';
+                case 'ticket-resolved':
+                    return 'icon-resolved';
+                case 'ticket-closed':
+                    return 'icon-closed';
+                case 'system-alert':
+                    return 'icon-system';
+                default:
+                    return 'icon-update';
+            }
+        }
+
+        // Get icon based on notification type
+        function getIcon(type) {
+            switch(type) {
+                case 'ticket-update':
+                    return 'fas fa-sync-alt';
+                case 'new-message':
+                    return 'fas fa-comment-alt';
+                case 'ticket-resolved':
+                    return 'fas fa-check-circle';
+                case 'ticket-closed':
+                    return 'fas fa-times-circle';
+                case 'system-alert':
+                    return 'fas fa-info-circle';
+                default:
+                    return 'fas fa-bell';
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            const total = notifications.length;
+            const unread = notifications.filter(n => n.unread).length;
+            const ticketUpdates = notifications.filter(n => 
+                n.type === 'ticket-update' || 
+                n.type === 'ticket-resolved' || 
+                n.type === 'ticket-closed' || 
+                n.type === 'new-message'
+            ).length;
+            
+            totalNotificationsEl.textContent = total;
+            unreadCountEl.textContent = unread;
+            ticketUpdatesEl.textContent = ticketUpdates;
+        }
+
+        // Render notifications
+        function renderNotifications(notificationsToRender) {
+            notificationsContainer.innerHTML = '';
+            
+            if (notificationsToRender.length === 0) {
+                notificationsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash"></i>
+                        <h3>No notifications found</h3>
+                        <p>Try adjusting your filters or check back later</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            notificationsToRender.forEach(notification => {
+                const notificationElement = document.createElement('div');
+                notificationElement.className = `notification-card ${notification.unread ? 'unread' : ''}`;
+                
+                let ticketLink = '';
+                if (notification.ticketId) {
+                    ticketLink = `
+                        <a href="#" class="notification-ticket">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>${notification.ticketId}: ${notification.ticketTitle}</span>
+                        </a>
+                    `;
+                }
+                
+                notificationElement.innerHTML = `
+                    <div class="notification-header">
+                        <div class="notification-type">
+                            <div class="notification-icon ${getIconClass(notification.type)}">
+                                <i class="${getIcon(notification.type)}"></i>
+                            </div>
+                            <div>
+                                <div class="notification-title">${notification.title}</div>
+                                <div class="notification-time">${formatRelativeTime(notification.time)}</div>
+                            </div>
+                        </div>
+                        <div class="notification-badge badge-${notification.badge}">
+                            ${notification.badge}
+                        </div>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-message">${notification.message}</div>
+                        ${ticketLink}
+                    </div>
+                    <div class="notification-actions">
+                        <button class="notification-action-btn" data-id="${notification.id}" data-action="view">
+                            <i class="fas fa-eye"></i> View Details
+                        </button>
+                        ${notification.unread ? `
+                            <button class="notification-action-btn primary" data-id="${notification.id}" data-action="mark-read">
+                                <i class="fas fa-check"></i> Mark as Read
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                notificationsContainer.appendChild(notificationElement);
+            });
+            
+            // Add event listeners to action buttons
+            document.querySelectorAll('.notification-action-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const notificationId = parseInt(this.getAttribute('data-id'));
+                    const action = this.getAttribute('data-action');
+                    
+                    if (action === 'mark-read') {
+                        markAsRead(notificationId);
+                    } else if (action === 'view') {
+                        viewNotification(notificationId);
+                    }
+                });
+            });
+        }
+
+        // Filter notifications
+        function filterNotifications(filter) {
+            let filteredNotifications = [...notifications];
+            
+            switch(filter) {
+                case 'unread':
+                    filteredNotifications = filteredNotifications.filter(n => n.unread);
+                    break;
+                case 'ticket':
+                    filteredNotifications = filteredNotifications.filter(n => 
+                        n.type === 'ticket-update' || 
+                        n.type === 'ticket-resolved' || 
+                        n.type === 'ticket-closed' || 
+                        n.type === 'new-message'
+                    );
+                    break;
+                case 'system':
+                    filteredNotifications = filteredNotifications.filter(n => n.type === 'system-alert');
+                    break;
+                case 'all':
+                default:
+                    // No filtering needed
+                    break;
+            }
+            
+            // Apply search filter
+            if (searchInput.value.trim() !== '') {
+                const searchTerm = searchInput.value.toLowerCase();
+                filteredNotifications = filteredNotifications.filter(notification => 
+                    notification.title.toLowerCase().includes(searchTerm) ||
+                    notification.message.toLowerCase().includes(searchTerm) ||
+                    (notification.ticketId && notification.ticketId.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            // Sort by time (newest first)
+            filteredNotifications.sort((a, b) => new Date(b.time) - new Date(a.time));
+            
+            renderNotifications(filteredNotifications);
+        }
+
+        // Mark notification as read
+        function markAsRead(id) {
+            const notification = notifications.find(n => n.id === id);
+            if (notification) {
+                notification.unread = false;
+                updateStats();
+                filterNotifications(getActiveFilter());
+            }
+        }
+
+        // Mark all notifications as read
+        function markAllAsRead() {
+            notifications.forEach(notification => {
+                notification.unread = false;
+            });
+            updateStats();
+            filterNotifications(getActiveFilter());
+        }
+
+        // View notification details
+        function viewNotification(id) {
+            const notification = notifications.find(n => n.id === id);
+            if (notification) {
+                // In a real app, this would navigate to the ticket or show details
+                alert(`Viewing notification: ${notification.title}\n\n${notification.message}`);
+                
+                // Mark as read when viewed
+                if (notification.unread) {
+                    markAsRead(id);
+                }
+            }
+        }
+
+        // Get active filter
+        function getActiveFilter() {
+            const activeBtn = document.querySelector('.filter-btn.active');
+            return activeBtn ? activeBtn.getAttribute('data-filter') : 'all';
+        }
+
+        // Event listeners
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterNotifications(this.getAttribute('data-filter'));
+            });
+        });
+
+        markAllReadBtn.addEventListener('click', markAllAsRead);
+        searchInput.addEventListener('input', () => filterNotifications(getActiveFilter()));
+
+        // Account Dropdown Functionality
+        const accountBtn = document.getElementById("accountBtn");
+        const accountMenu = document.getElementById("accountMenu");
+
+        if (accountBtn && accountMenu) {
+            accountBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                accountMenu.classList.toggle("show");
+                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close dropdown when pressing Escape key
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+        }
+
+        // Initial render
+        updateStats();
+        filterNotifications('all');
+    </script>
+</body>
+</html>

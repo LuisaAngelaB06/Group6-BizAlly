@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin Dashboard - AlliTrack</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/sidebar-header.css" />
+    <link rel="stylesheet" href="../css/user-dashboard.css" />
+</head>
+
+<body>
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">AT</div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle">User Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../pages/index-user.html" class="active" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+
+                    <div class="nav-section">Support</div>
+                    <a href="../pages/my-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> My Tickets
+                    </a>
+                    <a href="../pages/notifications.html" data-section="notifications">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <a href="../pages/submit-ticket.html" data-section="submit-ticket">
+                        <i class="fas fa-plus-circle"></i> Submit a Ticket
+                    </a>
+
+                    <div class="nav-section">Management</div>
+                    <a href="../pages/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> Preferences
+                    </a>
+                    <a href="../pages/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                    </a>
+                    <a href="../pages/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> Announcements
+                    </a>
+
+                    <div class="nav-section">System</div>
+                    <a href="../pages/account-security.html" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> Account Security
+                    </a>
+                    <a href="../pages/system-information.html" data-section="system-information">
+                        <i class="fas fa-info-circle"></i> System Information
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..." aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div style="font-weight:700">User</div>
+                            <div style="font-size:.82rem;color:var(--muted)">User</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar">AJ</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="#">Profile</a>
+                            <a href="#">Settings</a>
+                            <a href="#">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Dashboard Content -->
+                <div class="content">
+                    <div class="dashboard-content">
+                        <!-- Feature 1: Ticket Status Overview -->
+                        <section class="dashboard-section">
+                            <h2><i class="fas fa-ticket-alt"></i> My Tickets Overview</h2>
+                            <div class="ticket-status-grid">
+                                <div class="status-card open">
+                                    <div class="count">5</div>
+                                    <div class="label">Open Tickets</div>
+                                </div>
+                                <div class="status-card in-progress">
+                                    <div class="count">3</div>
+                                    <div class="label">In Progress</div>
+                                </div>
+                                <div class="status-card resolved">
+                                    <div class="count">12</div>
+                                    <div class="label">Resolved</div>
+                                </div>
+                                <div class="status-card closed">
+                                    <div class="count">8</div>
+                                    <div class="label">Closed</div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Feature 2: Recent Activity -->
+                        <section class="dashboard-section">
+                            <h2><i class="fas fa-history"></i> Recent Activity</h2>
+                            <div class="activity-list">
+                                <div class="activity-item">
+                                    <div class="activity-icon ticket">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <div class="activity-title">New ticket submitted</div>
+                                        <div class="activity-meta">Issue with login authentication</div>
+                                    </div>
+                                    <div class="activity-time">2 hours ago</div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon update">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <div class="activity-title">Ticket updated</div>
+                                        <div class="activity-meta">Ticket #TKT-4587 status changed to "In Progress"</div>
+                                    </div>
+                                    <div class="activity-time">Yesterday</div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon resolved">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <div class="activity-title">Ticket resolved</div>
+                                        <div class="activity-meta">Ticket #TKT-4219 has been resolved</div>
+                                    </div>
+                                    <div class="activity-time">2 days ago</div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon ticket">
+                                        <i class="fas fa-comment"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <div class="activity-title">New comment added</div>
+                                        <div class="activity-meta">Support agent responded to your ticket #TKT-4587</div>
+                                    </div>
+                                    <div class="activity-time">3 days ago</div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Feature 3: Quick Actions -->
+                        <section class="dashboard-section">
+                            <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+                            <div class="quick-actions-grid">
+                                <a href="../pages/submit-ticket.html" class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                    <div class="action-title">Submit Ticket</div>
+                                    <div class="action-desc">Create a new support request</div>
+                                </a>
+                                <a href="../pages/my-tickets.html" class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-ticket-alt"></i>
+                                    </div>
+                                    <div class="action-title">View Tickets</div>
+                                    <div class="action-desc">Check all your support tickets</div>
+                                </a>
+                                <a href="../pages/notifications.html" class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-bell"></i>
+                                    </div>
+                                    <div class="action-title">Notifications</div>
+                                    <div class="action-desc">View recent updates</div>
+                                </a>
+                                <a href="../pages/profile-settings.html" class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-user-cog"></i>
+                                    </div>
+                                    <div class="action-title">Profile Settings</div>
+                                    <div class="action-desc">Update your account details</div>
+                                </a>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div>Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Account Dropdown Functionality
+        const accountBtn = document.getElementById("accountBtn");
+        const accountMenu = document.getElementById("accountMenu");
+
+        if (accountBtn && accountMenu) {
+            accountBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                accountMenu.classList.toggle("show");
+                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close dropdown when pressing Escape key
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

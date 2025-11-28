@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Preferences - AlliTrack</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/sidebar-header.css" />
+    <link rel="stylesheet" href="../css/preferences.css" />
+</head>
+
+<body>
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">AT</div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle">User Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../pages/index-user.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+
+                    <div class="nav-section">Support</div>
+                    <a href="../pages/my-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> My Tickets
+                    </a>
+                    <a href="../pages/notifications.html" data-section="notifications">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <a href="../pages/submit-ticket.html" data-section="submit-ticket">
+                        <i class="fas fa-plus-circle"></i> Submit a Ticket
+                    </a>
+
+                    <div class="nav-section">Management</div>
+                    <a href="../pages/preferences.html" class="active" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> Preferences
+                    </a>
+                    <a href="../pages/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                    </a>
+                    <a href="../pages/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> Announcements
+                    </a>
+
+                    <div class="nav-section">System</div>
+                    <a href="../pages/account-security.html" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> Account Security
+                    </a>
+                    <a href="../pages/system-information.html" data-section="system-information">
+                        <i class="fas fa-info-circle"></i> System Information
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..." aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div style="font-weight:700">User</div>
+                            <div style="font-size:.82rem;color:var(--muted)">User</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar">AJ</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="#">Profile</a>
+                            <a href="#">Settings</a>
+                            <a href="#">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Preferences Content -->
+                <div class="content">
+                    <div class="preferences-content">
+                        <!-- Header with Container -->
+                        <div class="preferences-header-container">
+                            <div class="preferences-header">
+                                <h1><i class="fas fa-sliders-h"></i> Preferences</h1>
+                            </div>
+                        </div>
+
+                        <!-- Success Message -->
+                        <div class="success-message" id="successMessage">
+                            <div class="success-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="success-text">Preferences saved successfully!</div>
+                        </div>
+
+                        <!-- Preferences Form -->
+                        <form class="preferences-container" id="preferencesForm">
+                            <!-- Notification Settings -->
+                            <div class="preferences-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-bell"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title">Notification Settings</h2>
+                                        <p class="section-description">Manage how and when you receive notifications</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="settings-grid">
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <div class="setting-title">Email Notifications</div>
+                                            <div class="setting-description">Receive email alerts for ticket updates and system announcements</div>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="toggle">
+                                                <input type="checkbox" id="emailNotifications" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <div class="setting-title">Push Notifications</div>
+                                            <div class="setting-description">Show browser notifications for urgent updates</div>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="toggle">
+                                                <input type="checkbox" id="pushNotifications" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <div class="setting-title">Ticket Updates</div>
+                                            <div class="setting-description">Notify me when my tickets are updated or resolved</div>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="toggle">
+                                                <input type="checkbox" id="ticketUpdates" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <div class="setting-title">New Announcements</div>
+                                            <div class="setting-description">Notify me about new system announcements and features</div>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="toggle">
+                                                <input type="checkbox" id="announcementNotifications" checked>
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <div class="setting-title">Weekly Digest</div>
+                                            <div class="setting-description">Send weekly summary of all ticket activities</div>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="toggle">
+                                                <input type="checkbox" id="weeklyDigest">
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Language Settings -->
+                            <div class="preferences-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-language"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title">Language Settings</h2>
+                                        <p class="section-description">Set your preferred language for the entire dashboard</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="settings-grid">
+                                    <div class="setting-item">
+                                        <div class="setting-info">
+                                            <div class="setting-title">Dashboard Language</div>
+                                            <div class="setting-description">This will change the language across all pages of your dashboard</div>
+                                        </div>
+                                        <div class="setting-control">
+                                            <select class="select-control" id="language">
+                                                <option value="en">English</option>
+                                                <option value="es">Español (Spanish)</option>
+                                                <option value="fr">Français (French)</option>
+                                                <option value="de">Deutsch (German)</option>
+                                                <option value="it">Italiano (Italian)</option>
+                                                <option value="pt">Português (Portuguese)</option>
+                                                <option value="ja">日本語 (Japanese)</option>
+                                                <option value="zh">中文 (Chinese)</option>
+                                                <option value="ko">한국어 (Korean)</option>
+                                                <option value="ru">Русский (Russian)</option>
+                                                <option value="ar">العربية (Arabic)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="resetPreferences()">
+                                    <i class="fas fa-undo"></i> Reset to Defaults
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save Preferences
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div>Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Language translations
+        const translations = {
+            en: {
+                dashboard: "Dashboard",
+                myTickets: "My Tickets",
+                notifications: "Notifications",
+                submitTicket: "Submit a Ticket",
+                preferences: "Preferences",
+                profileSettings: "Profile Settings",
+                announcements: "Announcements",
+                accountSecurity: "Account Security",
+                systemInformation: "System Information",
+                support: "Support",
+                management: "Management",
+                system: "System",
+                searchPlaceholder: "Search tickets, users, IDs...",
+                userRole: "Administrator",
+                footer: "Dashboard Template"
+            },
+            es: {
+                dashboard: "Panel de Control",
+                myTickets: "Mis Tickets",
+                notifications: "Notificaciones",
+                submitTicket: "Enviar Ticket",
+                preferences: "Preferencias",
+                profileSettings: "Configuración de Perfil",
+                announcements: "Anuncios",
+                accountSecurity: "Seguridad de Cuenta",
+                systemInformation: "Información del Sistema",
+                support: "Soporte",
+                management: "Gestión",
+                system: "Sistema",
+                searchPlaceholder: "Buscar tickets, usuarios, IDs...",
+                userRole: "Administrador",
+                footer: "Plantilla del Panel"
+            },
+            fr: {
+                dashboard: "Tableau de Bord",
+                myTickets: "Mes Tickets",
+                notifications: "Notifications",
+                submitTicket: "Soumettre un Ticket",
+                preferences: "Préférences",
+                profileSettings: "Paramètres du Profil",
+                announcements: "Annonces",
+                accountSecurity: "Sécurité du Compte",
+                systemInformation: "Informations Système",
+                support: "Support",
+                management: "Gestion",
+                system: "Système",
+                searchPlaceholder: "Rechercher tickets, utilisateurs, IDs...",
+                userRole: "Administrateur",
+                footer: "Modèle de Tableau de Bord"
+            },
+            de: {
+                dashboard: "Dashboard",
+                myTickets: "Meine Tickets",
+                notifications: "Benachrichtigungen",
+                submitTicket: "Ticket einreichen",
+                preferences: "Einstellungen",
+                profileSettings: "Profileinstellungen",
+                announcements: "Ankündigungen",
+                accountSecurity: "Kontosicherheit",
+                systemInformation: "Systeminformationen",
+                support: "Support",
+                management: "Verwaltung",
+                system: "System",
+                searchPlaceholder: "Tickets, Benutzer, IDs suchen...",
+                userRole: "Administrator",
+                footer: "Dashboard-Vorlage"
+            }
+        };
+
+        // DOM elements
+        const preferencesForm = document.getElementById('preferencesForm');
+        const successMessage = document.getElementById('successMessage');
+        const languageSelect = document.getElementById('language');
+
+        // Load saved preferences
+        function loadPreferences() {
+            const savedLanguage = localStorage.getItem('dashboardLanguage') || 'en';
+            languageSelect.value = savedLanguage;
+            
+            // Load notification settings
+            const savedNotifications = JSON.parse(localStorage.getItem('notificationSettings') || '{}');
+            document.getElementById('emailNotifications').checked = savedNotifications.email !== false;
+            document.getElementById('pushNotifications').checked = savedNotifications.push !== false;
+            document.getElementById('ticketUpdates').checked = savedNotifications.ticketUpdates !== false;
+            document.getElementById('announcementNotifications').checked = savedNotifications.announcements !== false;
+            document.getElementById('weeklyDigest').checked = savedNotifications.weeklyDigest || false;
+            
+            // Apply current language
+            applyLanguage(savedLanguage);
+        }
+
+        // Apply language to the entire dashboard
+        function applyLanguage(language) {
+            const lang = translations[language] || translations.en;
+            
+            // Update sidebar navigation
+            document.querySelector('a[data-section="dashboard"]').innerHTML = `<i class="fas fa-chart-line"></i> ${lang.dashboard}`;
+            document.querySelector('a[data-section="tickets"]').innerHTML = `<i class="fas fa-ticket-alt"></i> ${lang.myTickets}`;
+            document.querySelector('a[data-section="notifications"]').innerHTML = `<i class="fas fa-bell"></i> ${lang.notifications}`;
+            document.querySelector('a[data-section="submit-ticket"]').innerHTML = `<i class="fas fa-plus-circle"></i> ${lang.submitTicket}`;
+            document.querySelector('a[data-section="preferences"]').innerHTML = `<i class="fas fa-sliders-h"></i> ${lang.preferences}`;
+            document.querySelector('a[data-section="profile-settings"]').innerHTML = `<i class="fas fa-user-cog"></i> ${lang.profileSettings}`;
+            document.querySelector('a[data-section="announcements"]').innerHTML = `<i class="fas fa-bullhorn"></i> ${lang.announcements}`;
+            document.querySelector('a[data-section="account-security"]').innerHTML = `<i class="fas fa-shield-alt"></i> ${lang.accountSecurity}`;
+            document.querySelector('a[data-section="system-information"]').innerHTML = `<i class="fas fa-info-circle"></i> ${lang.systemInformation}`;
+            
+            // Update section headers
+            document.querySelector('.nav-section:nth-child(2)').textContent = lang.support;
+            document.querySelector('.nav-section:nth-child(3)').textContent = lang.management;
+            document.querySelector('.nav-section:nth-child(4)').textContent = lang.system;
+            
+            // Update header search placeholder
+            document.querySelector('#q').placeholder = lang.searchPlaceholder;
+            
+            // Update user role
+            document.querySelector('.header-actions div:first-child div:last-child').textContent = lang.userRole;
+            
+            // Update footer
+            document.querySelector('.site-footer div:last-child').textContent = lang.footer;
+            
+            // Update page title
+            document.title = `${lang.preferences} - AlliTrack`;
+            
+            // Update preferences page header
+            document.querySelector('.preferences-header h1').innerHTML = `<i class="fas fa-sliders-h"></i> ${lang.preferences}`;
+            
+            // Update section titles and descriptions
+            document.querySelector('.section-title').textContent = "Notification Settings";
+            document.querySelector('.section-description').textContent = "Manage how and when you receive notifications";
+            
+            // Update setting titles and descriptions
+            const settingTitles = document.querySelectorAll('.setting-title');
+            const settingDescriptions = document.querySelectorAll('.setting-description');
+            
+            if (settingTitles[0]) settingTitles[0].textContent = "Email Notifications";
+            if (settingDescriptions[0]) settingDescriptions[0].textContent = "Receive email alerts for ticket updates and system announcements";
+            
+            if (settingTitles[1]) settingTitles[1].textContent = "Push Notifications";
+            if (settingDescriptions[1]) settingDescriptions[1].textContent = "Show browser notifications for urgent updates";
+            
+            if (settingTitles[2]) settingTitles[2].textContent = "Ticket Updates";
+            if (settingDescriptions[2]) settingDescriptions[2].textContent = "Notify me when my tickets are updated or resolved";
+            
+            if (settingTitles[3]) settingTitles[3].textContent = "New Announcements";
+            if (settingDescriptions[3]) settingDescriptions[3].textContent = "Notify me about new system announcements and features";
+            
+            if (settingTitles[4]) settingTitles[4].textContent = "Weekly Digest";
+            if (settingDescriptions[4]) settingDescriptions[4].textContent = "Send weekly summary of all ticket activities";
+            
+            // Update language section
+            const languageSection = document.querySelectorAll('.section-title')[1];
+            const languageDescription = document.querySelectorAll('.section-description')[1];
+            if (languageSection) languageSection.textContent = "Language Settings";
+            if (languageDescription) languageDescription.textContent = "Set your preferred language for the entire dashboard";
+            
+            const languageSettingTitle = document.querySelectorAll('.setting-title')[5];
+            const languageSettingDescription = document.querySelectorAll('.setting-description')[5];
+            if (languageSettingTitle) languageSettingTitle.textContent = "Dashboard Language";
+            if (languageSettingDescription) languageSettingDescription.textContent = "This will change the language across all pages of your dashboard";
+            
+            // Update button texts
+            document.querySelector('.btn-secondary').innerHTML = `<i class="fas fa-undo"></i> Reset to Defaults`;
+            document.querySelector('.btn-primary').innerHTML = `<i class="fas fa-save"></i> Save Preferences`;
+        }
+
+        // Form submission
+        preferencesForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            savePreferences();
+        });
+
+        function savePreferences() {
+            // Collect all preference values
+            const preferences = {
+                notifications: {
+                    email: document.getElementById('emailNotifications').checked,
+                    push: document.getElementById('pushNotifications').checked,
+                    ticketUpdates: document.getElementById('ticketUpdates').checked,
+                    announcements: document.getElementById('announcementNotifications').checked,
+                    weeklyDigest: document.getElementById('weeklyDigest').checked
+                },
+                language: document.getElementById('language').value
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('dashboardLanguage', preferences.language);
+            localStorage.setItem('notificationSettings', JSON.stringify(preferences.notifications));
+            
+            // Apply language changes immediately
+            applyLanguage(preferences.language);
+            
+            // Show success message
+            successMessage.classList.add('show');
+            
+            // Hide success message after 3 seconds
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 3000);
+            
+            console.log('Preferences saved:', preferences);
+        }
+
+        function resetPreferences() {
+            // Reset toggles to default
+            document.getElementById('emailNotifications').checked = true;
+            document.getElementById('pushNotifications').checked = true;
+            document.getElementById('ticketUpdates').checked = true;
+            document.getElementById('announcementNotifications').checked = true;
+            document.getElementById('weeklyDigest').checked = false;
+            
+            // Reset language to English
+            document.getElementById('language').value = 'en';
+            
+            // Save and apply defaults
+            savePreferences();
+            
+            console.log('Preferences reset to defaults');
+        }
+
+        // Language change handler
+        languageSelect.addEventListener('change', () => {
+            // Auto-save when language is changed
+            savePreferences();
+        });
+
+        // Account Dropdown Functionality
+        const accountBtn = document.getElementById("accountBtn");
+        const accountMenu = document.getElementById("accountMenu");
+
+        if (accountBtn && accountMenu) {
+            accountBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                accountMenu.classList.toggle("show");
+                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close dropdown when pressing Escape key
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+        }
+
+        // Load preferences when page loads
+        document.addEventListener('DOMContentLoaded', loadPreferences);
+    </script>
+</body>
+</html>
