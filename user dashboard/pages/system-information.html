@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>System Information - AlliTrack</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/sidebar-header.css" />
+    <link rel="stylesheet" href="../css/system-information.css" />
+</head>
+
+<body>
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">AT</div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle">User Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../pages/index-user.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+
+                    <div class="nav-section">Support</div>
+                    <a href="../pages/my-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> My Tickets
+                    </a>
+                    <a href="../pages/notifications.html" data-section="notifications">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <a href="../pages/submit-ticket.html" data-section="submit-ticket">
+                        <i class="fas fa-plus-circle"></i> Submit a Ticket
+                    </a>
+
+                    <div class="nav-section">Management</div>
+                    <a href="../pages/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> Preferences
+                    </a>
+                    <a href="../pages/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                    </a>
+                    <a href="../pages/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> Announcements
+                    </a>
+
+                    <div class="nav-section">System</div>
+                    <a href="../pages/account-security.html" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> Account Security
+                    </a>
+                    <a href="../pages/system-information.html" class="active" data-section="system-information">
+                        <i class="fas fa-info-circle"></i> System Information
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..." aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div style="font-weight:700">User</div>
+                            <div style="font-size:.82rem;color:var(--muted)">User</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar">AJ</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="#">Profile</a>
+                            <a href="#">Settings</a>
+                            <a href="#">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- System Information Content -->
+                <div class="content">
+                    <div class="system-content">
+                        <!-- Header with Container -->
+                        <div class="system-header-container">
+                            <div class="system-header">
+                                <h1><i class="fas fa-info-circle"></i> System Information</h1>
+                            </div>
+                        </div>
+
+                        <!-- System Information -->
+                        <div class="system-container">
+                            <!-- Application Information -->
+                            <div class="system-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-cube"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title">Application Information</h2>
+                                        <p class="section-description">Details about your AlliTrack application</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="info-cards">
+                                    <div class="info-card">
+                                        <div class="info-card-icon">
+                                            <i class="fas fa-rocket"></i>
+                                        </div>
+                                        <div class="info-card-title">Application Version</div>
+                                        <div class="info-card-value">v1.2.0</div>
+                                        <div class="info-card-meta">Stable Release</div>
+                                        <div class="info-card-description">
+                                            Current version of your AlliTrack dashboard with latest features and security updates.
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-card">
+                                        <div class="info-card-icon">
+                                            <i class="fas fa-calendar"></i>
+                                        </div>
+                                        <div class="info-card-title">Last Updated</div>
+                                        <div class="info-card-value">March 15, 2025</div>
+                                        <div class="info-card-meta">2 weeks ago</div>
+                                        <div class="info-card-description">
+                                            Most recent system update with performance improvements and bug fixes.
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-card">
+                                        <div class="info-card-icon">
+                                            <i class="fas fa-database"></i>
+                                        </div>
+                                        <div class="info-card-title">Data Center</div>
+                                        <div class="info-card-value">US-East-1</div>
+                                        <div class="info-card-meta">Primary Region</div>
+                                        <div class="info-card-description">
+                                            Your data is stored in secure, compliant data centers with 99.9% uptime.
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Technical Details -->
+                                <div class="technical-details">
+                                    <div class="technical-title">Technical Specifications</div>
+                                    <div class="detail-grid">
+                                        <div class="detail-item">
+                                            <div class="detail-label">API Version</div>
+                                            <div class="detail-value">wala pa ngani</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Database</div>
+                                            <div class="detail-value">wala pa ngani</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Framework</div>
+                                            <div class="detail-value">wala pa ngani</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Build Date</div>
+                                            <div class="detail-value">wala pa ngani</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Environment</div>
+                                            <div class="detail-value">wala pa ngani</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Support Level</div>
+                                            <div class="detail-value">wala pa ngani</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Legal & Compliance -->
+                            <div class="system-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-gavel"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title">Legal & Compliance</h2>
+                                        <p class="section-description">Important legal documents and policies</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="legal-links">
+                                    <a href="../pages/help/user-terms.html" class="legal-link">
+                                        <div class="legal-link-icon">
+                                            <i class="fas fa-file-contract"></i>
+                                        </div>
+                                        <div class="legal-link-content">
+                                            <div class="legal-link-title">Terms & Conditions</div>
+                                            <div class="legal-link-description">
+                                                Read our terms of service, user agreements, and acceptable use policies.
+                                            </div>
+                                        </div>
+                                        <div class="legal-link-arrow">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </div>
+                                    </a>
+                                    
+                                    <a href="../pages/help/user-privacy.html" class="legal-link">
+                                        <div class="legal-link-icon">
+                                            <i class="fas fa-shield-alt"></i>
+                                        </div>
+                                        <div class="legal-link-content">
+                                            <div class="legal-link-title">Privacy Policy</div>
+                                            <div class="legal-link-description">
+                                                Learn how we collect, use, and protect your personal information and data.
+                                            </div>
+                                        </div>
+                                        <div class="legal-link-arrow">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </div>
+                                    </a>
+                                    
+                                    <a href="../pages/help/user-agreement.html" class="legal-link">
+                                        <div class="legal-link-icon">
+                                            <i class="fas fa-handshake"></i>
+                                        </div>
+                                        <div class="legal-link-content">
+                                            <div class="legal-link-title">Service Level Agreement</div>
+                                            <div class="legal-link-description">
+                                                Review our commitment to service availability, support, and performance.
+                                            </div>
+                                        </div>
+                                        <div class="legal-link-arrow">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </div>
+                                    </a>
+                                    <a href="../pages/help/user-data.html" class="legal-link">
+                                        <div class="legal-link-icon">
+                                            <i class="fas fa-database"></i>
+                                        </div>
+                                        <div class="legal-link-content">
+                                            <div class="legal-link-title">Data Processing Agreement</div>
+                                            <div class="legal-link-description">
+                                                Understand how we process and protect your data in compliance with regulations.
+                                            </div>
+                                        </div>
+                                        <div class="legal-link-arrow">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div>Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const accountBtn = document.getElementById("accountBtn");
+        const accountMenu = document.getElementById("accountMenu");
+
+        // Account Dropdown Functionality
+        if (accountBtn && accountMenu) {
+            accountBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                accountMenu.classList.toggle("show");
+                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close dropdown when pressing Escape key
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+        }
+
+        // Simple version check (could be expanded with API call)
+        function checkForUpdates() {
+            // In a real application, this would call your API to check for updates
+            console.log('Checking for system updates...');
+        }
+
+        // Check for updates when page loads
+        document.addEventListener('DOMContentLoaded', checkForUpdates);
+    </script>
+</body>
+</html>

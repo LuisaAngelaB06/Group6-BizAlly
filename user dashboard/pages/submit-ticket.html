@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Submit a Ticket - AlliTrack</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/sidebar-header.css" />
+    <link rel="stylesheet" href="../css/submit-ticket.css" />
+</head>
+
+<body>
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">AT</div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle">User Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../pages/index-user.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+
+                    <div class="nav-section">Support</div>
+                    <a href="../pages/my-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> My Tickets
+                    </a>
+                    <a href="../pages/notifications.html" data-section="notifications">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <a href="../pages/submit-ticket.html" class="active" data-section="submit-ticket">
+                        <i class="fas fa-plus-circle"></i> Submit a Ticket
+                    </a>
+
+                    <div class="nav-section">Management</div>
+                    <a href="../pages/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> Preferences
+                    </a>
+                    <a href="../pages/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                    </a>
+                    <a href="../pages/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> Announcements
+                    </a>
+
+                    <div class="nav-section">System</div>
+                    <a href="../pages/account-security.html" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> Account Security
+                    </a>
+                    <a href="../pages/system-information.html" data-section="system-information">
+                        <i class="fas fa-info-circle"></i> System Information
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..." aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div style="font-weight:700">User</div>
+                            <div style="font-size:.82rem;color:var(--muted)">User</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar">AJ</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="#">Profile</a>
+                            <a href="#">Settings</a>
+                            <a href="#">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Submit Ticket Content -->
+                <div class="content">
+                    <div class="submit-ticket-content">
+                        <!-- Header with Container -->
+                        <div class="submit-ticket-header-container">
+                            <div class="submit-ticket-header">
+                                <h1><i class="fas fa-plus-circle"></i> Submit a Ticket</h1>
+                            </div>
+                        </div>
+
+                        <!-- Success Message (Hidden by default) -->
+                        <div class="success-message" id="successMessage">
+                            <div class="success-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="success-title">Ticket Submitted Successfully!</div>
+                            <div class="success-details" id="ticketDetails">
+                                Your ticket <strong id="ticketId">TKT-4892</strong> has been created and assigned to our support team.
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-secondary" onclick="resetForm()">
+                                    <i class="fas fa-plus"></i> Submit Another Ticket
+                                </button>
+                                <button class="btn btn-primary" onclick="viewTicket()">
+                                    <i class="fas fa-eye"></i> View Ticket
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Ticket Form -->
+                        <form class="ticket-form-container" id="ticketForm">
+                            <div class="form-grid">
+                                <!-- Subject -->
+                                <div class="form-group">
+                                    <label class="form-label" for="subject">
+                                        Subject <span class="required">*</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="subject" 
+                                        class="form-input" 
+                                        placeholder="Brief description of your issue"
+                                        required
+                                    />
+                                    <div class="form-error" id="subjectError">Please enter a subject for your ticket</div>
+                                </div>
+
+                                <!-- Category -->
+                                <div class="form-group">
+                                    <label class="form-label" for="category">
+                                        Category <span class="required">*</span>
+                                    </label>
+                                    <select id="category" class="form-select" required>
+                                        <option value="">Select a category</option>
+                                        <option value="technical">Technical Issue</option>
+                                        <option value="billing">Billing & Payments</option>
+                                        <option value="feature">Feature Request</option>
+                                        <option value="bug">Bug Report</option>
+                                        <option value="account">Account Issue</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                    <div class="form-error" id="categoryError">Please select a category</div>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="form-group">
+                                    <label class="form-label" for="description">
+                                        Description <span class="required">*</span>
+                                    </label>
+                                    <textarea 
+                                        id="description" 
+                                        class="form-textarea" 
+                                        placeholder="Please provide detailed information about your issue. Include steps to reproduce, error messages, and any relevant details."
+                                        required
+                                    ></textarea>
+                                    <div class="form-hint">
+                                        Be as detailed as possible to help us resolve your issue quickly
+                                    </div>
+                                    <div class="form-error" id="descriptionError">Please provide a description of your issue</div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> Submit Ticket
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div>Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const ticketForm = document.getElementById('ticketForm');
+        const successMessage = document.getElementById('successMessage');
+
+        // Form validation and submission
+        ticketForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (validateForm()) {
+                submitTicket();
+            }
+        });
+
+        function validateForm() {
+            let isValid = true;
+            const subject = document.getElementById('subject');
+            const category = document.getElementById('category');
+            const description = document.getElementById('description');
+            
+            // Reset errors
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.classList.remove('show');
+            });
+            document.querySelectorAll('.form-input, .form-select, .form-textarea').forEach(input => {
+                input.classList.remove('error');
+            });
+            
+            // Validate subject
+            if (!subject.value.trim()) {
+                document.getElementById('subjectError').classList.add('show');
+                subject.classList.add('error');
+                isValid = false;
+            }
+            
+            // Validate category
+            if (!category.value) {
+                document.getElementById('categoryError').classList.add('show');
+                category.classList.add('error');
+                isValid = false;
+            }
+            
+            // Validate description
+            if (!description.value.trim()) {
+                document.getElementById('descriptionError').classList.add('show');
+                description.classList.add('error');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+
+        function submitTicket() {
+            // Simulate API call
+            const ticketId = 'TKT-' + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('ticketId').textContent = ticketId;
+            
+            // Show success message
+            ticketForm.style.display = 'none';
+            successMessage.classList.add('show');
+            
+            // In a real application, you would send the form data to your backend here
+            console.log('Ticket submitted:', {
+                subject: document.getElementById('subject').value,
+                category: document.getElementById('category').value,
+                description: document.getElementById('description').value
+            });
+        }
+
+        function resetForm() {
+            ticketForm.reset();
+            
+            // Reset errors
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.classList.remove('show');
+            });
+            document.querySelectorAll('.form-input, .form-select, .form-textarea').forEach(input => {
+                input.classList.remove('error');
+            });
+            
+            // Show form, hide success message
+            ticketForm.style.display = 'block';
+            successMessage.classList.remove('show');
+        }
+
+        function viewTicket() {
+            // In a real application, this would redirect to the ticket view page
+            alert('Redirecting to ticket view...');
+            // window.location.href = `../pages/ticket-details.html?id=${document.getElementById('ticketId').textContent}`;
+        }
+
+        // Account Dropdown Functionality
+        const accountBtn = document.getElementById("accountBtn");
+        const accountMenu = document.getElementById("accountMenu");
+
+        if (accountBtn && accountMenu) {
+            accountBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                accountMenu.classList.toggle("show");
+                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close dropdown when pressing Escape key
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

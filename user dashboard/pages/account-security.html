@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Account Security - AlliTrack</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/sidebar-header.css" />
+    <link rel="stylesheet" href="../css/account-security.css" />
+</head>
+<body>
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">AT</div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle">User Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../pages/index-user.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </a>
+
+                    <div class="nav-section">Support</div>
+                    <a href="../pages/my-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> My Tickets
+                    </a>
+                    <a href="../pages/notifications.html" data-section="notifications">
+                        <i class="fas fa-bell"></i> Notifications
+                    </a>
+                    <a href="../pages/submit-ticket.html" data-section="submit-ticket">
+                        <i class="fas fa-plus-circle"></i> Submit a Ticket
+                    </a>
+
+                    <div class="nav-section">Management</div>
+                    <a href="../pages/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> Preferences
+                    </a>
+                    <a href="../pages/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                    </a>
+                    <a href="../pages/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> Announcements
+                    </a>
+
+                    <div class="nav-section">System</div>
+                    <a href="../pages/account-security.html" class="active" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> Account Security
+                    </a>
+                    <a href="../pages/system-information.html" data-section="system-information">
+                        <i class="fas fa-info-circle"></i> System Information
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..." aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div style="font-weight:700">User</div>
+                            <div style="font-size:.82rem;color:var(--muted)">User</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar">AJ</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="#">Profile</a>
+                            <a href="#">Settings</a>
+                            <a href="#">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Account Security Content -->
+                <div class="content">
+                    <div class="security-content">
+                        <!-- Header with Container -->
+                        <div class="security-header-container">
+                            <div class="security-header">
+                                <h1><i class="fas fa-shield-alt"></i> Account Security</h1>
+                            </div>
+                        </div>
+
+                        <!-- Success Message -->
+                        <div class="success-message" id="successMessage">
+                            <div class="success-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="success-text">Security settings updated successfully!</div>
+                        </div>
+
+                        <!-- Account Security Form -->
+                        <form class="security-container" id="securityForm">
+                            <!-- Two-Factor Authentication -->
+                            <div class="security-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-mobile-alt"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title">Two-Factor Authentication</h2>
+                                        <p class="section-description">Add an extra layer of security to your account</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="two-factor-section">
+                                    <div class="two-factor-header">
+                                        <div>
+                                            <div class="two-factor-title">Two-Factor Authentication (2FA)</div>
+                                            <div class="two-factor-description">
+                                                Protect your account with two-factor authentication. You'll need to enter a verification code from your authenticator app when signing in.
+                                            </div>
+                                        </div>
+                                        <div class="setting-control">
+                                            <label class="toggle">
+                                                <input type="checkbox" id="twoFactorEnabled">
+                                                <span class="toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="two-factor-setup" id="twoFactorSetup">
+                                        <div class="qr-code">
+                                            <div class="qr-placeholder">
+                                                <i class="fas fa-qrcode" style="font-size: 3rem;"></i>
+                                            </div>
+                                            <div class="form-hint">Scan this QR code with your authenticator app</div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="form-label" for="verificationCode">
+                                                Verification Code <span class="required">*</span>
+                                            </label>
+                                            <input 
+                                                type="text" 
+                                                id="verificationCode" 
+                                                class="form-input" 
+                                                placeholder="Enter 6-digit code"
+                                                maxlength="6"
+                                            />
+                                            <div class="form-error" id="verificationCodeError">Please enter a valid verification code</div>
+                                        </div>
+                                        
+                                        <div class="backup-codes">
+                                            <div class="backup-codes-title">Backup Codes</div>
+                                            <div class="form-hint">Save these codes in a secure place. You can use them to access your account if you lose your authenticator device.</div>
+                                            <div class="codes-grid">
+                                                <div>ABCD-EFGH-IJKL</div>
+                                                <div>MNOP-QRST-UVWX</div>
+                                                <div>YZ12-3456-7890</div>
+                                                <div>ABCD-EFGH-IJKL</div>
+                                                <div>MNOP-QRST-UVWX</div>
+                                                <div>YZ12-3456-7890</div>
+                                                <div>ABCD-EFGH-IJKL</div>
+                                                <div>MNOP-QRST-UVWX</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Login History -->
+                            <div class="security-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-history"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title">Login History</h2>
+                                        <p class="section-description">Recent login activity on your account</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="login-history">
+                                    <div class="history-list" id="loginHistoryList">
+                                        <!-- Login history items will be dynamically inserted here -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save Security Settings
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div>Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Sample login history data
+        const loginHistory = [
+            {
+                id: 1,
+                device: "Chrome on Windows",
+                location: "New York, NY, USA",
+                ip: "192.168.1.100",
+                time: "2025-03-20T14:30:00",
+                status: "success"
+            },
+            {
+                id: 2,
+                device: "Safari on macOS",
+                location: "San Francisco, CA, USA",
+                ip: "192.168.1.101",
+                time: "2025-03-19T09:15:00",
+                status: "success"
+            },
+            {
+                id: 3,
+                device: "Firefox on Linux",
+                location: "London, UK",
+                ip: "192.168.1.102",
+                time: "2025-03-18T16:45:00",
+                status: "success"
+            },
+            {
+                id: 4,
+                device: "Mobile App iOS",
+                location: "Tokyo, Japan",
+                ip: "192.168.1.103",
+                time: "2025-03-17T22:20:00",
+                status: "success"
+            },
+            {
+                id: 5,
+                device: "Unknown Device",
+                location: "Beijing, China",
+                ip: "192.168.1.104",
+                time: "2025-03-16T03:10:00",
+                status: "failed"
+            }
+        ];
+
+        // DOM elements
+        const securityForm = document.getElementById('securityForm');
+        const successMessage = document.getElementById('successMessage');
+        const twoFactorToggle = document.getElementById('twoFactorEnabled');
+        const twoFactorSetup = document.getElementById('twoFactorSetup');
+        const loginHistoryList = document.getElementById('loginHistoryList');
+
+        // Load saved security settings
+        function loadSecuritySettings() {
+            const savedSettings = JSON.parse(localStorage.getItem('securitySettings') || '{}');
+            
+            if (savedSettings.twoFactorEnabled) {
+                twoFactorToggle.checked = true;
+                twoFactorSetup.classList.add('show');
+            }
+        }
+
+        // Format date for display
+        function formatDateTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Render login history
+        function renderLoginHistory() {
+            loginHistoryList.innerHTML = '';
+            
+            loginHistory.forEach(login => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <div class="history-icon">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                    <div class="history-details">
+                        <div class="history-device">${login.device}</div>
+                        <div class="history-meta">
+                            ${login.location} • ${login.ip} • ${formatDateTime(login.time)}
+                        </div>
+                    </div>
+                    <div class="history-status status-${login.status}">
+                        ${login.status === 'success' ? 'Success' : 'Failed'}
+                    </div>
+                `;
+                loginHistoryList.appendChild(historyItem);
+            });
+        }
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+            
+            // Reset errors
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.classList.remove('show');
+            });
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.classList.remove('error');
+            });
+            
+            // Validate 2FA if enabled
+            if (twoFactorToggle.checked) {
+                const verificationCode = document.getElementById('verificationCode').value;
+                if (!verificationCode || verificationCode.length !== 6) {
+                    document.getElementById('verificationCodeError').classList.add('show');
+                    document.getElementById('verificationCode').classList.add('error');
+                    isValid = false;
+                }
+            }
+            
+            return isValid;
+        }
+
+        // Form submission
+        securityForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (validateForm()) {
+                saveSecuritySettings();
+            }
+        });
+
+        function saveSecuritySettings() {
+            // Collect security settings
+            const securityData = {
+                twoFactorEnabled: twoFactorToggle.checked,
+                lastUpdated: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('securitySettings', JSON.stringify(securityData));
+            
+            // Show success message
+            successMessage.classList.add('show');
+            
+            // Hide success message after 3 seconds
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 3000);
+            
+            console.log('Security settings saved:', securityData);
+        }
+
+        function resetForm() {
+            // Clear verification code
+            document.getElementById('verificationCode').value = '';
+            
+            // Reset 2FA toggle
+            twoFactorToggle.checked = false;
+            twoFactorSetup.classList.remove('show');
+            
+            // Reset errors
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.classList.remove('show');
+            });
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+
+        // Event listeners
+        twoFactorToggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                twoFactorSetup.classList.add('show');
+            } else {
+                twoFactorSetup.classList.remove('show');
+            }
+        });
+
+        // Account Dropdown Functionality
+        const accountBtn = document.getElementById("accountBtn");
+        const accountMenu = document.getElementById("accountMenu");
+
+        if (accountBtn && accountMenu) {
+            accountBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                accountMenu.classList.toggle("show");
+                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close dropdown when pressing Escape key
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+        }
+
+        // Load settings and render history when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSecuritySettings();
+            renderLoginHistory();
+        });
+    </script>
+</body>
+</html>
