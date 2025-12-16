@@ -73,18 +73,18 @@
                     </div>
                     <div class="header-actions">
                         <div style="text-align:right">
-                            <div style="font-weight:700">User</div>
-                            <div style="font-size:.82rem;color:var(--muted)">User</div>
+                            <div id="userName" style="font-weight:700">User</div>
+                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">user@example.com</div>
                         </div>
                         <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div class="avatar">AJ</div>
+                            <div id="userAvatar" class="avatar">U</div>
                             <i class="fas fa-chevron-down" style="opacity:.85"></i>
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="#">Profile</a>
-                            <a href="#">Settings</a>
-                            <a href="#">Logout</a>
+                            <a href="../pages/profile-settings.html">Profile</a>
+                            <a href="../pages/preferences.html">Settings</a>
+                            <a href="#" id="logoutBtn">Logout</a>
                         </div>
                     </div>
                 </header>
@@ -249,6 +249,98 @@
     </div>
 
     <script>
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get user data from localStorage (set by dashboard login)
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            
+            // Update user information in header
+            updateUserDisplay(userData);
+            
+            // Load preferences and initialize functionality
+            loadPreferences();
+            
+            // Setup form submission
+            initForm();
+            
+            // Setup logout functionality
+            setupLogout();
+            
+            console.log('Preferences page loaded for user:', userData?.name);
+        });
+        
+        // Update user display in header
+        function updateUserDisplay(userData) {
+            if (!userData) {
+                console.warn('No user data found in localStorage');
+                return;
+            }
+            
+            // Update user name
+            const userNameElement = document.getElementById('userName');
+            if (userNameElement && userData.name) {
+                userNameElement.textContent = userData.name;
+            }
+            
+            // Update user email
+            const userEmailElement = document.getElementById('userEmail');
+            if (userEmailElement && userData.email) {
+                userEmailElement.textContent = userData.email;
+            }
+            
+            // Update user avatar with initials
+            const userAvatarElement = document.getElementById('userAvatar');
+            if (userAvatarElement && userData.name) {
+                // Get initials from name (same as dashboard logic)
+                const initials = userData.name
+                    .split(' ')
+                    .map(word => word[0])
+                    .join('')
+                    .toUpperCase()
+                    .substring(0, 2);
+                userAvatarElement.textContent = initials;
+            }
+        }
+        
+        // Logout functionality
+        function setupLogout() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Clear user data from localStorage (same as dashboard)
+                    localStorage.removeItem('userData');
+                    
+                    // Redirect to login page (same as dashboard)
+                    window.location.href = '../../landing page/pages/index.html';
+                });
+            }
+        }
+
+        // Initialize form functionality
+        function initForm() {
+            const preferencesForm = document.getElementById('preferencesForm');
+            if (preferencesForm) {
+                preferencesForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    savePreferences();
+                });
+            }
+            
+            // Language change handler
+            const languageSelect = document.getElementById('language');
+            if (languageSelect) {
+                languageSelect.addEventListener('change', () => {
+                    // Auto-save when language is changed
+                    savePreferences();
+                });
+            }
+            
+            // Setup account dropdown
+            setupAccountDropdown();
+        }
+
         // Language translations
         const translations = {
             en: {
@@ -265,7 +357,6 @@
                 management: "Management",
                 system: "System",
                 searchPlaceholder: "Search tickets, users, IDs...",
-                userRole: "Administrator",
                 footer: "Dashboard Template"
             },
             es: {
@@ -282,7 +373,6 @@
                 management: "Gestión",
                 system: "Sistema",
                 searchPlaceholder: "Buscar tickets, usuarios, IDs...",
-                userRole: "Administrador",
                 footer: "Plantilla del Panel"
             },
             fr: {
@@ -299,7 +389,6 @@
                 management: "Gestion",
                 system: "Système",
                 searchPlaceholder: "Rechercher tickets, utilisateurs, IDs...",
-                userRole: "Administrateur",
                 footer: "Modèle de Tableau de Bord"
             },
             de: {
@@ -316,30 +405,33 @@
                 management: "Verwaltung",
                 system: "System",
                 searchPlaceholder: "Tickets, Benutzer, IDs suchen...",
-                userRole: "Administrator",
                 footer: "Dashboard-Vorlage"
             }
         };
 
-        // DOM elements
-        const preferencesForm = document.getElementById('preferencesForm');
-        const successMessage = document.getElementById('successMessage');
-        const languageSelect = document.getElementById('language');
-
         // Load saved preferences
         function loadPreferences() {
             const savedLanguage = localStorage.getItem('dashboardLanguage') || 'en';
-            languageSelect.value = savedLanguage;
+            const languageSelect = document.getElementById('language');
+            if (languageSelect) {
+                languageSelect.value = savedLanguage;
+            }
             
             // Load notification settings
             const savedNotifications = JSON.parse(localStorage.getItem('notificationSettings') || '{}');
-            document.getElementById('emailNotifications').checked = savedNotifications.email !== false;
-            document.getElementById('pushNotifications').checked = savedNotifications.push !== false;
-            document.getElementById('ticketUpdates').checked = savedNotifications.ticketUpdates !== false;
-            document.getElementById('announcementNotifications').checked = savedNotifications.announcements !== false;
-            document.getElementById('weeklyDigest').checked = savedNotifications.weeklyDigest || false;
+            const emailNotifications = document.getElementById('emailNotifications');
+            const pushNotifications = document.getElementById('pushNotifications');
+            const ticketUpdates = document.getElementById('ticketUpdates');
+            const announcementNotifications = document.getElementById('announcementNotifications');
+            const weeklyDigest = document.getElementById('weeklyDigest');
             
-            // Apply current language
+            if (emailNotifications) emailNotifications.checked = savedNotifications.email !== false;
+            if (pushNotifications) pushNotifications.checked = savedNotifications.push !== false;
+            if (ticketUpdates) ticketUpdates.checked = savedNotifications.ticketUpdates !== false;
+            if (announcementNotifications) announcementNotifications.checked = savedNotifications.announcements !== false;
+            if (weeklyDigest) weeklyDigest.checked = savedNotifications.weeklyDigest || false;
+            
+            // Apply current language (but DON'T overwrite user email)
             applyLanguage(savedLanguage);
         }
 
@@ -347,166 +439,186 @@
         function applyLanguage(language) {
             const lang = translations[language] || translations.en;
             
-            // Update sidebar navigation
-            document.querySelector('a[data-section="dashboard"]').innerHTML = `<i class="fas fa-chart-line"></i> ${lang.dashboard}`;
-            document.querySelector('a[data-section="tickets"]').innerHTML = `<i class="fas fa-ticket-alt"></i> ${lang.myTickets}`;
-            document.querySelector('a[data-section="notifications"]').innerHTML = `<i class="fas fa-bell"></i> ${lang.notifications}`;
-            document.querySelector('a[data-section="submit-ticket"]').innerHTML = `<i class="fas fa-plus-circle"></i> ${lang.submitTicket}`;
-            document.querySelector('a[data-section="preferences"]').innerHTML = `<i class="fas fa-sliders-h"></i> ${lang.preferences}`;
-            document.querySelector('a[data-section="profile-settings"]').innerHTML = `<i class="fas fa-user-cog"></i> ${lang.profileSettings}`;
-            document.querySelector('a[data-section="announcements"]').innerHTML = `<i class="fas fa-bullhorn"></i> ${lang.announcements}`;
-            document.querySelector('a[data-section="account-security"]').innerHTML = `<i class="fas fa-shield-alt"></i> ${lang.accountSecurity}`;
-            document.querySelector('a[data-section="system-information"]').innerHTML = `<i class="fas fa-info-circle"></i> ${lang.systemInformation}`;
-            
-            // Update section headers
-            document.querySelector('.nav-section:nth-child(2)').textContent = lang.support;
-            document.querySelector('.nav-section:nth-child(3)').textContent = lang.management;
-            document.querySelector('.nav-section:nth-child(4)').textContent = lang.system;
-            
-            // Update header search placeholder
-            document.querySelector('#q').placeholder = lang.searchPlaceholder;
-            
-            // Update user role
-            document.querySelector('.header-actions div:first-child div:last-child').textContent = lang.userRole;
-            
-            // Update footer
-            document.querySelector('.site-footer div:last-child').textContent = lang.footer;
-            
-            // Update page title
-            document.title = `${lang.preferences} - AlliTrack`;
-            
-            // Update preferences page header
-            document.querySelector('.preferences-header h1').innerHTML = `<i class="fas fa-sliders-h"></i> ${lang.preferences}`;
-            
-            // Update section titles and descriptions
-            document.querySelector('.section-title').textContent = "Notification Settings";
-            document.querySelector('.section-description').textContent = "Manage how and when you receive notifications";
-            
-            // Update setting titles and descriptions
-            const settingTitles = document.querySelectorAll('.setting-title');
-            const settingDescriptions = document.querySelectorAll('.setting-description');
-            
-            if (settingTitles[0]) settingTitles[0].textContent = "Email Notifications";
-            if (settingDescriptions[0]) settingDescriptions[0].textContent = "Receive email alerts for ticket updates and system announcements";
-            
-            if (settingTitles[1]) settingTitles[1].textContent = "Push Notifications";
-            if (settingDescriptions[1]) settingDescriptions[1].textContent = "Show browser notifications for urgent updates";
-            
-            if (settingTitles[2]) settingTitles[2].textContent = "Ticket Updates";
-            if (settingDescriptions[2]) settingDescriptions[2].textContent = "Notify me when my tickets are updated or resolved";
-            
-            if (settingTitles[3]) settingTitles[3].textContent = "New Announcements";
-            if (settingDescriptions[3]) settingDescriptions[3].textContent = "Notify me about new system announcements and features";
-            
-            if (settingTitles[4]) settingTitles[4].textContent = "Weekly Digest";
-            if (settingDescriptions[4]) settingDescriptions[4].textContent = "Send weekly summary of all ticket activities";
-            
-            // Update language section
-            const languageSection = document.querySelectorAll('.section-title')[1];
-            const languageDescription = document.querySelectorAll('.section-description')[1];
-            if (languageSection) languageSection.textContent = "Language Settings";
-            if (languageDescription) languageDescription.textContent = "Set your preferred language for the entire dashboard";
-            
-            const languageSettingTitle = document.querySelectorAll('.setting-title')[5];
-            const languageSettingDescription = document.querySelectorAll('.setting-description')[5];
-            if (languageSettingTitle) languageSettingTitle.textContent = "Dashboard Language";
-            if (languageSettingDescription) languageSettingDescription.textContent = "This will change the language across all pages of your dashboard";
-            
-            // Update button texts
-            document.querySelector('.btn-secondary').innerHTML = `<i class="fas fa-undo"></i> Reset to Defaults`;
-            document.querySelector('.btn-primary').innerHTML = `<i class="fas fa-save"></i> Save Preferences`;
+            try {
+                // Update sidebar navigation
+                const dashboardLink = document.querySelector('a[data-section="dashboard"]');
+                const ticketsLink = document.querySelector('a[data-section="tickets"]');
+                const notificationsLink = document.querySelector('a[data-section="notifications"]');
+                const submitTicketLink = document.querySelector('a[data-section="submit-ticket"]');
+                const preferencesLink = document.querySelector('a[data-section="preferences"]');
+                const profileSettingsLink = document.querySelector('a[data-section="profile-settings"]');
+                const announcementsLink = document.querySelector('a[data-section="announcements"]');
+                const accountSecurityLink = document.querySelector('a[data-section="account-security"]');
+                const systemInformationLink = document.querySelector('a[data-section="system-information"]');
+                
+                if (dashboardLink) dashboardLink.innerHTML = `<i class="fas fa-chart-line"></i> ${lang.dashboard}`;
+                if (ticketsLink) ticketsLink.innerHTML = `<i class="fas fa-ticket-alt"></i> ${lang.myTickets}`;
+                if (notificationsLink) notificationsLink.innerHTML = `<i class="fas fa-bell"></i> ${lang.notifications}`;
+                if (submitTicketLink) submitTicketLink.innerHTML = `<i class="fas fa-plus-circle"></i> ${lang.submitTicket}`;
+                if (preferencesLink) preferencesLink.innerHTML = `<i class="fas fa-sliders-h"></i> ${lang.preferences}`;
+                if (profileSettingsLink) profileSettingsLink.innerHTML = `<i class="fas fa-user-cog"></i> ${lang.profileSettings}`;
+                if (announcementsLink) announcementsLink.innerHTML = `<i class="fas fa-bullhorn"></i> ${lang.announcements}`;
+                if (accountSecurityLink) accountSecurityLink.innerHTML = `<i class="fas fa-shield-alt"></i> ${lang.accountSecurity}`;
+                if (systemInformationLink) systemInformationLink.innerHTML = `<i class="fas fa-info-circle"></i> ${lang.systemInformation}`;
+                
+                // Update section headers
+                const navSections = document.querySelectorAll('.nav-section');
+                if (navSections[0]) navSections[0].textContent = lang.support;
+                if (navSections[1]) navSections[1].textContent = lang.management;
+                if (navSections[2]) navSections[2].textContent = lang.system;
+                
+                // Update header search placeholder
+                const searchInput = document.querySelector('#q');
+                if (searchInput) searchInput.placeholder = lang.searchPlaceholder;
+                
+                // DO NOT update user email/role here - it's handled by updateUserDisplay()
+                
+                // Update footer
+                const footerText = document.querySelector('.site-footer div:last-child');
+                if (footerText) footerText.textContent = lang.footer;
+                
+                // Update page title
+                document.title = `${lang.preferences} - AlliTrack`;
+                
+                // Update preferences page header
+                const preferencesHeader = document.querySelector('.preferences-header h1');
+                if (preferencesHeader) preferencesHeader.innerHTML = `<i class="fas fa-sliders-h"></i> ${lang.preferences}`;
+                
+                // Update section titles and descriptions
+                const sectionTitles = document.querySelectorAll('.section-title');
+                const sectionDescriptions = document.querySelectorAll('.section-description');
+                
+                if (sectionTitles[0]) sectionTitles[0].textContent = "Notification Settings";
+                if (sectionDescriptions[0]) sectionDescriptions[0].textContent = "Manage how and when you receive notifications";
+                
+                if (sectionTitles[1]) sectionTitles[1].textContent = "Language Settings";
+                if (sectionDescriptions[1]) sectionDescriptions[1].textContent = "Set your preferred language for the entire dashboard";
+                
+                // Update setting titles and descriptions
+                const settingTitles = document.querySelectorAll('.setting-title');
+                const settingDescriptions = document.querySelectorAll('.setting-description');
+                
+                if (settingTitles[0]) settingTitles[0].textContent = "Email Notifications";
+                if (settingDescriptions[0]) settingDescriptions[0].textContent = "Receive email alerts for ticket updates and system announcements";
+                
+                if (settingTitles[1]) settingTitles[1].textContent = "Push Notifications";
+                if (settingDescriptions[1]) settingDescriptions[1].textContent = "Show browser notifications for urgent updates";
+                
+                if (settingTitles[2]) settingTitles[2].textContent = "Ticket Updates";
+                if (settingDescriptions[2]) settingDescriptions[2].textContent = "Notify me when my tickets are updated or resolved";
+                
+                if (settingTitles[3]) settingTitles[3].textContent = "New Announcements";
+                if (settingDescriptions[3]) settingDescriptions[3].textContent = "Notify me about new system announcements and features";
+                
+                if (settingTitles[4]) settingTitles[4].textContent = "Weekly Digest";
+                if (settingDescriptions[4]) settingDescriptions[4].textContent = "Send weekly summary of all ticket activities";
+                
+                if (settingTitles[5]) settingTitles[5].textContent = "Dashboard Language";
+                if (settingDescriptions[5]) settingDescriptions[5].textContent = "This will change the language across all pages of your dashboard";
+                
+                // Update button texts
+                const resetButton = document.querySelector('.btn-secondary');
+                const saveButton = document.querySelector('.btn-primary');
+                if (resetButton) resetButton.innerHTML = `<i class="fas fa-undo"></i> Reset to Defaults`;
+                if (saveButton) saveButton.innerHTML = `<i class="fas fa-save"></i> Save Preferences`;
+            } catch (error) {
+                console.error('Error applying language:', error);
+            }
         }
 
-        // Form submission
-        preferencesForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            savePreferences();
-        });
-
         function savePreferences() {
-            // Collect all preference values
-            const preferences = {
-                notifications: {
-                    email: document.getElementById('emailNotifications').checked,
-                    push: document.getElementById('pushNotifications').checked,
-                    ticketUpdates: document.getElementById('ticketUpdates').checked,
-                    announcements: document.getElementById('announcementNotifications').checked,
-                    weeklyDigest: document.getElementById('weeklyDigest').checked
-                },
-                language: document.getElementById('language').value
-            };
-            
-            // Save to localStorage
-            localStorage.setItem('dashboardLanguage', preferences.language);
-            localStorage.setItem('notificationSettings', JSON.stringify(preferences.notifications));
-            
-            // Apply language changes immediately
-            applyLanguage(preferences.language);
-            
-            // Show success message
-            successMessage.classList.add('show');
-            
-            // Hide success message after 3 seconds
-            setTimeout(() => {
-                successMessage.classList.remove('show');
-            }, 3000);
-            
-            console.log('Preferences saved:', preferences);
+            try {
+                // Collect all preference values
+                const preferences = {
+                    notifications: {
+                        email: document.getElementById('emailNotifications').checked,
+                        push: document.getElementById('pushNotifications').checked,
+                        ticketUpdates: document.getElementById('ticketUpdates').checked,
+                        announcements: document.getElementById('announcementNotifications').checked,
+                        weeklyDigest: document.getElementById('weeklyDigest').checked
+                    },
+                    language: document.getElementById('language').value
+                };
+                
+                // Save to localStorage
+                localStorage.setItem('dashboardLanguage', preferences.language);
+                localStorage.setItem('notificationSettings', JSON.stringify(preferences.notifications));
+                
+                // Apply language changes immediately
+                applyLanguage(preferences.language);
+                
+                // Show success message
+                const successMessage = document.getElementById('successMessage');
+                if (successMessage) {
+                    successMessage.classList.add('show');
+                    
+                    // Hide success message after 3 seconds
+                    setTimeout(() => {
+                        successMessage.classList.remove('show');
+                    }, 3000);
+                }
+                
+                console.log('Preferences saved:', preferences);
+            } catch (error) {
+                console.error('Error saving preferences:', error);
+            }
         }
 
         function resetPreferences() {
-            // Reset toggles to default
-            document.getElementById('emailNotifications').checked = true;
-            document.getElementById('pushNotifications').checked = true;
-            document.getElementById('ticketUpdates').checked = true;
-            document.getElementById('announcementNotifications').checked = true;
-            document.getElementById('weeklyDigest').checked = false;
-            
-            // Reset language to English
-            document.getElementById('language').value = 'en';
-            
-            // Save and apply defaults
-            savePreferences();
-            
-            console.log('Preferences reset to defaults');
+            try {
+                // Reset toggles to default
+                const emailNotifications = document.getElementById('emailNotifications');
+                const pushNotifications = document.getElementById('pushNotifications');
+                const ticketUpdates = document.getElementById('ticketUpdates');
+                const announcementNotifications = document.getElementById('announcementNotifications');
+                const weeklyDigest = document.getElementById('weeklyDigest');
+                const languageSelect = document.getElementById('language');
+                
+                if (emailNotifications) emailNotifications.checked = true;
+                if (pushNotifications) pushNotifications.checked = true;
+                if (ticketUpdates) ticketUpdates.checked = true;
+                if (announcementNotifications) announcementNotifications.checked = true;
+                if (weeklyDigest) weeklyDigest.checked = false;
+                if (languageSelect) languageSelect.value = 'en';
+                
+                // Save and apply defaults
+                savePreferences();
+                
+                console.log('Preferences reset to defaults');
+            } catch (error) {
+                console.error('Error resetting preferences:', error);
+            }
         }
-
-        // Language change handler
-        languageSelect.addEventListener('change', () => {
-            // Auto-save when language is changed
-            savePreferences();
-        });
 
         // Account Dropdown Functionality
-        const accountBtn = document.getElementById("accountBtn");
-        const accountMenu = document.getElementById("accountMenu");
+        function setupAccountDropdown() {
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
 
-        if (accountBtn && accountMenu) {
-            accountBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                accountMenu.classList.toggle("show");
-                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
-            });
+            if (accountBtn && accountMenu) {
+                accountBtn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    accountMenu.classList.toggle("show");
+                    accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+                });
 
-            // Close dropdown when clicking outside
-            document.addEventListener("click", (e) => {
-                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
-                    accountMenu.classList.remove("show");
-                    accountBtn.setAttribute("aria-expanded", false);
-                }
-            });
+                // Close dropdown when clicking outside
+                document.addEventListener("click", (e) => {
+                    if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                        accountMenu.classList.remove("show");
+                        accountBtn.setAttribute("aria-expanded", false);
+                    }
+                });
 
-            // Close dropdown when pressing Escape key
-            document.addEventListener("keydown", (e) => {
-                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
-                    accountMenu.classList.remove("show");
-                    accountBtn.setAttribute("aria-expanded", false);
-                }
-            });
+                // Close dropdown when pressing Escape key
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                        accountMenu.classList.remove("show");
+                        accountBtn.setAttribute("aria-expanded", false);
+                    }
+                });
+            }
         }
-
-        // Load preferences when page loads
-        document.addEventListener('DOMContentLoaded', loadPreferences);
     </script>
 </body>
 </html>

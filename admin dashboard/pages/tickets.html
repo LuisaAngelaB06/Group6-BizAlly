@@ -63,18 +63,19 @@
                     </div>
                     <div class="header-actions">
                         <div style="text-align:right">
-                            <div style="font-weight:700">Admin User</div>
-                            <div style="font-size:.82rem;color:var(--muted)">Administrator</div>
+                            <!-- Dynamic user data will be inserted here -->
+                            <div style="font-weight:700" id="userName">Admin User</div>
+                            <div style="font-size:.82rem;color:var(--muted)" id="userEmail">Administrator</div>
                         </div>
                         <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div class="avatar">AJ</div>
+                            <!-- Dynamic avatar initials -->
+                            <div class="avatar" id="userAvatar">AJ</div>
                             <i class="fas fa-chevron-down" style="opacity:.85"></i>
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="#">Profile</a>
-                            <a href="#">Settings</a>
-                            <a href="#">Logout</a>
+                            <a href="../pages/settings.html">Settings</a>
+                            <a href="#" id="logoutBtn">Logout</a>
                         </div>
                     </div>
                 </header>
@@ -182,72 +183,58 @@
     </div>
 
     <script>
-        // Sample ticket data
-        let tickets = [
-            { id: "#142", subject: "Login issue", requester: "John D.", status: "Open", priority: "High", date: "2025-11-24" },
-            { id: "#141", subject: "Payment failure", requester: "Jane S.", status: "In Progress", priority: "Medium", date: "2025-11-23" },
-            { id: "#140", subject: "Feature request", requester: "Mike R.", status: "Resolved", priority: "Low", date: "2025-11-23" },
-            { id: "#139", subject: "Password reset", requester: "Sarah L.", status: "Open", priority: "Medium", date: "2025-11-22" },
-            { id: "#138", subject: "Bug report", requester: "Alex K.", status: "In Progress", priority: "High", date: "2025-11-22" },
-            { id: "#137", subject: "Account verification", requester: "Tom B.", status: "Resolved", priority: "Low", date: "2025-11-21" },
-            { id: "#136", subject: "API integration", requester: "Emma W.", status: "Open", priority: "High", date: "2025-11-21" },
-            { id: "#135", subject: "UI feedback", requester: "Chris M.", status: "Resolved", priority: "Low", date: "2025-11-20" }
-        ];
-
-        // DOM Elements
-        const ticketsTbody = document.getElementById("ticketsTbody");
-        const searchInput = document.getElementById("searchInput");
-        const statusFilter = document.getElementById("statusFilter");
-        const priorityFilter = document.getElementById("priorityFilter");
-        const ticketCount = document.getElementById("ticketCount");
-        const statusModal = document.getElementById("statusModal");
-        const modalTicketId = document.getElementById("modalTicketId");
-        const closeModal = document.querySelector(".close");
-        const statusOptions = document.querySelectorAll(".status-option");
-        const priorityOptions = document.querySelectorAll(".priority-option");
-
-        let currentEditingTicket = null;
-
-        // Initialize the page
+        // Load and display user data from localStorage - EXACTLY as in index-admin.html
+        function loadUserData() {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            
+            if (userData) {
+                // Display user name
+                const userNameElement = document.getElementById('userName');
+                if (userNameElement && userData.name) {
+                    userNameElement.textContent = userData.name;
+                }
+                
+                // Display user email
+                const userEmailElement = document.getElementById('userEmail');
+                if (userEmailElement && userData.email) {
+                    userEmailElement.textContent = userData.email;
+                }
+                
+                // Display avatar initials
+                const userAvatarElement = document.getElementById('userAvatar');
+                if (userAvatarElement && userData.name) {
+                    // Get initials from name
+                    const nameParts = userData.name.split(' ');
+                    let initials = '';
+                    
+                    if (nameParts.length >= 2) {
+                        initials = nameParts[0].charAt(0) + nameParts[1].charAt(0);
+                    } else if (nameParts.length === 1) {
+                        initials = nameParts[0].charAt(0);
+                        if (nameParts[0].length > 1) {
+                            initials += nameParts[0].charAt(1);
+                        }
+                    }
+                    
+                    userAvatarElement.textContent = initials.toUpperCase();
+                }
+            } else {
+                // If no user data, redirect to login page
+                window.location.href = '../../landing page/pages/index.html';
+            }
+        }
+        
+        // Call the function when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            renderTickets(tickets);
-            setupEventListeners();
-            initializeChart();
+            loadUserData();
+            initializeTicketsPage();
         });
 
-        // Set up event listeners
-        function setupEventListeners() {
-            // Search functionality
-            searchInput.addEventListener('input', handleSearch);
-            
-            // Filter functionality
-            statusFilter.addEventListener('change', handleFilter);
-            priorityFilter.addEventListener('change', handleFilter);
-            
-            // Modal functionality
-            closeModal.addEventListener('click', closeStatusModal);
-            
-            // Status options
-            statusOptions.forEach(option => {
-                option.addEventListener('click', handleStatusUpdate);
-            });
-            
-            // Priority options
-            priorityOptions.forEach(option => {
-                option.addEventListener('click', handlePriorityUpdate);
-            });
-            
-            // Close modal when clicking outside
-            window.addEventListener('click', function(event) {
-                if (event.target === statusModal) {
-                    closeStatusModal();
-                }
-            });
-            
-            // Account dropdown
-            const accountBtn = document.getElementById("accountBtn");
-            const accountMenu = document.getElementById("accountMenu");
+        // Dropdown toggle - EXACTLY as in index-admin.html
+        const accountBtn = document.getElementById("accountBtn");
+        const accountMenu = document.getElementById("accountMenu");
 
+        if (accountBtn && accountMenu) {
             accountBtn.addEventListener("click", () => {
                 accountMenu.classList.toggle("show");
                 accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
@@ -261,8 +248,99 @@
             });
         }
 
+        // Logout functionality - EXACTLY as in index-admin.html
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Clear user data from localStorage
+                localStorage.removeItem('userData');
+
+                // Redirect to login page
+                window.location.href = '../../landing page/pages/index.html';
+            });
+        }
+
+        // Sample ticket data
+        let tickets = [
+            { id: "#142", subject: "Login issue", requester: "John D.", status: "Open", priority: "High", date: "2025-11-24" },
+            { id: "#141", subject: "Payment failure", requester: "Jane S.", status: "In Progress", priority: "Medium", date: "2025-11-23" },
+            { id: "#140", subject: "Feature request", requester: "Mike R.", status: "Resolved", priority: "Low", date: "2025-11-23" },
+            { id: "#139", subject: "Password reset", requester: "Sarah L.", status: "Open", priority: "Medium", date: "2025-11-22" },
+            { id: "#138", subject: "Bug report", requester: "Alex K.", status: "In Progress", priority: "High", date: "2025-11-22" },
+            { id: "#137", subject: "Account verification", requester: "Tom B.", status: "Resolved", priority: "Low", date: "2025-11-21" },
+            { id: "#136", subject: "API integration", requester: "Emma W.", status: "Open", priority: "High", date: "2025-11-21" },
+            { id: "#135", subject: "UI feedback", requester: "Chris M.", status: "Resolved", priority: "Low", date: "2025-11-20" }
+        ];
+
+        // DOM Elements for tickets functionality
+        const ticketsTbody = document.getElementById("ticketsTbody");
+        const searchInput = document.getElementById("searchInput");
+        const statusFilter = document.getElementById("statusFilter");
+        const priorityFilter = document.getElementById("priorityFilter");
+        const ticketCount = document.getElementById("ticketCount");
+        const statusModal = document.getElementById("statusModal");
+        const modalTicketId = document.getElementById("modalTicketId");
+        const closeModal = document.querySelector(".close");
+        const statusOptions = document.querySelectorAll(".status-option");
+        const priorityOptions = document.querySelectorAll(".priority-option");
+
+        let currentEditingTicket = null;
+
+        // Initialize tickets page
+        function initializeTicketsPage() {
+            renderTickets(tickets);
+            setupTicketsEventListeners();
+            initializeChart();
+        }
+
+        // Set up event listeners for tickets functionality
+        function setupTicketsEventListeners() {
+            // Search functionality
+            if (searchInput) {
+                searchInput.addEventListener('input', handleSearch);
+            }
+            
+            // Filter functionality
+            if (statusFilter) {
+                statusFilter.addEventListener('change', handleFilter);
+            }
+            if (priorityFilter) {
+                priorityFilter.addEventListener('change', handleFilter);
+            }
+            
+            // Modal functionality
+            if (closeModal) {
+                closeModal.addEventListener('click', closeStatusModal);
+            }
+            
+            // Status options
+            if (statusOptions) {
+                statusOptions.forEach(option => {
+                    option.addEventListener('click', handleStatusUpdate);
+                });
+            }
+            
+            // Priority options
+            if (priorityOptions) {
+                priorityOptions.forEach(option => {
+                    option.addEventListener('click', handlePriorityUpdate);
+                });
+            }
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === statusModal) {
+                    closeStatusModal();
+                }
+            });
+        }
+
         // Render tickets to the table
         function renderTickets(ticketsToRender) {
+            if (!ticketsTbody) return;
+            
             ticketsTbody.innerHTML = '';
             
             ticketsToRender.forEach(ticket => {
@@ -306,7 +384,9 @@
             });
             
             // Update ticket count
-            ticketCount.textContent = ticketsToRender.length;
+            if (ticketCount) {
+                ticketCount.textContent = ticketsToRender.length;
+            }
         }
 
         // Handle search functionality
@@ -348,38 +428,46 @@
         // Open status modal
         function openStatusModal(ticketId) {
             currentEditingTicket = ticketId;
-            modalTicketId.textContent = ticketId;
+            if (modalTicketId) modalTicketId.textContent = ticketId;
             
             // Highlight current status and priority
             const ticket = tickets.find(t => t.id === ticketId);
             if (ticket) {
                 // Remove active class from all options
-                statusOptions.forEach(opt => opt.classList.remove('active'));
-                priorityOptions.forEach(opt => opt.classList.remove('active'));
+                if (statusOptions) {
+                    statusOptions.forEach(opt => opt.classList.remove('active'));
+                }
+                if (priorityOptions) {
+                    priorityOptions.forEach(opt => opt.classList.remove('active'));
+                }
                 
                 // Add active class to current status
-                const currentStatusOption = Array.from(statusOptions).find(opt => 
-                    opt.getAttribute('data-status') === ticket.status
-                );
-                if (currentStatusOption) {
-                    currentStatusOption.classList.add('active');
+                if (statusOptions) {
+                    const currentStatusOption = Array.from(statusOptions).find(opt => 
+                        opt.getAttribute('data-status') === ticket.status
+                    );
+                    if (currentStatusOption) {
+                        currentStatusOption.classList.add('active');
+                    }
                 }
                 
                 // Add active class to current priority
-                const currentPriorityOption = Array.from(priorityOptions).find(opt => 
-                    opt.getAttribute('data-priority') === ticket.priority
-                );
-                if (currentPriorityOption) {
-                    currentPriorityOption.classList.add('active');
+                if (priorityOptions) {
+                    const currentPriorityOption = Array.from(priorityOptions).find(opt => 
+                        opt.getAttribute('data-priority') === ticket.priority
+                    );
+                    if (currentPriorityOption) {
+                        currentPriorityOption.classList.add('active');
+                    }
                 }
             }
             
-            statusModal.style.display = 'block';
+            if (statusModal) statusModal.style.display = 'block';
         }
 
         // Close status modal
         function closeStatusModal() {
-            statusModal.style.display = 'none';
+            if (statusModal) statusModal.style.display = 'none';
             currentEditingTicket = null;
         }
 
@@ -393,8 +481,10 @@
                 tickets[ticketIndex].status = newStatus;
                 
                 // Update active state
-                statusOptions.forEach(opt => opt.classList.remove('active'));
-                event.target.classList.add('active');
+                if (statusOptions) {
+                    statusOptions.forEach(opt => opt.classList.remove('active'));
+                    event.target.classList.add('active');
+                }
                 
                 // Re-render tickets
                 applyFilters(tickets);
@@ -411,8 +501,10 @@
                 tickets[ticketIndex].priority = newPriority;
                 
                 // Update active state
-                priorityOptions.forEach(opt => opt.classList.remove('active'));
-                event.target.classList.add('active');
+                if (priorityOptions) {
+                    priorityOptions.forEach(opt => opt.classList.remove('active'));
+                    event.target.classList.add('active');
+                }
                 
                 // Re-render tickets
                 applyFilters(tickets);
@@ -421,7 +513,10 @@
 
         // Initialize chart
         function initializeChart() {
-            const ctx = document.getElementById("ticketChart").getContext("2d");
+            const chartElement = document.getElementById("ticketChart");
+            if (!chartElement) return;
+            
+            const ctx = chartElement.getContext("2d");
             const chart = new Chart(ctx, {
                 type: "line",
                 data: {

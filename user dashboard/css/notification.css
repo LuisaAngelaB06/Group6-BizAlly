@@ -78,6 +78,14 @@
             border-color: var(--accent);
         }
         
+        /* New container for the notifications grid */
+        .notifications-list-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            padding: 20px;
+        }
+        
         .notifications-grid {
             display: flex;
             flex-direction: column;
@@ -348,5 +356,9 @@
             .notification-actions {
                 width: 100%;
                 justify-content: flex-start;
+            }
+            
+            .notifications-list-container {
+                padding: 15px;
             }
         }

@@ -62,18 +62,19 @@
                     </div>
                     <div class="header-actions">
                         <div style="text-align:right">
-                            <div style="font-weight:700">Admin User</div>
-                            <div style="font-size:.82rem;color:var(--muted)">Administrator</div>
+                            <!-- Dynamic user data will be inserted here -->
+                            <div style="font-weight:700" id="userName">Admin User</div>
+                            <div style="font-size:.82rem;color:var(--muted)" id="userEmail">Administrator</div>
                         </div>
                         <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div class="avatar">AJ</div>
+                            <!-- Dynamic avatar initials -->
+                            <div class="avatar" id="userAvatar">AJ</div>
                             <i class="fas fa-chevron-down" style="opacity:.85"></i>
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="#">Profile</a>
-                            <a href="#">Settings</a>
-                            <a href="#">Logout</a>
+                            <a href="../pages/settings.html">Settings</a>
+                            <a href="#" id="logoutBtn">Logout</a>
                         </div>
                     </div>
                 </header>
@@ -182,6 +183,85 @@
     </div>
 
     <script>
+        // Load and display user data from localStorage - EXACTLY as in index-admin.html
+        function loadUserData() {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            
+            if (userData) {
+                // Display user name
+                const userNameElement = document.getElementById('userName');
+                if (userNameElement && userData.name) {
+                    userNameElement.textContent = userData.name;
+                }
+                
+                // Display user email
+                const userEmailElement = document.getElementById('userEmail');
+                if (userEmailElement && userData.email) {
+                    userEmailElement.textContent = userData.email;
+                }
+                
+                // Display avatar initials
+                const userAvatarElement = document.getElementById('userAvatar');
+                if (userAvatarElement && userData.name) {
+                    // Get initials from name
+                    const nameParts = userData.name.split(' ');
+                    let initials = '';
+                    
+                    if (nameParts.length >= 2) {
+                        initials = nameParts[0].charAt(0) + nameParts[1].charAt(0);
+                    } else if (nameParts.length === 1) {
+                        initials = nameParts[0].charAt(0);
+                        if (nameParts[0].length > 1) {
+                            initials += nameParts[0].charAt(1);
+                        }
+                    }
+                    
+                    userAvatarElement.textContent = initials.toUpperCase();
+                }
+            } else {
+                // If no user data, redirect to login page
+                window.location.href = '../../landing page/pages/index.html';
+            }
+        }
+        
+        // Call the function when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            initializeUsersRolesPage();
+        });
+
+        // Dropdown toggle - EXACTLY as in index-admin.html
+        const accountBtn = document.getElementById("accountBtn");
+        const accountMenu = document.getElementById("accountMenu");
+
+        if (accountBtn && accountMenu) {
+            accountBtn.addEventListener("click", () => {
+                accountMenu.classList.toggle("show");
+                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            window.addEventListener("click", (e) => {
+                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+        }
+
+        // Logout functionality - EXACTLY as in index-admin.html
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Clear user data from localStorage
+                localStorage.removeItem('userData');
+
+                // Redirect to login page
+                window.location.href = '../../landing page/pages/index.html';
+            });
+        }
+
         // Sample data
         let sampleRoles = [
             { id: 'admin', name: 'Admin', description: 'Full access', permissions: ['all'] },
@@ -197,7 +277,7 @@
             { id: 4, name: 'Jude Park', email: 'jude@ba.inc', username: 'jude.p', role: 'approver', status: 'active', joined: '2025-07-21', ticketsAssigned: 5, ticketsResolved: 2, lastLogin: '2025-11-20 08:42', activity: ['Escalated #4620'] }
         ];
 
-        // DOM Elements
+        // DOM Elements for users & roles functionality
         const usersTbody = document.getElementById("usersTbody");
         const searchInput = document.getElementById("searchInput");
         const roleFilter = document.getElementById("roleFilter");
@@ -209,34 +289,48 @@
         const closeModal = document.querySelector(".close");
         const rolesList = document.getElementById("rolesList");
         const activityList = document.getElementById("activityList");
+        const btnAddUser = document.getElementById("btnAddUser");
+        const btnAddRole = document.getElementById("btnAddRole");
 
         let currentEditingUser = null;
         let currentEditingRole = null;
 
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
+        // Initialize users & roles page
+        function initializeUsersRolesPage() {
             renderUsers(users);
             renderRolesList();
             renderActivity();
-            setupEventListeners();
+            setupUsersRolesEventListeners();
             populateRoleFilters();
-        });
+        }
 
-        // Set up event listeners
-        function setupEventListeners() {
+        // Set up event listeners for users & roles functionality
+        function setupUsersRolesEventListeners() {
             // Search functionality
-            searchInput.addEventListener('input', handleSearch);
+            if (searchInput) {
+                searchInput.addEventListener('input', handleSearch);
+            }
             
             // Filter functionality
-            roleFilter.addEventListener('change', handleFilter);
-            statusFilter.addEventListener('change', handleFilter);
+            if (roleFilter) {
+                roleFilter.addEventListener('change', handleFilter);
+            }
+            if (statusFilter) {
+                statusFilter.addEventListener('change', handleFilter);
+            }
             
             // Modal functionality
-            closeModal.addEventListener('click', closeUserModal);
+            if (closeModal) {
+                closeModal.addEventListener('click', closeUserModal);
+            }
             
             // Button events
-            document.getElementById('btnAddUser').addEventListener('click', openAddUserModal);
-            document.getElementById('btnAddRole').addEventListener('click', openAddRoleModal);
+            if (btnAddUser) {
+                btnAddUser.addEventListener('click', openAddUserModal);
+            }
+            if (btnAddRole) {
+                btnAddRole.addEventListener('click', openAddRoleModal);
+            }
             
             // Close modal when clicking outside
             window.addEventListener('click', function(event) {
@@ -244,26 +338,12 @@
                     closeUserModal();
                 }
             });
-            
-            // Account dropdown
-            const accountBtn = document.getElementById("accountBtn");
-            const accountMenu = document.getElementById("accountMenu");
-
-            accountBtn.addEventListener("click", () => {
-                accountMenu.classList.toggle("show");
-                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
-            });
-
-            window.addEventListener("click", (e) => {
-                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
-                    accountMenu.classList.remove("show");
-                    accountBtn.setAttribute("aria-expanded", false);
-                }
-            });
         }
 
         // Populate role filters
         function populateRoleFilters() {
+            if (!roleFilter) return;
+            
             roleFilter.innerHTML = '<option value="all">All Roles</option>';
             sampleRoles.forEach(role => {
                 const option = document.createElement('option');
@@ -275,6 +355,8 @@
 
         // Render users to the table
         function renderUsers(usersToRender) {
+            if (!usersTbody) return;
+            
             usersTbody.innerHTML = '';
             
             usersToRender.forEach(user => {
@@ -333,11 +415,15 @@
             });
             
             // Update users count
-            usersCount.textContent = usersToRender.length;
+            if (usersCount) {
+                usersCount.textContent = usersToRender.length;
+            }
         }
 
         // Render roles list
         function renderRolesList() {
+            if (!rolesList) return;
+            
             rolesList.innerHTML = '';
             
             sampleRoles.forEach(role => {
@@ -363,6 +449,8 @@
 
         // Render activity list
         function renderActivity() {
+            if (!activityList) return;
+            
             activityList.innerHTML = '';
             
             const recentUsers = users.slice().sort((a, b) => new Date(b.lastLogin) - new Date(a.lastLogin)).slice(0, 5);
@@ -423,6 +511,8 @@
         // Open add user modal
         function openAddUserModal() {
             currentEditingUser = null;
+            if (!modalTitle || !modalContent) return;
+            
             modalTitle.textContent = 'Add New User';
             modalContent.innerHTML = `
                 <div class="modal-section">
@@ -467,7 +557,7 @@
                     <button class="btn-primary" onclick="saveUser()">Create User</button>
                 </div>
             `;
-            userModal.style.display = 'block';
+            if (userModal) userModal.style.display = 'block';
         }
 
         // Open edit user modal
@@ -476,6 +566,8 @@
             if (!user) return;
             
             currentEditingUser = user;
+            if (!modalTitle || !modalContent) return;
+            
             modalTitle.textContent = `Edit User - ${user.name}`;
             modalContent.innerHTML = `
                 <div class="modal-section">
@@ -526,12 +618,14 @@
                     </div>
                 </div>
             `;
-            userModal.style.display = 'block';
+            if (userModal) userModal.style.display = 'block';
         }
 
         // Open add role modal
         function openAddRoleModal() {
             currentEditingRole = null;
+            if (!modalTitle || !modalContent) return;
+            
             modalTitle.textContent = 'Add New Role';
             modalContent.innerHTML = `
                 <div class="modal-section">
@@ -584,7 +678,7 @@
                     <button class="btn-primary" onclick="saveRole()">Create Role</button>
                 </div>
             `;
-            userModal.style.display = 'block';
+            if (userModal) userModal.style.display = 'block';
         }
 
         // Open edit role modal
@@ -593,6 +687,8 @@
             if (!role) return;
             
             currentEditingRole = role;
+            if (!modalTitle || !modalContent) return;
+            
             modalTitle.textContent = `Edit Role - ${role.name}`;
             modalContent.innerHTML = `
                 <div class="modal-section">
@@ -646,12 +742,12 @@
                     <button class="btn-primary" onclick="saveRole()">Save Changes</button>
                 </div>
             `;
-            userModal.style.display = 'block';
+            if (userModal) userModal.style.display = 'block';
         }
 
         // Close user modal
         function closeUserModal() {
-            userModal.style.display = 'none';
+            if (userModal) userModal.style.display = 'none';
             currentEditingUser = null;
             currentEditingRole = null;
         }
@@ -806,6 +902,8 @@
             const user = users.find(u => u.id === userId);
             if (!user) return;
 
+            if (!modalTitle || !modalContent) return;
+            
             modalTitle.textContent = `User Activity - ${user.name}`;
             modalContent.innerHTML = `
                 <div class="modal-section">
@@ -825,7 +923,7 @@
                     <button class="btn-primary" onclick="closeUserModal()">Close</button>
                 </div>
             `;
-            userModal.style.display = 'block';
+            if (userModal) userModal.style.display = 'block';
         }
 
         // Helper functions

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlliTrack – Login</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <div class="logo">
+            <i class="fas fa-circle-notch"></i>
+        </div>
+
+        <h2>Welcome Back!</h2>
+        <p class="subtitle">Let's get you signed in securely.</p>
+
+        <div class="social-btn" id="googleLoginBtn">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google logo">
+            Continue with Google
+        </div>
+
+        <div class="social-btn" id="facebookLoginBtn">
+            <i class="fab fa-facebook"></i> Continue with Facebook
+        </div>
+
+        <div class="divider">or</div>
+
+        <form id="loginForm">
+            <!-- Email Field -->
+            <label for="email">Email</label>
+            <input type="email" id="email" maxlength="50" class="input-field" placeholder="Enter Your Email Address">
+            <p id="emailError" class="error-text"></p>
+
+            <!-- Password Field -->
+            <label for="password">Password</label>
+            <a class="forgot" href="#">Forgot Your Password?</a>
+            <div class="password-container">
+                <input type="password" id="password" maxlength="30" class="input-field" placeholder="Your Password">
+                <button type="button" class="toggle-password" id="togglePassword">
+                    <i class="far fa-eye"></i>
+                </button>
+            </div>
+            <p id="passwordError" class="error-text"></p>
+
+            <button class="login-btn" id="loginBtn" type="submit" disabled>Log in with Email</button>
+        </form>
+
+        <p class="footer-text">Don't Have an Account? <a href="../pages/signup.html">Sign Up</a></p>
+
+    </div>
+
+    <!-- Loading Overlay - Now properly hidden by default -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-circle-notch fa-spin"></i>
+        </div>
+        <div class="loading-text" id="loadingText">Logging in...</div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const email = document.getElementById("email");
+        const password = document.getElementById("password");
+        const emailError = document.getElementById("emailError");
+        const passwordError = document.getElementById("passwordError");
+        const loginBtn = document.getElementById("loginBtn");
+        const loginForm = document.getElementById("loginForm");
+        const togglePassword = document.getElementById("togglePassword");
+        const googleLoginBtn = document.getElementById("googleLoginBtn");
+        const facebookLoginBtn = document.getElementById("facebookLoginBtn");
+        const loadingOverlay = document.getElementById("loadingOverlay");
+        const loadingText = document.getElementById("loadingText");
+
+        // Configuration
+        const ADMIN_EMAIL_DOMAIN = '@allitrack.com';
+        const USER_DASHBOARD_PATH = '../../user dashboard/pages/index-user.html';
+        const ADMIN_DASHBOARD_PATH = '../../admin dashboard/pages/index-admin.html'; // Update with your actual admin dashboard path
+
+        // ========== LOADING OVERLAY FUNCTIONS ==========
+        /**
+         * Shows loading overlay with custom message
+         * @param {string} message - Loading message to display
+         */
+        function showLoading(message) {
+            loadingText.textContent = message;
+            loadingOverlay.style.display = 'flex';
+        }
+
+        /**
+         * Hides loading overlay
+         */
+        function hideLoading() {
+            loadingOverlay.style.display = 'none';
+        }
+
+        // ========== VALIDATION FUNCTIONS ==========
+        /**
+         * Validates email format
+         * @param {string} emailValue - Email to validate
+         * @returns {boolean} - True if valid, false otherwise
+         */
+        function validateEmail(emailValue) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailPattern.test(emailValue);
+        }
+
+        /**
+         * Validates password (basic validation)
+         * @param {string} passwordValue - Password to validate
+         * @returns {boolean} - True if valid, false otherwise
+         */
+        function validatePassword(passwordValue) {
+            return passwordValue.trim().length > 0;
+        }
+
+        /**
+         * Updates UI for field errors
+         * @param {HTMLElement} field - Input field
+         * @param {HTMLElement} errorElement - Error message element
+         * @param {string} message - Error message
+         * @param {boolean} hasError - Whether to show error
+         */
+        function setFieldError(field, errorElement, message, hasError) {
+            if (hasError) {
+                errorElement.textContent = message;
+                field.classList.add("error-input");
+            } else {
+                errorElement.textContent = "";
+                field.classList.remove("error-input");
+            }
+        }
+
+        /**
+         * Performs form validation and updates UI
+         * @returns {boolean} - True if form is valid
+         */
+        function validateForm() {
+            const emailValue = email.value.trim();
+            const passwordValue = password.value.trim();
+
+            let isFormValid = true;
+
+            // Email validation
+            if (!emailValue) {
+                setFieldError(email, emailError, "Email is required.", true);
+                isFormValid = false;
+            } else if (!validateEmail(emailValue)) {
+                setFieldError(email, emailError, "Please enter a valid email address.", true);
+                isFormValid = false;
+            } else {
+                setFieldError(email, emailError, "", false);
+            }
+
+            // Password validation
+            if (!passwordValue) {
+                setFieldError(password, passwordError, "Password is required.", true);
+                isFormValid = false;
+            } else if (!validatePassword(passwordValue)) {
+                setFieldError(password, passwordError, "Password must not be empty.", true);
+                isFormValid = false;
+            } else {
+                setFieldError(password, passwordError, "", false);
+            }
+
+            // Enable/disable login button based on validation
+            loginBtn.disabled = !isFormValid;
+
+            return isFormValid;
+        }
+
+        // ========== AUTHENTICATION FUNCTIONS ==========
+        /**
+         * Determines if user is admin based on email domain
+         * @param {string} userEmail - User's email address
+         * @returns {boolean} - True if admin, false if regular user
+         */
+        function isAdminUser(userEmail) {
+            return userEmail.toLowerCase().endsWith(ADMIN_EMAIL_DOMAIN.toLowerCase());
+        }
+
+        /**
+         * Simulates API login call (replace with actual API call)
+         * @param {string} email - User email
+         * @param {string} password - User password
+         * @returns {Promise<Object>} - User data object
+         */
+        async function simulateLoginAPI(email, password) {
+            // Simulate API delay
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    // This is where you would make your actual API call
+                    // For demo purposes, we're simulating a successful login
+                    resolve({
+                        success: true,
+                        user: {
+                            id: Math.random().toString(36).substr(2, 9),
+                            name: email.split('@')[0],
+                            email: email,
+                            role: isAdminUser(email) ? 'admin' : 'user',
+                            lastLogin: new Date().toISOString()
+                        }
+                    });
+                }, 1500);
+            });
+        }
+
+        /**
+         * Handles successful login
+         * @param {Object} userData - User data from API response
+         */
+        function handleLoginSuccess(userData) {
+            // Store user data in localStorage/sessionStorage
+            localStorage.setItem('userData', JSON.stringify(userData));
+            localStorage.setItem('authToken', 'simulated_token_' + Date.now()); // Simulated token
+
+            // Determine redirect path based on user role
+            const redirectPath = userData.role === 'admin'
+                ? ADMIN_DASHBOARD_PATH
+                : USER_DASHBOARD_PATH;
+
+            console.log(`Login successful. Redirecting ${userData.role} to: ${redirectPath}`);
+            window.location.href = redirectPath;
+        }
+
+        /**
+         * Handles login failure
+         * @param {string} errorMessage - Error message to display
+         */
+        function handleLoginFailure(errorMessage) {
+            hideLoading();
+            loginBtn.disabled = false;
+
+            // Display error to user (you could add an error div for this)
+            alert(`Login failed: ${errorMessage}`);
+            console.error('Login error:', errorMessage);
+        }
+
+        /**
+         * Processes email/password login
+         * @param {Event} e - Form submit event
+         */
+        async function handleEmailLogin(e) {
+            e.preventDefault();
+
+            // Validate form before submission
+            if (!validateForm()) {
+                return;
+            }
+
+            const emailValue = email.value.trim();
+            const passwordValue = password.value.trim();
+
+            showLoading('Logging in...');
+            loginBtn.disabled = true;
+
+            try {
+                // Simulate API call (replace with actual authentication)
+                const response = await simulateLoginAPI(emailValue, passwordValue);
+
+                if (response.success) {
+                    handleLoginSuccess(response.user);
+                } else {
+                    handleLoginFailure('Invalid credentials');
+                }
+            } catch (error) {
+                handleLoginFailure('Network error. Please try again.');
+            }
+        }
+
+        /**
+         * Handles social login (Google/Facebook)
+         * @param {string} provider - Social provider name
+         */
+        async function handleSocialLogin(provider) {
+            showLoading(`Connecting to ${provider}...`);
+
+            try {
+                // Simulate social login API call
+                const response = await new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve({
+                            success: true,
+                            user: {
+                                id: Math.random().toString(36).substr(2, 9),
+                                name: `${provider} User`,
+                                email: `user@${provider.toLowerCase()}.com`,
+                                provider: provider,
+                                role: 'user', // Social logins default to user role
+                                lastLogin: new Date().toISOString()
+                            }
+                        });
+                    }, 1500);
+                });
+
+                if (response.success) {
+                    handleLoginSuccess(response.user);
+                } else {
+                    handleLoginFailure(`${provider} login failed`);
+                }
+            } catch (error) {
+                handleLoginFailure(`${provider} login error`);
+            }
+        }
+
+        // ========== EVENT LISTENERS ==========
+        // Toggle password visibility
+        togglePassword.addEventListener('click', function () {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+
+            const icon = this.querySelector('i');
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        });
+
+        // Form submission
+        loginForm.addEventListener('submit', handleEmailLogin);
+
+        // Real-time validation as user types
+        email.addEventListener("input", validateForm);
+        password.addEventListener("input", validateForm);
+
+        // Social login buttons
+        if (googleLoginBtn) {
+            googleLoginBtn.addEventListener('click', () => handleSocialLogin('Google'));
+        }
+
+        if (facebookLoginBtn) {
+            facebookLoginBtn.addEventListener('click', () => handleSocialLogin('Facebook'));
+        }
+
+        // Initialize form validation on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            validateForm();
+            console.log('Login page initialized');
+            console.log('Admin email domain:', ADMIN_EMAIL_DOMAIN);
+        });
+    </script>
+
+</body>
+
+</html>

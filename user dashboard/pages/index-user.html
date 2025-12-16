@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Admin Dashboard - AlliTrack</title>
+    <title>User Dashboard - AlliTrack</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../css/sidebar-header.css" />
@@ -11,7 +12,8 @@
 </head>
 
 <body>
-    <div class="app">
+    <!-- Main Dashboard Content -->
+    <div class="app" id="dashboardContent">
         <div class="shell">
             <!-- Sidebar -->
             <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
@@ -69,22 +71,24 @@
                 <header class="header">
                     <div class="search" role="search" aria-label="Search Tickets">
                         <i class="fas fa-search" style="opacity:.6"></i>
-                        <input id="q" placeholder="Search tickets, users, IDs..." aria-label="Search tickets, users, IDs" />
+                        <input id="q" placeholder="Search tickets, users, IDs..."
+                            aria-label="Search tickets, users, IDs" />
                     </div>
                     <div class="header-actions">
                         <div style="text-align:right">
-                            <div style="font-weight:700">User</div>
-                            <div style="font-size:.82rem;color:var(--muted)">User</div>
+                            <div style="font-weight:700" id="userNameDisplay">User</div>
+                            <div style="font-size:.82rem;color:var(--muted)" id="userEmailDisplay">user@example.com
+                            </div>
                         </div>
                         <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div class="avatar">AJ</div>
+                            <div class="avatar" id="userAvatar">AJ</div>
                             <i class="fas fa-chevron-down" style="opacity:.85"></i>
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="#">Profile</a>
-                            <a href="#">Settings</a>
-                            <a href="#">Logout</a>
+                            <a href="../pages/profile-settings.html">Profile</a>
+                            <a href="../pages/preferences.html">Settings</a>
+                            <a href="#" id="logoutBtn">Logout</a>
                         </div>
                     </div>
                 </header>
@@ -135,7 +139,8 @@
                                     </div>
                                     <div class="activity-details">
                                         <div class="activity-title">Ticket updated</div>
-                                        <div class="activity-meta">Ticket #TKT-4587 status changed to "In Progress"</div>
+                                        <div class="activity-meta">Ticket #TKT-4587 status changed to "In Progress"
+                                        </div>
                                     </div>
                                     <div class="activity-time">Yesterday</div>
                                 </div>
@@ -155,7 +160,8 @@
                                     </div>
                                     <div class="activity-details">
                                         <div class="activity-title">New comment added</div>
-                                        <div class="activity-meta">Support agent responded to your ticket #TKT-4587</div>
+                                        <div class="activity-meta">Support agent responded to your ticket #TKT-4587
+                                        </div>
                                     </div>
                                     <div class="activity-time">3 days ago</div>
                                 </div>
@@ -209,9 +215,60 @@
     </div>
 
     <script>
+        // Set user information on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check for user data in localStorage
+            const userData = JSON.parse(localStorage.getItem('userData'));
+
+            // Display user information
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+            const userAvatar = document.getElementById('userAvatar');
+
+            if (userData) {
+                // User data exists, display it
+                if (userNameDisplay && userData.name) {
+                    userNameDisplay.textContent = userData.name;
+                }
+
+                if (userEmailDisplay && userData.email) {
+                    userEmailDisplay.textContent = userData.email;
+                }
+
+                if (userAvatar && userData.name) {
+                    // Get initials from name
+                    const initials = userData.name
+                        .split(' ')
+                        .map(word => word[0])
+                        .join('')
+                        .toUpperCase()
+                        .substring(0, 2);
+                    userAvatar.textContent = initials;
+                }
+
+                console.log('Welcome to AlliTrack Dashboard,', userData.name || 'User');
+            } else {
+                // No user data found, show default values
+                if (userNameDisplay) {
+                    userNameDisplay.textContent = 'Guest User';
+                }
+
+                if (userEmailDisplay) {
+                    userEmailDisplay.textContent = 'guest@example.com';
+                }
+
+                if (userAvatar) {
+                    userAvatar.textContent = 'GU';
+                }
+
+                console.log('Welcome to AlliTrack Dashboard - Guest Mode');
+            }
+        });
+
         // Account Dropdown Functionality
         const accountBtn = document.getElementById("accountBtn");
         const accountMenu = document.getElementById("accountMenu");
+        const logoutBtn = document.getElementById("logoutBtn");
 
         if (accountBtn && accountMenu) {
             accountBtn.addEventListener("click", (e) => {
@@ -236,6 +293,17 @@
                 }
             });
         }
+
+        // Logout functionality
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Clear user data from localStorage
+                localStorage.removeItem('userData');
+
+                // Redirect to login page
+                window.location.href = '../../landing page/pages/index.html';
+            });
+        }
     </script>
-</body>
-</html>
