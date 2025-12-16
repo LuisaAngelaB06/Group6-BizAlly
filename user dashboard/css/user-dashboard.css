@@ -1,193 +1,198 @@
-        /* Dashboard-specific styles */
-        .dashboard-content {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .dashboard-section {
-            background: var(--surface);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-sm);
-            padding: 20px;
-        }
-        
-        .dashboard-section h2 {
-            margin: 0 0 16px 0;
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #0f172a;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .dashboard-section h2 i {
-            color: var(--accent);
-        }
-        
-        /* Ticket Status Overview */
-        .ticket-status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-        }
-        
-        .status-card {
-            background: var(--bg);
-            border-radius: 10px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            border: 1px solid rgba(15, 23, 42, 0.05);
-            transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
-        }
-        
-        .status-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .status-card .count {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        
-        .status-card.open .count {
-            color: #3B82F6;
-        }
-        
-        .status-card.in-progress .count {
-            color: #F59E0B;
-        }
-        
-        .status-card.resolved .count {
-            color: #10B981;
-        }
-        
-        .status-card.closed .count {
-            color: #6B7280;
-        }
-        
-        .status-card .label {
-            font-size: 0.9rem;
-            color: var(--muted);
-            font-weight: 500;
-        }
-        
-        /* Recent Activity */
-        .activity-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
-        
-        .activity-item:hover {
-            background: rgba(59, 130, 246, 0.04);
-        }
-        
-        .activity-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.9rem;
-        }
-        
-        .activity-icon.ticket {
-            background: linear-gradient(135deg, #3B82F6, #1e66d6);
-        }
-        
-        .activity-icon.update {
-            background: linear-gradient(135deg, #F59E0B, #D97706);
-        }
-        
-        .activity-icon.resolved {
-            background: linear-gradient(135deg, #10B981, #059669);
-        }
-        
-        .activity-details {
-            flex: 1;
-        }
-        
-        .activity-title {
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-        
-        .activity-meta {
-            font-size: 0.85rem;
-            color: var(--muted);
-        }
-        
-        .activity-time {
-            font-size: 0.8rem;
-            color: var(--muted);
-        }
-        
-        /* Quick Actions */
-        .quick-actions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
-        }
-        
-        .action-card {
-            background: var(--bg);
-            border-radius: 10px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            border: 1px solid rgba(15, 23, 42, 0.05);
-            transition: all 0.2s var(--ease);
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-        }
-        
-        .action-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-            background: rgba(59, 130, 246, 0.04);
-            color: var(--accent);
-        }
-        
-        .action-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, var(--accent), var(--accent-2));
-            color: white;
-            font-size: 1.2rem;
-            margin-bottom: 12px;
-        }
-        
-        .action-title {
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-        
-        .action-desc {
-            font-size: 0.85rem;
-            color: var(--muted);
-        }
+/* Dashboard-specific styles */
+.dashboard-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.dashboard-section {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 20px;
+}
+
+.dashboard-section h2 {
+    margin: 0 0 16px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dashboard-section h2 i {
+    color: var(--accent);
+}
+
+/* Ticket Status Overview */
+.ticket-status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.status-card {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.status-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.status-card .count {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.status-card.open .count {
+    color: #3B82F6;
+}
+
+.status-card.in-progress .count {
+    color: #F59E0B;
+}
+
+.status-card.resolved .count {
+    color: #10B981;
+}
+
+.status-card.closed .count {
+    color: #6B7280;
+}
+
+.status-card .label {
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 500;
+}
+
+/* Recent Activity */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.activity-item:hover {
+    background: rgba(59, 130, 246, 0.04);
+}
+
+.activity-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.activity-icon.ticket {
+    background: linear-gradient(135deg, #3B82F6, #1e66d6);
+}
+
+.activity-icon.update {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+}
+
+.activity-icon.resolved {
+    background: linear-gradient(135deg, #10B981, #059669);
+}
+
+.activity-details {
+    flex: 1;
+}
+
+.activity-title {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.activity-meta {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.activity-time {
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+/* Quick Actions */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.action-card {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid rgba(15, 23, 42, 0.05);
+    transition: all 0.2s var(--ease);
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+}
+
+.action-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    background: rgba(59, 130, 246, 0.04);
+    color: var(--accent);
+}
+
+.action-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: white;
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+}
+
+.action-title {
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.action-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+/* Hidden utility class */
+.hidden {
+    display: none !important;
+}

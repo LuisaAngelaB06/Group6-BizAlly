@@ -73,18 +73,18 @@
                     </div>
                     <div class="header-actions">
                         <div style="text-align:right">
-                            <div style="font-weight:700">User</div>
-                            <div style="font-size:.82rem;color:var(--muted)">User</div>
+                            <div id="userName" style="font-weight:700">User</div>
+                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">user@example.com</div>
                         </div>
                         <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div class="avatar">AJ</div>
+                            <div id="userAvatar" class="avatar">U</div>
                             <i class="fas fa-chevron-down" style="opacity:.85"></i>
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="#">Profile</a>
-                            <a href="#">Settings</a>
-                            <a href="#">Logout</a>
+                            <a href="../pages/profile-settings.html">Profile</a>
+                            <a href="../pages/preferences.html">Settings</a>
+                            <a href="#" id="logoutBtn">Logout</a>
                         </div>
                     </div>
                 </header>
@@ -194,18 +194,92 @@
     </div>
 
     <script>
-        // DOM elements
-        const ticketForm = document.getElementById('ticketForm');
-        const successMessage = document.getElementById('successMessage');
-
-        // Form validation and submission
-        ticketForm.addEventListener('submit', (e) => {
-            e.preventDefault();
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get user data from localStorage (set by dashboard login)
+            const userData = JSON.parse(localStorage.getItem('userData'));
             
-            if (validateForm()) {
-                submitTicket();
-            }
+            // Update user information in header
+            updateUserDisplay(userData);
+            
+            // Initialize form functionality
+            initForm();
+            
+            // Setup logout functionality
+            setupLogout();
+            
+            console.log('Submit Ticket page loaded for user:', userData?.name);
         });
+        
+        // Update user display in header
+        function updateUserDisplay(userData) {
+            if (!userData) {
+                console.warn('No user data found in localStorage');
+                return;
+            }
+            
+            // Update user name
+            const userNameElement = document.getElementById('userName');
+            if (userNameElement && userData.name) {
+                userNameElement.textContent = userData.name;
+            }
+            
+            // Update user email
+            const userEmailElement = document.getElementById('userEmail');
+            if (userEmailElement && userData.email) {
+                userEmailElement.textContent = userData.email;
+            }
+            
+            // Update user avatar with initials
+            const userAvatarElement = document.getElementById('userAvatar');
+            if (userAvatarElement && userData.name) {
+                // Get initials from name (same as dashboard logic)
+                const initials = userData.name
+                    .split(' ')
+                    .map(word => word[0])
+                    .join('')
+                    .toUpperCase()
+                    .substring(0, 2);
+                userAvatarElement.textContent = initials;
+            }
+        }
+        
+        // Logout functionality
+        function setupLogout() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Clear user data from localStorage (same as dashboard)
+                    localStorage.removeItem('userData');
+                    
+                    // Redirect to login page (same as dashboard)
+                    window.location.href = '../../landing page/pages/index.html';
+                });
+            }
+        }
+
+        // Initialize form functionality
+        function initForm() {
+            // DOM elements
+            const ticketForm = document.getElementById('ticketForm');
+            const successMessage = document.getElementById('successMessage');
+
+            // Form validation and submission
+            if (ticketForm) {
+                ticketForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    if (validateForm()) {
+                        submitTicket();
+                    }
+                });
+            }
+            
+            // Setup account dropdown
+            setupAccountDropdown();
+        }
 
         function validateForm() {
             let isValid = true;
@@ -251,8 +325,13 @@
             document.getElementById('ticketId').textContent = ticketId;
             
             // Show success message
-            ticketForm.style.display = 'none';
-            successMessage.classList.add('show');
+            const ticketForm = document.getElementById('ticketForm');
+            const successMessage = document.getElementById('successMessage');
+            
+            if (ticketForm && successMessage) {
+                ticketForm.style.display = 'none';
+                successMessage.classList.add('show');
+            }
             
             // In a real application, you would send the form data to your backend here
             console.log('Ticket submitted:', {
@@ -263,7 +342,12 @@
         }
 
         function resetForm() {
-            ticketForm.reset();
+            const ticketForm = document.getElementById('ticketForm');
+            const successMessage = document.getElementById('successMessage');
+            
+            if (ticketForm) {
+                ticketForm.reset();
+            }
             
             // Reset errors
             document.querySelectorAll('.form-error').forEach(error => {
@@ -274,8 +358,10 @@
             });
             
             // Show form, hide success message
-            ticketForm.style.display = 'block';
-            successMessage.classList.remove('show');
+            if (ticketForm && successMessage) {
+                ticketForm.style.display = 'block';
+                successMessage.classList.remove('show');
+            }
         }
 
         function viewTicket() {
@@ -285,31 +371,33 @@
         }
 
         // Account Dropdown Functionality
-        const accountBtn = document.getElementById("accountBtn");
-        const accountMenu = document.getElementById("accountMenu");
+        function setupAccountDropdown() {
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
 
-        if (accountBtn && accountMenu) {
-            accountBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                accountMenu.classList.toggle("show");
-                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
-            });
+            if (accountBtn && accountMenu) {
+                accountBtn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    accountMenu.classList.toggle("show");
+                    accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+                });
 
-            // Close dropdown when clicking outside
-            document.addEventListener("click", (e) => {
-                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
-                    accountMenu.classList.remove("show");
-                    accountBtn.setAttribute("aria-expanded", false);
-                }
-            });
+                // Close dropdown when clicking outside
+                document.addEventListener("click", (e) => {
+                    if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                        accountMenu.classList.remove("show");
+                        accountBtn.setAttribute("aria-expanded", false);
+                    }
+                });
 
-            // Close dropdown when pressing Escape key
-            document.addEventListener("keydown", (e) => {
-                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
-                    accountMenu.classList.remove("show");
-                    accountBtn.setAttribute("aria-expanded", false);
-                }
-            });
+                // Close dropdown when pressing Escape key
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                        accountMenu.classList.remove("show");
+                        accountBtn.setAttribute("aria-expanded", false);
+                    }
+                });
+            }
         }
     </script>
 </body>

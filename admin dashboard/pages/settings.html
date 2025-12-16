@@ -62,18 +62,19 @@
                     </div>
                     <div class="header-actions">
                         <div style="text-align:right">
-                            <div style="font-weight:700">Admin User</div>
-                            <div style="font-size:.82rem;color:var(--muted)">Administrator</div>
+                            <!-- Dynamic user data will be inserted here -->
+                            <div style="font-weight:700" id="userName">Admin User</div>
+                            <div style="font-size:.82rem;color:var(--muted)" id="userEmail">Administrator</div>
                         </div>
                         <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div class="avatar">AJ</div>
+                            <!-- Dynamic avatar initials -->
+                            <div class="avatar" id="userAvatar">AJ</div>
                             <i class="fas fa-chevron-down" style="opacity:.85"></i>
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="#">Profile</a>
-                            <a href="#">Settings</a>
-                            <a href="#">Logout</a>
+                            <a href="../pages/settings.html">Settings</a>
+                            <a href="#" id="logoutBtn">Logout</a>
                         </div>
                     </div>
                 </header>
@@ -102,6 +103,9 @@
                         </button>
                         <button class="nav-btn" data-section="notifications">
                             <i class="fas fa-bell"></i> Notifications
+                        </button>
+                        <button class="nav-btn" data-section="tickets">
+                            <i class="fas fa-ticket-alt"></i> Tickets
                         </button>
                         <button class="nav-btn" data-section="security">
                             <i class="fas fa-shield-alt"></i> Security
@@ -446,6 +450,85 @@
     </div>
 
     <script>
+        // Load and display user data from localStorage - EXACTLY as in index-admin.html
+        function loadUserData() {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            
+            if (userData) {
+                // Display user name
+                const userNameElement = document.getElementById('userName');
+                if (userNameElement && userData.name) {
+                    userNameElement.textContent = userData.name;
+                }
+                
+                // Display user email
+                const userEmailElement = document.getElementById('userEmail');
+                if (userEmailElement && userData.email) {
+                    userEmailElement.textContent = userData.email;
+                }
+                
+                // Display avatar initials
+                const userAvatarElement = document.getElementById('userAvatar');
+                if (userAvatarElement && userData.name) {
+                    // Get initials from name
+                    const nameParts = userData.name.split(' ');
+                    let initials = '';
+                    
+                    if (nameParts.length >= 2) {
+                        initials = nameParts[0].charAt(0) + nameParts[1].charAt(0);
+                    } else if (nameParts.length === 1) {
+                        initials = nameParts[0].charAt(0);
+                        if (nameParts[0].length > 1) {
+                            initials += nameParts[0].charAt(1);
+                        }
+                    }
+                    
+                    userAvatarElement.textContent = initials.toUpperCase();
+                }
+            } else {
+                // If no user data, redirect to login page
+                window.location.href = '../../landing page/pages/index.html';
+            }
+        }
+        
+        // Call the function when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            initializeSettingsPage();
+        });
+
+        // Dropdown toggle - EXACTLY as in index-admin.html
+        const accountBtn = document.getElementById("accountBtn");
+        const accountMenu = document.getElementById("accountMenu");
+
+        if (accountBtn && accountMenu) {
+            accountBtn.addEventListener("click", () => {
+                accountMenu.classList.toggle("show");
+                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            window.addEventListener("click", (e) => {
+                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    accountBtn.setAttribute("aria-expanded", false);
+                }
+            });
+        }
+
+        // Logout functionality - EXACTLY as in index-admin.html
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Clear user data from localStorage
+                localStorage.removeItem('userData');
+
+                // Redirect to login page
+                window.location.href = '../../landing page/pages/index.html';
+            });
+        }
+
         // Default settings configuration
         const defaultSettings = {
             general: {
@@ -490,7 +573,7 @@
         // Current settings (initially set to defaults)
         let currentSettings = JSON.parse(JSON.stringify(defaultSettings));
 
-        // DOM Elements
+        // DOM Elements for settings
         const settingsNav = document.querySelectorAll('.nav-btn');
         const settingsSections = document.querySelectorAll('.settings-section');
         const saveBtn = document.getElementById('saveBtn');
@@ -505,15 +588,14 @@
         const dangerButtons = document.querySelectorAll('.btn-danger');
         const settingCards = document.querySelectorAll('.setting-card');
 
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
+        function initializeSettingsPage() {
             loadSettings();
-            setupEventListeners();
+            setupSettingsEventListeners();
             initializeSettingsForm();
-        });
+        }
 
-        // Set up event listeners
-        function setupEventListeners() {
+        // Set up event listeners for settings functionality
+        function setupSettingsEventListeners() {
             // Navigation
             settingsNav.forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -523,44 +605,32 @@
             });
 
             // Save and reset buttons
-            saveBtn.addEventListener('click', saveSettings);
-            resetBtn.addEventListener('click', resetSettings);
+            if (saveBtn) saveBtn.addEventListener('click', saveSettings);
+            if (resetBtn) resetBtn.addEventListener('click', resetSettings);
 
             // Search functionality
-            searchInput.addEventListener('input', handleSearch);
+            if (searchInput) {
+                searchInput.addEventListener('input', handleSearch);
+            }
 
             // Modal functionality
-            cancelConfirm.addEventListener('click', closeConfirmModal);
-            proceedConfirm.addEventListener('click', handleConfirmAction);
+            if (cancelConfirm) cancelConfirm.addEventListener('click', closeConfirmModal);
+            if (proceedConfirm) proceedConfirm.addEventListener('click', handleConfirmAction);
 
             // Danger zone buttons
-            dangerButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const action = this.id;
-                    showConfirmModal(action);
+            if (dangerButtons) {
+                dangerButtons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const action = this.id;
+                        showConfirmModal(action);
+                    });
                 });
-            });
+            }
 
             // Close modal when clicking outside
             window.addEventListener('click', function(event) {
                 if (event.target === confirmModal) {
                     closeConfirmModal();
-                }
-            });
-
-            // Account dropdown
-            const accountBtn = document.getElementById("accountBtn");
-            const accountMenu = document.getElementById("accountMenu");
-
-            accountBtn.addEventListener("click", () => {
-                accountMenu.classList.toggle("show");
-                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
-            });
-
-            window.addEventListener("click", (e) => {
-                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
-                    accountMenu.classList.remove("show");
-                    accountBtn.setAttribute("aria-expanded", false);
                 }
             });
         }
@@ -637,7 +707,9 @@
             });
             
             if (searchTerm === '') {
-                searchResultsInfo.textContent = 'All settings visible';
+                if (searchResultsInfo) {
+                    searchResultsInfo.textContent = 'All settings visible';
+                }
                 return;
             }
 
@@ -662,10 +734,12 @@
             });
             
             // Update search results info
-            if (visibleCards === 0) {
-                searchResultsInfo.textContent = 'No settings found';
-            } else {
-                searchResultsInfo.textContent = `Found ${visibleCards} of ${totalCards} settings`;
+            if (searchResultsInfo) {
+                if (visibleCards === 0) {
+                    searchResultsInfo.textContent = 'No settings found';
+                } else {
+                    searchResultsInfo.textContent = `Found ${visibleCards} of ${totalCards} settings`;
+                }
             }
         }
 
@@ -775,9 +849,9 @@
                     break;
             }
             
-            confirmMessage.textContent = message;
-            proceedConfirm.setAttribute('data-action', action);
-            confirmModal.style.display = 'block';
+            if (confirmMessage) confirmMessage.textContent = message;
+            if (proceedConfirm) proceedConfirm.setAttribute('data-action', action);
+            if (confirmModal) confirmModal.style.display = 'block';
         }
 
         // Handle confirmed action
@@ -804,7 +878,7 @@
 
         // Close confirmation modal
         function closeConfirmModal() {
-            confirmModal.style.display = 'none';
+            if (confirmModal) confirmModal.style.display = 'none';
         }
 
         // Show success toast
@@ -816,36 +890,6 @@
             setTimeout(() => {
                 successToast.classList.remove('show');
             }, 3000);
-        }
-
-        // Export settings as JSON
-        function exportSettings() {
-            const dataStr = JSON.stringify(currentSettings, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
-            link.download = 'allitrack-settings.json';
-            link.click();
-        }
-
-        // Import settings from JSON
-        function importSettings(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedSettings = JSON.parse(e.target.result);
-                    currentSettings = importedSettings;
-                    initializeSettingsForm();
-                    showToast('Settings imported successfully!');
-                } catch (error) {
-                    alert('Error importing settings: Invalid JSON file');
-                }
-            };
-            reader.readAsText(file);
         }
     </script>
 </body>

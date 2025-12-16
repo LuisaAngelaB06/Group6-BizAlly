@@ -72,18 +72,18 @@
                     </div>
                     <div class="header-actions">
                         <div style="text-align:right">
-                            <div style="font-weight:700">User</div>
-                            <div style="font-size:.82rem;color:var(--muted)">User</div>
+                            <div id="userName" style="font-weight:700">User</div>
+                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">user@example.com</div>
                         </div>
                         <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div class="avatar">AJ</div>
+                            <div id="userAvatar" class="avatar">U</div>
                             <i class="fas fa-chevron-down" style="opacity:.85"></i>
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="#">Profile</a>
-                            <a href="#">Settings</a>
-                            <a href="#">Logout</a>
+                            <a href="../pages/profile-settings.html">Profile</a>
+                            <a href="../pages/preferences.html">Settings</a>
+                            <a href="#" id="logoutBtn">Logout</a>
                         </div>
                     </div>
                 </header>
@@ -122,7 +122,7 @@
                                 
                                 <div class="profile-photo-section">
                                     <div class="profile-photo" id="profilePhoto">
-                                        <div id="profileInitials">AJ</div>
+                                        <div id="profileInitials">U</div>
                                         <img id="profileImage" style="display: none;" alt="Profile Photo">
                                         <div class="profile-photo-overlay">
                                             <i class="fas fa-camera"></i>
@@ -169,7 +169,6 @@
                                                 id="firstName" 
                                                 class="form-input" 
                                                 placeholder="Enter your first name"
-                                                value="Admin"
                                                 required
                                             />
                                             <div class="form-error" id="firstNameError">Please enter your first name</div>
@@ -184,7 +183,6 @@
                                                 id="lastName" 
                                                 class="form-input" 
                                                 placeholder="Enter your last name"
-                                                value="User"
                                                 required
                                             />
                                             <div class="form-error" id="lastNameError">Please enter your last name</div>
@@ -199,7 +197,6 @@
                                                 id="email" 
                                                 class="form-input" 
                                                 placeholder="Enter your email address"
-                                                value="admin.user@allitrack.com"
                                                 required
                                             />
                                             <div class="form-error" id="emailError">Please enter a valid email address</div>
@@ -214,7 +211,6 @@
                                                 id="phone" 
                                                 class="form-input" 
                                                 placeholder="Enter your phone number"
-                                                value="+1 (555) 123-4567"
                                             />
                                             <div class="form-hint">Optional</div>
                                         </div>
@@ -228,7 +224,6 @@
                                                 id="department" 
                                                 class="form-input" 
                                                 placeholder="Enter your department"
-                                                value="IT Support"
                                             />
                                             <div class="form-hint">Optional</div>
                                         </div>
@@ -325,48 +320,170 @@
     </div>
 
     <script>
-        // DOM elements
-        const profileForm = document.getElementById('profileForm');
-        const successMessage = document.getElementById('successMessage');
-        const profilePhoto = document.getElementById('profilePhoto');
-        const profileImage = document.getElementById('profileImage');
-        const profileInitials = document.getElementById('profileInitials');
-        const newPasswordInput = document.getElementById('newPassword');
-        const passwordStrength = document.getElementById('passwordStrength');
-
-        // Load saved profile data
-        function loadProfileData() {
-            const savedProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get user data from localStorage (set by dashboard login)
+            const userData = JSON.parse(localStorage.getItem('userData'));
             
-            if (savedProfile.firstName) {
-                document.getElementById('firstName').value = savedProfile.firstName;
-                document.getElementById('lastName').value = savedProfile.lastName;
-                document.getElementById('email').value = savedProfile.email;
-                document.getElementById('phone').value = savedProfile.phone || '';
-                document.getElementById('department').value = savedProfile.department || '';
-                
-                // Update profile photo if exists
-                if (savedProfile.photo) {
-                    profileImage.src = savedProfile.photo;
-                    profileImage.style.display = 'block';
-                    profileInitials.style.display = 'none';
-                }
-                
-                // Update header avatar
-                updateHeaderAvatar(savedProfile.firstName, savedProfile.lastName, savedProfile.photo);
+            // Update user information in header
+            updateUserDisplay(userData);
+            
+            // Load profile data from localStorage
+            loadProfileData();
+            
+            // Initialize form functionality
+            initForm();
+            
+            // Setup logout functionality
+            setupLogout();
+            
+            console.log('Profile Settings page loaded for user:', userData?.name);
+        });
+        
+        // Update user display in header
+        function updateUserDisplay(userData) {
+            if (!userData) {
+                console.warn('No user data found in localStorage');
+                return;
+            }
+            
+            // Update user name
+            const userNameElement = document.getElementById('userName');
+            if (userNameElement && userData.name) {
+                userNameElement.textContent = userData.name;
+            }
+            
+            // Update user email
+            const userEmailElement = document.getElementById('userEmail');
+            if (userEmailElement && userData.email) {
+                userEmailElement.textContent = userData.email;
+            }
+            
+            // Update user avatar with initials
+            const userAvatarElement = document.getElementById('userAvatar');
+            if (userAvatarElement && userData.name) {
+                // Get initials from name (same as dashboard logic)
+                const initials = userData.name
+                    .split(' ')
+                    .map(word => word[0])
+                    .join('')
+                    .toUpperCase()
+                    .substring(0, 2);
+                userAvatarElement.textContent = initials;
+            }
+        }
+        
+        // Logout functionality
+        function setupLogout() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Clear user data from localStorage (same as dashboard)
+                    localStorage.removeItem('userData');
+                    
+                    // Redirect to login page (same as dashboard)
+                    window.location.href = '../../landing page/pages/index.html';
+                });
             }
         }
 
-        // Update header avatar
-        function updateHeaderAvatar(firstName, lastName, photo) {
-            const headerAvatar = document.querySelector('.header .avatar');
-            if (headerAvatar) {
-                if (photo) {
-                    headerAvatar.innerHTML = `<img src="${photo}" alt="${firstName} ${lastName}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-                } else {
-                    const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
-                    headerAvatar.textContent = initials;
+        // Initialize form functionality
+        function initForm() {
+            const profileForm = document.getElementById('profileForm');
+            if (profileForm) {
+                profileForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    
+                    if (validateForm()) {
+                        saveProfile();
+                    }
+                });
+            }
+            
+            // Password strength checker
+            const newPasswordInput = document.getElementById('newPassword');
+            if (newPasswordInput) {
+                newPasswordInput.addEventListener('input', (e) => {
+                    checkPasswordStrength(e.target.value);
+                });
+            }
+            
+            // Setup account dropdown
+            setupAccountDropdown();
+        }
+
+        // DOM elements
+        let profilePhoto, profileImage, profileInitials, passwordStrength;
+
+        // Load saved profile data
+        function loadProfileData() {
+            // Initialize DOM elements
+            profilePhoto = document.getElementById('profilePhoto');
+            profileImage = document.getElementById('profileImage');
+            profileInitials = document.getElementById('profileInitials');
+            passwordStrength = document.getElementById('passwordStrength');
+            
+            // Get user data from localStorage
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            const savedProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            
+            // Get name parts for form
+            let firstName = 'User';
+            let lastName = '';
+            let email = userData.email || 'user@example.com';
+            
+            if (userData.name) {
+                const nameParts = userData.name.split(' ');
+                firstName = nameParts[0] || 'User';
+                lastName = nameParts.slice(1).join(' ') || '';
+            }
+            
+            // Set form values (use saved profile data first, then userData)
+            document.getElementById('firstName').value = savedProfile.firstName || firstName;
+            document.getElementById('lastName').value = savedProfile.lastName || lastName;
+            document.getElementById('email').value = savedProfile.email || email;
+            document.getElementById('phone').value = savedProfile.phone || '';
+            document.getElementById('department').value = savedProfile.department || '';
+            
+            // Update profile photo if exists
+            if (savedProfile.photo) {
+                if (profileImage) {
+                    profileImage.src = savedProfile.photo;
+                    profileImage.style.display = 'block';
                 }
+                if (profileInitials) {
+                    profileInitials.style.display = 'none';
+                }
+            }
+            
+            // Update profile initials
+            if (profileInitials) {
+                const formFirstName = document.getElementById('firstName').value;
+                const formLastName = document.getElementById('lastName').value;
+                const initials = (formFirstName.charAt(0) + (formLastName.charAt(0) || '')).toUpperCase();
+                profileInitials.textContent = initials;
+            }
+            
+            // Update header avatar
+            updateHeaderAvatar();
+        }
+
+        // Update header avatar
+        function updateHeaderAvatar() {
+            const headerAvatar = document.getElementById('userAvatar');
+            if (!headerAvatar) return;
+            
+            const savedProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            
+            if (savedProfile.photo) {
+                headerAvatar.innerHTML = `<img src="${savedProfile.photo}" alt="${firstName} ${lastName}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+            } else {
+                const initials = (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase();
+                headerAvatar.textContent = initials;
             }
         }
 
@@ -388,9 +505,11 @@
                 
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    profileImage.src = e.target.result;
-                    profileImage.style.display = 'block';
-                    profileInitials.style.display = 'none';
+                    if (profileImage && profileInitials) {
+                        profileImage.src = e.target.result;
+                        profileImage.style.display = 'block';
+                        profileInitials.style.display = 'none';
+                    }
                     
                     // Save to localStorage
                     const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
@@ -398,11 +517,7 @@
                     localStorage.setItem('userProfile', JSON.stringify(profile));
                     
                     // Update header avatar
-                    updateHeaderAvatar(
-                        document.getElementById('firstName').value,
-                        document.getElementById('lastName').value,
-                        e.target.result
-                    );
+                    updateHeaderAvatar();
                 };
                 reader.readAsDataURL(file);
             }
@@ -410,8 +525,10 @@
 
         // Remove profile photo
         function removePhoto() {
-            profileImage.style.display = 'none';
-            profileInitials.style.display = 'block';
+            if (profileImage && profileInitials) {
+                profileImage.style.display = 'none';
+                profileInitials.style.display = 'block';
+            }
             
             // Remove from localStorage
             const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
@@ -419,15 +536,13 @@
             localStorage.setItem('userProfile', JSON.stringify(profile));
             
             // Update header avatar
-            updateHeaderAvatar(
-                document.getElementById('firstName').value,
-                document.getElementById('lastName').value,
-                null
-            );
+            updateHeaderAvatar();
         }
 
         // Password strength checker
         function checkPasswordStrength(password) {
+            if (!passwordStrength) return;
+            
             let strength = 0;
             
             if (password.length >= 8) strength++;
@@ -472,8 +587,9 @@
             requiredFields.forEach(field => {
                 const input = document.getElementById(field);
                 if (!input.value.trim()) {
-                    document.getElementById(field + 'Error').classList.add('show');
-                    input.classList.add('error');
+                    const errorElement = document.getElementById(field + 'Error');
+                    if (errorElement) errorElement.classList.add('show');
+                    if (input) input.classList.add('error');
                     isValid = false;
                 }
             });
@@ -481,41 +597,52 @@
             // Validate email format
             const email = document.getElementById('email');
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (email.value && !emailRegex.test(email.value)) {
-                document.getElementById('emailError').classList.add('show');
-                email.classList.add('error');
+            if (email && email.value && !emailRegex.test(email.value)) {
+                const emailError = document.getElementById('emailError');
+                if (emailError) emailError.classList.add('show');
+                if (email) email.classList.add('error');
                 isValid = false;
             }
             
             // Validate password change if any password field is filled
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
+            const currentPassword = document.getElementById('currentPassword');
+            const newPassword = document.getElementById('newPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
             
-            if (currentPassword || newPassword || confirmPassword) {
-                if (!currentPassword) {
-                    document.getElementById('currentPasswordError').classList.add('show');
-                    document.getElementById('currentPassword').classList.add('error');
+            const currentPasswordValue = currentPassword ? currentPassword.value : '';
+            const newPasswordValue = newPassword ? newPassword.value : '';
+            const confirmPasswordValue = confirmPassword ? confirmPassword.value : '';
+            
+            if (currentPasswordValue || newPasswordValue || confirmPasswordValue) {
+                if (!currentPasswordValue) {
+                    const currentPasswordError = document.getElementById('currentPasswordError');
+                    if (currentPasswordError) currentPasswordError.classList.add('show');
+                    if (currentPassword) currentPassword.classList.add('error');
                     isValid = false;
                 }
                 
-                if (!newPassword) {
-                    document.getElementById('newPasswordError').classList.add('show');
-                    document.getElementById('newPassword').classList.add('error');
+                if (!newPasswordValue) {
+                    const newPasswordError = document.getElementById('newPasswordError');
+                    if (newPasswordError) newPasswordError.classList.add('show');
+                    if (newPassword) newPassword.classList.add('error');
                     isValid = false;
                 }
                 
-                if (newPassword !== confirmPassword) {
-                    document.getElementById('confirmPasswordError').classList.add('show');
-                    document.getElementById('confirmPassword').classList.add('error');
+                if (newPasswordValue !== confirmPasswordValue) {
+                    const confirmPasswordError = document.getElementById('confirmPasswordError');
+                    if (confirmPasswordError) confirmPasswordError.classList.add('show');
+                    if (confirmPassword) confirmPassword.classList.add('error');
                     isValid = false;
                 }
                 
                 // Validate password strength
-                if (newPassword && newPassword.length < 8) {
-                    document.getElementById('newPasswordError').textContent = 'Password must be at least 8 characters long';
-                    document.getElementById('newPasswordError').classList.add('show');
-                    document.getElementById('newPassword').classList.add('error');
+                if (newPasswordValue && newPasswordValue.length < 8) {
+                    const newPasswordError = document.getElementById('newPasswordError');
+                    if (newPasswordError) {
+                        newPasswordError.textContent = 'Password must be at least 8 characters long';
+                        newPasswordError.classList.add('show');
+                    }
+                    if (newPassword) newPassword.classList.add('error');
                     isValid = false;
                 }
             }
@@ -523,107 +650,137 @@
             return isValid;
         }
 
-        // Form submission
-        profileForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            if (validateForm()) {
-                saveProfile();
-            }
-        });
-
         function saveProfile() {
-            // Collect profile data
-            const profileData = {
-                firstName: document.getElementById('firstName').value,
-                lastName: document.getElementById('lastName').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                department: document.getElementById('department').value,
-                photo: profileImage.style.display === 'block' ? profileImage.src : null
-            };
-            
-            // Save to localStorage
-            localStorage.setItem('userProfile', JSON.stringify(profileData));
-            
-            // Update header avatar
-            updateHeaderAvatar(profileData.firstName, profileData.lastName, profileData.photo);
-            
-            // Show success message
-            successMessage.classList.add('show');
-            
-            // Hide success message after 3 seconds
-            setTimeout(() => {
-                successMessage.classList.remove('show');
-            }, 3000);
-            
-            console.log('Profile saved:', profileData);
+            try {
+                // Collect profile data
+                const profileData = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    department: document.getElementById('department').value,
+                    photo: profileImage && profileImage.style.display === 'block' ? profileImage.src : null
+                };
+                
+                // Save to localStorage
+                localStorage.setItem('userProfile', JSON.stringify(profileData));
+                
+                // Also update the main userData in localStorage
+                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                userData.name = `${profileData.firstName} ${profileData.lastName}`;
+                userData.email = profileData.email;
+                localStorage.setItem('userData', JSON.stringify(userData));
+                
+                // Update header display
+                updateUserDisplay(userData);
+                
+                // Update header avatar
+                updateHeaderAvatar();
+                
+                // Show success message
+                const successMessage = document.getElementById('successMessage');
+                if (successMessage) {
+                    successMessage.classList.add('show');
+                    
+                    // Hide success message after 3 seconds
+                    setTimeout(() => {
+                        successMessage.classList.remove('show');
+                    }, 3000);
+                }
+                
+                console.log('Profile saved:', profileData);
+            } catch (error) {
+                console.error('Error saving profile:', error);
+            }
         }
 
         function resetForm() {
-            // Reset to original values
-            document.getElementById('firstName').value = 'Admin';
-            document.getElementById('lastName').value = 'User';
-            document.getElementById('email').value = 'admin.user@allitrack.com';
-            document.getElementById('phone').value = '+1 (555) 123-4567';
-            document.getElementById('department').value = 'IT Support';
-            
-            // Clear password fields
-            document.getElementById('currentPassword').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmPassword').value = '';
-            
-            // Reset photo
-            removePhoto();
-            
-            // Reset errors
-            document.querySelectorAll('.form-error').forEach(error => {
-                error.classList.remove('show');
-            });
-            document.querySelectorAll('.form-input').forEach(input => {
-                input.classList.remove('error');
-            });
-            
-            // Reset password strength
-            passwordStrength.className = 'password-strength';
-            passwordStrength.querySelector('.strength-text').textContent = 'Password strength';
+            try {
+                // Get original user data
+                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                let firstName = 'User';
+                let lastName = '';
+                let email = userData.email || 'user@example.com';
+                
+                if (userData.name) {
+                    const nameParts = userData.name.split(' ');
+                    firstName = nameParts[0] || 'User';
+                    lastName = nameParts.slice(1).join(' ') || '';
+                }
+                
+                // Reset to original values
+                document.getElementById('firstName').value = firstName;
+                document.getElementById('lastName').value = lastName;
+                document.getElementById('email').value = email;
+                document.getElementById('phone').value = '';
+                document.getElementById('department').value = '';
+                
+                // Clear password fields
+                const currentPassword = document.getElementById('currentPassword');
+                const newPassword = document.getElementById('newPassword');
+                const confirmPassword = document.getElementById('confirmPassword');
+                
+                if (currentPassword) currentPassword.value = '';
+                if (newPassword) newPassword.value = '';
+                if (confirmPassword) confirmPassword.value = '';
+                
+                // Reset photo
+                removePhoto();
+                
+                // Reset errors
+                document.querySelectorAll('.form-error').forEach(error => {
+                    error.classList.remove('show');
+                });
+                document.querySelectorAll('.form-input').forEach(input => {
+                    input.classList.remove('error');
+                });
+                
+                // Reset password strength
+                if (passwordStrength) {
+                    passwordStrength.className = 'password-strength';
+                    const strengthText = passwordStrength.querySelector('.strength-text');
+                    if (strengthText) strengthText.textContent = 'Password strength';
+                }
+                
+                // Update profile initials
+                if (profileInitials) {
+                    const initials = (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase();
+                    profileInitials.textContent = initials;
+                }
+            } catch (error) {
+                console.error('Error resetting form:', error);
+            }
         }
-
-        // Event listeners
-        newPasswordInput.addEventListener('input', (e) => {
-            checkPasswordStrength(e.target.value);
-        });
 
         // Account Dropdown Functionality
-        const accountBtn = document.getElementById("accountBtn");
-        const accountMenu = document.getElementById("accountMenu");
+        function setupAccountDropdown() {
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
 
-        if (accountBtn && accountMenu) {
-            accountBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                accountMenu.classList.toggle("show");
-                accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
-            });
+            if (accountBtn && accountMenu) {
+                accountBtn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    accountMenu.classList.toggle("show");
+                    accountBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+                });
 
-            // Close dropdown when clicking outside
-            document.addEventListener("click", (e) => {
-                if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
-                    accountMenu.classList.remove("show");
-                    accountBtn.setAttribute("aria-expanded", false);
-                }
-            });
+                // Close dropdown when clicking outside
+                document.addEventListener("click", (e) => {
+                    if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                        accountMenu.classList.remove("show");
+                        accountBtn.setAttribute("aria-expanded", false);
+                    }
+                });
 
-            // Close dropdown when pressing Escape key
-            document.addEventListener("keydown", (e) => {
-                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
-                    accountMenu.classList.remove("show");
-                    accountBtn.setAttribute("aria-expanded", false);
-                }
-            });
+                // Close dropdown when pressing Escape key
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                        accountMenu.classList.remove("show");
+                        accountBtn.setAttribute("aria-expanded", false);
+                    }
+                });
+            }
         }
-
-        // Load profile data when page loads
-        document.addEventListener('DOMContentLoaded', loadProfileData);
     </script>
 </body>
 </html>

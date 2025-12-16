@@ -50,18 +50,19 @@
                     </div>
                     <div class="header-actions">
                         <div style="text-align:right">
-                            <div style="font-weight:700">Admin User</div>
-                            <div style="font-size:.82rem;color:var(--muted)">Administrator</div>
+                            <!-- Dynamic user data will be inserted here -->
+                            <div style="font-weight:700" id="userName">Admin User</div>
+                            <div style="font-size:.82rem;color:var(--muted)" id="userEmail">Administrator</div>
                         </div>
                         <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div class="avatar">AJ</div>
+                            <!-- Dynamic avatar initials -->
+                            <div class="avatar" id="userAvatar">AJ</div>
                             <i class="fas fa-chevron-down" style="opacity:.85"></i>
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="#">Profile</a>
-                            <a href="#">Settings</a>
-                            <a href="#">Logout</a>
+                            <a href="../pages/settings.html">Settings</a>
+                            <a href="#" id="logoutBtn">Logout</a>
                         </div>
                     </div>
                 </header>
@@ -150,6 +151,50 @@
     </div>
 
     <script>
+        // Load and display user data from localStorage
+        function loadUserData() {
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            
+            if (userData) {
+                // Display user name
+                const userNameElement = document.getElementById('userName');
+                if (userNameElement && userData.name) {
+                    userNameElement.textContent = userData.name;
+                }
+                
+                // Display user email
+                const userEmailElement = document.getElementById('userEmail');
+                if (userEmailElement && userData.email) {
+                    userEmailElement.textContent = userData.email;
+                }
+                
+                // Display avatar initials
+                const userAvatarElement = document.getElementById('userAvatar');
+                if (userAvatarElement && userData.name) {
+                    // Get initials from name
+                    const nameParts = userData.name.split(' ');
+                    let initials = '';
+                    
+                    if (nameParts.length >= 2) {
+                        initials = nameParts[0].charAt(0) + nameParts[1].charAt(0);
+                    } else if (nameParts.length === 1) {
+                        initials = nameParts[0].charAt(0);
+                        if (nameParts[0].length > 1) {
+                            initials += nameParts[0].charAt(1);
+                        }
+                    }
+                    
+                    userAvatarElement.textContent = initials.toUpperCase();
+                }
+            } else {
+                // If no user data, redirect to login page
+                window.location.href = '../../landing page/pages/index.html';
+            }
+        }
+        
+        // Call the function when page loads
+        document.addEventListener('DOMContentLoaded', loadUserData);
+
         // Dropdown toggle
         const accountBtn = document.getElementById("accountBtn");
         const accountMenu = document.getElementById("accountMenu");
@@ -165,6 +210,20 @@
                 accountBtn.setAttribute("aria-expanded", false);
             }
         });
+
+        // Logout functionality
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Clear user data from localStorage
+                localStorage.removeItem('userData');
+
+                // Redirect to login page
+                window.location.href = '../../landing page/pages/index.html';
+            });
+        }
 
         // Sample ticket table data
         const tickets = [
