@@ -1,0 +1,157 @@
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Page Layout */
+.page {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 50px;
+    background-color: #fff;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* Header */
+.doc-header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #dcdcdc;
+    padding-bottom: 20px;
+}
+
+.brand .logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: #0077cc;
+}
+
+.brand .tagline {
+    display: block;
+    font-size: 14px;
+    color: #555;
+}
+
+h1 {
+    margin: 10px 0 5px;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #666;
+}
+
+/* Sections */
+.doc-section {
+    margin-bottom: 30px;
+}
+
+.doc-section h2 {
+    color: #0077cc;
+    border-bottom: 2px solid #0077cc;
+    padding-bottom: 4px;
+    margin-bottom: 15px;
+}
+
+ol {
+    padding-left: 20px;
+}
+
+.step {
+    margin-bottom: 10px;
+}
+
+.step strong {
+    color: #0077cc;
+}
+
+/* Tip and Warning Boxes with vertical icon */
+.tip,
+.warning {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    align-items: start;
+    margin: 10px 0 15px 0;
+    padding: 12px;
+    border-left: 5px solid;
+    border-radius: 4px;
+}
+
+.tip {
+    background-color: #e6f7ff;
+    border-color: #3399ff;
+}
+
+.tip .icon {
+    font-weight: bold;
+    color: #3399ff;
+    font-size: 20px;
+    line-height: 1;
+}
+
+.warning {
+    background-color: #ffe6e6;
+    border-color: #ff3333;
+}
+
+.warning .icon {
+    font-weight: bold;
+    color: #ff3333;
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* Support Box */
+.support-box {
+    padding: 20px;
+    background-color: #e6f2ff;
+    border-radius: 6px;
+    text-align: left;
+}
+
+.support-box h2 {
+    margin-top: 0;
+}
+
+/* Buttons */
+.button-group {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    background-color: #0077cc;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #005fa3;
+}
+
+/* Footer */
+.doc-footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 12px;
+    color: #999;
+}
