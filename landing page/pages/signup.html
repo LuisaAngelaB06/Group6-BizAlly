@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlliTrack – Sign Up</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/signup.css">
+    
+    <style>
+        /* Loading overlay styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .loading-spinner {
+            font-size: 40px;
+            color: #000;
+            margin-bottom: 20px;
+        }
+        
+        .loading-text {
+            font-size: 16px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+
+        <div class="logo">
+            <i class="fas fa-circle-notch"></i>
+        </div>
+
+        <h2>Create Your Account</h2>
+        <p class="subtitle">Join AlliTrack and start tracking your performance.</p>
+
+        <!-- ADDED IDs to social buttons -->
+        <div class="social-btn" id="googleSignupBtn">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google logo">
+            Sign up with Google
+        </div>
+
+        <div class="social-btn" id="facebookSignupBtn">
+            <i class="fab fa-facebook"></i> Sign up with Facebook
+        </div>
+
+        <div class="divider">or</div>
+
+        <form id="signupForm">
+            <!-- Name Fields -->
+            <div class="name-fields">
+                <div>
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" maxlength="30" class="input-field" placeholder="John">
+                    <p id="firstNameError" class="error-text"></p>
+                </div>
+                <div>
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" maxlength="30" class="input-field" placeholder="Doe">
+                    <p id="lastNameError" class="error-text"></p>
+                </div>
+            </div>
+
+            <!-- Email Field -->
+            <label for="email">Email</label>
+            <input type="email" id="email" maxlength="50" class="input-field" placeholder="you@example.com">
+            <p id="emailError" class="error-text"></p>
+
+            <!-- Password Field -->
+            <label for="password">Password</label>
+            <div class="password-container">
+                <input type="password" id="password" maxlength="30" class="input-field" placeholder="Create a password">
+                <button type="button" class="toggle-password" id="togglePassword">
+                    <i class="far fa-eye"></i>
+                </button>
+            </div>
+            
+            <!-- Password Requirements - Compact version -->
+            <div class="password-requirements">
+                <div class="requirement invalid" id="reqLength">
+                    <i class="far fa-circle"></i> 8+ characters
+                </div>
+                <div class="requirement invalid" id="reqUppercase">
+                    <i class="far fa-circle"></i> Uppercase & lowercase
+                </div>
+                <div class="requirement invalid" id="reqNumber">
+                    <i class="far fa-circle"></i> Number & special char
+                </div>
+            </div>
+            <p id="passwordError" class="error-text"></p>
+
+            <!-- Confirm Password Field -->
+            <label for="confirmPassword">Confirm Password</label>
+            <div class="password-container">
+                <input type="password" id="confirmPassword" maxlength="30" class="input-field" placeholder="Re-enter password">
+                <button type="button" class="toggle-password" id="toggleConfirmPassword">
+                    <i class="far fa-eye"></i>
+                </button>
+            </div>
+            <p id="confirmPasswordError" class="error-text"></p>
+
+            <!-- Terms and Conditions -->
+            <div class="terms-container">
+                <div class="terms">
+                    <input type="checkbox" id="terms" name="terms">
+                    <label for="terms">I agree to the <a href="../../landing page/pages/help/terms.html">Terms</a> and <a href="../../landing page/pages/help/privacy.html">Privacy Policy</a></label>
+                </div>
+                <p id="termsError" class="error-text"></p>
+            </div>
+
+            <button class="signup-btn" id="signupBtn" type="submit" disabled>Create Account</button>
+        </form>
+
+        <p class="footer-text">Already have an account? <a href="login.html">Log In</a></p>
+
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-circle-notch fa-spin"></i>
+        </div>
+        <div class="loading-text" id="loadingText">Creating your account...</div>
+    </div>
+
+<script>
+    // Form elements
+    const firstName = document.getElementById("firstName");
+    const lastName = document.getElementById("lastName");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
+    const confirmPassword = document.getElementById("confirmPassword");
+    const terms = document.getElementById("terms");
+    const signupBtn = document.getElementById("signupBtn");
+    const signupForm = document.getElementById("signupForm");
+    const togglePassword = document.getElementById("togglePassword");
+    const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+    const googleSignupBtn = document.getElementById("googleSignupBtn");
+    const facebookSignupBtn = document.getElementById("facebookSignupBtn");
+    const loadingOverlay = document.getElementById("loadingOverlay");
+    const loadingText = document.getElementById("loadingText");
+
+    // Error elements
+    const firstNameError = document.getElementById("firstNameError");
+    const lastNameError = document.getElementById("lastNameError");
+    const emailError = document.getElementById("emailError");
+    const passwordError = document.getElementById("passwordError");
+    const confirmPasswordError = document.getElementById("confirmPasswordError");
+    const termsError = document.getElementById("termsError");
+
+    // Password requirement elements
+    const reqLength = document.getElementById("reqLength");
+    const reqUppercase = document.getElementById("reqUppercase");
+    const reqNumber = document.getElementById("reqNumber");
+
+    // Show loading overlay
+    function showLoading(message) {
+        loadingText.textContent = message;
+        loadingOverlay.style.display = 'flex';
+    }
+
+    // Hide loading overlay
+    function hideLoading() {
+        loadingOverlay.style.display = 'none';
+    }
+
+    // Function to redirect to login page
+    function redirectToLogin() {
+        // Redirect to login page
+        window.location.href = 'login.html'; // Relative path to login page
+    }
+
+    // Google Signup
+    if (googleSignupBtn) {
+        googleSignupBtn.addEventListener('click', function() {
+            showLoading('Signing up with Google...');
+            
+            // Simulate Google OAuth flow
+            setTimeout(() => {
+                // In a real app, this would be actual Google OAuth
+                // After successful Google signup, redirect to login
+                hideLoading();
+                redirectToLogin();
+            }, 1500);
+        });
+    }
+
+    // Facebook Signup
+    if (facebookSignupBtn) {
+        facebookSignupBtn.addEventListener('click', function() {
+            showLoading('Signing up with Facebook...');
+            
+            // Simulate Facebook OAuth flow
+            setTimeout(() => {
+                // In a real app, this would be actual Facebook OAuth
+                // After successful Facebook signup, redirect to login
+                hideLoading();
+                redirectToLogin();
+            }, 1500);
+        });
+    }
+
+    function checkPasswordRequirements(pass) {
+        // Check each requirement
+        const hasLength = pass.length >= 8;
+        const hasUppercase = /[A-Z]/.test(pass);
+        const hasLowercase = /[a-z]/.test(pass);
+        const hasNumber = /[0-9]/.test(pass);
+        const hasSpecial = /[@$!%*?&]/.test(pass);
+
+        // Update requirement indicators (combined for compactness)
+        updateRequirement(reqLength, hasLength);
+        updateRequirement(reqUppercase, hasUppercase && hasLowercase);
+        updateRequirement(reqNumber, hasNumber && hasSpecial);
+
+        return hasLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
+    }
+
+    function updateRequirement(element, isValid) {
+        if (isValid) {
+            element.classList.remove("invalid");
+            element.classList.add("valid");
+            element.querySelector("i").className = "fas fa-check-circle";
+        } else {
+            element.classList.remove("valid");
+            element.classList.add("invalid");
+            element.querySelector("i").className = "far fa-circle";
+        }
+    }
+
+    function validate() {
+        let isValid = true;
+
+        // First Name validation
+        if (firstName.value.trim() === '') {
+            firstNameError.textContent = "First name is required.";
+            firstName.classList.add("error-input");
+            isValid = false;
+        } else if (firstName.value.trim().length < 2) {
+            firstNameError.textContent = "First name must be at least 2 characters.";
+            firstName.classList.add("error-input");
+            isValid = false;
+        } else {
+            firstNameError.textContent = "";
+            firstName.classList.remove("error-input");
+        }
+
+        // Last Name validation
+        if (lastName.value.trim() === '') {
+            lastNameError.textContent = "Last name is required.";
+            lastName.classList.add("error-input");
+            isValid = false;
+        } else if (lastName.value.trim().length < 2) {
+            lastNameError.textContent = "Last name must be at least 2 characters.";
+            lastName.classList.add("error-input");
+            isValid = false;
+        } else {
+            lastNameError.textContent = "";
+            lastName.classList.remove("error-input");
+        }
+
+        // Email validation
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (email.value.trim() === '') {
+            emailError.textContent = "Email is required.";
+            email.classList.add("error-input");
+            isValid = false;
+        } else if (!emailPattern.test(email.value)) {
+            emailError.textContent = "Please enter a valid email address.";
+            email.classList.add("error-input");
+            isValid = false;
+        } else {
+            emailError.textContent = "";
+            email.classList.remove("error-input");
+        }
+
+        // Password validation
+        const passwordValid = checkPasswordRequirements(password.value);
+        if (password.value.trim() === '') {
+            passwordError.textContent = "Password is required.";
+            password.classList.add("error-input");
+            isValid = false;
+        } else if (!passwordValid) {
+            passwordError.textContent = "Password doesn't meet requirements.";
+            password.classList.add("error-input");
+            isValid = false;
+        } else {
+            passwordError.textContent = "";
+            password.classList.remove("error-input");
+        }
+
+        // Confirm Password validation
+        if (confirmPassword.value.trim() === '') {
+            confirmPasswordError.textContent = "Please confirm your password.";
+            confirmPassword.classList.add("error-input");
+            isValid = false;
+        } else if (password.value !== confirmPassword.value) {
+            confirmPasswordError.textContent = "Passwords do not match.";
+            confirmPassword.classList.add("error-input");
+            isValid = false;
+        } else {
+            confirmPasswordError.textContent = "";
+            confirmPassword.classList.remove("error-input");
+        }
+
+        // Terms validation
+        if (!terms.checked) {
+            termsError.textContent = "You must accept the terms.";
+            isValid = false;
+        } else {
+            termsError.textContent = "";
+        }
+
+        // Enable or disable signup button
+        signupBtn.disabled = !isValid;
+        
+        return isValid;
+    }
+
+    // Toggle password visibility
+    togglePassword.addEventListener('click', function() {
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        
+        const icon = this.querySelector('i');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    });
+
+    // Toggle confirm password visibility
+    toggleConfirmPassword.addEventListener('click', function() {
+        const type = confirmPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+        confirmPassword.setAttribute('type', type);
+        
+        const icon = this.querySelector('i');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    });
+
+    // Form submission
+    signupForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!validate()) {
+            return;
+        }
+        
+        // Show loading state
+        showLoading('Creating your account...');
+        signupBtn.disabled = true;
+        
+        // Simulate API call for signup
+        setTimeout(() => {
+            // Hide loading overlay
+            hideLoading();
+            
+            // Reset form
+            signupForm.reset();
+            signupBtn.disabled = true;
+            
+            // Reset password requirements
+            checkPasswordRequirements('');
+            
+            // Redirect to login page after 1 second
+            setTimeout(() => {
+                redirectToLogin();
+            }, 1000);
+        }, 1500);
+    });
+
+    // Real-time validation as user types
+    firstName.addEventListener("input", validate);
+    lastName.addEventListener("input", validate);
+    email.addEventListener("input", validate);
+    password.addEventListener("input", function() {
+        checkPasswordRequirements(this.value);
+        validate();
+    });
+    confirmPassword.addEventListener("input", validate);
+    terms.addEventListener("change", validate);
+</script>
+
+</body>
+</html>
