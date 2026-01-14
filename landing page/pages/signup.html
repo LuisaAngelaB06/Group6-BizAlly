@@ -168,6 +168,46 @@
     const reqUppercase = document.getElementById("reqUppercase");
     const reqNumber = document.getElementById("reqNumber");
 
+    // Function to prevent spaces in input fields
+    function preventSpaces(event) {
+        if (event.key === ' ') {
+            event.preventDefault();
+            return false;
+        }
+    }
+
+    // Function to prevent spaces on paste
+    function preventSpacesOnPaste(event) {
+        // Get pasted data
+        const clipboardData = event.clipboardData || window.clipboardData;
+        const pastedData = clipboardData.getData('text');
+        
+        // Check if pasted data contains spaces
+        if (pastedData.includes(' ')) {
+            event.preventDefault();
+            // Remove spaces and insert the cleaned text
+            const cleanedText = pastedData.replace(/\s/g, '');
+            document.execCommand('insertText', false, cleanedText);
+            return false;
+        }
+    }
+
+    // Apply space prevention to all relevant input fields
+    [firstName, lastName, email, password, confirmPassword].forEach(field => {
+        // Prevent space on key press
+        field.addEventListener('keydown', preventSpaces);
+        
+        // Prevent spaces on paste
+        field.addEventListener('paste', preventSpacesOnPaste);
+        
+        // Also validate on input to remove any spaces that might get through
+        field.addEventListener('input', function() {
+            if (this.value.includes(' ')) {
+                this.value = this.value.replace(/\s/g, '');
+            }
+        });
+    });
+
     // Show loading overlay
     function showLoading(message) {
         loadingText.textContent = message;
@@ -393,6 +433,16 @@
     });
     confirmPassword.addEventListener("input", validate);
     terms.addEventListener("change", validate);
+
+    // Additional validation to ensure no spaces are present on form submission
+    signupForm.addEventListener('submit', function(e) {
+        // Check all fields for spaces one more time
+        [firstName, lastName, email, password, confirmPassword].forEach(field => {
+            if (field.value.includes(' ')) {
+                field.value = field.value.replace(/\s/g, '');
+            }
+        });
+    });
 </script>
 
 </body>
