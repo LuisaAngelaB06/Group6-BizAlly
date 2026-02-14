@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Preferences - AlliTrack</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
+    <link rel="stylesheet" href="../../styles/user page/preferences.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <script src="../../scripts/mobile-restriction.js"></script>
+    <script src="../../scripts/user-preference-manager.js"></script>
+    <script src="../../scripts/user-data-manager.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Access Denied Modal -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">User dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+                Home</button>
+        </div>
+    </div>
+
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="../../assets/images/AlliTrack Logo.png" alt="AlliTrack Logo" class="logo-img"
+                            style="width: 32px; height: 32px;">
+                    </div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle" data-section="userDashboard">User Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../../pages/user page/index-user.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> <span data-section="dashboard">Dashboard</span>
+                    </a>
+
+                    <div class="nav-section" data-section="support">Support</div>
+                    <a href="../../pages/user page/my-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> <span data-section="myTickets">My Tickets</span>
+                    </a>
+                    <a href="../../pages/user page/notifications.html" data-section="notifications">
+                        <i class="fas fa-bell"></i> <span data-section="notifications">Notifications</span>
+                    </a>
+                    <a href="../../pages/user page/submit-ticket.html" data-section="submit-ticket">
+                        <i class="fas fa-plus-circle"></i> <span data-section="submitTicket">Submit a Ticket</span>
+                    </a>
+
+                    <div class="nav-section" data-section="management">Management</div>
+                    <a href="../../pages/user page/preferences.html" class="active" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> <span data-section="preferences">Preferences</span>
+                    </a>
+                    <a href="../../pages/user page/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> <span data-section="profileSettings">Profile Settings</span>
+                    </a>
+                    <a href="../../pages/user page/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> <span data-section="announcements">Announcements</span>
+                    </a>
+
+                    <div class="nav-section" data-section="system">System</div>
+                    <a href="../../pages/user page/account-security.html" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> <span data-section="accountSecurity">Account Security</span>
+                    </a>
+                    <a href="../../pages/user page/system-information.html" data-section="system-information">
+                        <i class="fas fa-info-circle"></i> <span data-section="systemInformation">System
+                            Information</span>
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..." data-input="searchPlaceholder"
+                            aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div id="userName" style="font-weight:700">User</div>
+                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">user@example.com</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div id="userAvatar" class="avatar">U</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="../../pages/user page/profile-settings.html" data-section="profile">Profile</a>
+                            <a href="../../pages/user page/preferences.html" data-section="settings">Settings</a>
+                            <a href="#" id="logoutBtn" data-section="logout">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Preferences Content - ENHANCED WITH TABS -->
+                <div class="content">
+                    <div class="preferences-content">
+                        <!-- Header with Container -->
+                        <div class="preferences-header-container">
+                            <div class="preferences-header">
+                                <h1><i class="fas fa-sliders-h"></i> <span data-section="pageHeader">Preferences</span>
+                                </h1>
+                            </div>
+                        </div>
+
+                        <!-- Success Message -->
+                        <div class="success-message" id="successMessage">
+                            <div class="success-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="success-text" data-section="successMessage">Preferences saved successfully!
+                            </div>
+                        </div>
+
+                        <!-- NEW: Preferences Tabs -->
+                        <div class="preferences-tabs">
+                            <button class="tab-btn active" data-tab="appearance">
+                                <i class="fas fa-palette"></i>
+                                <span data-section="appearanceTab">Appearance</span>
+                            </button>
+                            <button class="tab-btn" data-tab="language">
+                                <i class="fas fa-language"></i>
+                                <span data-section="languageTab">Language</span>
+                            </button>
+                            <button class="tab-btn" data-tab="notifications">
+                                <i class="fas fa-bell"></i>
+                                <span data-section="notificationsTab">Notifications</span>
+                            </button>
+                        </div>
+
+                        <!-- Preferences Container -->
+                        <div class="preferences-container-enhanced">
+                            
+                            <!-- Appearance Tab -->
+                            <div class="preferences-tab-content active" id="appearance-tab">
+                                <div class="preferences-section">
+                                    <div class="section-header">
+                                        <div class="section-icon">
+                                            <i class="fas fa-palette"></i>
+                                        </div>
+                                        <div>
+                                            <h2 class="section-title" data-section="themeSettings">Theme Settings</h2>
+                                            <p class="section-description" data-section="themeDescription">Customize your dashboard appearance</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Theme Cards Grid - ENHANCED VISUAL SELECTION -->
+                                    <div class="theme-options-grid">
+                                        <div class="theme-card" data-theme="auto">
+                                            <div class="theme-card-header">
+                                                <div class="theme-icon-circle auto">
+                                                    <i class="fas fa-adjust"></i>
+                                                </div>
+                                                <div class="theme-radio">
+                                                    <input type="radio" name="theme" id="theme-auto" value="auto">
+                                                    <span class="radio-check"></span>
+                                                </div>
+                                            </div>
+                                            <div class="theme-card-content">
+                                                <h3 class="theme-title" data-section="autoTheme">Auto (System)</h3>
+                                                <p class="theme-description" data-section="autoThemeDesc">Automatically switches between light and dark based on your system settings</p>
+                                            </div>
+                                            <div class="theme-card-preview auto-preview"></div>
+                                        </div>
+
+                                        <div class="theme-card" data-theme="light">
+                                            <div class="theme-card-header">
+                                                <div class="theme-icon-circle light">
+                                                    <i class="fas fa-sun"></i>
+                                                </div>
+                                                <div class="theme-radio">
+                                                    <input type="radio" name="theme" id="theme-light" value="light">
+                                                    <span class="radio-check"></span>
+                                                </div>
+                                            </div>
+                                            <div class="theme-card-content">
+                                                <h3 class="theme-title" data-section="lightTheme">Light Mode</h3>
+                                                <p class="theme-description" data-section="lightThemeDesc">Clean and bright interface for daytime use</p>
+                                            </div>
+                                            <div class="theme-card-preview light-preview"></div>
+                                        </div>
+
+                                        <div class="theme-card" data-theme="dark">
+                                            <div class="theme-card-header">
+                                                <div class="theme-icon-circle dark">
+                                                    <i class="fas fa-moon"></i>
+                                                </div>
+                                                <div class="theme-radio">
+                                                    <input type="radio" name="theme" id="theme-dark" value="dark">
+                                                    <span class="radio-check"></span>
+                                                </div>
+                                            </div>
+                                            <div class="theme-card-content">
+                                                <h3 class="theme-title" data-section="darkTheme">Dark Mode</h3>
+                                                <p class="theme-description" data-section="darkThemeDesc">Easier on the eyes in low-light environments</p>
+                                            </div>
+                                            <div class="theme-card-preview dark-preview"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Language Tab -->
+                            <div class="preferences-tab-content" id="language-tab">
+                                <div class="preferences-section">
+                                    <div class="section-header">
+                                        <div class="section-icon">
+                                            <i class="fas fa-language"></i>
+                                        </div>
+                                        <div>
+                                            <h2 class="section-title" data-section="languageSettings">Language Settings</h2>
+                                            <p class="section-description" data-section="languageDescription">Set your preferred language for the entire dashboard</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Language Cards - ENHANCED VISUAL SELECTION -->
+                                    <div class="language-cards">
+                                        <div class="language-card" data-language="en">
+                                            <div class="language-card-header">
+                                                <div class="language-flag large">🇺🇸</div>
+                                                <div class="language-radio">
+                                                    <input type="radio" name="language" id="language-en" value="en">
+                                                    <span class="radio-check"></span>
+                                                </div>
+                                            </div>
+                                            <div class="language-card-content">
+                                                <h3 class="language-title" data-section="english">English</h3>
+                                                <p class="language-description" data-section="englishDesc">United States English - Default language</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="language-card" data-language="fil">
+                                            <div class="language-card-header">
+                                                <div class="language-flag large">🇵🇭</div>
+                                                <div class="language-radio">
+                                                    <input type="radio" name="language" id="language-fil" value="fil">
+                                                    <span class="radio-check"></span>
+                                                </div>
+                                            </div>
+                                            <div class="language-card-content">
+                                                <h3 class="language-title" data-section="filipino">Filipino</h3>
+                                                <p class="language-description" data-section="filipinoDesc">Tagalog (Pilipinas) - Wikang Filipino</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="language-help">
+                                        <i class="fas fa-info-circle"></i>
+                                        <p data-section="languageHelp">Language changes will apply immediately to the entire dashboard interface.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notifications Tab -->
+                            <div class="preferences-tab-content" id="notifications-tab">
+                                <div class="preferences-section">
+                                    <div class="section-header">
+                                        <div class="section-icon">
+                                            <i class="fas fa-bell"></i>
+                                        </div>
+                                        <div>
+                                            <h2 class="section-title" data-section="notificationSettings">Notification Settings</h2>
+                                            <p class="section-description" data-section="notificationDescription">Manage how and when you receive notifications</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- ENHANCED: Categorized Notification Settings -->
+                                    <div class="notification-settings">
+                                        <!-- Email Notifications Category -->
+                                        <div class="notification-category">
+                                            <h3 class="notification-category-title">
+                                                <i class="fas fa-envelope"></i>
+                                                <span data-section="emailNotifications">Email Notifications</span>
+                                            </h3>
+                                            <div class="notification-items">
+                                                <div class="notification-item">
+                                                    <div class="notification-item-content">
+                                                        <h4 data-section="ticketUpdates">Ticket Updates</h4>
+                                                        <p data-section="ticketDescription">Notify me when my tickets are updated or resolved</p>
+                                                    </div>
+                                                    <label class="switch">
+                                                        <input type="checkbox" id="ticketUpdates" checked>
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </div>
+                                                
+                                                <div class="notification-item">
+                                                    <div class="notification-item-content">
+                                                        <h4 data-section="announcementNotifications">New Announcements</h4>
+                                                        <p data-section="announcementDescription">Notify me about new system announcements and features</p>
+                                                    </div>
+                                                    <label class="switch">
+                                                        <input type="checkbox" id="announcementNotifications" checked>
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </div>
+                                                
+                                                <div class="notification-item">
+                                                    <div class="notification-item-content">
+                                                        <h4 data-section="weeklyDigest">Weekly Digest</h4>
+                                                        <p data-section="weeklyDescription">Send weekly summary of all ticket activities</p>
+                                                    </div>
+                                                    <label class="switch">
+                                                        <input type="checkbox" id="weeklyDigest">
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Push Notifications Category -->
+                                        <div class="notification-category">
+                                            <h3 class="notification-category-title">
+                                                <i class="fas fa-bell"></i>
+                                                <span data-section="pushNotifications">Push Notifications</span>
+                                            </h3>
+                                            <div class="notification-items">
+                                                <div class="notification-item">
+                                                    <div class="notification-item-content">
+                                                        <h4 data-section="browserNotifications">Browser Notifications</h4>
+                                                        <p data-section="browserDescription">Show browser notifications for urgent updates</p>
+                                                    </div>
+                                                    <label class="switch">
+                                                        <input type="checkbox" id="pushNotifications" checked>
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </div>
+                                                
+                                                <div class="notification-item">
+                                                    <div class="notification-item-content">
+                                                        <h4 data-section="soundAlerts">Sound Alerts</h4>
+                                                        <p data-section="soundDescription">Play sound when new notifications arrive</p>
+                                                    </div>
+                                                    <label class="switch">
+                                                        <input type="checkbox" id="soundAlerts">
+                                                        <span class="slider"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Notification Frequency -->
+                                        <div class="notification-category">
+                                            <h3 class="notification-category-title">
+                                                <i class="fas fa-clock"></i>
+                                                <span data-section="notificationFrequency">Notification Frequency</span>
+                                            </h3>
+                                            <div class="frequency-options">
+                                                <div class="frequency-option">
+                                                    <label class="frequency-label">
+                                                        <input type="radio" name="frequency" value="realtime" checked>
+                                                        <div class="frequency-content">
+                                                            <h4 data-section="realtime">Real-time</h4>
+                                                            <p data-section="realtimeDesc">Receive notifications immediately as they happen</p>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                                
+                                                <div class="frequency-option">
+                                                    <label class="frequency-label">
+                                                        <input type="radio" name="frequency" value="hourly">
+                                                        <div class="frequency-content">
+                                                            <h4 data-section="hourlyDigest">Hourly Digest</h4>
+                                                            <p data-section="hourlyDesc">Group notifications and receive them every hour</p>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                                
+                                                <div class="frequency-option">
+                                                    <label class="frequency-label">
+                                                        <input type="radio" name="frequency" value="daily">
+                                                        <div class="frequency-content">
+                                                            <h4 data-section="dailyDigest">Daily Digest</h4>
+                                                            <p data-section="dailyDesc">Receive a daily summary of all notifications</p>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="notification-help">
+                                        <i class="fas fa-info-circle"></i>
+                                        <p data-section="notificationHelp">Notification settings are saved automatically. Changes take effect immediately.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions - Now at the bottom of the container -->
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="resetBtn">
+                                    <i class="fas fa-undo"></i> <span data-section="resetDefaults">Reset to Defaults</span>
+                                </button>
+                                <button type="button" class="btn btn-primary" id="saveBtn">
+                                    <i class="fas fa-save"></i> <span data-section="savePreferences">Save Preferences</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div data-section="footerText">Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Enhanced Preferences page loading...');
+
+            // Initialize User Data Manager FIRST
+            if (window.userDataManager) {
+                console.log('User Data Manager found, initializing user display...');
+                window.userDataManager.initializeUserDisplay();
+            } else {
+                console.error('User Data Manager NOT FOUND!');
+            }
+
+            // Initialize Preferences Manager
+            if (window.preferencesManager) {
+                console.log('Initializing Preferences Manager...');
+                window.preferencesManager.initialize();
+                window.preferencesManager.applyTheme();
+                window.preferencesManager.applyLanguage();
+            }
+
+            // SETUP TABS
+            setupTabs();
+            
+            // SETUP THEME SELECTION
+            setupThemeSelection();
+            
+            // SETUP LANGUAGE SELECTION
+            setupLanguageSelection();
+            
+            // SETUP NOTIFICATION CONTROLS
+            setupNotificationControls();
+            
+            // LOAD SAVED PREFERENCES
+            loadSavedPreferences();
+
+            // Setup reset button
+            const resetBtn = document.getElementById('resetBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (window.preferencesManager) {
+                        window.preferencesManager.resetPreferences();
+                        showSuccessMessage('Preferences reset to defaults');
+                        loadSavedPreferences(); // Reload the UI with defaults
+                    }
+                });
+            }
+
+            // Setup save button
+            const saveBtn = document.getElementById('saveBtn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    saveAllPreferences();
+                });
+            }
+
+            // Setup logout functionality
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    localStorage.removeItem('userData');
+                    localStorage.removeItem('userProfile');
+                    localStorage.removeItem('dashboardLanguage');
+                    localStorage.removeItem('preferredTheme');
+                    localStorage.removeItem('notificationSettings');
+                    window.location.href = '../../../index.html';
+                });
+            }
+
+            // Setup account dropdown
+            setupAccountDropdown();
+
+            console.log('Enhanced Preferences page fully loaded');
+        });
+
+        // ============ TAB FUNCTIONS ============
+        function setupTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.preferences-tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const tabId = this.dataset.tab;
+
+                    // Update active tab button
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Show selected tab content
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+        }
+
+        // ============ THEME FUNCTIONS ============
+        function setupThemeSelection() {
+            const themeCards = document.querySelectorAll('.theme-card');
+
+            themeCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    const theme = this.dataset.theme;
+
+                    // Update radio button
+                    const radio = this.querySelector('input[type="radio"]');
+                    if (radio) {
+                        radio.checked = true;
+
+                        // Update card selection
+                        themeCards.forEach(c => c.classList.remove('selected'));
+                        this.classList.add('selected');
+
+                        // Apply theme immediately if preference manager exists
+                        if (window.preferencesManager) {
+                            window.preferencesManager.setTheme(theme);
+                            showSuccessMessage('Theme updated');
+                        }
+                    }
+                });
+            });
+        }
+
+        // ============ LANGUAGE FUNCTIONS ============
+        function setupLanguageSelection() {
+            const languageCards = document.querySelectorAll('.language-card');
+
+            languageCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    const language = this.dataset.language;
+
+                    // Update radio button
+                    const radio = this.querySelector('input[type="radio"]');
+                    if (radio) {
+                        radio.checked = true;
+
+                        // Update card selection
+                        languageCards.forEach(c => c.classList.remove('selected'));
+                        this.classList.add('selected');
+
+                        // Apply language immediately
+                        if (window.preferencesManager) {
+                            console.log('Setting language:', language);
+                            window.preferencesManager.setLanguage(language);
+                            showSuccessMessage('Language updated');
+                        }
+                    }
+                });
+            });
+        }
+
+        // ============ NOTIFICATION FUNCTIONS ============
+        function setupNotificationControls() {
+            // Setup toggle switches
+            const switches = document.querySelectorAll('.switch input[type="checkbox"]');
+            switches.forEach(switchEl => {
+                switchEl.addEventListener('change', function() {
+                    // No auto-save - will be saved when clicking Save button
+                    console.log(`Notification ${this.id} changed to: ${this.checked}`);
+                });
+            });
+            
+            // Setup frequency options
+            const frequencyRadios = document.querySelectorAll('input[name="frequency"]');
+            frequencyRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        console.log(`Frequency changed to: ${this.value}`);
+                    }
+                });
+            });
+        }
+
+        // ============ LOAD SAVED PREFERENCES ============
+        function loadSavedPreferences() {
+            if (!window.preferencesManager) return;
+
+            // Load theme
+            const theme = window.preferencesManager.getCurrentTheme();
+            const themeRadio = document.querySelector(`input[name="theme"][value="${theme}"]`);
+            if (themeRadio) {
+                themeRadio.checked = true;
+                themeRadio.closest('.theme-card')?.classList.add('selected');
+            }
+
+            // Load language
+            const language = window.preferencesManager.getCurrentLanguage();
+            const languageRadio = document.querySelector(`input[name="language"][value="${language}"]`);
+            if (languageRadio) {
+                languageRadio.checked = true;
+                languageRadio.closest('.language-card')?.classList.add('selected');
+            }
+
+            // Load notification settings from localStorage
+            loadNotificationSettings();
+        }
+
+        function loadNotificationSettings() {
+            const savedSettings = localStorage.getItem('notificationSettings');
+            if (savedSettings) {
+                try {
+                    const settings = JSON.parse(savedSettings);
+                    
+                    // Load toggle states
+                    const toggleIds = ['ticketUpdates', 'announcementNotifications', 'weeklyDigest', 'pushNotifications', 'soundAlerts'];
+                    toggleIds.forEach(id => {
+                        const input = document.getElementById(id);
+                        if (input && settings[id] !== undefined) {
+                            input.checked = settings[id];
+                        }
+                    });
+                    
+                    // Load frequency
+                    if (settings.frequency) {
+                        const frequencyRadio = document.querySelector(`input[name="frequency"][value="${settings.frequency}"]`);
+                        if (frequencyRadio) frequencyRadio.checked = true;
+                    }
+                } catch (e) {
+                    console.error('Error loading notification settings:', e);
+                }
+            }
+        }
+
+        // ============ SAVE ALL PREFERENCES ============
+        function saveAllPreferences() {
+            // Save notification settings
+            const notificationSettings = {
+                ticketUpdates: document.getElementById('ticketUpdates')?.checked || false,
+                announcementNotifications: document.getElementById('announcementNotifications')?.checked || false,
+                weeklyDigest: document.getElementById('weeklyDigest')?.checked || false,
+                pushNotifications: document.getElementById('pushNotifications')?.checked || false,
+                soundAlerts: document.getElementById('soundAlerts')?.checked || false,
+                frequency: document.querySelector('input[name="frequency"]:checked')?.value || 'realtime'
+            };
+            
+            localStorage.setItem('notificationSettings', JSON.stringify(notificationSettings));
+            
+            // Show success message
+            showSuccessMessage('Preferences saved successfully!');
+        }
+
+        // ============ HELPER FUNCTIONS ============
+        function showSuccessMessage(message) {
+            const successMsg = document.getElementById('successMessage');
+            const successText = successMsg.querySelector('.success-text');
+            
+            if (successText) {
+                successText.textContent = message;
+            }
+            
+            successMsg.classList.add('show');
+            
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 3000);
+        }
+
+        function setupAccountDropdown() {
+            const accountBtn = document.getElementById('accountBtn');
+            const accountMenu = document.getElementById('accountMenu');
+
+            if (accountBtn && accountMenu) {
+                accountBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    accountMenu.classList.toggle('show');
+                    this.setAttribute('aria-expanded', accountMenu.classList.contains('show'));
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                        accountMenu.classList.remove('show');
+                        accountBtn.setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                accountMenu.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

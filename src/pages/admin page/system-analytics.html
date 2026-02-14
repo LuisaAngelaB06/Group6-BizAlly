@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title data-translate="analytics_page_title">System Analytics - AlliTrack Admin</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
+    <link rel="stylesheet" href="../../styles/admin page/system-analytics.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <script src="../../scripts/admin-preference-manager.js"></script>
+    <script src="../../scripts/admin-data-manager.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Access Denied Modal -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+                Home</button>
+        </div>
+    </div>
+
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="../../../src/assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                            style="width: 32px; height: 32px;">
+                    </div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle" data-translate="admin_dashboard">Admin Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../../pages/admin page/index-admin.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
+                    <a href="../../pages/admin page/all-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
+                    </a>
+                    <a href="../../pages/admin page/staff-management.html" data-section="users">
+                        <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
+                    </a>
+                    <a href="../../pages/admin page/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="system_management">System Management</div>
+                    <a href="../../pages/admin page/system-settings.html" data-section="system-settings">
+                        <i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span>
+                    </a>
+                    <a href="../../pages/admin page/system-analytics.html" class="active" data-section="analytics">
+                        <i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span>
+                    </a>
+                    <a href="../../pages/admin page/system-logs.html" data-section="logs">
+                        <i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
+                    <a href="../../pages/admin page/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
+                    </a>
+                    <a href="../../pages/admin page/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Analytics">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search metrics, reports..."
+                            data-translate-placeholder="search_analytics" aria-label="Search analytics" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div id="userName" style="font-weight:700">Admin</div>
+                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">admin@allitrack.com</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div id="userAvatar" class="avatar">A</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="../../pages/admin page/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="../../pages/admin page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Analytics Content -->
+                <div class="content">
+                    <!-- Page Header -->
+                    <div class="page-header">
+                        <div class="header-content">
+                            <h1><i class="fas fa-chart-bar"></i> <span data-translate="analytics_title">System
+                                    Analytics</span></h1>
+                            <p class="subtitle" data-translate="analytics_description">Monitor system performance, user
+                                engagement, and business metrics</p>
+                        </div>
+                    </div>
+
+                    <!-- Date Range Selector -->
+                    <div class="date-range-selector">
+                        <div class="date-range-header">
+                            <h3><i class="fas fa-calendar-alt"></i> <span data-translate="time_period">Time
+                                    Period</span></h3>
+                            <div class="date-presets">
+                                <button class="preset-btn active" data-preset="7d">7D</button>
+                                <button class="preset-btn" data-preset="30d">30D</button>
+                                <button class="preset-btn" data-preset="90d">90D</button>
+                                <button class="preset-btn" data-preset="1y">1Y</button>
+                                <button class="preset-btn" data-preset="custom">Custom</button>
+                            </div>
+                        </div>
+                        <div class="date-range-input">
+                            <i class="fas fa-calendar"></i>
+                            <input type="text" id="dateRangePicker" placeholder="Select date range">
+                            <button class="btn btn-primary" id="applyDateRange">
+                                <i class="fas fa-check"></i> <span data-translate="apply">Apply</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Key Metrics Cards - Single Straight Line -->
+                    <div class="metrics-grid single-line">
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-icon" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="metric-trend up">
+                                    <i class="fas fa-arrow-up"></i> 12.5%
+                                </div>
+                            </div>
+                            <div class="metric-value">1,248</div>
+                            <div class="metric-label" data-translate="active_users">Active Users</div>
+                            <div class="metric-description" data-translate="active_users_desc">Users active in last 30
+                                days</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-icon" style="background: linear-gradient(135deg, #10B981, #047857);">
+                                    <i class="fas fa-ticket-alt"></i>
+                                </div>
+                                <div class="metric-trend up">
+                                    <i class="fas fa-arrow-up"></i> 8.2%
+                                </div>
+                            </div>
+                            <div class="metric-value">342</div>
+                            <div class="metric-label" data-translate="tickets_resolved">Tickets Resolved</div>
+                            <div class="metric-description" data-translate="tickets_resolved_desc">This month</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-icon" style="background: linear-gradient(135deg, #F59E0B, #D97706);">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="metric-trend down">
+                                    <i class="fas fa-arrow-down"></i> 15.3%
+                                </div>
+                            </div>
+                            <div class="metric-value">2.4h</div>
+                            <div class="metric-label" data-translate="avg_response_time">Avg. Response Time</div>
+                            <div class="metric-description" data-translate="avg_response_time_desc">To first response
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-icon" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="metric-trend up">
+                                    <i class="fas fa-arrow-up"></i> 24.7%
+                                </div>
+                            </div>
+                            <div class="metric-value">94.2%</div>
+                            <div class="metric-label" data-translate="satisfaction_rate">Satisfaction Rate</div>
+                            <div class="metric-description" data-translate="satisfaction_rate_desc">Based on surveys
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="charts-section">
+                        <!-- Row 1: Two main charts -->
+                        <div class="charts-row">
+                            <div class="chart-container">
+                                <div class="chart-header">
+                                    <h3><i class="fas fa-chart-area"></i> <span data-translate="ticket_trends">Ticket
+                                            Trends</span></h3>
+                                    <select class="chart-filter" id="ticketTrendFilter">
+                                        <option value="weekly" data-translate="weekly">Weekly</option>
+                                        <option value="monthly" data-translate="monthly" selected>Monthly</option>
+                                        <option value="quarterly" data-translate="quarterly">Quarterly</option>
+                                    </select>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <canvas id="ticketTrendsChart"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="chart-container">
+                                <div class="chart-header">
+                                    <h3><i class="fas fa-chart-pie"></i> <span data-translate="ticket_categories">Ticket
+                                            Categories</span></h3>
+                                    <select class="chart-filter" id="categoryFilter">
+                                        <option value="all" data-translate="all" selected>All</option>
+                                        <option value="technical" data-translate="technical">Technical</option>
+                                        <option value="billing" data-translate="billing">Billing</option>
+                                        <option value="general" data-translate="general">General</option>
+                                    </select>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <canvas id="ticketCategoriesChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Two more charts -->
+                        <div class="charts-row">
+                            <div class="chart-container">
+                                <div class="chart-header">
+                                    <h3><i class="fas fa-chart-bar"></i> <span data-translate="user_activity">User
+                                            Activity</span></h3>
+                                    <select class="chart-filter" id="activityFilter">
+                                        <option value="daily" data-translate="daily" selected>Daily</option>
+                                        <option value="weekly" data-translate="weekly">Weekly</option>
+                                        <option value="hourly" data-translate="hourly">Hourly</option>
+                                    </select>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <canvas id="userActivityChart"></canvas>
+                                </div>
+                            </div>
+
+                            <div class="chart-container">
+                                <div class="chart-header">
+                                    <h3><i class="fas fa-hourglass-half"></i> <span
+                                            data-translate="response_times">Response Times</span></h3>
+                                    <select class="chart-filter" id="responseTimeFilter">
+                                        <option value="team" data-translate="by_team">By Team</option>
+                                        <option value="priority" data-translate="by_priority" selected>By Priority
+                                        </option>
+                                        <option value="category" data-translate="by_category">By Category</option>
+                                    </select>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <canvas id="responseTimesChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Single large chart -->
+                        <div class="charts-row full-width">
+                            <div class="chart-container full-width">
+                                <div class="chart-header">
+                                    <h3><i class="fas fa-trend-up"></i> <span
+                                            data-translate="performance_over_time">Performance Over Time</span></h3>
+                                    <div class="chart-legend">
+                                        <div class="legend-item">
+                                            <span class="legend-color" style="background-color: #3B82F6;"></span>
+                                            <span data-translate="tickets_opened">Tickets Opened</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <span class="legend-color" style="background-color: #10B981;"></span>
+                                            <span data-translate="tickets_resolved">Tickets Resolved</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <span class="legend-color" style="background-color: #F59E0B;"></span>
+                                            <span data-translate="avg_response_time">Avg. Response Time (hrs)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="chart-wrapper">
+                                    <canvas id="performanceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Tables Section -->
+                    <div class="tables-section">
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3><i class="fas fa-table"></i> <span data-translate="top_performers">Top Performing
+                                        Agents</span></h3>
+                                <button class="btn btn-secondary" data-translate="view_all">View All</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="analytics-table" id="topAgentsTable">
+                                    <thead>
+                                        <tr>
+                                            <th data-translate="agent_name">Agent Name</th>
+                                            <th data-translate="tickets_resolved">Tickets Resolved</th>
+                                            <th data-translate="avg_response_time">Avg. Response Time</th>
+                                            <th data-translate="satisfaction_rate">Satisfaction Rate</th>
+                                            <th data-translate="performance_score">Performance Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3><i class="fas fa-chart-line"></i> <span data-translate="system_metrics">System
+                                        Metrics</span></h3>
+                                <div class="table-actions">
+                                    <button class="btn btn-secondary" id="refreshMetrics">
+                                        <i class="fas fa-sync-alt"></i> <span data-translate="refresh">Refresh</span>
+                                    </button>
+                                    <button class="btn btn-primary" id="exportMetrics">
+                                        <i class="fas fa-download"></i> <span data-translate="export">Export</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="analytics-table" id="systemMetricsTable">
+                                    <thead>
+                                        <tr>
+                                            <th data-translate="metric">Metric</th>
+                                            <th data-translate="current">Current</th>
+                                            <th data-translate="previous">Previous</th>
+                                            <th data-translate="change">Change</th>
+                                            <th data-translate="trend">Trend</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export and Reports Section -->
+                    <div class="reports-section">
+                        <div class="reports-header">
+                            <h3><i class="fas fa-file-export"></i> <span data-translate="reports_export">Reports &
+                                    Export</span></h3>
+                            <p data-translate="reports_description">Generate detailed reports and export analytics data
+                            </p>
+                        </div>
+                        <div class="reports-grid">
+                            <div class="report-card">
+                                <div class="report-icon">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+                                <h4 data-translate="monthly_report">Monthly Report</h4>
+                                <p data-translate="monthly_report_desc">Comprehensive monthly performance analysis</p>
+                                <button class="btn btn-secondary" data-translate="generate">Generate</button>
+                            </div>
+
+                            <div class="report-card">
+                                <div class="report-icon">
+                                    <i class="fas fa-file-excel"></i>
+                                </div>
+                                <h4 data-translate="data_export">Data Export</h4>
+                                <p data-translate="data_export_desc">Export raw analytics data for external analysis</p>
+                                <button class="btn btn-secondary" data-translate="export">Export</button>
+                            </div>
+
+                            <div class="report-card">
+                                <div class="report-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <h4 data-translate="custom_report">Custom Report</h4>
+                                <p data-translate="custom_report_desc">Create custom reports with selected metrics</p>
+                                <button class="btn btn-primary" data-translate="create">Create</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast for notifications -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Translation dictionary for analytics page
+        const translations = {
+            'en': {
+                'analytics_page_title': 'System Analytics - AlliTrack Admin',
+                'analytics_title': 'System Analytics',
+                'analytics_description': 'Monitor system performance, user engagement, and business metrics',
+                'search_analytics': 'Search metrics, reports...',
+                'time_period': 'Time Period',
+                'apply': 'Apply',
+                'active_users': 'Active Users',
+                'active_users_desc': 'Users active in last 30 days',
+                'tickets_resolved': 'Tickets Resolved',
+                'tickets_resolved_desc': 'This month',
+                'avg_response_time': 'Avg. Response Time',
+                'avg_response_time_desc': 'To first response',
+                'satisfaction_rate': 'Satisfaction Rate',
+                'satisfaction_rate_desc': 'Based on surveys',
+                'ticket_trends': 'Ticket Trends',
+                'ticket_categories': 'Ticket Categories',
+                'user_activity': 'User Activity',
+                'response_times': 'Response Times',
+                'performance_over_time': 'Performance Over Time',
+                'weekly': 'Weekly',
+                'monthly': 'Monthly',
+                'quarterly': 'Quarterly',
+                'all': 'All',
+                'technical': 'Technical',
+                'billing': 'Billing',
+                'general': 'General',
+                'daily': 'Daily',
+                'hourly': 'Hourly',
+                'by_team': 'By Team',
+                'by_priority': 'By Priority',
+                'by_category': 'By Category',
+                'tickets_opened': 'Tickets Opened',
+                'top_performers': 'Top Performing Agents',
+                'view_all': 'View All',
+                'agent_name': 'Agent Name',
+                'performance_score': 'Performance Score',
+                'system_metrics': 'System Metrics',
+                'refresh': 'Refresh',
+                'export': 'Export',
+                'metric': 'Metric',
+                'current': 'Current',
+                'previous': 'Previous',
+                'change': 'Change',
+                'trend': 'Trend',
+                'reports_export': 'Reports & Export',
+                'reports_description': 'Generate detailed reports and export analytics data',
+                'monthly_report': 'Monthly Report',
+                'monthly_report_desc': 'Comprehensive monthly performance analysis',
+                'data_export': 'Data Export',
+                'data_export_desc': 'Export raw analytics data for external analysis',
+                'custom_report': 'Custom Report',
+                'custom_report_desc': 'Create custom reports with selected metrics',
+                'generate': 'Generate',
+                'create': 'Create',
+                'export_success': 'Export completed successfully',
+                'report_generating': 'Generating report...',
+                'report_generated': 'Report generated successfully',
+                'data_refreshed': 'Data refreshed successfully',
+                'loading_data': 'Loading analytics data...',
+
+                // Navigation (shared with other pages)
+                'admin_dashboard': 'Admin Dashboard',
+                'dashboard': 'Dashboard',
+                'ticket_management': 'Ticket Management',
+                'all_tickets': 'All Tickets',
+                'users_management': 'Users Management',
+                'announcements': 'Announcements',
+                'system_management': 'System Management',
+                'system_settings': 'System Settings',
+                'analytics': 'Analytics',
+                'system_logs': 'System Logs',
+                'admin_tools': 'Admin Tools',
+                'preferences': 'Preferences',
+                'profile_settings': 'Profile Settings',
+                'profile': 'Profile',
+                'settings': 'Settings',
+                'logout': 'Logout',
+                'admin_dashboard_template': 'AlliTrack Admin Dashboard'
+            },
+            'fil': {
+                'analytics_page_title': 'System Analytics - AlliTrack Admin',
+                'analytics_title': 'Analitika ng Sistema',
+                'analytics_description': 'Subaybayan ang pagganap ng system at metrics ng negosyo',
+                'search_analytics': 'Maghanap ng metrics, reports...',
+                'time_period': 'Panahon',
+                'apply': 'Ilapat',
+                'active_users': 'Aktibong User',
+                'active_users_desc': 'User na aktibo sa huling 30 araw',
+                'tickets_resolved': 'Natapos na Ticket',
+                'tickets_resolved_desc': 'Ngayong buwan',
+                'avg_response_time': 'Karaniwang Oras ng Tugon',
+                'avg_response_time_desc': 'Sa unang tugon',
+                'satisfaction_rate': 'Rate ng Kasiyahan',
+                'satisfaction_rate_desc': 'Batay sa mga survey',
+                'ticket_trends': 'Trend ng Ticket',
+                'ticket_categories': 'Mga Kategorya ng Ticket',
+                'user_activity': 'Aktibidad ng User',
+                'response_times': 'Mga Oras ng Tugon',
+                'performance_over_time': 'Pagganap sa Paglipas ng Panahon',
+                'weekly': 'Lingguhan',
+                'monthly': 'Buwanan',
+                'quarterly': 'Quarterly',
+                'all': 'Lahat',
+                'technical': 'Teknikal',
+                'billing': 'Billing',
+                'general': 'Pangkalahatan',
+                'daily': 'Araw-araw',
+                'hourly': 'Oras-oras',
+                'by_team': 'Ayon sa Team',
+                'by_priority': 'Ayon sa Priyoridad',
+                'by_category': 'Ayon sa Kategorya',
+                'tickets_opened': 'Mga Binukas na Ticket',
+                'top_performers': 'Mga Nangungunang Agent',
+                'view_all': 'Tingnan Lahat',
+                'agent_name': 'Pangalan ng Agent',
+                'performance_score': 'Marka ng Pagganap',
+                'system_metrics': 'Mga Metric ng Sistema',
+                'refresh': 'I-refresh',
+                'export': 'I-export',
+                'metric': 'Metric',
+                'current': 'Kasalukuyan',
+                'previous': 'Nakaraan',
+                'change': 'Pagbabago',
+                'trend': 'Trend',
+                'reports_export': 'Mga Report at Export',
+                'reports_description': 'Gumawa ng mga detalyadong report at i-export ang data',
+                'monthly_report': 'Buwanang Report',
+                'monthly_report_desc': 'Komprehensibong buwanang pagsusuri ng pagganap',
+                'data_export': 'Pag-export ng Data',
+                'data_export_desc': 'I-export ang hilaw na data para sa panlabas na pagsusuri',
+                'custom_report': 'Custom na Report',
+                'custom_report_desc': 'Gumawa ng custom na report na may mga napiling metric',
+                'generate': 'Gumawa',
+                'create': 'Lumikha',
+                'export_success': 'Matagumpay na na-export',
+                'report_generating': 'Ginagawa ang report...',
+                'report_generated': 'Matagumpay na nagawa ang report',
+                'data_refreshed': 'Matagumpay na na-refresh ang data',
+                'loading_data': 'Naglo-load ng analytics data...',
+
+                // Navigation (shared with other pages)
+                'admin_dashboard': 'Admin Dashboard',
+                'dashboard': 'Dashboard',
+                'ticket_management': 'Pamamahala ng Ticket',
+                'all_tickets': 'Lahat ng Ticket',
+                'users_management': 'Pamamahala ng User',
+                'announcements': 'Mga Anunsyo',
+                'system_management': 'Pamamahala ng Sistema',
+                'system_settings': 'Mga Setting ng Sistema',
+                'analytics': 'Analitika',
+                'system_logs': 'Mga Log ng Sistema',
+                'admin_tools': 'Mga Tool ng Admin',
+                'preferences': 'Mga Kagustuhan',
+                'profile_settings': 'Mga Setting ng Profile',
+                'profile': 'Profile',
+                'settings': 'Mga Setting',
+                'logout': 'Logout',
+                'admin_dashboard_template': 'AlliTrack Admin Dashboard'
+            }
+        };
+
+        // Sample data for analytics
+        const sampleData = {
+            topAgents: [
+                { name: 'Maria Santos', ticketsResolved: 145, avgResponseTime: '1.2h', satisfaction: '96%', score: 98 },
+                { name: 'Juan Dela Cruz', ticketsResolved: 132, avgResponseTime: '1.5h', satisfaction: '94%', score: 95 },
+                { name: 'Ana Reyes', ticketsResolved: 128, avgResponseTime: '1.8h', satisfaction: '92%', score: 92 },
+                { name: 'Pedro Gonzales', ticketsResolved: 118, avgResponseTime: '2.1h', satisfaction: '90%', score: 88 },
+                { name: 'Liza Lim', ticketsResolved: 105, avgResponseTime: '2.4h', satisfaction: '89%', score: 85 }
+            ],
+            systemMetrics: [
+                { metric: 'System Uptime', current: '99.95%', previous: '99.92%', change: '+0.03%', trend: 'up' },
+                { metric: 'API Response Time', current: '120ms', previous: '135ms', change: '-11.1%', trend: 'up' },
+                { metric: 'Database Load', current: '68%', previous: '72%', change: '-5.6%', trend: 'up' },
+                { metric: 'Active Sessions', current: '245', previous: '218', change: '+12.4%', trend: 'up' },
+                { metric: 'Error Rate', current: '0.12%', previous: '0.15%', change: '-20.0%', trend: 'up' }
+            ],
+            ticketTrends: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                opened: [120, 135, 142, 158, 165, 172, 180],
+                resolved: [115, 130, 138, 152, 160, 168, 175]
+            },
+            ticketCategories: {
+                labels: ['Technical', 'Billing', 'General', 'Feature Request', 'Bug Report'],
+                data: [35, 25, 20, 12, 8],
+                colors: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EF4444']
+            }
+        };
+
+        // Chart instances
+        let charts = {};
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('📊 Analytics: Starting initialization...');
+
+            // Initialize user data manager
+            if (window.userDataManager) {
+                window.userDataManager.initializeUserDisplay();
+            }
+
+            // Initialize preferences manager
+            if (window.preferencesManager) {
+                window.preferencesManager.initialize();
+                window.preferencesManager.applyTheme();
+
+                // Get current language from preferences manager
+                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
+                applyTranslations(currentLang);
+            } else {
+                applyTranslations('en');
+            }
+
+            // Setup logout functionality
+            setupLogout();
+
+            // Setup account dropdown
+            setTimeout(() => {
+                console.log('🔄 Setting up account dropdown...');
+                setupAccountDropdown();
+            }, 50);
+
+            // Initialize date range picker
+            initializeDatePicker();
+
+            // Load and initialize charts
+            initializeCharts();
+
+            // Load data tables
+            loadDataTables();
+
+            // Setup event listeners
+            setupEventListeners();
+
+            console.log('✅ Analytics page loaded');
+        });
+
+        // Account Dropdown Functionality
+        function setupAccountDropdown() {
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
+
+            if (!accountBtn || !accountMenu) {
+                console.error('❌ Account dropdown elements not found!');
+                return;
+            }
+
+            // Remove any existing click listeners by cloning
+            const newBtn = accountBtn.cloneNode(true);
+            accountBtn.parentNode.replaceChild(newBtn, accountBtn);
+
+            // Get fresh reference
+            const freshBtn = document.getElementById("accountBtn");
+
+            // Add click event to toggle dropdown
+            freshBtn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+
+                const isShowing = accountMenu.classList.contains("show");
+                accountMenu.classList.toggle("show");
+                freshBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", function (e) {
+                if (accountMenu.classList.contains("show") &&
+                    !freshBtn.contains(e.target) &&
+                    !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close when clicking menu items (except logout)
+            const menuItems = accountMenu.querySelectorAll("a");
+            menuItems.forEach(item => {
+                item.addEventListener("click", function () {
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                });
+            });
+
+            // Ensure button is clickable
+            freshBtn.style.cursor = 'pointer';
+        }
+
+        // Apply translations to the page
+        function applyTranslations(language) {
+            const lang = translations[language] ? language : 'en';
+            const dict = translations[lang];
+
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (dict[key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') {
+                        if (element.type !== 'text' && element.type !== 'email' && element.type !== 'password' && element.type !== 'tel') {
+                            element.textContent = dict[key];
+                        }
+                    } else if (element.tagName === 'OPTION') {
+                        element.textContent = dict[key];
+                    } else {
+                        element.textContent = dict[key];
+                    }
+                }
+            });
+
+            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-translate-placeholder');
+                if (dict[key]) {
+                    element.placeholder = dict[key];
+                }
+            });
+
+            if (dict['analytics_page_title']) {
+                document.title = dict['analytics_page_title'];
+            }
+        }
+
+        // Logout functionality
+        function setupLogout() {
+            console.log('🔐 Setting up logout functionality...');
+
+            // Remove any existing logout buttons to avoid duplicates
+            const existingLogoutBtns = document.querySelectorAll('#logoutBtn');
+            existingLogoutBtns.forEach(btn => {
+                const parent = btn.parentNode;
+                const newBtn = btn.cloneNode(true);
+                parent.replaceChild(newBtn, btn);
+            });
+
+            // Now attach the event listener to the fresh logout button
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                const logoutHandler = function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Clear user data from localStorage
+                    localStorage.removeItem('userData');
+                    localStorage.removeItem('userProfile');
+                    localStorage.removeItem('adminPreferences');
+                    localStorage.removeItem('preferredTheme');
+                    localStorage.removeItem('preferredLanguage');
+
+                    // Redirect to login page
+                    window.location.href = '../../../index.html';
+                };
+
+                logoutBtn.removeEventListener('click', logoutHandler);
+                logoutBtn.addEventListener('click', logoutHandler);
+            }
+        }
+
+        // Initialize date range picker
+        function initializeDatePicker() {
+            $('#dateRangePicker').daterangepicker({
+                opens: 'left',
+                startDate: moment().subtract(30, 'days'),
+                endDate: moment(),
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                }
+            }, function (start, end, label) {
+                console.log('Date range selected: ' + start.format('MMMM D, YYYY') + ' to ' + end.format('MMMM D, YYYY'));
+            });
+        }
+
+        // Initialize all charts
+        function initializeCharts() {
+            // Ticket Trends Chart (Line Chart)
+            const ticketTrendsCtx = document.getElementById('ticketTrendsChart').getContext('2d');
+            charts.ticketTrends = new Chart(ticketTrendsCtx, {
+                type: 'line',
+                data: {
+                    labels: sampleData.ticketTrends.labels,
+                    datasets: [{
+                        label: 'Tickets Opened',
+                        data: sampleData.ticketTrends.opened,
+                        borderColor: '#3B82F6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Tickets Resolved',
+                        data: sampleData.ticketTrends.resolved,
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Ticket Categories Chart (Doughnut)
+            const ticketCategoriesCtx = document.getElementById('ticketCategoriesChart').getContext('2d');
+            charts.ticketCategories = new Chart(ticketCategoriesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: sampleData.ticketCategories.labels,
+                    datasets: [{
+                        data: sampleData.ticketCategories.data,
+                        backgroundColor: sampleData.ticketCategories.colors,
+                        borderWidth: 1,
+                        borderColor: 'var(--surface)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+
+            // User Activity Chart (Bar Chart)
+            const userActivityCtx = document.getElementById('userActivityChart').getContext('2d');
+            charts.userActivity = new Chart(userActivityCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Active Users',
+                        data: [245, 280, 310, 295, 320, 180, 150],
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: '#3B82F6',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Response Times Chart (Bar Chart)
+            const responseTimesCtx = document.getElementById('responseTimesChart').getContext('2d');
+            charts.responseTimes = new Chart(responseTimesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['High', 'Medium', 'Low'],
+                    datasets: [{
+                        label: 'Response Time (hours)',
+                        data: [1.2, 2.4, 4.8],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(16, 185, 129, 0.7)'
+                        ],
+                        borderColor: [
+                            '#EF4444',
+                            '#F59E0B',
+                            '#10B981'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Hours'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Performance Chart (Multi-line Chart)
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            charts.performance = new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Tickets Opened',
+                        data: [165, 172, 180, 190],
+                        borderColor: '#3B82F6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Tickets Resolved',
+                        data: [160, 168, 175, 185],
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Avg. Response Time',
+                        data: [2.8, 2.6, 2.4, 2.2],
+                        borderColor: '#F59E0B',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    stacked: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Tickets'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Hours'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load data tables
+        function loadDataTables() {
+            // Top Agents Table
+            const topAgentsTbody = document.querySelector('#topAgentsTable tbody');
+            if (topAgentsTbody) {
+                topAgentsTbody.innerHTML = '';
+                sampleData.topAgents.forEach(agent => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>${agent.name}</strong></td>
+                        <td>${agent.ticketsResolved}</td>
+                        <td>${agent.avgResponseTime}</td>
+                        <td>
+                            <span class="satisfaction-badge ${agent.satisfaction === '96%' ? 'high' : agent.satisfaction === '94%' ? 'medium' : 'low'}">
+                                ${agent.satisfaction}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="score-container">
+                                <div class="score-bar">
+                                    <div class="score-fill" style="width: ${agent.score}%"></div>
+                                </div>
+                                <span class="score-value">${agent.score}</span>
+                            </div>
+                        </td>
+                    `;
+                    topAgentsTbody.appendChild(row);
+                });
+            }
+
+            // System Metrics Table
+            const systemMetricsTbody = document.querySelector('#systemMetricsTable tbody');
+            if (systemMetricsTbody) {
+                systemMetricsTbody.innerHTML = '';
+                sampleData.systemMetrics.forEach(metric => {
+                    const row = document.createElement('tr');
+                    const trendIcon = metric.trend === 'up' ? 'fa-arrow-up' : 'fa-arrow-down';
+                    const trendClass = metric.trend === 'up' ? 'trend-up' : 'trend-down';
+
+                    row.innerHTML = `
+                        <td>${metric.metric}</td>
+                        <td><strong>${metric.current}</strong></td>
+                        <td>${metric.previous}</td>
+                        <td><span class="${trendClass}"><i class="fas ${trendIcon}"></i> ${metric.change}</span></td>
+                        <td>
+                            <div class="sparkline">
+                                <div class="sparkline-bar" style="height: ${metric.trend === 'up' ? '70%' : '30%'}"></div>
+                                <div class="sparkline-bar" style="height: ${metric.trend === 'up' ? '80%' : '40%'}"></div>
+                                <div class="sparkline-bar" style="height: ${metric.trend === 'up' ? '90%' : '20%'}"></div>
+                                <div class="sparkline-bar" style="height: ${metric.trend === 'up' ? '100%' : '10%'}"></div>
+                                <div class="sparkline-bar" style="height: ${metric.trend === 'up' ? '95%' : '25%'}"></div>
+                            </div>
+                        </td>
+                    `;
+                    systemMetricsTbody.appendChild(row);
+                });
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Date presets
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const preset = this.dataset.preset;
+                    let startDate, endDate = moment();
+
+                    switch (preset) {
+                        case '7d':
+                            startDate = moment().subtract(7, 'days');
+                            break;
+                        case '30d':
+                            startDate = moment().subtract(30, 'days');
+                            break;
+                        case '90d':
+                            startDate = moment().subtract(90, 'days');
+                            break;
+                        case '1y':
+                            startDate = moment().subtract(1, 'year');
+                            break;
+                        case 'custom':
+                            // Keep current selection for custom
+                            return;
+                    }
+
+                    $('#dateRangePicker').data('daterangepicker').setStartDate(startDate);
+                    $('#dateRangePicker').data('daterangepicker').setEndDate(endDate);
+
+                    // Update charts based on new date range
+                    updateChartsForDateRange(startDate, endDate);
+                });
+            });
+
+            // Apply date range button
+            document.getElementById('applyDateRange').addEventListener('click', function () {
+                const picker = $('#dateRangePicker').data('daterangepicker');
+                updateChartsForDateRange(picker.startDate, picker.endDate);
+                showToast('Date range applied successfully', 'success');
+            });
+
+            // Chart filter changes
+            document.getElementById('ticketTrendFilter').addEventListener('change', function () {
+                updateTicketTrendsChart(this.value);
+            });
+
+            // Refresh metrics button
+            document.getElementById('refreshMetrics').addEventListener('click', function () {
+                showToast('Refreshing analytics data...', 'info');
+                setTimeout(() => {
+                    loadDataTables();
+                    showToast('Data refreshed successfully', 'success');
+                }, 1000);
+            });
+
+            // Export metrics button
+            document.getElementById('exportMetrics').addEventListener('click', function () {
+                showToast('Exporting analytics data...', 'info');
+                setTimeout(() => {
+                    const currentLang = window.preferencesManager ?
+                        window.preferencesManager.getCurrentLanguage() : 'en';
+                    const dict = translations[currentLang] || translations['en'];
+                    showToast(dict['export_success'] || 'Export completed successfully', 'success');
+                }, 1500);
+            });
+
+            // Report generation buttons
+            document.querySelectorAll('.report-card button').forEach(button => {
+                button.addEventListener('click', function () {
+                    const currentLang = window.preferencesManager ?
+                        window.preferencesManager.getCurrentLanguage() : 'en';
+                    const dict = translations[currentLang] || translations['en'];
+
+                    showToast(dict['report_generating'] || 'Generating report...', 'info');
+                    setTimeout(() => {
+                        showToast(dict['report_generated'] || 'Report generated successfully', 'success');
+                    }, 2000);
+                });
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('q');
+            let searchTimeout;
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        console.log('Searching for:', this.value);
+                    }, 500);
+                });
+            }
+        }
+
+        // Update charts based on date range
+        function updateChartsForDateRange(startDate, endDate) {
+            console.log('Updating charts for date range:', startDate.format('YYYY-MM-DD'), 'to', endDate.format('YYYY-MM-DD'));
+
+            // In a real app, you would fetch new data from the server based on the date range
+            // For now, we'll just show a toast notification
+            const currentLang = window.preferencesManager ?
+                window.preferencesManager.getCurrentLanguage() : 'en';
+            const dict = translations[currentLang] || translations['en'];
+
+            showToast(dict['loading_data'] || 'Loading analytics data...', 'info');
+        }
+
+        // Update ticket trends chart based on filter
+        function updateTicketTrendsChart(filter) {
+            // In a real app, you would fetch new data based on the filter
+            console.log('Updating ticket trends with filter:', filter);
+
+            // For demo purposes, just update the chart title
+            const chartTitle = document.querySelector('#ticketTrendsChart').closest('.chart-container').querySelector('h3');
+            const currentLang = window.preferencesManager ?
+                window.preferencesManager.getCurrentLanguage() : 'en';
+            const dict = translations[currentLang] || translations['en'];
+
+            if (filter === 'weekly') {
+                charts.ticketTrends.data.labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            } else if (filter === 'monthly') {
+                charts.ticketTrends.data.labels = sampleData.ticketTrends.labels;
+            } else if (filter === 'quarterly') {
+                charts.ticketTrends.data.labels = ['Q1', 'Q2', 'Q3', 'Q4'];
+            }
+
+            charts.ticketTrends.update();
+        }
+
+        // Show toast message
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Listen for language changes
+        document.addEventListener('languageChanged', function (e) {
+            applyTranslations(e.detail.language);
+        });
+    </script>
+</body>
+
+</html>

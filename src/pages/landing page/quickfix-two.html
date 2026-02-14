@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Quick Fix – IP PBX (Yeastar) · AlliTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../styles/shared/landing-style.css">
+    <link rel="stylesheet" href="../../styles/shared/quickfix-one.css">
+    <link rel="stylesheet" href="../../styles/landing page/quickfix-two.css">
+    <script src="../../scripts/landing-accessibility.js"></script>
+</head>
+
+<body>
+    <div class="document-wrapper">
+        <div class="back-home-wrapper">
+            <a href="../../../index.html#home-section" class="back-home-link">
+                <i class="fas fa-arrow-left"></i> Back to AlliTrack Home
+            </a>
+        </div>
+
+        <div class="doc-title">
+            <i class="fas fa-phone-alt"></i>
+            <h1>IP PBX (Yeastar) · Quick Fix</h1>
+        </div>
+
+        <div class="doc-meta">
+            <span><i class="fas fa-file-pdf"></i> TROUBLESHOOTING GUIDE v2.1 · Yeastar</span>
+            <span><i class="fas fa-microchip"></i> AlliTrack voice support</span>
+            <span><i class="fas fa-clock"></i> 4‑minute diagnosis</span>
+        </div>
+
+        <p style="font-size:1.05rem; margin-bottom:28px; color: var(--text-secondary);">
+            Field‑tested resolutions for Yeastar S-Series, TA series, and cloud PBX. Includes SIP trunk issues,
+            extension registration, voicemail, and call quality.
+        </p>
+
+        <div class="section-title">
+            <i class="fas fa-plug"></i> Extension & trunk connectivity
+        </div>
+        <div class="card-grid">
+            <!-- card 1: extension offline / unregister -->
+            <div class="fix-card">
+                <div class="fix-icon"><i class="fas fa-phone-slash"></i></div>
+                <h3>Extension unregistered / offline</h3>
+                <p style="margin-bottom: 10px;">Yeastar extension shows red? Quick verify:</p>
+                <div class="pbx-code-snippet">
+                    <i class="fas fa-terminal" style="margin-right: 6px; color:var(--blue-500);"></i>
+                    Extensions → status → check “Last Register”
+                </div>
+                <ul style="margin-top: 16px; list-style: none; padding-left: 0;">
+                    <li style="display: flex; gap: 8px; margin-bottom: 6px;"><span
+                            style="color: var(--blue-500);">✓</span> <span>Wrong SIP password / IP restriction</span>
+                    </li>
+                    <li style="display: flex; gap: 8px; margin-bottom: 6px;"><span
+                            style="color: var(--blue-500);">✓</span> <span>NAT keep‑alive: enable "friendly scan" or set
+                            registration interval to 120s</span></li>
+                    <li style="display: flex; gap: 8px;"><span style="color: var(--blue-500);">✓</span> <span>Use LAN or
+                            VPN; PBX firewall whitelist phone MAC</span></li>
+                </ul>
+            </div>
+            <!-- card 2: SIP trunk fail -->
+            <div class="fix-card">
+                <div class="fix-icon"><i class="fas fa-network-wired"></i></div>
+                <h3>SIP trunk / provider down</h3>
+                <p>Provider rejecting registration? Common Yeastar checks:</p>
+                <div style="margin-top: 12px;">
+                    <span class="badge"><i class="fas fa-bolt"></i> immediate action</span>
+                    <p style="margin-top: 12px; margin-bottom: 0;">
+                        <i class="fas fa-sync" style="color:var(--blue-500);"></i>
+                        <strong>PBX » Trunk » Status »</strong> “Force Register”<br>
+                        <span style="font-size:0.85rem;">Check SIP message: 403, 401 – wrong secret or IP.</span>
+                    </p>
+                </div>
+                <div style="margin-top: 14px; background:var(--blue-50); padding: 10px; border-radius: 12px;">
+                    <i class="fas fa-info-circle"></i> Yeastar: outbound proxy overwrite? Set provider SIP server
+                    directly.
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-envelope"></i> Voicemail & auto‑attendant
+        </div>
+        <div class="table-diag">
+            <table>
+                <tr>
+                    <td style="font-weight:600; width: 30px;">1.</td>
+                    <td style="font-weight:600;">MWI not lighting</td>
+                    <td>Subscribe MWI on phone; Yeastar: check “Message Waiting” policy – RFC 3842.</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:600;">2.</td>
+                    <td style="font-weight:600;">Voicemail to email fails</td>
+                    <td>SMTP settings: use app password; TLS/STARTTLS; port 587. Test in PBX » System » Email.</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:600;">3.</td>
+                    <td style="font-weight:600;">IVR timeout / no input</td>
+                    <td>Check digit map; adjust timeout to 5s. Avoid overlapping extensions.</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:600;">4.</td>
+                    <td style="font-weight:600;">Voicemail password reset</td>
+                    <td>Dial *78 from extension or clear via PBX: extension → voicemail PIN.</td>
+                </tr>
+            </table>
+        </div>
+        <div class="code-block">
+            <i class="fas fa-diagnoses" style="margin-right: 8px; color: var(--blue-500);"></i>
+            Yeastar diagnostic CLI (SSH): <span style="font-family: monospace;">/usr/sbin/asterisk -rx "sip show
+                peers"</span> | grep UNREACHABLE
+        </div>
+
+        <!-- ========== SECTION 3 – CALL QUALITY / ONE-WAY AUDIO ========= -->
+        <div class="section-title">
+            <i class="fas fa-waveform"></i> Call quality & one‑way audio
+        </div>
+        <ul class="step-list">
+            <li><span class="step-num">1</span> <strong>RTP ports blocked</strong> – ensure UDP 10000–20000 open
+                (Yeastar default). Symmetric NAT? Enable “STUN”.</li>
+            <li><span class="step-num">2</span> <strong>Codec mismatch</strong> – force G.711 (PCMA/PCMU). Disable G.722
+                if provider fails.</li>
+            <li><span class="step-num">3</span> <strong>Jitter buffer</strong>: adaptive; set to 60/120 ms for choppy
+                audio. PBX: extension → advanced.</li>
+            <li><span class="step-num">4</span> <strong>one‑way audio (remote hold)</strong>: CANREINVITE=no; use
+                “update” instead of re‑INVITE.</li>
+        </ul>
+
+        <div class="two-col-grid">
+            <div style="background: var(--blue-50); padding: 20px; border-radius: 20px;">
+                <i class="fas fa-box"
+                    style="color: var(--blue-500); font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
+                <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Yeastar firmware</h3>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Firmware 50.xx.xx.xx? Some S20/T50 have SIP
+                    transport issues. Upgrade to 60.19+. Backup config first.</p>
+                <span class="sip-tag"><i class="fas fa-tag"></i> check release notes</span>
+            </div>
+            <div
+                style="background: var(--gray-50); padding: 20px; border-radius: 20px; border:1px solid var(--border-color);">
+                <i class="fas fa-clock"
+                    style="color: var(--blue-500); font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
+                <h3 style="font-size: 1.2rem; margin-bottom: 8px;">NTP & call timers</h3>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">CDR wrong time? Use <span
+                        style="font-family: monospace;">pool.ntp.org</span>; force sync. Affects billing & voicemail
+                    timestamps.</p>
+            </div>
+        </div>
+
+        <div style="margin: 32px 0 16px;">
+            <span class="badge"><i class="fas fa-toolbox"></i> 30‑second resolution – Yeastar</span>
+        </div>
+        <div class="two-col-grid">
+            <div class="tip-box">
+                <h4><i class="fas fa-ban" style="color:var(--blue-500);"></i> Blacklisted IPs</h4>
+                <p style="color: var(--text-secondary);">PBX automatically blocks failed auth. Go to Security » Attack
+                    Defense, whitelist your office IP.</p>
+            </div>
+            <div class="tip-box">
+                <h4><i class="fas fa-database" style="color:var(--blue-500);"></i> SD card full</h4>
+                <p style="color: var(--text-secondary);">Yeastar internal SD for logs/recording. Format or archive
+                    recordings → PBX » System » Storage.</p>
+            </div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 32px 0 24px;">
+        <div style="margin-top: 24px;">
+            <h3 style="font-weight: 600; font-size: 1.1rem; display: flex; gap: 8px; margin-bottom: 16px;">
+                <i class="fas fa-table"></i> Error & status codes – Yeastar PBX
+            </h3>
+            <div style="overflow-x: auto;">
+                <table class="error-matrix">
+                    <thead>
+                        <tr>
+                            <th>Code / event</th>
+                            <th>Indication</th>
+                            <th>Quick fix</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 600;">403</td>
+                            <td>Forbidden / wrong secret</td>
+                            <td>Reset extension/trunk password; check PBX domain</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">488</td>
+                            <td>Not acceptable codec</td>
+                            <td>Disable G.729; enable PCMA/PCMU; check codec license</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">480</td>
+                            <td>Temporarily unavailable</td>
+                            <td>Extension not registered; DND / forward check</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">CFG‑014</td>
+                            <td>Voicemail storage failure</td>
+                            <td>Repair SD card; remount via SSH: mount -o remount,rw /</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">SIP/2.0 503</td>
+                            <td>Trunk service degraded</td>
+                            <td>Provider outage; fallback to PSTN / failover trunk</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px;">
+                <i class="fas fa-cog" style="color: var(--blue-500); font-size: 1.5rem;"></i>
+                <span style="font-weight: 700; font-size: 1.1rem;">Extension quick config (Yeastar Web)</span>
+            </div>
+            <div
+                style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 20px; padding: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div>
+                        <span style="display: block; font-weight: 600;">SIP endpoint</span>
+                        <span style="font-family: monospace; font-size: 0.8rem;">transport: UDP/TLS</span>
+                        <span style="display: block; margin-top: 12px;"><i class="fas fa-check-circle"
+                                style="color: green;"></i> NAT: yes (keep‑alive)</span>
+                    </div>
+                    <div>
+                        <span style="display: block; font-weight: 600;">Codec order</span>
+                        <span style="font-family: monospace;">PCMA, PCMU, G.722</span>
+                        <span style="display: block; margin-top: 12px;"><i class="fas fa-clock"></i> reg: 120s</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title" style="margin-top: 48px;">
+            <i class="fas fa-record-vinyl"></i> Call recording – missing or partial
+        </div>
+        <div class="card-grid" style="margin-bottom: 8px;">
+            <div class="fix-card" style="margin-bottom: 0;">
+                <i class="fas fa-microphone-slash"
+                    style="color: var(--blue-500); font-size: 1.5rem; margin-bottom: 10px;"></i>
+                <h3>Recording not triggered</h3>
+                <p>Check extension » call recording mode: "always" or "on demand". For Yeastar TA: enable in trunk
+                    settings.</p>
+                <div class="badge" style="margin-top: 10px;"><i class="fas fa-hdd"></i> disk usage > 95%? overwrite
+                    oldest</div>
+            </div>
+            <div class="fix-card">
+                <i class="fas fa-file-audio"
+                    style="color: var(--blue-500); font-size: 1.5rem; margin-bottom: 10px;"></i>
+                <h3>Corrupted .wav</h3>
+                <p>Stop/start recording service: PBX » System » Recording. SSH: <span
+                        style="font-family: monospace;">rc.recording restart</span></p>
+            </div>
+        </div>
+
+        <div class="open-ticket-section">
+            <button class="btn-open-ticket" id="submitTicketBtn">
+                <i class="fas fa-ticket-alt"></i> Still having trouble? Submit a ticket
+            </button>
+            <p style="font-size:0.8rem; color: var(--text-secondary); margin-top: 16px;">
+                Submit a support ticket — we’ll help you further.
+            </p>
+        </div>
+
+        <div class="footnote-pdf">
+            <span><i class="fas fa-print"></i> print‑ready · AlliTrack intelligent ticketing · PBX diagnostics
+                2025</span>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="feedbackModal">
+        <div class="modal-card">
+            <button class="close-modal-x" id="closeModalX" aria-label="Close modal">&times;</button>
+            <div class="modal-icon">
+                <i class="fas fa-headset"></i>
+            </div>
+            <h2>How was the system?</h2>
+            <p>Your feedback helps us improve the<br>IP PBX (Yeastar) Quick Fix.</p>
+
+            <div class="rating-group">
+                <button class="rating-btn" data-rating="good"><i class="fas fa-smile"></i> Good</button>
+                <button class="rating-btn" data-rating="neutral"><i class="fas fa-meh"></i> Neutral</button>
+                <button class="rating-btn" data-rating="bad"><i class="fas fa-frown"></i> Bad</button>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-primary" id="submitRating">Submit & continue</button>
+                <button class="modal-btn modal-btn-secondary" id="closeModalBtn">Cancel</button>
+            </div>
+            <p style="font-size:0.75rem; color: var(--text-secondary); margin-top: 20px;">
+                After submitting, you'll be redirected to login.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+            const STORAGE_PREFIX = 'alliTrack_';
+            let fontSizeLevel = 1;
+            let highContrast = false;
+            let focusHighlight = false;
+            let theme = 'light';
+
+            try {
+                fontSizeLevel = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'fontSize') || '1');
+                highContrast = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'highContrast') || 'false');
+                focusHighlight = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'focusHighlight') || 'false');
+                theme = localStorage.getItem(STORAGE_PREFIX + 'theme') || 'light';
+            } catch (e) { }
+
+            const FONT_VALUES = ['80%', '100%', '120%', '140%'];
+            const FONT_NAMES = ['Small', 'Medium', 'Large', 'X-Large'];
+            const body = document.body;
+
+            function applyFontSize() {
+                document.documentElement.style.fontSize = FONT_VALUES[fontSizeLevel];
+                const lbl = document.getElementById('currentFontSize');
+                if (lbl) lbl.textContent = FONT_NAMES[fontSizeLevel];
+                localStorage.setItem(STORAGE_PREFIX + 'fontSize', JSON.stringify(fontSizeLevel));
+            }
+
+            function applyTheme() {
+                body.classList.remove('dark-theme', 'light-theme');
+                if (theme === 'dark') body.classList.add('dark-theme');
+                else body.classList.add('light-theme');
+                localStorage.setItem(STORAGE_PREFIX + 'theme', theme);
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.theme === theme);
+                });
+            }
+
+            function applyContrast() {
+                body.classList.toggle('high-contrast', highContrast);
+                localStorage.setItem(STORAGE_PREFIX + 'highContrast', JSON.stringify(highContrast));
+                const btn = document.getElementById('toggleContrast');
+                if (btn) {
+                    btn.classList.toggle('active', highContrast);
+                    btn.setAttribute('aria-pressed', highContrast);
+                    btn.innerHTML = highContrast ? '<i class="fas fa-circle-half-stroke"></i> Disable' : '<i class="fas fa-circle-half-stroke"></i> Enable';
+                }
+            }
+
+            function applyFocus() {
+                body.classList.toggle('focus-highlight', focusHighlight);
+                localStorage.setItem(STORAGE_PREFIX + 'focusHighlight', JSON.stringify(focusHighlight));
+                const btn = document.getElementById('toggleFocus');
+                if (btn) {
+                    btn.classList.toggle('active', focusHighlight);
+                    btn.setAttribute('aria-pressed', focusHighlight);
+                    btn.innerHTML = focusHighlight ? '<i class="fas fa-border-all"></i> Disable' : '<i class="fas fa-border-all"></i> Enable';
+                }
+            }
+
+            function setFontSize(level) { if (level >= 0 && level < FONT_VALUES.length) { fontSizeLevel = level; applyFontSize(); } }
+            function setTheme(t) { theme = t; applyTheme(); }
+            function setHighContrast(v) { highContrast = v; applyContrast(); }
+            function setFocus(v) { focusHighlight = v; applyFocus(); }
+            function resetAll() { setFontSize(1); setTheme('light'); setHighContrast(false); setFocus(false); }
+
+            applyFontSize(); applyTheme(); applyContrast(); applyFocus();
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const toggleBtn = document.getElementById('accessibilityToggle');
+                const panel = document.getElementById('accessibilityPanel');
+                const closeBtn = document.getElementById('closeAccessibility');
+
+                if (toggleBtn && panel) {
+                    toggleBtn.replaceWith(toggleBtn.cloneNode(true));
+                    const newToggle = document.getElementById('accessibilityToggle');
+
+                    newToggle.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        panel.classList.toggle('open');
+                        newToggle.setAttribute('aria-expanded', panel.classList.contains('open'));
+                    });
+
+                    if (closeBtn) {
+                        closeBtn.replaceWith(closeBtn.cloneNode(true));
+                        const newClose = document.getElementById('closeAccessibility');
+                        newClose.addEventListener('click', function () {
+                            panel.classList.remove('open');
+                            newToggle.setAttribute('aria-expanded', 'false');
+                        });
+                    }
+
+                    document.addEventListener('click', function (e) {
+                        if (panel.classList.contains('open') && !panel.contains(e.target) && !newToggle.contains(e.target)) {
+                            panel.classList.remove('open');
+                            newToggle.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                }
+
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.replaceWith(btn.cloneNode(true));
+                });
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        setTheme(this.dataset.theme);
+                    });
+                });
+
+                const decreaseBtn = document.getElementById('decreaseFont');
+                if (decreaseBtn) {
+                    decreaseBtn.replaceWith(decreaseBtn.cloneNode(true));
+                    document.getElementById('decreaseFont').addEventListener('click', function () { setFontSize(fontSizeLevel - 1); });
+                }
+                const increaseBtn = document.getElementById('increaseFont');
+                if (increaseBtn) {
+                    increaseBtn.replaceWith(increaseBtn.cloneNode(true));
+                    document.getElementById('increaseFont').addEventListener('click', function () { setFontSize(fontSizeLevel + 1); });
+                }
+
+                const contrastBtn = document.getElementById('toggleContrast');
+                if (contrastBtn) {
+                    contrastBtn.replaceWith(contrastBtn.cloneNode(true));
+                    document.getElementById('toggleContrast').addEventListener('click', function () { setHighContrast(!highContrast); });
+                }
+
+                const focusBtn = document.getElementById('toggleFocus');
+                if (focusBtn) {
+                    focusBtn.replaceWith(focusBtn.cloneNode(true));
+                    document.getElementById('toggleFocus').addEventListener('click', function () { setFocus(!focusHighlight); });
+                }
+
+                const resetBtn = document.getElementById('resetAccessibility');
+                if (resetBtn) {
+                    resetBtn.replaceWith(resetBtn.cloneNode(true));
+                    document.getElementById('resetAccessibility').addEventListener('click', resetAll);
+                }
+
+                const modal = document.getElementById('feedbackModal');
+                const triggerBtn = document.getElementById('submitTicketBtn');
+                const closeModalBtn = document.getElementById('closeModalBtn');
+                const closeModalX = document.getElementById('closeModalX');
+                const submitRating = document.getElementById('submitRating');
+
+                function openModal() { if (modal) modal.classList.add('active'); }
+                function closeModal() { if (modal) modal.classList.remove('active'); }
+
+                if (triggerBtn) {
+                    triggerBtn.replaceWith(triggerBtn.cloneNode(true));
+                    document.getElementById('submitTicketBtn').addEventListener('click', openModal);
+                }
+                if (closeModalBtn) {
+                    closeModalBtn.replaceWith(closeModalBtn.cloneNode(true));
+                    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+                }
+                if (closeModalX) {
+                    closeModalX.replaceWith(closeModalX.cloneNode(true));
+                    document.getElementById('closeModalX').addEventListener('click', closeModal);
+                }
+
+                if (submitRating) {
+                    submitRating.replaceWith(submitRating.cloneNode(true));
+                    document.getElementById('submitRating').addEventListener('click', function () {
+                        closeModal();
+                        window.location.href = '../../pages/landing page/unified-auth-modal.html';
+                    });
+                }
+
+                document.querySelectorAll('.rating-btn').forEach(btn => {
+                    btn.replaceWith(btn.cloneNode(true));
+                });
+                document.querySelectorAll('.rating-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        document.querySelectorAll('.rating-btn').forEach(b => {
+                            b.style.background = ''; b.style.color = ''; b.style.borderColor = '';
+                            const icon = b.querySelector('i'); if (icon) icon.style.color = '';
+                        });
+                        this.style.background = 'var(--blue-500)';
+                        this.style.color = 'white';
+                        this.style.borderColor = 'var(--blue-500)';
+                        const icon = this.querySelector('i');
+                        if (icon) icon.style.color = 'white';
+                    });
+                });
+
+                if (modal) {
+                    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+                }
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') {
+                        const panel = document.getElementById('accessibilityPanel');
+                        const toggleBtn = document.getElementById('accessibilityToggle');
+                        if (panel?.classList.contains('open')) {
+                            panel.classList.remove('open');
+                            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+                        }
+                        if (modal?.classList.contains('active')) {
+                            modal.classList.remove('active');
+                        }
+                    }
+                });
+            }); 
+        })();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Quick Fix – Door Access · AlliTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../styles/shared/landing-style.css">
+    <link rel="stylesheet" href="../../styles/landing page/quickfix-four.css">
+    <script src="../../scripts/landing-accessibility.js"></script>
+</head>
+
+<body>
+    <div class="document-wrapper">
+        <div class="back-home-wrapper">
+            <a href="../../../index.html#home-section" class="back-home-link">
+                <i class="fas fa-arrow-left"></i> Back to AlliTrack Home
+            </a>
+        </div>
+
+        <div class="doc-title">
+            <i class="fas fa-door-open"></i>
+            <h1>Door Access · Quick Fix</h1>
+        </div>
+
+        <!-- meta info -->
+        <div class="doc-meta">
+            <span><i class="fas fa-id-card"></i> ACCESS CONTROL v2.4</span>
+            <span><i class="fas fa-shield-alt"></i> AlliTrack physical security</span>
+            <span><i class="fas fa-clock"></i> 4‑minute entry diagnosis</span>
+        </div>
+
+        <p style="font-size:1.05rem; margin-bottom:28px; color: var(--text-secondary);">
+            Field‑proven fixes for magnetic locks, credential readers, controllers and exit devices.
+        </p>
+
+        <!-- hardware & locking -->
+        <div class="section-title">
+            <i class="fas fa-lock"></i> Lock hardware & power
+        </div>
+        <div class="card-grid">
+            <div class="fix-card">
+                <div class="fix-icon"><i class="fas fa-magnet"></i></div>
+                <h3>Maglock won't release</h3>
+                <p style="margin-bottom: 10px;">Check REX button and power supply:</p>
+                <div style="background: var(--gray-100); padding: 8px 12px; border-radius: 12px; font-family: monospace; font-size:0.8rem; overflow-x: auto;">
+                    DC voltage at lock: 12V/24V ±10%
+                </div>
+                <ul style="margin-top: 16px; list-style: none; padding-left: 0;">
+                    <li style="display: flex; gap: 8px; margin-bottom: 6px;"><span style="color: var(--blue-500);">✓</span> <span>Test with separate 12V battery – lock clicks?</span></li>
+                    <li style="display: flex; gap: 8px; margin-bottom: 6px;"><span style="color: var(--blue-500);">✓</span> <span>Reverse diode across lock terminals (1N4004)</span></li>
+                </ul>
+            </div>
+            <div class="fix-card">
+                <div class="fix-icon"><i class="fas fa-fingerprint"></i></div>
+                <h3>Reader / credential fails</h3>
+                <p>Prox card / fingerprint / PIN rejected.</p>
+                <div style="margin-top: 16px;">
+                    <span class="badge"><i class="fas fa-bolt"></i> Quick fix</span>
+                    <p style="margin-top: 10px;">Clean reader lens/pad with isopropyl. <br><span style="font-family: monospace;">Wiegand data lines: D0/D1 pull-up 2.2kΩ</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- controller & communication -->
+        <div class="section-title">
+            <i class="fas fa-microchip"></i> Controller & network
+        </div>
+        <div class="table-diag">
+            <table>
+                <tr>
+                    <td style="font-weight:600; width: 30px;">1.</td>
+                    <td style="font-weight:600;">Controller offline (IP)</td>
+                    <td>Ping device; check PoE switch port; static IP vs DHCP mismatch</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:600;">2.</td>
+                    <td style="font-weight:600;">RS‑485 communication</td>
+                    <td>Termination resistor 120Ω at last device; A/B polarity reversed</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:600;">3.</td>
+                    <td style="font-weight:600;">Wiegand flapping</td>
+                    <td>Shielded cable? Keep <150m; separate from AC power</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:600;">4.</td>
+                    <td style="font-weight:600;">Time‑out / relay stuck</td>
+                    <td>Check strike rating: 1A max inductive – add snubber</td>
+                </tr>
+            </table>
+        </div>
+        <div class="code-block">
+            <i class="fas fa-terminal" style="margin-right: 8px; color: var(--blue-500);"></i>
+            Controller debug: serial console @ 38400 baud → "diag door1" shows last 10 events
+        </div>
+
+        <!-- access rights & schedules -->
+        <div class="section-title">
+            <i class="fas fa-calendar-alt"></i> Credentials & schedules
+        </div>
+        <ul class="step-list">
+            <li><span class="step-num">1</span> <strong>Card not recognised</strong> – verify facility code matches reader; re‑enroll card; check bit length (26/34/37 bit).</li>
+            <li><span class="step-num">2</span> <strong>Access denied – time zone</strong> – user not allowed at this hour. Override with "always" profile for testing.</li>
+            <li><span class="step-num">3</span> <strong>Anti‑passback violation</strong> – reset entry/exit state; disable APB temporarily.</li>
+            <li><span class="step-num">4</span> <strong>PIN code not working</strong> – keypad mode: 4‑6 digits, duplicate PINs not allowed. Factory reset keypad sequence.</li>
+        </ul>
+
+        <!-- advanced two col -->
+        <div class="two-col-grid">
+            <div style="background: var(--blue-50); padding: 20px; border-radius: 20px;">
+                <i class="fas fa-door-closed" style="color: var(--blue-500); font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
+                <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Door prop / forced open</h3>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Magnetic switch misalignment >5mm. Adjust strike plate; replace reed switch if corroded.</p>
+            </div>
+            <div style="background: var(--gray-50); padding: 20px; border-radius: 20px; border:1px solid var(--border-color);">
+                <i class="fas fa-battery-quarter" style="color: var(--blue-500); font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
+                <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Battery backup fails</h3>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Sealed lead‑acid: charge voltage 13.7V. Replace if <12V after 24h charge. Check thermal fuse.</p>
+            </div>
+        </div>
+
+        <!-- 30 sec resolution -->
+        <div style="margin: 32px 0 16px;">
+            <span class="badge"><i class="fas fa-toolbox"></i> 30‑second resolution</span>
+        </div>
+        <div class="two-col-grid">
+            <div class="tip-box">
+                <h4><i class="fas fa-bolt" style="color:var(--blue-500);"></i> Electric strike hums</h4>
+                <p style="color: var(--text-secondary);">AC on solenoid? Use DC. Add bridge rectifier + capacitor; or replace with DC strike.</p>
+            </div>
+            <div class="tip-box">
+                <h4><i class="fas fa-hand-point-up" style="color:var(--blue-500);"></i> REX (request to exit)</h4>
+                <p style="color: var(--text-secondary);">Motion sensor timeout: set retrigger 2 sec. PIR lens covered by dust – wipe gently.</p>
+            </div>
+        </div>
+
+        <!-- error matrix -->
+        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 32px 0 24px;">
+        <div style="margin-top: 24px;">
+            <h3 style="font-weight: 600; font-size: 1.1rem; display: flex; gap: 8px; margin-bottom: 16px;">
+                <i class="fas fa-table"></i> Error code matrix – door access
+            </h3>
+            <div style="overflow-x: auto;">
+                <table class="error-matrix">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Indication</th>
+                            <th>Quick fix</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 600;">E012</td>
+                            <td>Door forced open (DPS)</td>
+                            <td>adjust door position sensor; check magnet gap</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">E024</td>
+                            <td>Too many wrong PIN attempts</td>
+                            <td>wait 30s or unlock via supervisor card</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">E031</td>
+                            <td>Controller watchdog reset</td>
+                            <td>check 5V rail; replace power supply</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">E045</td>
+                            <td>Wiegand parity error</td>
+                            <td>verify facility code / card format mismatch</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="open-ticket-section">
+            <button class="btn-open-ticket" id="submitTicketBtn">
+                <i class="fas fa-ticket-alt"></i> Still having trouble? Submit a ticket
+            </button>
+            <p style="font-size:0.8rem; color: var(--text-secondary); margin-top: 16px;">
+                Submit a support ticket — we’ll help you further.
+            </p>
+        </div>
+
+        <div class="footnote-pdf">
+            <span><i class="fas fa-print"></i> print‑ready · AlliTrack intelligent ticketing · generated 2025</span>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="feedbackModal">
+        <div class="modal-card">
+            <button class="close-modal-x" id="closeModalX" aria-label="Close modal">&times;</button>
+            <div class="modal-icon">
+                <i class="fas fa-headset"></i>
+            </div>
+            <h2>How was the system?</h2>
+            <p>Your feedback helps us improve the<br>Door Access Quick Fix.</p>
+
+            <div class="rating-group">
+                <button class="rating-btn" data-rating="good"><i class="fas fa-smile"></i> Good</button>
+                <button class="rating-btn" data-rating="neutral"><i class="fas fa-meh"></i> Neutral</button>
+                <button class="rating-btn" data-rating="bad"><i class="fas fa-frown"></i> Bad</button>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-primary" id="submitRating">Submit & continue</button>
+                <button class="modal-btn modal-btn-secondary" id="closeModalBtn">Cancel</button>
+            </div>
+            <p style="font-size:0.75rem; color: var(--text-secondary); margin-top: 20px;">
+                After submitting, you'll be redirected to login.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const STORAGE_PREFIX = 'alliTrack_';
+            let fontSizeLevel = 1;
+            let highContrast = false;
+            let focusHighlight = false;
+            let theme = 'light';
+
+            try {
+                fontSizeLevel = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'fontSize') || '1');
+                highContrast = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'highContrast') || 'false');
+                focusHighlight = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'focusHighlight') || 'false');
+                theme = localStorage.getItem(STORAGE_PREFIX + 'theme') || 'light';
+            } catch (e) { }
+
+            const FONT_VALUES = ['80%', '100%', '120%', '140%'];
+            const FONT_NAMES = ['Small', 'Medium', 'Large', 'X-Large'];
+            const body = document.body;
+
+            function applyFontSize() {
+                document.documentElement.style.fontSize = FONT_VALUES[fontSizeLevel];
+                const lbl = document.getElementById('currentFontSize');
+                if (lbl) lbl.textContent = FONT_NAMES[fontSizeLevel];
+                localStorage.setItem(STORAGE_PREFIX + 'fontSize', JSON.stringify(fontSizeLevel));
+            }
+
+            function applyTheme() {
+                body.classList.remove('dark-theme', 'light-theme');
+                if (theme === 'dark') body.classList.add('dark-theme');
+                else body.classList.add('light-theme');
+                localStorage.setItem(STORAGE_PREFIX + 'theme', theme);
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.theme === theme);
+                });
+            }
+
+            function applyContrast() {
+                body.classList.toggle('high-contrast', highContrast);
+                localStorage.setItem(STORAGE_PREFIX + 'highContrast', JSON.stringify(highContrast));
+                const btn = document.getElementById('toggleContrast');
+                if (btn) {
+                    btn.classList.toggle('active', highContrast);
+                    btn.setAttribute('aria-pressed', highContrast);
+                }
+            }
+
+            function applyFocus() {
+                body.classList.toggle('focus-highlight', focusHighlight);
+                localStorage.setItem(STORAGE_PREFIX + 'focusHighlight', JSON.stringify(focusHighlight));
+                const btn = document.getElementById('toggleFocus');
+                if (btn) {
+                    btn.classList.toggle('active', focusHighlight);
+                    btn.setAttribute('aria-pressed', focusHighlight);
+                }
+            }
+
+            function setFontSize(level) { if (level >= 0 && level < FONT_VALUES.length) { fontSizeLevel = level; applyFontSize(); } }
+            function setTheme(t) { theme = t; applyTheme(); }
+            function setHighContrast(v) { highContrast = v; applyContrast(); }
+            function setFocus(v) { focusHighlight = v; applyFocus(); }
+            function resetAll() { setFontSize(1); setTheme('light'); setHighContrast(false); setFocus(false); }
+
+            applyFontSize(); applyTheme(); applyContrast(); applyFocus();
+
+            // ---------- EVENT LISTENERS (DOM ready) ----------
+            document.addEventListener('DOMContentLoaded', function () {
+                // accessibility panel
+                const toggleBtn = document.getElementById('accessibilityToggle');
+                const panel = document.getElementById('accessibilityPanel');
+                const closeBtn = document.getElementById('closeAccessibility');
+                if (toggleBtn && panel) {
+                    toggleBtn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        panel.classList.toggle('open');
+                        toggleBtn.setAttribute('aria-expanded', panel.classList.contains('open'));
+                    });
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', function () {
+                            panel.classList.remove('open');
+                            toggleBtn.setAttribute('aria-expanded', 'false');
+                        });
+                    }
+                    document.addEventListener('click', function (e) {
+                        if (panel.classList.contains('open') && !panel.contains(e.target) && !toggleBtn.contains(e.target)) {
+                            panel.classList.remove('open');
+                            toggleBtn.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                }
+
+                // theme buttons
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.addEventListener('click', function (e) { e.preventDefault(); setTheme(this.dataset.theme); });
+                });
+
+                document.getElementById('decreaseFont')?.addEventListener('click', function () { setFontSize(fontSizeLevel - 1); });
+                document.getElementById('increaseFont')?.addEventListener('click', function () { setFontSize(fontSizeLevel + 1); });
+                document.getElementById('toggleContrast')?.addEventListener('click', function () { setHighContrast(!highContrast); });
+                document.getElementById('toggleFocus')?.addEventListener('click', function () { setFocus(!focusHighlight); });
+                document.getElementById('resetAccessibility')?.addEventListener('click', resetAll);
+
+                const modal = document.getElementById('feedbackModal');
+                const triggerBtn = document.getElementById('submitTicketBtn');
+                const closeModalBtn = document.getElementById('closeModalBtn');
+                const closeModalX = document.getElementById('closeModalX');
+                const submitRating = document.getElementById('submitRating');
+
+                function openModal() {
+                    if (modal) modal.classList.add('active');
+                }
+                function closeModal() {
+                    if (modal) modal.classList.remove('active');
+                }
+
+                if (triggerBtn) {
+                    triggerBtn.addEventListener('click', openModal);
+                }
+
+                if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+                if (closeModalX) closeModalX.addEventListener('click', closeModal);
+
+                if (submitRating) {
+                    submitRating.addEventListener('click', function () {
+                        const selectedRating = document.querySelector('.rating-btn[style*="background: var(--blue-500)"]');
+                        closeModal();
+                        window.location.href = '../../pages/landing page/unified-auth-modal.html';
+                    });
+                }
+
+                // rating button interaction (visual selection)
+                document.querySelectorAll('.rating-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        // remove selected style from all
+                        document.querySelectorAll('.rating-btn').forEach(b => {
+                            b.style.background = '';
+                            b.style.color = '';
+                            b.style.borderColor = '';
+                            const icon = b.querySelector('i');
+                            if (icon) icon.style.color = '';
+                        });
+                        // apply selected style
+                        this.style.background = 'var(--blue-500)';
+                        this.style.color = 'white';
+                        this.style.borderColor = 'var(--blue-500)';
+                        const icon = this.querySelector('i');
+                        if (icon) icon.style.color = 'white';
+                    });
+                });
+
+                // close modal when clicking overlay
+                if (modal) {
+                    modal.addEventListener('click', function (e) {
+                        if (e.target === modal) closeModal();
+                    });
+                }
+
+            }); // DOMContentLoaded
+
+            // escape key for accessibility panel + modal
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    const panel = document.getElementById('accessibilityPanel');
+                    const toggleBtn = document.getElementById('accessibilityToggle');
+                    if (panel?.classList.contains('open')) {
+                        panel.classList.remove('open');
+                        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+                    }
+                    const modal = document.getElementById('feedbackModal');
+                    if (modal?.classList.contains('active')) {
+                        modal.classList.remove('active');
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+
+</html>

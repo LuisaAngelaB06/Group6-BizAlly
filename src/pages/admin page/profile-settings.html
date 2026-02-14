@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title data-translate="profile_settings_page_title">Profile Settings - AlliTrack Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
+    <link rel="stylesheet" href="../../styles/admin page/profile-settings.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <script src="../../scripts/mobile-restriction.js"></script>
+    <script src="../../scripts/admin-preference-manager.js"></script>
+    <script src="../../scripts/admin-data-manager.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Access Denied Modal -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+                Home</button>
+        </div>
+    </div>
+    
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="../../../src/assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                            style="width: 32px; height: 32px;">
+                    </div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle" data-translate="admin_dashboard">Admin Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../../pages/admin page/index-admin.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
+                    <a href="../../pages/admin page/all-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
+                    </a>
+                    <a href="../../pages/admin page/staff-management.html" data-section="users">
+                        <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
+                    </a>
+                    <a href="../../pages/admin page/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="system_management">System Management</div>
+                    <a href="../../pages/admin page/system-settings.html" data-section="system-settings">
+                        <i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span>
+                    </a>
+                    <a href="../../pages/admin page/system-analytics.html" data-section="analytics">
+                        <i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span>
+                    </a>
+                    <a href="../../pages/admin page/system-logs.html" data-section="logs">
+                        <i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
+                    <a href="../../pages/admin page/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
+                    </a>
+                    <a href="../../pages/admin page/profile-settings.html" class="active"
+                        data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..."
+                            data-translate-placeholder="search_tickets" aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div id="userName" style="font-weight:700">Admin</div>
+                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">admin@allitrack.com</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div id="userAvatar" class="avatar">A</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="../../pages/admin page/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="../../pages/admin page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Profile Settings Content -->
+                <div class="content">
+                    <div class="profile-content">
+                        <!-- Header with Container -->
+                        <div class="profile-header-container">
+                            <div class="profile-header">
+                                <h1><i class="fas fa-user-cog"></i> <span
+                                        data-translate="profile_settings_title">Profile Settings</span></h1>
+                            </div>
+                        </div>
+
+                        <!-- Profile Settings Form -->
+                        <form class="profile-container" id="profileForm">
+                            <!-- Profile Photo Section -->
+                            <div class="profile-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title" data-translate="profile_photo">Profile Photo</h2>
+                                        <p class="section-description" data-translate="update_profile_picture">Update
+                                            your profile picture</p>
+                                    </div>
+                                </div>
+
+                                <div class="profile-photo-section">
+                                    <div class="profile-photo" id="profilePhoto">
+                                        <div id="profileInitials">A</div>
+                                        <img id="profileImage" style="display: none;" alt="Profile Photo">
+                                        <div class="profile-photo-overlay">
+                                            <i class="fas fa-camera"></i>
+                                        </div>
+                                    </div>
+                                    <div class="profile-photo-info">
+                                        <div class="profile-photo-title" data-translate="your_profile_picture">Your
+                                            Profile Picture</div>
+                                        <div class="profile-photo-description" data-translate="photo_requirements">
+                                            Upload a new photo. JPG, GIF or PNG. Max size 5MB.
+                                        </div>
+                                        <div class="photo-actions">
+                                            <button type="button" class="btn btn-primary"
+                                                onclick="document.getElementById('photoUpload').click()">
+                                                <i class="fas fa-upload"></i> <span data-translate="upload_photo">Upload
+                                                    Photo</span>
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" onclick="removePhoto()">
+                                                <i class="fas fa-times"></i> <span data-translate="remove">Remove</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="file" id="photoUpload" accept="image/*" style="display: none;"
+                                    onchange="handlePhotoUpload(event)">
+                            </div>
+
+                            <!-- Personal Information -->
+                            <div class="profile-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title" data-translate="personal_info">Personal Information
+                                        </h2>
+                                        <p class="section-description" data-translate="update_basic_info">Update your
+                                            basic profile information</p>
+                                    </div>
+                                </div>
+
+                                <div class="profile-form">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label" for="firstName">
+                                                <span data-translate="first_name">First Name</span> <span
+                                                    class="required">*</span>
+                                            </label>
+                                            <input type="text" id="firstName" class="form-input"
+                                                placeholder="Enter your first name" required />
+                                            <div class="form-error" id="firstNameError"
+                                                data-translate="enter_first_name">Please enter your first name</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="lastName">
+                                                <span data-translate="last_name">Last Name</span> <span
+                                                    class="required">*</span>
+                                            </label>
+                                            <input type="text" id="lastName" class="form-input"
+                                                placeholder="Enter your last name" required />
+                                            <div class="form-error" id="lastNameError" data-translate="enter_last_name">
+                                                Please enter your last name</div>
+                                        </div>
+
+                                        <div class="form-group full-width">
+                                            <label class="form-label" for="email">
+                                                <span data-translate="email_address">Email Address</span> <span
+                                                    class="required">*</span>
+                                            </label>
+                                            <input type="email" id="email" class="form-input"
+                                                placeholder="Enter your email address" required />
+                                            <div class="form-error" id="emailError" data-translate="enter_valid_email">
+                                                Please enter a valid email address</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="phone">
+                                                <i class="fas fa-phone"></i> <span data-translate="phone_number">Phone
+                                                    Number</span>
+                                            </label>
+                                            <input type="tel" id="phone" class="form-input"
+                                                placeholder="Enter your phone number" />
+                                            <div class="form-hint" data-translate="optional">Optional</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="department">
+                                                <i class="fas fa-building"></i> <span
+                                                    data-translate="department">Department</span>
+                                            </label>
+                                            <select id="department" class="form-input">
+                                                <option value="" data-translate="select_department">Select Department
+                                                </option>
+                                                <option value="it" data-translate="it_department">IT Department</option>
+                                                <option value="hr" data-translate="hr_department">Human Resources
+                                                </option>
+                                                <option value="finance" data-translate="finance_department">Finance
+                                                </option>
+                                                <option value="operations" data-translate="operations_department">
+                                                    Operations</option>
+                                                <option value="marketing" data-translate="marketing_department">
+                                                    Marketing</option>
+                                                <option value="sales" data-translate="sales_department">Sales</option>
+                                                <option value="support" data-translate="support_department">Customer
+                                                    Support</option>
+                                                <option value="other" data-translate="other_department">Other</option>
+                                            </select>
+                                            <div class="form-hint" data-translate="optional">Optional</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="role">
+                                                <i class="fas fa-user-shield"></i> <span
+                                                    data-translate="role">Role</span>
+                                            </label>
+                                            <input type="text" id="role" class="form-input" value="Administrator"
+                                                readonly />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Change Password -->
+                            <div class="profile-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title" data-translate="change_password">Change Password</h2>
+                                        <p class="section-description" data-translate="update_password_security">Update
+                                            your password to keep your account secure</p>
+                                    </div>
+                                </div>
+
+                                <div class="profile-form">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label" for="currentPassword">
+                                                <span data-translate="current_password">Current Password</span> <span
+                                                    class="required">*</span>
+                                            </label>
+                                            <input type="password" id="currentPassword" class="form-input"
+                                                placeholder="Enter current password" />
+                                            <div class="form-error" id="currentPasswordError"
+                                                data-translate="enter_current_password">Please enter your current
+                                                password</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="newPassword">
+                                                <span data-translate="new_password">New Password</span> <span
+                                                    class="required">*</span>
+                                            </label>
+                                            <input type="password" id="newPassword" class="form-input"
+                                                placeholder="Enter new password" />
+                                            <div class="password-strength" id="passwordStrength">
+                                                <div class="strength-bar">
+                                                    <div class="strength-fill"></div>
+                                                </div>
+                                                <div class="strength-text" data-translate="password_strength">Password
+                                                    strength</div>
+                                            </div>
+                                            <div class="form-error" id="newPasswordError"
+                                                data-translate="enter_new_password">Please enter a new password</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="confirmPassword">
+                                                <span data-translate="confirm_password">Confirm Password</span> <span
+                                                    class="required">*</span>
+                                            </label>
+                                            <input type="password" id="confirmPassword" class="form-input"
+                                                placeholder="Confirm new password" />
+                                            <div class="form-error" id="confirmPasswordError"
+                                                data-translate="passwords_not_match">Passwords do not match</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-hint">
+                                        <i class="fas fa-info-circle"></i> <span
+                                            data-translate="password_requirements">Password must be at least 8
+                                            characters long and include uppercase, lowercase, numbers, and special
+                                            characters.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                    <i class="fas fa-times"></i> <span data-translate="cancel">Cancel</span>
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> <span data-translate="save_changes">Save Changes</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Account Dropdown Functionality - FIXED VERSION
+        function setupAccountDropdown() {
+            console.log('🔧 Setting up account dropdown...');
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
+
+            if (!accountBtn || !accountMenu) {
+                console.error('❌ Account dropdown elements not found!');
+                return;
+            }
+
+            console.log('✅ Elements found, setting up...');
+
+            // Don't clone elements - just work with existing ones
+            // Remove any existing click listeners
+            const newBtn = accountBtn.cloneNode(true);
+            accountBtn.parentNode.replaceChild(newBtn, accountBtn);
+
+            // Get fresh reference
+            const freshBtn = document.getElementById("accountBtn");
+
+            // Add click event to toggle dropdown
+            freshBtn.addEventListener("click", function (e) {
+                console.log('🎯 Account button clicked!');
+                e.stopPropagation();
+                e.preventDefault();
+
+                const isShowing = accountMenu.classList.contains("show");
+                accountMenu.classList.toggle("show");
+                freshBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", function (e) {
+                if (accountMenu.classList.contains("show") &&
+                    !freshBtn.contains(e.target) &&
+                    !accountMenu.contains(e.target)) {
+                    console.log('🔒 Closing dropdown (clicked outside)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    console.log('🔒 Closing dropdown (Escape key)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close when clicking menu items (except logout)
+            const menuItems = accountMenu.querySelectorAll("a");
+            menuItems.forEach(item => {
+                item.addEventListener("click", function () {
+                    console.log('🔒 Closing dropdown (menu item clicked)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                });
+            });
+
+            // Ensure button is clickable
+            freshBtn.style.cursor = 'pointer';
+
+            console.log('✅ Account dropdown setup complete');
+        }
+
+        // Translation dictionary for admin profile settings page
+        const translations = {
+            'en': {
+                // PAGE-SPECIFIC translations only:
+                'profile_settings_page_title': 'Profile Settings - AlliTrack Admin',
+                'profile_settings_title': 'Profile Settings',
+                'search_tickets': 'Search tickets, users, IDs...',
+                'profile_updated': 'Profile updated successfully!',
+                'profile_photo': 'Profile Photo',
+                'update_profile_picture': 'Update your profile picture',
+                'your_profile_picture': 'Your Profile Picture',
+                'photo_requirements': 'Upload a new photo. JPG, GIF or PNG. Max size 5MB.',
+                'upload_photo': 'Upload Photo',
+                'remove': 'Remove',
+                'personal_info': 'Personal Information',
+                'update_basic_info': 'Update your basic profile information',
+                'first_name': 'First Name',
+                'last_name': 'Last Name',
+                'enter_first_name': 'Please enter your first name',
+                'enter_last_name': 'Please enter your last name',
+                'email_address': 'Email Address',
+                'enter_valid_email': 'Please enter a valid email address',
+                'phone_number': 'Phone Number',
+                'department': 'Department',
+                'select_department': 'Select Department',
+                'it_department': 'IT Department',
+                'hr_department': 'Human Resources',
+                'finance_department': 'Finance',
+                'operations_department': 'Operations',
+                'marketing_department': 'Marketing',
+                'sales_department': 'Sales',
+                'support_department': 'Customer Support',
+                'other_department': 'Other',
+                'role': 'Role',
+                'optional': 'Optional',
+                'change_password': 'Change Password',
+                'update_password_security': 'Update your password to keep your account secure',
+                'current_password': 'Current Password',
+                'enter_current_password': 'Please enter your current password',
+                'new_password': 'New Password',
+                'enter_new_password': 'Please enter a new password',
+                'confirm_password': 'Confirm Password',
+                'passwords_not_match': 'Passwords do not match',
+                'password_strength': 'Password strength',
+                'weak_password': 'Weak password',
+                'medium_strength': 'Medium strength',
+                'strong_password': 'Strong password',
+                'password_requirements': 'Password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters.',
+                'cancel': 'Cancel',
+                'save_changes': 'Save Changes',
+
+                // Navigation (admin specific)
+                'admin_dashboard': 'Admin Dashboard',
+                'dashboard': 'Dashboard',
+                'ticket_management': 'Ticket Management',
+                'all_tickets': 'All Tickets',
+                'users_management': 'Users Management',
+                'announcements': 'Announcements',
+                'system_management': 'System Management',
+                'system_settings': 'System Settings',
+                'analytics': 'Analytics',
+                'system_logs': 'System Logs',
+                'admin_tools': 'Admin Tools',
+                'preferences': 'Preferences',
+                'profile_settings': 'Profile Settings',
+                'profile': 'Profile',
+                'settings': 'Settings',
+                'logout': 'Logout',
+                'admin_dashboard_template': 'AlliTrack Admin Dashboard'
+            },
+            'fil': {
+                'profile_settings_page_title': 'Mga Setting ng Profile - AlliTrack Admin',
+                'profile_settings_title': 'Mga Setting ng Profile',
+                'search_tickets': 'Maghanap...',
+                'profile_updated': 'Na-update ang profile!',
+                'profile_photo': 'Litrato sa Profile',
+                'update_profile_picture': 'I-update ang litrato',
+                'your_profile_picture': 'Iyong Litrato',
+                'photo_requirements': 'Mag-upload ng bagong litrato. JPG, GIF o PNG. Max 5MB.',
+                'upload_photo': 'Mag-upload ng Litrato',
+                'remove': 'Tanggalin',
+                'personal_info': 'Personal na Impormasyon',
+                'update_basic_info': 'I-update ang impormasyon',
+                'first_name': 'Pangalan',
+                'last_name': 'Apelyido',
+                'enter_first_name': 'Ilagay ang pangalan',
+                'enter_last_name': 'Ilagay ang apelyido',
+                'email_address': 'Email',
+                'enter_valid_email': 'Ilagay ang tamang email',
+                'phone_number': 'Telepono',
+                'department': 'Department',
+                'select_department': 'Pumili ng Department',
+                'it_department': 'IT Department',
+                'hr_department': 'Human Resources',
+                'finance_department': 'Finance',
+                'operations_department': 'Operations',
+                'marketing_department': 'Marketing',
+                'sales_department': 'Sales',
+                'support_department': 'Customer Support',
+                'other_department': 'Iba Pa',
+                'role': 'Tungkulin',
+                'optional': 'Opsyonal',
+                'change_password': 'Palitan ang Password',
+                'update_password_security': 'I-update ang password',
+                'current_password': 'Kasalukuyang Password',
+                'enter_current_password': 'Ilagay ang kasalukuyang password',
+                'new_password': 'Bagong Password',
+                'enter_new_password': 'Ilagay ang bagong password',
+                'confirm_password': 'Kumpirmahin ang Password',
+                'passwords_not_match': 'Hindi magkatugma ang password',
+                'password_strength': 'Lakas ng Password',
+                'weak_password': 'Mahinang password',
+                'medium_strength': 'Katamtamang lakas',
+                'strong_password': 'Malakas na password',
+                'password_requirements': 'Password: 8+ na character, malaki at maliit na letra, numero, at special characters.',
+                'cancel': 'Kanselahin',
+                'save_changes': 'I-save',
+
+                // Navigation (admin specific)
+                'admin_dashboard': 'Admin Dashboard',
+                'dashboard': 'Dashboard',
+                'ticket_management': 'Pamamahala ng Ticket',
+                'all_tickets': 'Lahat ng Ticket',
+                'users_management': 'Pamamahala ng User',
+                'announcements': 'Mga Anunsyo',
+                'system_management': 'Pamamahala ng Sistema',
+                'system_settings': 'Mga Setting ng Sistema',
+                'analytics': 'Analitika',
+                'system_logs': 'Mga Log ng Sistema',
+                'admin_tools': 'Mga Tool ng Admin',
+                'preferences': 'Mga Kagustuhan',
+                'profile_settings': 'Mga Setting ng Profile',
+                'profile': 'Profile',
+                'settings': 'Mga Setting',
+                'logout': 'Logout',
+                'admin_dashboard_template': 'AlliTrack Admin Dashboard'
+            }
+        };
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🚀 Admin Profile Settings: Starting initialization...');
+
+            // Add Toast HTML element to body
+            const toast = document.createElement('div');
+            toast.id = 'toast';
+            toast.className = 'toast';
+            document.body.appendChild(toast);
+
+            // Initialize user data manager FIRST
+            if (window.userDataManager) {
+                console.log('👤 Initializing User Data Manager...');
+                window.userDataManager.initializeUserDisplay();
+
+                // Set admin-specific default data
+                const userData = window.userDataManager.getUserData();
+                if (!userData.name) {
+                    window.userDataManager.updateUserData({
+                        name: 'Admin User',
+                        email: 'admin@allitrack.com',
+                        role: 'Administrator'
+                    });
+                }
+            } else {
+                console.error('❌ User Data Manager not found!');
+            }
+
+            // Initialize preferences manager
+            if (window.preferencesManager) {
+                console.log('⚙️ Initializing Preferences Manager...');
+                window.preferencesManager.initialize();
+
+                // Apply theme immediately
+                window.preferencesManager.applyTheme();
+
+                // Get current language from preferences manager
+                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
+                applyTranslations(currentLang);
+            } else {
+                console.error('❌ Preferences Manager not found!');
+                applyTranslations('en'); // Default to English
+            }
+
+            // Setup theme listener
+            setupThemeListener();
+
+            // Cache DOM elements
+            const profileImage = document.getElementById('profileImage');
+            const profileInitials = document.getElementById('profileInitials');
+
+            // Load profile data from localStorage
+            loadProfileData();
+
+            // Initialize form functionality
+            initForm();
+
+            // Setup logout functionality FIRST
+            setupLogout();
+
+            // SETUP ACCOUNT DROPDOWN - CALL THIS AFTER setupLogout
+            setTimeout(() => {
+                console.log('🔄 Setting up account dropdown...');
+                setupAccountDropdown();
+            }, 50);
+
+            console.log('✅ Admin Profile Settings page loaded');
+        });
+
+        // Setup theme listener
+        function setupThemeListener() {
+            console.log('🌙 Setting up theme listener...');
+
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'preferredTheme') {
+                    console.log('Theme changed via storage:', event.newValue);
+                    if (window.preferencesManager) {
+                        setTimeout(() => {
+                            window.preferencesManager.applyTheme();
+                        }, 100);
+                    }
+                }
+            });
+
+            document.addEventListener('themeChanged', function (e) {
+                console.log('Theme changed via event:', e.detail.theme);
+                if (window.preferencesManager) {
+                    window.preferencesManager.applyTheme();
+                }
+            });
+        }
+
+        // Apply translations to the page
+        function applyTranslations(language) {
+            const lang = translations[language] ? language : 'en';
+            const dict = translations[lang];
+
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (dict[key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') {
+                        if (element.type !== 'text' && element.type !== 'email' && element.type !== 'password' && element.type !== 'tel') {
+                            element.textContent = dict[key];
+                        }
+                    } else if (element.tagName === 'OPTION') {
+                        element.textContent = dict[key];
+                    } else {
+                        element.textContent = dict[key];
+                    }
+                }
+            });
+
+            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-translate-placeholder');
+                if (dict[key]) {
+                    element.placeholder = dict[key];
+                }
+            });
+
+            if (dict['profile_settings_page_title']) {
+                document.title = dict['profile_settings_page_title'];
+            }
+        }
+
+        // Listen for language changes from preference-manager.js
+        document.addEventListener('languageChanged', function (e) {
+            console.log('Language changed to:', e.detail.language);
+            applyTranslations(e.detail.language);
+        });
+
+        // Load saved profile data
+        function loadProfileData() {
+            if (!window.userDataManager) {
+                console.error('User Data Manager not available');
+                return;
+            }
+
+            const userData = window.userDataManager.getUserData();
+            const profileImage = document.getElementById('profileImage');
+            const profileInitials = document.getElementById('profileInitials');
+
+            // Set form values
+            document.getElementById('firstName').value = userData.firstName || userData.name?.split(' ')[0] || 'Admin';
+            document.getElementById('lastName').value = userData.lastName || userData.name?.split(' ').slice(1).join(' ') || 'User';
+            document.getElementById('email').value = userData.email || 'admin@allitrack.com';
+            document.getElementById('phone').value = userData.phone || '';
+
+            // Set department dropdown value
+            const departmentSelect = document.getElementById('department');
+            if (departmentSelect && userData.department) {
+                departmentSelect.value = userData.department;
+            }
+
+            document.getElementById('role').value = userData.role || 'Administrator';
+
+            // Update profile photo if exists
+            if (userData.photo && profileImage && profileInitials) {
+                profileImage.src = userData.photo;
+                profileImage.style.display = 'block';
+                profileInitials.style.display = 'none';
+            } else if (profileInitials) {
+                updateProfileInitials();
+            }
+        }
+
+        // Update profile initials
+        function updateProfileInitials() {
+            const profileInitials = document.getElementById('profileInitials');
+            if (!profileInitials) return;
+
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const initials = (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase();
+            profileInitials.textContent = initials || 'A';
+        }
+
+        // Logout functionality - FIXED VERSION
+        function setupLogout() {
+            console.log('🔐 Setting up logout functionality...');
+
+            // First remove any existing logout buttons to avoid duplicates
+            const existingLogoutBtns = document.querySelectorAll('#logoutBtn');
+            existingLogoutBtns.forEach(btn => {
+                const parent = btn.parentNode;
+                const newBtn = btn.cloneNode(true);
+                parent.replaceChild(newBtn, btn);
+            });
+
+            // Now attach the event listener to the fresh logout button
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                console.log('✅ Logout button found, attaching handler...');
+
+                // Create a robust logout handler
+                const logoutHandler = function (e) {
+                    console.log('🚪 Logout button clicked!');
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Clear user data from localStorage
+                    localStorage.removeItem('userData');
+                    localStorage.removeItem('userProfile');
+                    localStorage.removeItem('adminPreferences');
+                    localStorage.removeItem('preferredTheme');
+                    localStorage.removeItem('preferredLanguage');
+
+                    console.log('🧹 Cleared localStorage, redirecting to login...');
+
+                    // Redirect to admin login page
+                    window.location.href = '../../../index.html';
+                };
+
+                // Remove any existing listeners and attach fresh one
+                logoutBtn.removeEventListener('click', logoutHandler);
+                logoutBtn.addEventListener('click', logoutHandler);
+
+            } else {
+                console.error('❌ Logout button not found!');
+            }
+        }
+
+        // Initialize form functionality
+        function initForm() {
+            const profileForm = document.getElementById('profileForm');
+            if (profileForm) {
+                profileForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    if (validateForm()) {
+                        saveProfile();
+                    }
+                });
+            }
+
+            // Password strength checker
+            const newPasswordInput = document.getElementById('newPassword');
+            if (newPasswordInput) {
+                newPasswordInput.addEventListener('input', (e) => {
+                    checkPasswordStrength(e.target.value);
+                });
+            }
+
+            // Update initials when name fields change
+            const firstNameInput = document.getElementById('firstName');
+            const lastNameInput = document.getElementById('lastName');
+
+            if (firstNameInput) {
+                firstNameInput.addEventListener('input', updateProfileInitials);
+            }
+
+            if (lastNameInput) {
+                lastNameInput.addEventListener('input', updateProfileInitials);
+            }
+        }
+
+        // Handle photo upload
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(file.type)) {
+                showToast('Please select a valid image file (JPG, PNG, or GIF)', 'error');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('File size must be less than 5MB', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const profileImage = document.getElementById('profileImage');
+                const profileInitials = document.getElementById('profileInitials');
+
+                if (profileImage && profileInitials) {
+                    profileImage.src = e.target.result;
+                    profileImage.style.display = 'block';
+                    profileInitials.style.display = 'none';
+                }
+
+                if (window.userDataManager) {
+                    window.userDataManager.updateUserProfile({
+                        photo: e.target.result,
+                        firstName: document.getElementById('firstName').value,
+                        lastName: document.getElementById('lastName').value
+                    });
+                }
+
+                showToast('Profile photo uploaded successfully', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Remove profile photo - FIXED to show user's initials
+        function removePhoto() {
+            const profileImage = document.getElementById('profileImage');
+            const profileInitials = document.getElementById('profileInitials');
+
+            if (profileImage && profileInitials) {
+                profileImage.style.display = 'none';
+                profileInitials.style.display = 'block';
+
+                // Update the initials based on current form values
+                updateProfileInitials();
+            }
+
+            if (window.userDataManager) {
+                const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+                delete userProfile.photo;
+                localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                window.userDataManager.dispatchUserDataChanged();
+            }
+
+            showToast('Profile photo removed', 'success');
+        }
+
+        // Password strength checker
+        function checkPasswordStrength(password) {
+            const passwordStrength = document.getElementById('passwordStrength');
+            if (!passwordStrength) return;
+
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.match(/[a-z]/)) strength++;
+            if (password.match(/[A-Z]/)) strength++;
+            if (password.match(/[0-9]/)) strength++;
+            if (password.match(/[^a-zA-Z0-9]/)) strength++;
+
+            passwordStrength.className = 'password-strength';
+            const strengthText = passwordStrength.querySelector('.strength-text');
+
+            const currentLang = window.preferencesManager ?
+                window.preferencesManager.getCurrentLanguage() : 'en';
+            const dict = translations[currentLang] || translations['en'];
+
+            if (password.length === 0) {
+                strengthText.textContent = dict['password_strength'] || 'Password strength';
+            } else if (strength <= 2) {
+                passwordStrength.classList.add('strength-weak');
+                strengthText.textContent = dict['weak_password'] || 'Weak password';
+            } else if (strength <= 4) {
+                passwordStrength.classList.add('strength-medium');
+                strengthText.textContent = dict['medium_strength'] || 'Medium strength';
+            } else {
+                passwordStrength.classList.add('strength-strong');
+                strengthText.textContent = dict['strong_password'] || 'Strong password';
+            }
+        }
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.classList.remove('show');
+            });
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            // Validate required fields
+            const requiredFields = ['firstName', 'lastName', 'email'];
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field);
+                if (!input.value.trim()) {
+                    const errorElement = document.getElementById(field + 'Error');
+                    if (errorElement) errorElement.classList.add('show');
+                    if (input) input.classList.add('error');
+                    isValid = false;
+                }
+            });
+
+            // Validate email format
+            const email = document.getElementById('email');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && email.value && !emailRegex.test(email.value)) {
+                const emailError = document.getElementById('emailError');
+                if (emailError) emailError.classList.add('show');
+                if (email) email.classList.add('error');
+                isValid = false;
+            }
+
+            // Validate password change
+            const currentPassword = document.getElementById('currentPassword');
+            const newPassword = document.getElementById('newPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
+
+            const currentPasswordValue = currentPassword ? currentPassword.value : '';
+            const newPasswordValue = newPassword ? newPassword.value : '';
+            const confirmPasswordValue = confirmPassword ? confirmPassword.value : '';
+
+            if (currentPasswordValue || newPasswordValue || confirmPasswordValue) {
+                if (!currentPasswordValue) {
+                    const currentPasswordError = document.getElementById('currentPasswordError');
+                    if (currentPasswordError) currentPasswordError.classList.add('show');
+                    if (currentPassword) currentPassword.classList.add('error');
+                    isValid = false;
+                }
+
+                if (!newPasswordValue) {
+                    const newPasswordError = document.getElementById('newPasswordError');
+                    if (newPasswordError) newPasswordError.classList.add('show');
+                    if (newPassword) newPassword.classList.add('error');
+                    isValid = false;
+                }
+
+                if (newPasswordValue !== confirmPasswordValue) {
+                    const confirmPasswordError = document.getElementById('confirmPasswordError');
+                    if (confirmPasswordError) confirmPasswordError.classList.add('show');
+                    if (confirmPassword) confirmPassword.classList.add('error');
+                    isValid = false;
+                }
+
+                if (newPasswordValue && newPasswordValue.length < 8) {
+                    const newPasswordError = document.getElementById('newPasswordError');
+                    if (newPasswordError) {
+                        const currentLang = window.preferencesManager ?
+                            window.preferencesManager.getCurrentLanguage() : 'en';
+                        const dict = translations[currentLang] || translations['en'];
+                        newPasswordError.textContent = dict['password_requirements']?.split('.')[0] || 'Password must be at least 8 characters long';
+                        newPasswordError.classList.add('show');
+                    }
+                    if (newPassword) newPassword.classList.add('error');
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
+        function saveProfile() {
+            try {
+                if (!window.userDataManager) {
+                    console.error('User Data Manager not available');
+                    return;
+                }
+
+                const profileImage = document.getElementById('profileImage');
+                const profileData = {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    department: document.getElementById('department').value,
+                    role: document.getElementById('role').value
+                };
+
+                if (profileImage && profileImage.style.display === 'block') {
+                    profileData.photo = profileImage.src;
+                }
+
+                window.userDataManager.updateUserProfile(profileData);
+                window.userDataManager.updateUserData({
+                    name: `${profileData.firstName} ${profileData.lastName}`,
+                    email: profileData.email,
+                    role: profileData.role
+                });
+
+                // Show toast notification instead of inline success message
+                showToast('Profile updated successfully', 'success');
+
+                console.log('Admin profile saved:', profileData);
+            } catch (error) {
+                console.error('Error saving admin profile:', error);
+                showToast('Error saving profile', 'error');
+            }
+        }
+
+        function resetForm() {
+            try {
+                if (!window.userDataManager) {
+                    console.error('User Data Manager not available');
+                    return;
+                }
+
+                const userData = window.userDataManager.getUserData();
+                let firstName = 'Admin';
+                let lastName = 'User';
+                let email = userData.email || 'admin@allitrack.com';
+                let role = userData.role || 'Administrator';
+
+                if (userData.name) {
+                    const nameParts = userData.name.split(' ');
+                    firstName = nameParts[0] || 'Admin';
+                    lastName = nameParts.slice(1).join(' ') || 'User';
+                }
+
+                document.getElementById('firstName').value = firstName;
+                document.getElementById('lastName').value = lastName;
+                document.getElementById('email').value = email;
+                document.getElementById('phone').value = '';
+                document.getElementById('department').value = '';
+                document.getElementById('role').value = role;
+
+                const currentPassword = document.getElementById('currentPassword');
+                const newPassword = document.getElementById('newPassword');
+                const confirmPassword = document.getElementById('confirmPassword');
+
+                if (currentPassword) currentPassword.value = '';
+                if (newPassword) newPassword.value = '';
+                if (confirmPassword) confirmPassword.value = '';
+
+                removePhoto();
+
+                document.querySelectorAll('.form-error').forEach(error => {
+                    error.classList.remove('show');
+                });
+                document.querySelectorAll('.form-input').forEach(input => {
+                    input.classList.remove('error');
+                });
+
+                const passwordStrength = document.getElementById('passwordStrength');
+                if (passwordStrength) {
+                    passwordStrength.className = 'password-strength';
+                    const strengthText = passwordStrength.querySelector('.strength-text');
+                    const currentLang = window.preferencesManager ?
+                        window.preferencesManager.getCurrentLanguage() : 'en';
+                    const dict = translations[currentLang] || translations['en'];
+                    if (strengthText) strengthText.textContent = dict['password_strength'] || 'Password strength';
+                }
+
+                updateProfileInitials();
+
+                showToast('Form reset to saved values', 'success');
+            } catch (error) {
+                console.error('Error resetting form:', error);
+                showToast('Error resetting form', 'error');
+            }
+        }
+
+        // Show toast message (same as preferences page)
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            if (!toast) {
+                console.error('Toast element not found');
+                return;
+            }
+
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>
