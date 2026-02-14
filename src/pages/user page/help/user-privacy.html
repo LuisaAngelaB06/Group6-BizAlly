@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="privacy_page_title">Privacy Statement - AlliTrack</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../../styles/user page/help/user-privacy.css">
+    <script src="../../../scripts/user-preference-manager.js" defer></script>
+</head>
+
+<body>
+    <div class="legal-container">
+        <div class="legal-header">
+            <h1><i class="fas fa-user-shield"></i> <span data-translate="privacy_title">Privacy Statement</span></h1>
+            <p><span data-translate="last_updated">Last Updated</span>: <span data-translate="privacy_last_updated">January
+                    2025</span></p>
+        </div>
+
+        <div class="legal-content">
+            <div class="section">
+                <h2><span data-translate="privacy_section_1_title">1. Introduction</span></h2>
+                <p data-translate="privacy_section_1_content">
+                    AlliTrack is committed to protecting your privacy. This Privacy Statement
+                    explains how we collect, use, disclose, and safeguard your information when you use our ticketing
+                    system and related services.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2><span data-translate="privacy_section_2_title">2. Information We Collect</span></h2>
+                <p>
+                    <strong data-translate="personal_info_label">Personal Information:</strong>
+                    <span data-translate="personal_info_desc">When you create an account or submit tickets, we may
+                        collect your name, email address, company information, and contact details.</span>
+                </p>
+                <p>
+                    <strong data-translate="usage_data_label">Usage Data:</strong>
+                    <span data-translate="usage_data_desc">We collect information about how you interact with our
+                        services, including IP addresses, browser type, pages visited, and timestamps.</span>
+                </p>
+                <p>
+                    <strong data-translate="ticket_data_label">Ticket Data:</strong>
+                    <span data-translate="ticket_data_desc">Information you provide when submitting support tickets,
+                        including descriptions, attachments, and related communications.</span>
+                </p>
+            </div>
+
+            <div class="section">
+                <h2><span data-translate="privacy_section_3_title">3. How We Use Your Information</span></h2>
+                <p data-translate="info_use_intro">We use the collected information to:</p>
+                <ul>
+                    <li data-translate="info_use_1">Provide and maintain our ticketing services</li>
+                    <li data-translate="info_use_2">Process and respond to your support requests</li>
+                    <li data-translate="info_use_3">Send important service notifications</li>
+                    <li data-translate="info_use_4">Improve our services and user experience</li>
+                    <li data-translate="info_use_5">Comply with legal obligations</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2><span data-translate="privacy_section_4_title">4. Data Sharing and Disclosure</span></h2>
+                <p data-translate="sharing_intro">We do not sell your personal information. We may share your information with:</p>
+                <ul>
+                    <li data-translate="sharing_1">Service providers who assist in delivering our services</li>
+                    <li data-translate="sharing_2">Legal authorities when required by law</li>
+                    <li data-translate="sharing_3">Business partners with your explicit consent</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2><span data-translate="privacy_section_5_title">5. Data Security</span></h2>
+                <p data-translate="security_content">
+                    We implement appropriate technical and organizational security measures to protect your personal
+                    information against unauthorized access, alteration, disclosure, or destruction.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2><span data-translate="privacy_section_6_title">6. Your Rights</span></h2>
+                <p data-translate="rights_intro">You have the right to:</p>
+                <ul>
+                    <li data-translate="right_1">Access and review your personal information</li>
+                    <li data-translate="right_2">Correct inaccurate data</li>
+                    <li data-translate="right_3">Request deletion of your information</li>
+                    <li data-translate="right_4">Object to processing of your data</li>
+                    <li data-translate="right_5">Data portability</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2><span data-translate="privacy_section_7_title">7. Contact Us</span></h2>
+                <p data-translate="contact_intro">If you have questions about this Privacy Statement or our data practices, contact us at:</p>
+                <p>
+                    <span data-translate="email_label">Email</span>: sales.businessalliance@gmail.com<br>
+                    <span data-translate="address_label">Address</span>: <span data-translate="company_address">Unit 204
+                        K-Juan Building, 1st Street cor. T. Gener St., Kamuning, Quezon City, Philippines</span>
+                </p>
+            </div>
+
+            <div class="legal-footer">
+                <a href="../../../pages/user page/system-information.html" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                    <span data-translate="back_to_home">Back to Home</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to detect system theme
+        function getSystemTheme() {
+            return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        // Function to apply theme
+        function applyTheme(theme) {
+            console.log('Applying theme:', theme);
+
+            // Remove any existing theme classes
+            document.body.classList.remove('light-mode', 'dark-mode');
+
+            // Determine which theme to apply
+            let actualTheme = theme;
+            if (theme === 'auto') {
+                actualTheme = getSystemTheme();
+            }
+
+            // Apply the correct theme class
+            document.body.classList.add(actualTheme + '-mode');
+            document.body.setAttribute('data-theme', actualTheme);
+        }
+
+        // Apply initial theme from localStorage IMMEDIATELY (before DOM loads)
+        (function applyInitialTheme() {
+            const savedTheme = localStorage.getItem('preferredTheme') || 'light';
+            console.log('Applying initial theme:', savedTheme);
+
+            // Apply immediately to prevent flash of unstyled content
+            const actualTheme = savedTheme === 'auto' ? getSystemTheme() : savedTheme;
+            document.body.classList.add(actualTheme + '-mode');
+            document.body.setAttribute('data-theme', actualTheme);
+        })();
+
+        // Translation dictionary for Privacy page
+        const translations = {
+            'en': {
+                // Page header
+                'privacy_page_title': 'Privacy Statement - AlliTrack',
+                'privacy_title': 'Privacy Statement',
+                'last_updated': 'Last Updated',
+                'privacy_last_updated': 'January 2025',
+
+                // Section titles
+                'privacy_section_1_title': '1. Introduction',
+                'privacy_section_2_title': '2. Information We Collect',
+                'privacy_section_3_title': '3. How We Use Your Information',
+                'privacy_section_4_title': '4. Data Sharing and Disclosure',
+                'privacy_section_5_title': '5. Data Security',
+                'privacy_section_6_title': '6. Your Rights',
+                'privacy_section_7_title': '7. Contact Us',
+
+                // Section 1
+                'privacy_section_1_content': 'AlliTrack is committed to protecting your privacy. This Privacy Statement explains how we collect, use, disclose, and safeguard your information when you use our ticketing system and related services.',
+
+                // Section 2
+                'personal_info_label': 'Personal Information:',
+                'personal_info_desc': 'When you create an account or submit tickets, we may collect your name, email address, company information, and contact details.',
+                'usage_data_label': 'Usage Data:',
+                'usage_data_desc': 'We collect information about how you interact with our services, including IP addresses, browser type, pages visited, and timestamps.',
+                'ticket_data_label': 'Ticket Data:',
+                'ticket_data_desc': 'Information you provide when submitting support tickets, including descriptions, attachments, and related communications.',
+
+                // Section 3
+                'info_use_intro': 'We use the collected information to:',
+                'info_use_1': 'Provide and maintain our ticketing services',
+                'info_use_2': 'Process and respond to your support requests',
+                'info_use_3': 'Send important service notifications',
+                'info_use_4': 'Improve our services and user experience',
+                'info_use_5': 'Comply with legal obligations',
+
+                // Section 4
+                'sharing_intro': 'We do not sell your personal information. We may share your information with:',
+                'sharing_1': 'Service providers who assist in delivering our services',
+                'sharing_2': 'Legal authorities when required by law',
+                'sharing_3': 'Business partners with your explicit consent',
+
+                // Section 5
+                'security_content': 'We implement appropriate technical and organizational security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.',
+
+                // Section 6
+                'rights_intro': 'You have the right to:',
+                'right_1': 'Access and review your personal information',
+                'right_2': 'Correct inaccurate data',
+                'right_3': 'Request deletion of your information',
+                'right_4': 'Object to processing of your data',
+                'right_5': 'Data portability',
+
+                // Section 7
+                'contact_intro': 'If you have questions about this Privacy Statement or our data practices, contact us at:',
+                'email_label': 'Email',
+                'address_label': 'Address',
+                'company_address': 'Unit 204 K-Juan Building, 1st Street cor. T. Gener St., Kamuning, Quezon City, Philippines',
+
+                // Footer
+                'back_to_home': 'Back to Home'
+            },
+            'fil': {
+                // Page header
+                'privacy_page_title': 'Pahayag sa Privacy - AlliTrack',
+                'privacy_title': 'Pahayag sa Privacy',
+                'last_updated': 'Huling Na-update',
+                'privacy_last_updated': 'Enero 2025',
+
+                // Section titles
+                'privacy_section_1_title': '1. Panimula',
+                'privacy_section_2_title': '2. Impormasyong Kolektahin Namin',
+                'privacy_section_3_title': '3. Paano Namin Ginagamit ang Iyong Impormasyon',
+                'privacy_section_4_title': '4. Pagbabahagi at Paglalantad ng Data',
+                'privacy_section_5_title': '5. Seguridad ng Data',
+                'privacy_section_6_title': '6. Ang Iyong Mga Karapatan',
+                'privacy_section_7_title': '7. Makipag-ugnayan sa Amin',
+
+                // Section 1
+                'privacy_section_1_content': 'Ang AlliTrack ay nakatuon sa pagprotekta ng iyong privacy. Ipinaliliwanag ng Pahayag sa Privacy na ito kung paano namin kinokolekta, ginagamit, isinisiwalat, at pinoprotektahan ang iyong impormasyon kapag ginagamit mo ang aming ticketing system at mga kaugnay na serbisyo.',
+
+                // Section 2
+                'personal_info_label': 'Personal na Impormasyon:',
+                'personal_info_desc': 'Kapag lumikha ka ng account o nagsumite ng mga ticket, maaari naming kolektahin ang iyong pangalan, email address, impormasyon ng kumpanya, at mga detalye ng pakikipag-ugnayan.',
+                'usage_data_label': 'Data ng Paggamit:',
+                'usage_data_desc': 'Kinokolekta namin ang impormasyon tungkol sa kung paano ka nakikipag-ugnayan sa aming mga serbisyo, kabilang ang mga IP address, uri ng browser, mga pahinang binisita, at mga timestamp.',
+                'ticket_data_label': 'Data ng Ticket:',
+                'ticket_data_desc': 'Impormasyong ibinibigay mo kapag nagsumite ng mga support ticket, kabilang ang mga paglalarawan, mga attachment, at mga kaugnay na komunikasyon.',
+
+                // Section 3
+                'info_use_intro': 'Ginagamit namin ang kinolektang impormasyon upang:',
+                'info_use_1': 'Magbigay at mapanatili ang aming mga serbisyo sa ticketing',
+                'info_use_2': 'Iproseso at tumugon sa iyong mga kahilingan sa suporta',
+                'info_use_3': 'Magpadala ng mahahalagang abiso sa serbisyo',
+                'info_use_4': 'Pagbutihin ang aming mga serbisyo at karanasan ng gumagamit',
+                'info_use_5': 'Sumunod sa mga legal na obligasyon',
+
+                // Section 4
+                'sharing_intro': 'Hindi namin ibinebenta ang iyong personal na impormasyon. Maaari naming ibahagi ang iyong impormasyon sa:',
+                'sharing_1': 'Mga tagapagbigay ng serbisyo na tumutulong sa paghahatid ng aming mga serbisyo',
+                'sharing_2': 'Mga legal na awtoridad kapag kinakailangan ng batas',
+                'sharing_3': 'Mga kasosyo sa negosyo sa iyong tahasang pahintulot',
+
+                // Section 5
+                'security_content': 'Nagpapatupad kami ng naaangkop na teknikal at organisasyonal na mga hakbang sa seguridad upang protektahan ang iyong personal na impormasyon laban sa hindi awtorisadong pag-access, pagbabago, paglalantad, o pagkasira.',
+
+                // Section 6
+                'rights_intro': 'May karapatan kang:',
+                'right_1': 'Ma-access at suriin ang iyong personal na impormasyon',
+                'right_2': 'Itama ang hindi tumpak na data',
+                'right_3': 'Humiling ng pagbura ng iyong impormasyon',
+                'right_4': 'Tutulan ang pagproseso ng iyong data',
+                'right_5': 'Portability ng data',
+
+                // Section 7
+                'contact_intro': 'Kung mayroon kang mga katanungan tungkol sa Pahayag sa Privacy na ito o sa aming mga kasanayan sa data, makipag-ugnayan sa amin sa:',
+                'email_label': 'Email',
+                'address_label': 'Address',
+                'company_address': 'Unit 204 K-Juan Building, 1st Street cor. T. Gener St., Kamuning, Quezon City, Philippines',
+
+                // Footer
+                'back_to_home': 'Bumalik sa Home'
+            }
+        };
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Privacy page loaded');
+
+            // Setup system theme listener for auto mode
+            setupSystemThemeListener();
+
+            // Initialize preferences manager
+            if (window.preferencesManager) {
+                console.log('Privacy: Initializing Preferences Manager...');
+                window.preferencesManager.initialize();
+
+                // Re-apply theme using preference manager
+                const savedTheme = localStorage.getItem('preferredTheme') || 'light';
+                applyTheme(savedTheme);
+
+                // Get current language from preferences manager
+                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
+                applyTranslations(currentLang);
+            } else {
+                console.warn('Privacy: preferencesManager not found, using localStorage');
+                // Apply default language
+                const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+                applyTranslations(savedLang);
+            }
+
+            // Setup theme listener to respond to theme changes
+            setupThemeListener();
+        });
+
+        // Setup system theme listener for auto mode
+        function setupSystemThemeListener() {
+            if (window.matchMedia) {
+                const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+                // Set initial listener
+                const handleSystemThemeChange = (e) => {
+                    const currentSavedTheme = localStorage.getItem('preferredTheme') || 'light';
+
+                    // Only apply system theme if user has selected "auto"
+                    if (currentSavedTheme === 'auto') {
+                        const newTheme = e.matches ? 'dark' : 'light';
+                        console.log('System theme changed to:', newTheme);
+                        applyTheme('auto');
+
+                        // Dispatch event for other components
+                        document.dispatchEvent(new CustomEvent('themeChanged', {
+                            detail: { theme: newTheme }
+                        }));
+                    }
+                };
+
+                // Add event listener
+                colorSchemeQuery.addEventListener('change', handleSystemThemeChange);
+
+                // Also check immediately if we're in auto mode
+                const currentSavedTheme = localStorage.getItem('preferredTheme') || 'light';
+                if (currentSavedTheme === 'auto') {
+                    applyTheme('auto');
+                }
+            }
+        }
+
+        // Setup theme listener
+        function setupThemeListener() {
+            console.log('Setting up theme listener for Privacy...');
+
+            // Listen for theme changes via storage events
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'preferredTheme') {
+                    console.log('Theme changed via storage (from preferences):', event.newValue);
+                    const newTheme = event.newValue || 'light';
+                    applyTheme(newTheme);
+                }
+            });
+
+            // Listen for theme changes via broadcast
+            document.addEventListener('themeChanged', function (e) {
+                console.log('Theme changed via event:', e.detail.theme);
+                applyTheme(e.detail.theme);
+            });
+        }
+
+        // Apply translations to the page
+        function applyTranslations(language) {
+            const lang = translations[language] ? language : 'en';
+            const dict = translations[lang];
+
+            // Translate all elements with data-translate attribute
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (dict[key]) {
+                    element.textContent = dict[key];
+                }
+            });
+
+            // Update page title
+            if (dict['privacy_page_title']) {
+                document.title = dict['privacy_page_title'];
+            }
+        }
+
+        // Listen for language changes from other pages
+        document.addEventListener('languageChanged', function (e) {
+            console.log('Language changed to:', e.detail.language);
+            applyTranslations(e.detail.language);
+        });
+    </script>
+</body>
+
+</html>

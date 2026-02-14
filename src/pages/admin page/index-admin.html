@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin Dashboard - AlliTrack</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
+    <link rel="stylesheet" href="../../styles/admin page/index-admin.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <script src="../../scripts/mobile-restriction.js"></script>
+    <script src="../../scripts/admin-preference-manager.js"></script>
+    <script src="../../scripts/admin-data-manager.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Access Denied Modal -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+                Home</button>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Content -->
+    <div class="app" id="dashboardContent">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="../../assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                            style="width: 32px; height: 32px;">
+                    </div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle">Admin Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../../pages/admin page/index-admin.html" class="active" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> <span>Dashboard</span>
+                    </a>
+
+                    <div class="nav-section">Ticket Management</div>
+                    <a href="../../pages/admin page/all-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> <span>All Tickets</span>
+                    </a>
+                    <a href="../../pages/admin page/staff-management.html" data-section="users">
+                        <i class="fas fa-users"></i> <span>Staff Management</span>
+                    </a>
+                    <a href="../../pages/admin page/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> <span>Announcements</span>
+                    </a>
+
+                    <div class="nav-section">System Management</div>
+                    <a href="../../pages/admin page/system-settings.html" data-section="system-settings">
+                        <i class="fas fa-cogs"></i> <span>System Settings</span>
+                    </a>
+                    <a href="../../pages/admin page/system-analytics.html" data-section="analytics">
+                        <i class="fas fa-chart-bar"></i> <span>Analytics</span>
+                    </a>
+                    <a href="../../pages/admin page/system-logs.html" data-section="logs">
+                        <i class="fas fa-clipboard-list"></i> <span>System Logs</span>
+                    </a>
+
+                    <div class="nav-section">Admin Tools</div>
+                    <a href="../../pages/admin page/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> <span>Preferences</span>
+                    </a>
+                    <a href="../../pages/admin page/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> <span>Profile Settings</span>
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..."
+                            aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div style="font-weight:700" id="userNameDisplay">Admin</div>
+                            <div style="font-size:.82rem;color:var(--muted)" id="userEmailDisplay">admin@allitrack.com
+                            </div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar" id="userAvatar">AD</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="../../pages/admin page/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="../../pages/admin page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="../../../index.html" id="logoutBtn" data-translate="logout">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Dashboard Content -->
+                <div class="content">
+                    <div class="dashboard-content">
+                        <!-- Feature 1: System Overview -->
+                        <section class="dashboard-section">
+                            <h2><i class="fas fa-tachometer-alt"></i> <span data-translate="system_overview">System
+                                    Overview</span></h2>
+                            <div class="ticket-status-grid">
+                                <div class="status-card open">
+                                    <div class="count">24</div>
+                                    <div class="label" data-translate="open_tickets">Open Tickets</div>
+                                </div>
+                                <div class="status-card in-progress">
+                                    <div class="count">12</div>
+                                    <div class="label" data-translate="in_progress">In Progress</div>
+                                </div>
+                                <div class="status-card resolved">
+                                    <div class="count">48</div>
+                                    <div class="label" data-translate="resolved">Resolved</div>
+                                </div>
+                                <div class="status-card closed">
+                                    <div class="count">156</div>
+                                    <div class="label" data-translate="total_users">Total Users</div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Feature 2: Recent Activity -->
+                        <section class="dashboard-section">
+                            <h2><i class="fas fa-history"></i> <span data-translate="recent_activity">Recent
+                                    Activity</span></h2>
+                            <div class="activity-list">
+                                <div class="activity-item">
+                                    <div class="activity-icon ticket">
+                                        <i class="fas fa-user-plus"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <div class="activity-title" data-translate="new_user_registered">New user
+                                            registered</div>
+                                        <div class="activity-meta" data-translate="john_doe_added">John Doe joined the
+                                            platform</div>
+                                    </div>
+                                    <div class="activity-time" data-translate="hours_ago">2 hours ago</div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon update">
+                                        <i class="fas fa-ticket-alt"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <div class="activity-title" data-translate="ticket_assigned">Ticket assigned
+                                        </div>
+                                        <div class="activity-meta" data-translate="ticket_assigned_to_support">Ticket
+                                            #TKT-4587 assigned to Support Team</div>
+                                    </div>
+                                    <div class="activity-time" data-translate="yesterday">Yesterday</div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon resolved">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <div class="activity-title" data-translate="system_update">System update
+                                            completed</div>
+                                        <div class="activity-meta" data-translate="version_updated">Updated to version
+                                            1.2.0</div>
+                                    </div>
+                                    <div class="activity-time" data-translate="days_ago">2 days ago</div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon ticket">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <div class="activity-title" data-translate="security_audit">Security audit
+                                            completed</div>
+                                        <div class="activity-meta" data-translate="no_issues_found">No security issues
+                                            found</div>
+                                    </div>
+                                    <div class="activity-time" data-translate="days_ago_3">3 days ago</div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Feature 3: Quick Actions -->
+                        <section class="dashboard-section">
+                            <h2><i class="fas fa-bolt"></i> <span data-translate="quick_actions">Quick Actions</span>
+                            </h2>
+                            <div class="quick-actions-grid">
+                                <a href="../../pages/admin page/all-tickets.html" class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-ticket-alt"></i>
+                                    </div>
+                                    <div class="action-title" data-translate="manage_tickets">Manage Tickets</div>
+                                    <div class="action-desc" data-translate="view_all_tickets">View and manage all
+                                        support tickets</div>
+                                </a>
+                                <a href="../../pages/admin page/staff-management.html" class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="action-title" data-translate="manage_users">Manage Users</div>
+                                    <div class="action-desc" data-translate="view_all_users">View and manage all system
+                                        users</div>
+                                </a>
+                                <a href="../../pages/admin page/announcements.html" class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-bullhorn"></i>
+                                    </div>
+                                    <div class="action-title" data-translate="create_announcement">Create Announcement
+                                    </div>
+                                    <div class="action-desc" data-translate="broadcast_message">Broadcast message to all
+                                        users</div>
+                                </a>
+                                <a href="../../pages/admin page/system-analytics.html" class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </div>
+                                    <div class="action-title" data-translate="view_analytics">View Analytics</div>
+                                    <div class="action-desc" data-translate="system_performance">Check system
+                                        performance metrics</div>
+                                </a>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div>Admin Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Translation dictionaries
+        const translations = {
+            en: {
+                // System Overview
+                system_overview: "System Overview",
+                open_tickets: "Open Tickets",
+                in_progress: "In Progress",
+                resolved: "Resolved",
+                total_users: "Total Users",
+
+                // Recent Activity (kept as-is, not translated)
+                recent_activity: "Recent Activity",
+                new_user_registered: "New user registered",
+                john_doe_added: "John Doe joined the platform",
+                hours_ago: "2 hours ago",
+                ticket_assigned: "Ticket assigned",
+                ticket_assigned_to_support: "Ticket #TKT-4587 assigned to Support Team",
+                yesterday: "Yesterday",
+                system_update: "System update completed",
+                version_updated: "Updated to version 1.2.0",
+                days_ago: "2 days ago",
+                security_audit: "Security audit completed",
+                no_issues_found: "No security issues found",
+                days_ago_3: "3 days ago",
+
+                // Quick Actions
+                quick_actions: "Quick Actions",
+                manage_tickets: "Manage Tickets",
+                view_all_tickets: "View and manage all support tickets",
+                manage_users: "Manage Users",
+                view_all_users: "View and manage all system users",
+                create_announcement: "Create Announcement",
+                broadcast_message: "Broadcast message to all users",
+                view_analytics: "View Analytics",
+                system_performance: "Check system performance metrics"
+            },
+            fil: {
+                // System Overview
+                system_overview: "Pangkalahatang Sistema",
+                open_tickets: "Bukas na Ticket",
+                in_progress: "Kasulukuyang Ginagawa",
+                resolved: "Nalutas",
+                total_users: "Kabuuang Gumagamit",
+
+                // Recent Activity (kept as-is, not translated - same as English)
+                recent_activity: "Recent Activity",
+                new_user_registered: "New user registered",
+                john_doe_added: "John Doe joined the platform",
+                hours_ago: "2 hours ago",
+                ticket_assigned: "Ticket assigned",
+                ticket_assigned_to_support: "Ticket #TKT-4587 assigned to Support Team",
+                yesterday: "Yesterday",
+                system_update: "System update completed",
+                version_updated: "Updated to version 1.2.0",
+                days_ago: "2 days ago",
+                security_audit: "Security audit completed",
+                no_issues_found: "No security issues found",
+                days_ago_3: "3 days ago",
+
+                // Quick Actions
+                quick_actions: "Mabilisang Aksyon",
+                manage_tickets: "Pamahalaan ang mga Ticket",
+                view_all_tickets: "Tingnan at pamahalaan ang lahat ng support ticket",
+                manage_users: "Pamahalaan ang mga Gumagamit",
+                view_all_users: "Tingnan at pamahalaan ang lahat ng gumagamit ng system",
+                create_announcement: "Gumawa ng Anunsyo",
+                broadcast_message: "I-broadcast ang mensahe sa lahat ng gumagamit",
+                view_analytics: "Tingnan ang Analytics",
+                system_performance: "Suriin ang mga sukatan ng pagganap ng system"
+            }
+        };
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🚀 Dashboard: Starting initialization...');
+
+            // Load user data
+            loadAndDisplayUserData();
+
+            // Initialize user data manager if available
+            if (window.userDataManager) {
+                console.log('👤 Initializing User Data Manager...');
+                window.userDataManager.initializeUserDisplay();
+            }
+
+            // Initialize preferences manager
+            if (window.preferencesManager) {
+                console.log('⚙️ Initializing Preferences Manager...');
+
+                // Apply theme and language immediately
+                window.preferencesManager.applyTheme();
+                applyLanguage();
+
+                // Listen for language changes from preferences page
+                document.addEventListener('languageChanged', function (e) {
+                    console.log('📝 Language changed event received:', e.detail.language);
+                    applyLanguage();
+                });
+
+                // Listen for language reload events
+                document.addEventListener('languageReloaded', function (e) {
+                    console.log('🔄 Language reloaded event received:', e.detail.language);
+                    applyLanguage();
+                });
+
+                // Listen for storage events
+                window.addEventListener('storage', function (e) {
+                    if (e.key === 'dashboardLanguage' || e.key === 'langReloadTimestamp') {
+                        console.log('💾 Language storage event received');
+                        setTimeout(() => {
+                            applyLanguage();
+                        }, 100);
+                    }
+                });
+            } else {
+                // Fallback: Apply language directly if preferencesManager is not available
+                applyLanguage();
+            }
+
+            // Setup logout functionality FIRST
+            setupLogout();
+
+            // Setup account dropdown - USING THE FIXED VERSION FROM YOUR PROFILE SETTINGS
+            setTimeout(() => {
+                console.log('🔄 Setting up account dropdown...');
+                setupAccountDropdown();
+            }, 50);
+
+            // Setup search functionality
+            setupSearch();
+
+            console.log('✅ Dashboard page loaded');
+        });
+
+        // Account Dropdown Functionality - FIXED VERSION (from profile-settings)
+        function setupAccountDropdown() {
+            console.log('🔧 Setting up account dropdown...');
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
+
+            if (!accountBtn || !accountMenu) {
+                console.error('❌ Account dropdown elements not found!');
+                return;
+            }
+
+            console.log('✅ Elements found, setting up...');
+
+            // Don't clone elements - just work with existing ones
+            // Remove any existing click listeners by cloning
+            const newBtn = accountBtn.cloneNode(true);
+            accountBtn.parentNode.replaceChild(newBtn, accountBtn);
+
+            // Get fresh reference
+            const freshBtn = document.getElementById("accountBtn");
+
+            // Add click event to toggle dropdown
+            freshBtn.addEventListener("click", function (e) {
+                console.log('🎯 Account button clicked!');
+                e.stopPropagation();
+                e.preventDefault();
+
+                const isShowing = accountMenu.classList.contains("show");
+                accountMenu.classList.toggle("show");
+                freshBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", function (e) {
+                if (accountMenu.classList.contains("show") &&
+                    !freshBtn.contains(e.target) &&
+                    !accountMenu.contains(e.target)) {
+                    console.log('🔒 Closing dropdown (clicked outside)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    console.log('🔒 Closing dropdown (Escape key)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close when clicking menu items (except logout)
+            const menuItems = accountMenu.querySelectorAll("a");
+            menuItems.forEach(item => {
+                item.addEventListener("click", function () {
+                    console.log('🔒 Closing dropdown (menu item clicked)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                });
+            });
+
+            // Ensure button is clickable
+            freshBtn.style.cursor = 'pointer';
+
+            console.log('✅ Account dropdown setup complete');
+        }
+
+        // Apply language translation
+        function applyLanguage() {
+            let language = 'en'; // Default to English
+
+            // Try to get language from preferencesManager first
+            if (window.preferencesManager && window.preferencesManager.getCurrentLanguage) {
+                language = window.preferencesManager.getCurrentLanguage();
+            }
+            // Fallback to localStorage
+            else {
+                language = localStorage.getItem('dashboardLanguage') || 'en';
+            }
+
+            console.log('📝 Dashboard: Applying language:', language);
+
+            // Get the translation dictionary for the current language
+            const langDict = translations[language] || translations.en;
+
+            // Apply translations to all elements with data-translate attribute
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (langDict[key]) {
+                    if (element.tagName === 'INPUT') {
+                        element.placeholder = langDict[key];
+                    } else {
+                        element.textContent = langDict[key];
+                    }
+                }
+            });
+        }
+
+        // Load user data from localStorage
+        function loadAndDisplayUserData() {
+            try {
+                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+
+                const combinedData = {
+                    ...userData,
+                    ...userProfile,
+                    fullName: `${userProfile.firstName || userData.firstName || ''} ${userProfile.lastName || userData.lastName || ''}`.trim() || userData.name || 'Administrator'
+                };
+
+                updateUserDisplay(combinedData);
+            } catch (error) {
+                console.error('❌ Error loading user data:', error);
+                updateUserDisplay({
+                    name: 'Administrator',
+                    email: 'admin@allitrack.com',
+                    initials: 'AD'
+                });
+            }
+        }
+
+        // Update user display
+        function updateUserDisplay(userData) {
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+            const userAvatar = document.getElementById('userAvatar');
+
+            if (userNameDisplay) {
+                userNameDisplay.textContent = userData.fullName || 'Administrator';
+            }
+
+            if (userEmailDisplay) {
+                userEmailDisplay.textContent = userData.email || 'admin@allitrack.com';
+            }
+
+            if (userAvatar) {
+                const initials = (userData.fullName || 'AD')
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .substring(0, 2);
+                userAvatar.textContent = initials;
+            }
+        }
+
+        // Logout functionality - FIXED VERSION (from profile-settings)
+        function setupLogout() {
+            console.log('🔐 Setting up logout functionality...');
+
+            // First remove any existing logout buttons to avoid duplicates
+            const existingLogoutBtns = document.querySelectorAll('#logoutBtn');
+            existingLogoutBtns.forEach(btn => {
+                const parent = btn.parentNode;
+                const newBtn = btn.cloneNode(true);
+                parent.replaceChild(newBtn, btn);
+            });
+
+            // Now attach the event listener to the fresh logout button
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                console.log('✅ Logout button found, attaching handler...');
+
+                // Create a robust logout handler
+                const logoutHandler = function (e) {
+                    console.log('🚪 Logout button clicked!');
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Clear all user data
+                    const keysToRemove = [
+                        'userData', 'userProfile', 'loggedInUser',
+                        'currentUser', 'user', 'loginData', 'authData',
+                        'dashboardLanguage', 'preferredTheme'
+                    ];
+
+                    keysToRemove.forEach(key => localStorage.removeItem(key));
+                    sessionStorage.clear();
+
+                    console.log('🧹 Cleared localStorage, redirecting to login...');
+
+                    // Redirect to login
+                    window.location.href = '../../pages/landing page/unified-auth-modal.html';
+                };
+
+                // Remove any existing listeners and attach fresh one
+                logoutBtn.removeEventListener('click', logoutHandler);
+                logoutBtn.addEventListener('click', logoutHandler);
+
+            } else {
+                console.error('❌ Logout button not found!');
+            }
+        }
+
+        // Setup search
+        function setupSearch() {
+            const searchInput = document.getElementById('q');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        const query = this.value.trim();
+                        if (query) {
+                            window.location.href = `../../pages/admin page/all-tickets.html?search=${encodeURIComponent(query)}`;
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

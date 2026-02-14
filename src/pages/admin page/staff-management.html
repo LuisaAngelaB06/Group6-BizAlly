@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title data-translate="staff_management_title">Staff Management - AlliTrack Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
+    <link rel="stylesheet" href="../../styles/admin page/staff-management.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <script src="../../scripts/mobile-restriction.js"></script>
+    <script src="../../scripts/admin-preference-manager.js"></script>
+    <script src="../../scripts/admin-data-manager.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Access Denied Modal -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+                Home</button>
+        </div>
+    </div>
+
+    <div class="app">
+        <div class="shell">
+            <!-- SIDEBAR (identical to all-tickets) -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="../../../src/assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                            style="width: 32px; height: 32px;">
+                    </div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle" data-translate="admin_dashboard">Admin Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../../pages/admin page/index-admin.html" data-section="dashboard"><i
+                            class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span></a>
+                    <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
+                    <a href="../../pages/admin page/all-tickets.html" data-section="tickets"><i
+                            class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span></a>
+                    <a href="../../pages/admin page/staff-management.html" class="active" data-section="users"><i
+                            class="fas fa-users"></i> <span data-translate="users_management">Staff
+                            Management</span></a>
+                    <a href="../../pages/admin page/announcements.html" data-section="announcements"><i
+                            class="fas fa-bullhorn"></i>
+                        <span data-translate="announcements">Announcements</span></a>
+                    <div class="nav-section" data-translate="system_management">System Management</div>
+                    <a href="../../pages/admin page/system-settings.html" data-section="system-settings"><i
+                            class="fas fa-cogs"></i>
+                        <span data-translate="system_settings">System Settings</span></a>
+                    <a href="../../pages/admin page/system-analytics.html" data-section="analytics"><i
+                            class="fas fa-chart-bar"></i>
+                        <span data-translate="analytics">Analytics</span></a>
+                    <a href="../../pages/admin page/system-logs.html" data-section="logs"><i
+                            class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span></a>
+                    <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
+                    <a href="../../pages/admin page/preferences.html" data-section="preferences"><i
+                            class="fas fa-sliders-h"></i>
+                        <span data-translate="preferences">Preferences</span></a>
+                    <a href="../../pages/admin page/profile-settings.html" data-section="profile-settings"><i
+                            class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile
+                            Settings</span></a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="main">
+                <!-- Header with account dropdown (identical) -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Staff">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="staffSearch" placeholder="Search staff by name, email, role..."
+                            data-translate-placeholder="search_staff" aria-label="Search staff" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div id="userName" style="font-weight:700">Admin</div>
+                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">admin@allitrack.com</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div id="userAvatar" class="avatar">A</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="../../pages/admin page/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="../../pages/admin page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Staff Management Content -->
+                <div class="content">
+                    <!-- Page Header - WITH page-header class container (EXACTLY like all-tickets) -->
+                    <div class="page-header">
+                        <div class="header-content">
+                            <h1>
+                                <i class="fas fa-users" style="color:var(--accent);"></i>
+                                <span data-translate="staff_management">Staff Management</span>
+                            </h1>
+                            <p class="subtitle" data-translate="staff_management_description">Manage staff accounts,
+                                roles, and permissions</p>
+                        </div>
+                    </div>
+
+                    <!-- Staff container – matches tickets-container size -->
+                    <div class="staff-container">
+                        <!-- Toolbar: filters + actions -->
+                        <div class="staff-toolbar">
+                            <div class="filters">
+                                <div class="filter-group">
+                                    <label for="roleFilter" class="filter-label" data-translate="role">Role</label>
+                                    <select id="roleFilter" class="filter-select">
+                                        <option value="all" data-translate="all_roles">All Roles</option>
+                                        <option value="admin" data-translate="admin">Admin</option>
+                                        <option value="support" data-translate="support">Support Staff</option>
+                                        <option value="agent" data-translate="agent">Agent</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="statusFilter" class="filter-label"
+                                        data-translate="status">Status</label>
+                                    <select id="statusFilter" class="filter-select">
+                                        <option value="all" data-translate="all_status">All Status</option>
+                                        <option value="active" data-translate="active">Active</option>
+                                        <option value="inactive" data-translate="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-secondary" id="clearFiltersBtn">
+                                    <i class="fas fa-times"></i> <span data-translate="clear_filters">Clear
+                                        Filters</span>
+                                </button>
+                            </div>
+                            <div class="actions">
+                                <button class="btn btn-primary" id="addStaffBtn">
+                                    <i class="fas fa-user-plus"></i> <span data-translate="add_staff">Add Staff</span>
+                                </button>
+                                <button class="btn btn-danger" id="deleteStaffBtn" style="display:none;">
+                                    <i class="fas fa-trash-alt"></i> <span data-translate="delete_selected">Delete
+                                        Selected</span>
+                                </button>
+                                <button class="btn btn-secondary" id="refreshStaffBtn">
+                                    <i class="fas fa-sync-alt"></i> <span data-translate="refresh">Refresh</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Staff Table - exact sizing as all-tickets -->
+                        <div class="staff-table-container">
+                            <div class="table-responsive">
+                                <table class="staff-table" id="staffTable">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:30px;"><input type="checkbox" id="selectAllStaff"
+                                                    title="Select All"></th>
+                                            <th data-translate="staff_id">Staff ID</th>
+                                            <th data-translate="name">Name</th>
+                                            <th data-translate="email">Email</th>
+                                            <th data-translate="role">Role</th>
+                                            <th data-translate="status">Status</th>
+                                            <th data-translate="admin_access">Admin</th>
+                                            <th data-translate="actions">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="staffTableBody">
+                                        <!-- JS population -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Pagination -->
+                            <div class="pagination-container">
+                                <div class="pagination-info" id="paginationInfo"></div>
+                                <div class="pagination-controls">
+                                    <button class="pagination-btn" id="firstPageBtn" title="First Page"><i
+                                            class="fas fa-angle-double-left"></i></button>
+                                    <button class="pagination-btn" id="prevPageBtn" title="Previous Page"><i
+                                            class="fas fa-angle-left"></i></button>
+                                    <div class="pagination-numbers" id="paginationNumbers"></div>
+                                    <button class="pagination-btn" id="nextPageBtn" title="Next Page"><i
+                                            class="fas fa-angle-right"></i></button>
+                                    <button class="pagination-btn" id="lastPageBtn" title="Last Page"><i
+                                            class="fas fa-angle-double-right"></i></button>
+                                </div>
+                                <div class="pagination-page-size">
+                                    <label for="pageSizeSelect" data-translate="items_per_page">Items per page:</label>
+                                    <select id="pageSizeSelect" class="page-size-select">
+                                        <option value="5">5</option>
+                                        <option value="10" selected>10</option>
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <!-- Add/Edit Staff Modal -->
+    <div class="modal" id="staffFormModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-cog"></i> <span id="modalTitle" data-translate="add_staff">Add Staff</span>
+                </h3>
+                <button class="modal-close" id="closeFormModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="staffForm">
+                    <input type="hidden" id="staffId" value="">
+                    <div class="form-group">
+                        <label for="fullName" data-translate="full_name">Full Name</label>
+                        <input type="text" id="fullName" class="form-control" required placeholder="e.g. Jane Doe">
+                    </div>
+                    <div class="form-group">
+                        <label for="email" data-translate="email">Email</label>
+                        <input type="email" id="email" class="form-control" required placeholder="staff@allitrack.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="role" data-translate="role">Role</label>
+                        <select id="role" class="form-control">
+                            <option value="admin">Admin</option>
+                            <option value="support">Support Staff</option>
+                            <option value="agent">Agent</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="status" data-translate="status">Status</label>
+                        <select id="status" class="form-control">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="isAdminToggle" data-translate="admin_access">Admin Access</label>
+                        <select id="isAdminToggle" class="form-control">
+                            <option value="true">Yes (Administrator)</option>
+                            <option value="false">No (Standard)</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelFormBtn" data-translate="cancel">Cancel</button>
+                <button class="btn btn-primary" id="saveStaffBtn" data-translate="save">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteConfirmModal">
+        <div class="modal-content" style="max-width:500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i> <span
+                        data-translate="confirm_delete">Confirm Delete</span></h3>
+                <button class="modal-close" id="closeDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteMessage"></p>
+                <div id="selectedStaffList"
+                    style="display:none; margin-top:15px; max-height:200px; overflow-y:auto; background:var(--hover-bg); padding:12px; border-radius:8px;">
+                    <h4 style="margin-bottom:10px; font-size:0.9rem;">Selected Staff:</h4>
+                    <ul id="staffToDeleteList"></ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelDeleteBtn" data-translate="cancel">Cancel</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn" data-translate="delete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // ---------- TRANSLATIONS (en / fil) ----------
+            const translations = {
+                en: {
+                    staff_management_title: 'Staff Management - AlliTrack Admin',
+                    staff_management: 'Staff Management',
+                    staff_management_description: 'Manage staff accounts, roles, and permissions',
+                    search_staff: 'Search staff by name, email, role...',
+                    add_staff: 'Add Staff',
+                    delete_selected: 'Delete Selected',
+                    refresh: 'Refresh',
+                    clear_filters: 'Clear Filters',
+                    staff_id: 'Staff ID',
+                    name: 'Name',
+                    email: 'Email',
+                    role: 'Role',
+                    status: 'Status',
+                    admin_access: 'Admin',
+                    actions: 'Actions',
+                    all_roles: 'All Roles',
+                    admin: 'Admin',
+                    support: 'Support Staff',
+                    agent: 'Agent',
+                    all_status: 'All Status',
+                    active: 'Active',
+                    inactive: 'Inactive',
+                    edit: 'Edit',
+                    delete: 'Delete',
+                    toggle_admin: 'Toggle Admin',
+                    confirm_delete: 'Confirm Delete',
+                    cancel: 'Cancel',
+                    save: 'Save',
+                    full_name: 'Full Name',
+                    items_per_page: 'Items per page:',
+                    showing: 'Showing',
+                    to: 'to',
+                    of: 'of',
+                    staff: 'staff',
+                    no_staff_found: 'No staff found',
+                    delete_staff_confirm: 'Are you sure you want to delete this staff member?',
+                    delete_staff_confirm_multiple: 'Are you sure you want to delete {count} selected staff members?',
+                    delete_success: 'Staff deleted successfully',
+                    staff_saved: 'Staff saved successfully',
+                    error_saving: 'Error saving staff',
+                    no_staff_selected: 'No staff selected',
+                    profile: 'Profile',
+                    settings: 'Settings',
+                    logout: 'Logout',
+                    admin_dashboard: 'Admin Dashboard',
+                    all_tickets: 'All Tickets',
+                    users_management: 'Staff Management',
+                    admin_dashboard_template: 'AlliTrack Admin Dashboard'
+                },
+                fil: {
+                    staff_management_title: 'Pamamahala ng Staff - AlliTrack Admin',
+                    staff_management: 'Pamamahala ng Staff',
+                    staff_management_description: 'Pamahalaan ang mga staff account, tungkulin, at pahintulot',
+                    search_staff: 'Maghanap ng staff sa pangalan, email, tungkulin...',
+                    add_staff: 'Magdagdag ng Staff',
+                    delete_selected: 'I-delete ang Napili',
+                    refresh: 'I-refresh',
+                    clear_filters: 'Tanggalin ang Filters',
+                    staff_id: 'Staff ID',
+                    name: 'Pangalan',
+                    email: 'Email',
+                    role: 'Tungkulin',
+                    status: 'Status',
+                    admin_access: 'Admin',
+                    actions: 'Mga Aksyon',
+                    all_roles: 'Lahat ng Tungkulin',
+                    admin: 'Admin',
+                    support: 'Support Staff',
+                    agent: 'Agent',
+                    all_status: 'Lahat ng Status',
+                    active: 'Aktibo',
+                    inactive: 'Hindi Aktibo',
+                    edit: 'I-edit',
+                    delete: 'I-delete',
+                    toggle_admin: 'Palitan ang Admin',
+                    confirm_delete: 'Kumpirmahin ang Pag-delete',
+                    cancel: 'Kanselahin',
+                    save: 'I-save',
+                    full_name: 'Buong Pangalan',
+                    items_per_page: 'Mga item bawat pahina:',
+                    showing: 'Ipinapakita',
+                    to: 'hanggang',
+                    of: 'ng',
+                    staff: 'ng staff',
+                    no_staff_found: 'Walang nakitang staff',
+                    delete_staff_confirm: 'Sigurado ka bang gusto mong i-delete ang staff na ito?',
+                    delete_staff_confirm_multiple: 'Sigurado ka bang gusto mong i-delete ang {count} napiling staff?',
+                    delete_success: 'Matagumpay na na-delete ang staff',
+                    staff_saved: 'Matagumpay na na-save ang staff',
+                    error_saving: 'Error sa pag-save ng staff',
+                    no_staff_selected: 'Walang napiling staff',
+                    profile: 'Profile',
+                    settings: 'Mga Setting',
+                    logout: 'Logout',
+                    admin_dashboard: 'Admin Dashboard',
+                    all_tickets: 'Lahat ng Ticket',
+                    users_management: 'Pamamahala ng Staff',
+                    admin_dashboard_template: 'AlliTrack Admin Dashboard'
+                }
+            };
+
+            // ---------- SAMPLE STAFF DATA ----------
+            let staffMembers = [
+                { id: 'STF-1001', name: 'John Carter', email: 'john.carter@allitrack.com', role: 'admin', status: 'active', isAdmin: true },
+                { id: 'STF-1002', name: 'Maria Santos', email: 'maria.santos@allitrack.com', role: 'support', status: 'active', isAdmin: false },
+                { id: 'STF-1003', name: 'Alex Rivera', email: 'alex.rivera@allitrack.com', role: 'agent', status: 'active', isAdmin: false },
+                { id: 'STF-1004', name: 'Jamie Smith', email: 'jamie.smith@allitrack.com', role: 'support', status: 'inactive', isAdmin: false },
+                { id: 'STF-1005', name: 'Taylor Wong', email: 'taylor.wong@allitrack.com', role: 'admin', status: 'active', isAdmin: true },
+                { id: 'STF-1006', name: 'Jordan Lee', email: 'jordan.lee@allitrack.com', role: 'agent', status: 'active', isAdmin: false },
+                { id: 'STF-1007', name: 'Casey Kim', email: 'casey.kim@allitrack.com', role: 'support', status: 'active', isAdmin: false },
+                { id: 'STF-1008', name: 'Riley Patel', email: 'riley.patel@allitrack.com', role: 'admin', status: 'inactive', isAdmin: true },
+                { id: 'STF-1009', name: 'Sam Johnson', email: 'sam.johnson@allitrack.com', role: 'agent', status: 'active', isAdmin: false },
+                { id: 'STF-1010', name: 'Morgan Chen', email: 'morgan.chen@allitrack.com', role: 'support', status: 'active', isAdmin: false },
+                { id: 'STF-1011', name: 'Dana White', email: 'dana.white@allitrack.com', role: 'agent', status: 'inactive', isAdmin: false }
+            ];
+
+            // Global state
+            let currentFilteredStaff = [];
+            let selectedStaff = new Set();
+            let currentPage = 1;
+            let itemsPerPage = 10;
+            let totalPages = 1;
+            let editingStaffId = null;
+
+            // ---------- UTILITIES ----------
+            function getCurrentLanguage() {
+                return (window.preferencesManager?.getCurrentLanguage?.()) || 'en';
+            }
+
+            function applyTranslations(lang) {
+                const dict = translations[lang] || translations.en;
+                document.querySelectorAll('[data-translate]').forEach(el => {
+                    const key = el.dataset.translate;
+                    if (dict[key]) {
+                        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+                            if (!['text', 'email', 'password', 'tel'].includes(el.type)) el.textContent = dict[key];
+                        } else if (el.tagName === 'OPTION') el.textContent = dict[key];
+                        else el.textContent = dict[key];
+                    }
+                });
+                document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+                    const key = el.dataset.translatePlaceholder;
+                    if (dict[key]) el.placeholder = dict[key];
+                });
+                if (dict.staff_management_title) document.title = dict.staff_management_title;
+            }
+
+            // Toast
+            function showToast(message, type = 'success') {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.className = `toast ${type}`;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+
+            // Load and render staff table
+            function loadStaff() {
+                const tbody = document.getElementById('staffTableBody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+
+                const roleFilter = document.getElementById('roleFilter').value;
+                const statusFilter = document.getElementById('statusFilter').value;
+                const searchTerm = document.getElementById('staffSearch')?.value.toLowerCase() || '';
+
+                currentFilteredStaff = staffMembers.filter(staff => {
+                    if (roleFilter !== 'all' && staff.role !== roleFilter) return false;
+                    if (statusFilter !== 'all' && staff.status !== statusFilter) return false;
+                    if (searchTerm) {
+                        const haystack = `${staff.id} ${staff.name} ${staff.email} ${staff.role}`.toLowerCase();
+                        if (!haystack.includes(searchTerm)) return false;
+                    }
+                    return true;
+                });
+
+                totalPages = Math.ceil(currentFilteredStaff.length / itemsPerPage);
+                if (currentPage > totalPages) currentPage = totalPages || 1;
+                const start = (currentPage - 1) * itemsPerPage;
+                const pageData = currentFilteredStaff.slice(start, start + itemsPerPage);
+
+                pageData.forEach(staff => {
+                    const row = document.createElement('tr');
+                    row.dataset.staffId = staff.id;
+                    const isChecked = selectedStaff.has(staff.id);
+                    row.innerHTML = `
+                        <td style="width:30px; text-align:center;"><input type="checkbox" class="staff-checkbox" data-staff-id="${staff.id}" ${isChecked ? 'checked' : ''}></td>
+                        <td><strong>${staff.id}</strong></td>
+                        <td>${staff.name}</td>
+                        <td><span style="font-size:0.75rem; color:var(--text-secondary);">${staff.email}</span></td>
+                        <td><span class="badge ${staff.role === 'admin' ? 'badge-admin' : 'badge-staff'}">${staff.role === 'admin' ? 'Admin' : staff.role === 'support' ? 'Support' : 'Agent'}</span></td>
+                        <td><span class="badge ${staff.status === 'active' ? 'badge-active' : 'badge-inactive'}">${staff.status === 'active' ? 'Active' : 'Inactive'}</span></td>
+                        <td style="text-align:center;"><span class="badge ${staff.isAdmin ? 'badge-admin' : 'badge-inactive'}">${staff.isAdmin ? 'Yes' : 'No'}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action btn-edit" data-staff-id="${staff.id}" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-action btn-toggle-admin" data-staff-id="${staff.id}" title="Toggle Admin"><i class="fas fa-user-shield"></i></button>
+                                <button class="btn-action btn-delete" data-staff-id="${staff.id}" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                attachRowListeners();
+                updatePagination();
+                updateDeleteButtonVisibility();
+                updateSelectAllCheckbox();
+            }
+
+            function attachRowListeners() {
+                document.querySelectorAll('.staff-checkbox').forEach(cb => {
+                    cb.removeEventListener('change', handleCheckChange);
+                    cb.addEventListener('change', handleCheckChange);
+                });
+                document.querySelectorAll('.btn-edit').forEach(btn => {
+                    btn.removeEventListener('click', handleEdit);
+                    btn.addEventListener('click', handleEdit);
+                });
+                document.querySelectorAll('.btn-toggle-admin').forEach(btn => {
+                    btn.removeEventListener('click', handleToggleAdmin);
+                    btn.addEventListener('click', handleToggleAdmin);
+                });
+                document.querySelectorAll('.btn-delete').forEach(btn => {
+                    btn.removeEventListener('click', handleDeleteSingle);
+                    btn.addEventListener('click', handleDeleteSingle);
+                });
+            }
+
+            function handleCheckChange(e) {
+                const id = e.target.dataset.staffId;
+                if (e.target.checked) selectedStaff.add(id);
+                else selectedStaff.delete(id);
+                updateDeleteButtonVisibility();
+                updateSelectAllCheckbox();
+            }
+
+            function handleEdit(e) {
+                const id = e.currentTarget.dataset.staffId;
+                const staff = staffMembers.find(s => s.id === id);
+                if (staff) openEditModal(staff);
+            }
+
+            function handleToggleAdmin(e) {
+                const id = e.currentTarget.dataset.staffId;
+                const staff = staffMembers.find(s => s.id === id);
+                if (staff) {
+                    staff.isAdmin = !staff.isAdmin;
+                    showToast(`Admin access toggled for ${staff.name}`, 'success');
+                    loadStaff();
+                }
+            }
+
+            function handleDeleteSingle(e) {
+                const id = e.currentTarget.dataset.staffId;
+                selectedStaff.clear();
+                selectedStaff.add(id);
+                showDeleteConfirmation([id]);
+            }
+
+            // ---------- MODALS ----------
+            function openAddModal() {
+                editingStaffId = null;
+                document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Add Staff';
+                document.getElementById('staffId').value = '';
+                document.getElementById('fullName').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('role').value = 'support';
+                document.getElementById('status').value = 'active';
+                document.getElementById('isAdminToggle').value = 'false';
+                document.getElementById('staffFormModal').classList.add('show');
+            }
+
+            function openEditModal(staff) {
+                editingStaffId = staff.id;
+                document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-edit"></i> Edit Staff';
+                document.getElementById('staffId').value = staff.id;
+                document.getElementById('fullName').value = staff.name;
+                document.getElementById('email').value = staff.email;
+                document.getElementById('role').value = staff.role;
+                document.getElementById('status').value = staff.status;
+                document.getElementById('isAdminToggle').value = staff.isAdmin ? 'true' : 'false';
+                document.getElementById('staffFormModal').classList.add('show');
+            }
+
+            function closeFormModal() {
+                document.getElementById('staffFormModal').classList.remove('show');
+            }
+
+            // Save staff (add/edit)
+            function saveStaff() {
+                const name = document.getElementById('fullName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const role = document.getElementById('role').value;
+                const status = document.getElementById('status').value;
+                const isAdmin = document.getElementById('isAdminToggle').value === 'true';
+                if (!name || !email) { showToast('Name and email required', 'error'); return; }
+
+                if (editingStaffId) {
+                    const index = staffMembers.findIndex(s => s.id === editingStaffId);
+                    if (index !== -1) {
+                        staffMembers[index] = { ...staffMembers[index], name, email, role, status, isAdmin };
+                    }
+                } else {
+                    const newId = `STF-${Math.floor(2000 + staffMembers.length + 1)}`;
+                    staffMembers.push({ id: newId, name, email, role, status, isAdmin });
+                }
+                showToast(translations[getCurrentLanguage()].staff_saved, 'success');
+                closeFormModal();
+                loadStaff();
+            }
+
+            // ---------- DELETE ----------
+            function showDeleteConfirmation(ids) {
+                const modal = document.getElementById('deleteConfirmModal');
+                const msg = document.getElementById('deleteMessage');
+                const listDiv = document.getElementById('selectedStaffList');
+                const listEl = document.getElementById('staffToDeleteList');
+                const dict = translations[getCurrentLanguage()];
+
+                listEl.innerHTML = '';
+                if (ids.length === 1) {
+                    const staff = staffMembers.find(s => s.id === ids[0]);
+                    msg.textContent = dict.delete_staff_confirm || 'Are you sure?';
+                    msg.innerHTML += `<br><br><strong>${staff?.id}</strong>: ${staff?.name}`;
+                    listDiv.style.display = 'none';
+                } else {
+                    msg.textContent = (dict.delete_staff_confirm_multiple || 'Delete {count}?').replace('{count}', ids.length);
+                    ids.forEach(id => {
+                        const s = staffMembers.find(s => s.id === id);
+                        if (s) {
+                            const li = document.createElement('li');
+                            li.innerHTML = `<strong>${s.id}</strong>: ${s.name}`;
+                            listEl.appendChild(li);
+                        }
+                    });
+                    listDiv.style.display = 'block';
+                }
+                modal.classList.add('show');
+            }
+
+            function confirmDelete() {
+                const ids = Array.from(selectedStaff);
+                staffMembers = staffMembers.filter(s => !selectedStaff.has(s.id));
+                selectedStaff.clear();
+                loadStaff();
+                document.getElementById('deleteConfirmModal').classList.remove('show');
+                showToast(translations[getCurrentLanguage()].delete_success, 'success');
+                updateDeleteButtonVisibility();
+            }
+
+            // ---------- UI UPDATES ----------
+            function updateDeleteButtonVisibility() {
+                const btn = document.getElementById('deleteStaffBtn');
+                if (selectedStaff.size > 0) {
+                    btn.style.display = 'flex';
+                    btn.innerHTML = `<i class="fas fa-trash-alt"></i> <span>${translations[getCurrentLanguage()].delete_selected} (${selectedStaff.size})</span>`;
+                } else btn.style.display = 'none';
+            }
+
+            function updateSelectAllCheckbox() {
+                const selectAll = document.getElementById('selectAllStaff');
+                if (!selectAll) return;
+                const pageIds = getCurrentPageStaffIds();
+                const allChecked = pageIds.length > 0 && pageIds.every(id => selectedStaff.has(id));
+                selectAll.checked = allChecked;
+                selectAll.indeterminate = !allChecked && pageIds.some(id => selectedStaff.has(id));
+            }
+
+            function getCurrentPageStaffIds() {
+                const start = (currentPage - 1) * itemsPerPage;
+                return currentFilteredStaff.slice(start, start + itemsPerPage).map(s => s.id);
+            }
+
+            function updatePagination() {
+                const info = document.getElementById('paginationInfo');
+                const nums = document.getElementById('paginationNumbers');
+                const dict = translations[getCurrentLanguage()];
+                const total = currentFilteredStaff.length;
+                if (total === 0) info.textContent = dict.no_staff_found || 'No staff found';
+                else {
+                    const start = (currentPage - 1) * itemsPerPage + 1;
+                    const end = Math.min(currentPage * itemsPerPage, total);
+                    info.textContent = `${dict.showing} ${start} ${dict.to} ${end} ${dict.of} ${total} ${dict.staff}`;
+                }
+
+                nums.innerHTML = '';
+                const addPage = (p) => {
+                    const btn = document.createElement('button');
+                    btn.className = `pagination-number ${p === currentPage ? 'active' : ''}`;
+                    btn.textContent = p;
+                    btn.addEventListener('click', () => { currentPage = p; loadStaff(); });
+                    nums.appendChild(btn);
+                };
+
+                if (totalPages > 0) {
+                    addPage(1);
+                    if (currentPage > 3) nums.appendChild(createEllipsis());
+                    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                        if (i !== 1 && i !== totalPages) addPage(i);
+                    }
+                    if (currentPage < totalPages - 2) nums.appendChild(createEllipsis());
+                    if (totalPages > 1) addPage(totalPages);
+                }
+
+                document.getElementById('firstPageBtn').disabled = currentPage === 1;
+                document.getElementById('prevPageBtn').disabled = currentPage === 1;
+                document.getElementById('nextPageBtn').disabled = currentPage === totalPages || totalPages === 0;
+                document.getElementById('lastPageBtn').disabled = currentPage === totalPages || totalPages === 0;
+            }
+
+            function createEllipsis() {
+                const span = document.createElement('span');
+                span.className = 'pagination-ellipsis';
+                span.textContent = '...';
+                return span;
+            }
+
+            // ---------- EVENT LISTENERS ----------
+            function setupEventListeners() {
+                // Filters
+                document.getElementById('roleFilter').addEventListener('change', () => { currentPage = 1; loadStaff(); });
+                document.getElementById('statusFilter').addEventListener('change', () => { currentPage = 1; loadStaff(); });
+                document.getElementById('clearFiltersBtn').addEventListener('click', function () {
+                    document.getElementById('roleFilter').value = 'all';
+                    document.getElementById('statusFilter').value = 'all';
+                    document.getElementById('staffSearch').value = '';
+                    currentPage = 1;
+                    loadStaff();
+                    showToast('Filters cleared', 'success');
+                });
+                document.getElementById('refreshStaffBtn').addEventListener('click', () => { loadStaff(); showToast('Refreshed', 'success'); });
+                document.getElementById('addStaffBtn').addEventListener('click', openAddModal);
+                document.getElementById('deleteStaffBtn').addEventListener('click', () => {
+                    if (selectedStaff.size) showDeleteConfirmation(Array.from(selectedStaff));
+                    else showToast(translations[getCurrentLanguage()].no_staff_selected, 'error');
+                });
+                // Search debounce
+                let timeout;
+                document.getElementById('staffSearch').addEventListener('input', function () {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => { currentPage = 1; loadStaff(); }, 300);
+                });
+                // Pagination
+                document.getElementById('pageSizeSelect').addEventListener('change', function (e) {
+                    itemsPerPage = parseInt(e.target.value);
+                    currentPage = 1;
+                    loadStaff();
+                });
+                document.getElementById('firstPageBtn').addEventListener('click', () => { currentPage = 1; loadStaff(); });
+                document.getElementById('prevPageBtn').addEventListener('click', () => { if (currentPage > 1) { currentPage--; loadStaff(); } });
+                document.getElementById('nextPageBtn').addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; loadStaff(); } });
+                document.getElementById('lastPageBtn').addEventListener('click', () => { currentPage = totalPages; loadStaff(); });
+                // Select all
+                document.getElementById('selectAllStaff').addEventListener('change', function (e) {
+                    const ids = getCurrentPageStaffIds();
+                    if (e.target.checked) ids.forEach(id => selectedStaff.add(id));
+                    else ids.forEach(id => selectedStaff.delete(id));
+                    document.querySelectorAll('.staff-checkbox').forEach(cb => { cb.checked = e.target.checked; });
+                    updateDeleteButtonVisibility();
+                });
+                // Modal buttons
+                document.getElementById('closeFormModal').addEventListener('click', closeFormModal);
+                document.getElementById('cancelFormBtn').addEventListener('click', closeFormModal);
+                document.getElementById('saveStaffBtn').addEventListener('click', saveStaff);
+                document.getElementById('closeDeleteModal').addEventListener('click', () => document.getElementById('deleteConfirmModal').classList.remove('show'));
+                document.getElementById('cancelDeleteBtn').addEventListener('click', () => document.getElementById('deleteConfirmModal').classList.remove('show'));
+                document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
+                // Close modal on outside click
+                window.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('modal')) e.target.classList.remove('show');
+                });
+                // Escape
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        document.querySelectorAll('.modal.show').forEach(m => m.classList.remove('show'));
+                    }
+                });
+                // Logout
+                document.getElementById('logoutBtn')?.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    localStorage.clear();
+                    window.location.href = '../../../index.html';
+                });
+            }
+
+            // ---------- ACCOUNT DROPDOWN (copied from all-tickets) ----------
+            function setupAccountDropdown() {
+                const btn = document.getElementById("accountBtn");
+                const menu = document.getElementById("accountMenu");
+                if (!btn || !menu) return;
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                const freshBtn = document.getElementById("accountBtn");
+                freshBtn.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    menu.classList.toggle("show");
+                    freshBtn.setAttribute("aria-expanded", menu.classList.contains("show"));
+                });
+                document.addEventListener("click", function (e) {
+                    if (!freshBtn.contains(e.target) && !menu.contains(e.target)) menu.classList.remove("show");
+                });
+                menu.querySelectorAll("a").forEach(a => a.addEventListener("click", () => menu.classList.remove("show")));
+            }
+
+            // ---------- INITIALIZE ----------
+            document.addEventListener('DOMContentLoaded', function () {
+                // Inject toast
+                if (!document.getElementById('toast')) {
+                    const t = document.createElement('div');
+                    t.id = 'toast'; t.className = 'toast';
+                    document.body.appendChild(t);
+                }
+                if (window.userDataManager) window.userDataManager.initializeUserDisplay();
+                if (window.preferencesManager) {
+                    window.preferencesManager.initialize();
+                    window.preferencesManager.applyTheme();
+                    const lang = window.preferencesManager.getCurrentLanguage() || 'en';
+                    applyTranslations(lang);
+                } else applyTranslations('en');
+                setupAccountDropdown();
+                setupEventListeners();
+                loadStaff();
+            });
+        })();
+    </script>
+</body>
+
+</html>

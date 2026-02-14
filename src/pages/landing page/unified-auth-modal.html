@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>AlliTrack · Unified Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../styles/landing page/unified-auth-modal.css">
+    <script src="../../scripts/landing-accessibility.js"></script>
+</head>
+
+<body>
+    <div class="modal-orb-bg"></div>
+    <div class="modal-fixed">
+        <div class="modal-content">
+            <div class="compact-header">
+                <div>
+                    <a href="../../../index.html#home-section" aria-label="AlliTrack Home">
+                        <img src="../../assets/images/AlliTrack Logo.png" alt="AlliTrack" width="140" height="40">
+                    </a>
+                    <div class="compact-tagline">support that flows · frictionless</div>
+                </div>
+            </div>
+
+            <!-- FIXED TRUST ROW - Now evenly spaced -->
+            <div class="trust-row">
+                <div class="trust-item"><i class="fas fa-headset"></i> 2.5k daily tickets</div>
+                <div class="trust-item"><i class="fas fa-clock"></i> &lt;4 min reply</div>
+                <div class="trust-item"><i class="fas fa-cloud"></i> 99.99% uptime</div>
+            </div>
+
+            <!-- TAB SWITCHER -->
+            <div class="tab-switch">
+                <button class="tab-btn active" id="tabLoginBtn"><i class="fas fa-key"></i> Log In</button>
+                <button class="tab-btn" id="tabSignupBtn"><i class="fas fa-user-plus"></i> Sign Up</button>
+            </div>
+
+            <!-- AUTH FORMS CONTAINER -->
+            <div class="auth-forms">
+
+                <!-- LOGIN FORM -->
+                <div id="loginFormContainer" class="auth-form active">
+                    <form id="modalLoginForm">
+                        <label for="modalEmail">Email</label>
+                        <input type="email" id="modalEmail" maxlength="50" class="input-field"
+                            placeholder="Enter your email address">
+                        <p id="modalEmailError" class="error-text"></p>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label for="modalPassword" style="margin-top: 8px;">Password</label>
+                            <a href="#" class="forgot-link">Forgot password?</a>
+                        </div>
+                        <div class="password-container">
+                            <input type="password" id="modalPassword" maxlength="30" class="input-field"
+                                placeholder="Your password">
+                            <button type="button" class="toggle-password" id="toggleModalPassword">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                        <p id="modalPasswordError" class="error-text"></p>
+
+                        <button class="login-btn" id="modalLoginBtn" type="submit" disabled>
+                            <i class="fas fa-paper-plane"></i> Log in with Email
+                        </button>
+                    </form>
+
+                    <div class="divider">or</div>
+
+                    <div class="social-btn" id="modalGoogleLogin">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"
+                            alt="Google"> Continue with Google
+                    </div>
+                    <div class="social-btn" id="modalFacebookLogin">
+                        <i class="fab fa-facebook"></i> Continue with Facebook
+                    </div>
+                    <p class="footer-text">
+                        Don't have an account? <a href="../../pages/landing page/unified-auth-modal.html" id="switchToSignupLink">Sign up</a>
+                    </p>
+                </div>
+
+                <!-- SIGNUP FORM -->
+                <div id="signupFormContainer" class="auth-form">
+                    <form id="modalSignupForm">
+                        <div style="display: flex; gap: 16px; margin-bottom: 4px;">
+                            <div style="flex: 1;">
+                                <label for="modalFirstName">First name</label>
+                                <input type="text" id="modalFirstName" maxlength="30" class="input-field"
+                                    placeholder="John">
+                                <p id="modalFirstNameError" class="error-text"></p>
+                            </div>
+                            <div style="flex: 1;">
+                                <label for="modalLastName">Last name</label>
+                                <input type="text" id="modalLastName" maxlength="30" class="input-field"
+                                    placeholder="Doe">
+                                <p id="modalLastNameError" class="error-text"></p>
+                            </div>
+                        </div>
+
+                        <label for="modalSignupEmail">Email</label>
+                        <input type="email" id="modalSignupEmail" maxlength="50" class="input-field"
+                            placeholder="you@example.com">
+                        <p id="modalSignupEmailError" class="error-text"></p>
+
+                        <label for="modalSignupPassword">Password</label>
+                        <div class="password-container">
+                            <input type="password" id="modalSignupPassword" maxlength="30" class="input-field"
+                                placeholder="Create a password">
+                            <button type="button" class="toggle-password" id="toggleModalSignupPassword">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+
+                        <div class="password-requirements">
+                            <div class="requirement invalid" id="reqLength"><i class="far fa-circle"></i> 8+ characters
+                            </div>
+                            <div class="requirement invalid" id="reqUppercase"><i class="far fa-circle"></i> Uppercase &amp;
+                                lowercase</div>
+                            <div class="requirement invalid" id="reqNumber"><i class="far fa-circle"></i> Number &amp;
+                                special char</div>
+                        </div>
+                        <p id="modalSignupPasswordError" class="error-text"></p>
+
+                        <label for="modalConfirmPassword">Confirm password</label>
+                        <div class="password-container">
+                            <input type="password" id="modalConfirmPassword" maxlength="30" class="input-field"
+                                placeholder="Re-enter password">
+                            <button type="button" class="toggle-password" id="toggleModalConfirmPassword">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                        <p id="modalConfirmPasswordError" class="error-text"></p>
+
+                        <div class="terms-container">
+                            <div class="terms">
+                                <input type="checkbox" id="modalTerms">
+                                <label for="modalTerms">I agree to the <a href="../../pages/landing page/terms.html">Terms</a> and <a href="../../pages/landing page/privacy.html">Privacy
+                                        Policy</a></label>
+                            </div>
+                            <p id="modalTermsError" class="error-text"></p>
+                        </div>
+
+                        <button class="signup-btn" id="modalSignupBtn" type="submit" disabled>
+                            <i class="fas fa-user-check"></i> Create Account
+                        </button>
+                    </form>
+
+                    <div class="divider">or</div>
+
+                    <div class="social-btn" id="modalGoogleSignup">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"
+                            alt="Google"> Sign up with Google
+                    </div>
+                    <div class="social-btn" id="modalFacebookSignup">
+                        <i class="fab fa-facebook"></i> Sign up with Facebook
+                    </div>
+                    <p class="footer-text">
+                        Already have an account? <a href="../../pages/landing page/unified-auth-modal.html" id="switchToLoginLink">Log in</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOADING OVERLAY -->
+        <div class="loading-overlay" id="modalLoadingOverlay">
+            <div class="loading-spinner">
+                <i class="fas fa-circle-notch fa-spin"></i>
+            </div>
+            <div class="loading-text" id="modalLoadingText">Processing...</div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // ========== CONFIGURATION ==========
+            const ADMIN_EMAIL_DOMAIN = '@allitrack.com';
+            const USER_DASHBOARD_PATH = '../../pages/user page/index-user.html';
+            const ADMIN_DASHBOARD_PATH = '../../pages/admin page/index-admin.html';
+
+            // ========== DOM ELEMENTS ==========
+            const tabLogin = document.getElementById('tabLoginBtn');
+            const tabSignup = document.getElementById('tabSignupBtn');
+            const loginFormDiv = document.getElementById('loginFormContainer');
+            const signupFormDiv = document.getElementById('signupFormContainer');
+            const switchToSignupLink = document.getElementById('switchToSignupLink');
+            const switchToLoginLink = document.getElementById('switchToLoginLink');
+
+            // Login elements
+            const loginEmail = document.getElementById('modalEmail');
+            const loginPass = document.getElementById('modalPassword');
+            const loginEmailError = document.getElementById('modalEmailError');
+            const loginPassError = document.getElementById('modalPasswordError');
+            const modalLoginBtn = document.getElementById('modalLoginBtn');
+            const loginForm = document.getElementById('modalLoginForm');
+
+            // Signup elements
+            const firstName = document.getElementById('modalFirstName');
+            const lastName = document.getElementById('modalLastName');
+            const signupEmail = document.getElementById('modalSignupEmail');
+            const signupPwdField = document.getElementById('modalSignupPassword');
+            const confirmPwdField = document.getElementById('modalConfirmPassword');
+            const termsCheck = document.getElementById('modalTerms');
+            const signupBtn = document.getElementById('modalSignupBtn');
+
+            const firstNameErr = document.getElementById('modalFirstNameError');
+            const lastNameErr = document.getElementById('modalLastNameError');
+            const signupEmailErr = document.getElementById('modalSignupEmailError');
+            const signupPwdErr = document.getElementById('modalSignupPasswordError');
+            const confirmErr = document.getElementById('modalConfirmPasswordError');
+            const termsErr = document.getElementById('modalTermsError');
+
+            const reqLength = document.getElementById('reqLength');
+            const reqUppercase = document.getElementById('reqUppercase');
+            const reqNumber = document.getElementById('reqNumber');
+
+            // Loading overlay
+            const loadingOverlay = document.getElementById('modalLoadingOverlay');
+            const loadingText = document.getElementById('modalLoadingText');
+
+            // ========== UTILITY FUNCTIONS ==========
+            function validateEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            function isAdminUser(userEmail) {
+                return userEmail.toLowerCase().endsWith(ADMIN_EMAIL_DOMAIN.toLowerCase());
+            }
+
+            function preventSpaces(e) {
+                if (e.key === ' ') e.preventDefault();
+            }
+
+            function cleanPaste(e) {
+                const data = (e.clipboardData || window.clipboardData).getData('text');
+                if (data.includes(' ')) {
+                    e.preventDefault();
+                    document.execCommand('insertText', false, data.replace(/\s/g, ''));
+                }
+            }
+
+            // ========== LOADING OVERLAY FUNCTIONS ==========
+            function showLoading(msg) {
+                loadingText.textContent = msg || 'Processing...';
+                loadingOverlay.style.display = 'flex';
+            }
+
+            function hideLoading() {
+                loadingOverlay.style.display = 'none';
+            }
+
+            // ========== AUTHENTICATION FUNCTIONS ==========
+            async function simulateLoginAPI(email, password) {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve({
+                            success: true,
+                            user: {
+                                id: Math.random().toString(36).substr(2, 9),
+                                name: email.split('@')[0],
+                                email: email,
+                                role: isAdminUser(email) ? 'admin' : 'user',
+                                lastLogin: new Date().toISOString()
+                            }
+                        });
+                    }, 1500);
+                });
+            }
+
+            function handleLoginSuccess(userData) {
+                localStorage.setItem('userData', JSON.stringify(userData));
+                localStorage.setItem('authToken', 'simulated_token_' + Date.now());
+
+                const redirectPath = userData.role === 'admin'
+                    ? ADMIN_DASHBOARD_PATH
+                    : USER_DASHBOARD_PATH;
+
+                console.log(`Login successful. Redirecting ${userData.role} to: ${redirectPath}`);
+                window.location.href = redirectPath;
+            }
+
+            function handleLoginFailure(errorMessage) {
+                hideLoading();
+                modalLoginBtn.disabled = false;
+                alert(`Login failed: ${errorMessage}`);
+                console.error('Login error:', errorMessage);
+            }
+
+            // ========== LOGIN VALIDATION ==========
+            function validateLoginForm() {
+                let valid = true;
+                const emailVal = loginEmail.value.trim();
+                const passVal = loginPass.value.trim();
+
+                if (!emailVal) {
+                    loginEmailError.textContent = 'Email is required.';
+                    loginEmail.classList.add('error-input');
+                    valid = false;
+                } else if (!validateEmail(emailVal)) {
+                    loginEmailError.textContent = 'Valid email required.';
+                    loginEmail.classList.add('error-input');
+                    valid = false;
+                } else {
+                    loginEmailError.textContent = '';
+                    loginEmail.classList.remove('error-input');
+                }
+
+                if (!passVal) {
+                    loginPassError.textContent = 'Password required.';
+                    loginPass.classList.add('error-input');
+                    valid = false;
+                } else {
+                    loginPassError.textContent = '';
+                    loginPass.classList.remove('error-input');
+                }
+
+                modalLoginBtn.disabled = !valid;
+                return valid;
+            }
+
+            // ========== SIGNUP VALIDATION ==========
+            function updateRequirement(el, isValid) {
+                if (isValid) {
+                    el.classList.remove('invalid');
+                    el.classList.add('valid');
+                    el.querySelector('i').className = 'fas fa-check-circle';
+                } else {
+                    el.classList.remove('valid');
+                    el.classList.add('invalid');
+                    el.querySelector('i').className = 'far fa-circle';
+                }
+            }
+
+            function checkPasswordRequirements(pass) {
+                const hasLength = pass.length >= 8;
+                const hasUppercase = /[A-Z]/.test(pass);
+                const hasLowercase = /[a-z]/.test(pass);
+                const hasNumber = /[0-9]/.test(pass);
+                const hasSpecial = /[@$!%*?&]/.test(pass);
+
+                updateRequirement(reqLength, hasLength);
+                updateRequirement(reqUppercase, hasUppercase && hasLowercase);
+                updateRequirement(reqNumber, hasNumber && hasSpecial);
+
+                return hasLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
+            }
+
+            function validateSignup() {
+                let isValid = true;
+
+                if (!firstName?.value.trim()) {
+                    firstNameErr.textContent = 'First name required';
+                    firstName?.classList.add('error-input');
+                    isValid = false;
+                } else {
+                    firstNameErr.textContent = '';
+                    firstName?.classList.remove('error-input');
+                }
+
+                if (!lastName?.value.trim()) {
+                    lastNameErr.textContent = 'Last name required';
+                    lastName?.classList.add('error-input');
+                    isValid = false;
+                } else {
+                    lastNameErr.textContent = '';
+                    lastName?.classList.remove('error-input');
+                }
+
+                const semail = signupEmail?.value.trim();
+                if (!semail) {
+                    signupEmailErr.textContent = 'Email required';
+                    signupEmail?.classList.add('error-input');
+                    isValid = false;
+                } else if (!validateEmail(semail)) {
+                    signupEmailErr.textContent = 'Valid email required';
+                    signupEmail?.classList.add('error-input');
+                    isValid = false;
+                } else {
+                    signupEmailErr.textContent = '';
+                    signupEmail?.classList.remove('error-input');
+                }
+
+                const pwd = signupPwdField?.value || '';
+                if (!pwd) {
+                    signupPwdErr.textContent = 'Password required';
+                    signupPwdField?.classList.add('error-input');
+                    isValid = false;
+                } else if (!checkPasswordRequirements(pwd)) {
+                    signupPwdErr.textContent = 'Requirements not met';
+                    signupPwdField?.classList.add('error-input');
+                    isValid = false;
+                } else {
+                    signupPwdErr.textContent = '';
+                    signupPwdField?.classList.remove('error-input');
+                }
+
+                if (!confirmPwdField?.value) {
+                    confirmErr.textContent = 'Please confirm password';
+                    confirmPwdField?.classList.add('error-input');
+                    isValid = false;
+                } else if (confirmPwdField.value !== pwd) {
+                    confirmErr.textContent = 'Passwords do not match';
+                    confirmPwdField?.classList.add('error-input');
+                    isValid = false;
+                } else {
+                    confirmErr.textContent = '';
+                    confirmPwdField?.classList.remove('error-input');
+                }
+
+                if (!termsCheck?.checked) {
+                    termsErr.textContent = 'You must accept the terms';
+                    isValid = false;
+                } else {
+                    termsErr.textContent = '';
+                }
+
+                if (signupBtn) signupBtn.disabled = !isValid;
+                return isValid;
+            }
+
+            // ========== EVENT HANDLERS ==========
+            function activateLogin() {
+                tabLogin.classList.add('active');
+                tabSignup.classList.remove('active');
+                loginFormDiv.classList.add('active');
+                signupFormDiv.classList.remove('active');
+            }
+
+            function activateSignup() {
+                tabSignup.classList.add('active');
+                tabLogin.classList.remove('active');
+                signupFormDiv.classList.add('active');
+                loginFormDiv.classList.remove('active');
+            }
+
+            async function handleEmailLogin(e) {
+                e.preventDefault();
+
+                if (!validateLoginForm()) {
+                    return;
+                }
+
+                const emailValue = loginEmail.value.trim();
+                const passwordValue = loginPass.value.trim();
+
+                showLoading('Logging in...');
+                modalLoginBtn.disabled = true;
+
+                try {
+                    const response = await simulateLoginAPI(emailValue, passwordValue);
+
+                    if (response.success) {
+                        handleLoginSuccess(response.user);
+                    } else {
+                        handleLoginFailure('Invalid credentials');
+                    }
+                } catch (error) {
+                    handleLoginFailure('Network error. Please try again.');
+                }
+            }
+
+            async function handleSocialLogin(provider, isLogin = true) {
+                showLoading(`Connecting to ${provider}...`);
+
+                try {
+                    const response = await new Promise(resolve => {
+                        setTimeout(() => {
+                            resolve({
+                                success: true,
+                                user: {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    name: `${provider} User`,
+                                    email: `user@${provider.toLowerCase()}.com`,
+                                    provider: provider,
+                                    role: 'user', // Social logins default to user role
+                                    lastLogin: new Date().toISOString()
+                                }
+                            });
+                        }, 1500);
+                    });
+
+                    if (response.success) {
+                        handleLoginSuccess(response.user);
+                    } else {
+                        handleLoginFailure(`${provider} login failed`);
+                    }
+                } catch (error) {
+                    handleLoginFailure(`${provider} login error`);
+                }
+            }
+
+            async function handleSignupSubmit(e) {
+                e.preventDefault();
+                if (!validateSignup()) return;
+
+                showLoading('Creating your account...');
+                signupBtn.disabled = true;
+
+                try {
+                    // Simulate signup API call
+                    await new Promise(resolve => setTimeout(resolve, 1600));
+
+                    hideLoading();
+                    alert('✅ Account created! Please log in.');
+                    activateLogin();
+
+                    // Reset form
+                    signupForm.reset();
+                    checkPasswordRequirements('');
+                    validateSignup();
+
+                } catch (error) {
+                    hideLoading();
+                    alert('Signup failed. Please try again.');
+                    signupBtn.disabled = false;
+                }
+            }
+
+            // ========== SETUP FUNCTIONS ==========
+            function setupToggle(toggleId, inputId) {
+                const toggle = document.getElementById(toggleId);
+                const input = document.getElementById(inputId);
+                if (toggle && input) {
+                    toggle.addEventListener('click', function () {
+                        const type = input.type === 'password' ? 'text' : 'password';
+                        input.type = type;
+                        this.querySelector('i').classList.toggle('fa-eye');
+                        this.querySelector('i').classList.toggle('fa-eye-slash');
+                    });
+                }
+            }
+
+            // ========== INITIALIZATION ==========
+            function init() {
+                // Tab switching
+                tabLogin.addEventListener('click', activateLogin);
+                tabSignup.addEventListener('click', activateSignup);
+
+                if (switchToSignupLink) switchToSignupLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    activateSignup();
+                });
+                
+                if (switchToLoginLink) switchToLoginLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    activateLogin();
+                });
+
+                // Password toggle
+                setupToggle('toggleModalPassword', 'modalPassword');
+                setupToggle('toggleModalSignupPassword', 'modalSignupPassword');
+                setupToggle('toggleModalConfirmPassword', 'modalConfirmPassword');
+
+                // Login validation
+                if (loginEmail) loginEmail.addEventListener('input', validateLoginForm);
+                if (loginPass) loginPass.addEventListener('input', validateLoginForm);
+
+                // Signup validation
+                if (firstName) firstName.addEventListener('input', validateSignup);
+                if (lastName) lastName.addEventListener('input', validateSignup);
+                if (signupEmail) signupEmail.addEventListener('input', validateSignup);
+                if (signupPwdField) {
+                    signupPwdField.addEventListener('input', function () {
+                        checkPasswordRequirements(this.value);
+                        validateSignup();
+                    });
+                }
+                if (confirmPwdField) confirmPwdField.addEventListener('input', validateSignup);
+                if (termsCheck) termsCheck.addEventListener('change', validateSignup);
+
+                // Prevent spaces in inputs
+                ['modalFirstName', 'modalLastName', 'modalSignupEmail', 'modalSignupPassword', 'modalConfirmPassword', 'modalEmail', 'modalPassword'].forEach(id => {
+                    const f = document.getElementById(id);
+                    if (f) f.addEventListener('keydown', preventSpaces);
+                });
+
+                // Clean spaces on paste
+                ['modalEmail', 'modalPassword', 'modalSignupEmail', 'modalSignupPassword', 'modalConfirmPassword', 'modalFirstName', 'modalLastName'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.addEventListener('paste', cleanPaste);
+                });
+
+                // Login form submit
+                if (loginForm) {
+                    loginForm.addEventListener('submit', handleEmailLogin);
+                }
+
+                // Signup form submit
+                const signupForm = document.getElementById('modalSignupForm');
+                if (signupForm) {
+                    signupForm.addEventListener('submit', handleSignupSubmit);
+                }
+
+                // Social login handlers
+                document.getElementById('modalGoogleLogin')?.addEventListener('click', () => handleSocialLogin('Google', true));
+                document.getElementById('modalFacebookLogin')?.addEventListener('click', () => handleSocialLogin('Facebook', true));
+                document.getElementById('modalGoogleSignup')?.addEventListener('click', () => handleSocialLogin('Google', false));
+                document.getElementById('modalFacebookSignup')?.addEventListener('click', () => handleSocialLogin('Facebook', false));
+
+                // Initial validation
+                validateLoginForm();
+                validateSignup();
+
+                console.log('Login page initialized with authentication support');
+            }
+
+            // Start the application
+            init();
+        })();
+    </script>
+</body>
+
+</html>

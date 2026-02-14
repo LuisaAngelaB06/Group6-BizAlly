@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title data-translate="dashboard_page_title">User Dashboard - AlliTrack</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
+    <link rel="stylesheet" href="../../styles/user page/user-dashboard.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <script src="../../scripts/mobile-restriction.js"></script>
+    <script src="../../scripts/user-preference-manager.js"></script>
+    <script src="../../scripts/user-data-manager.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Access Denied Modal -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">User dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+                Home</button>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Content -->
+    <div class="app" id="dashboardContent">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="../../../src/assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                            style="width: 32px; height: 32px;">
+                    </div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle" data-translate="user_dashboard">User Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../../pages/user page/index-user.html" class="active" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="support">Support</div>
+                    <a href="../../pages/user page/my-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> <span data-translate="my_tickets">My Tickets</span>
+                    </a>
+                    <a href="../../pages/user page/notifications.html" data-section="notifications">
+                        <i class="fas fa-bell"></i> <span data-translate="notifications">Notifications</span>
+                    </a>
+                    <a href="../../pages/user page/submit-ticket.html" data-section="submit-ticket">
+                        <i class="fas fa-plus-circle"></i> <span data-translate="submit_ticket">Submit a Ticket</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="management">Management</div>
+                    <a href="../../pages/user page/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
+                    </a>
+                    <a href="../../pages/user page/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
+                    </a>
+                    <a href="../../pages/user page/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="system">System</div>
+                    <a href="../../pages/user page/account-security.html" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> <span data-translate="account_security">Account
+                            Security</span>
+                    </a>
+                    <a href="../../pages/user page/system-information.html" data-section="system-information">
+                        <i class="fas fa-info-circle"></i> <span data-translate="system_information">System
+                            Information</span>
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..."
+                            data-translate-placeholder="search_tickets" aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div style="font-weight:700" id="userNameDisplay">User</div>
+                            <div style="font-size:.82rem;color:var(--muted)" id="userEmailDisplay">user@example.com
+                            </div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar" id="userAvatar">AJ</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="../../pages/user page/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="../../pages/user page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="../../../landing page/pages/index.html" id="logoutBtn"
+                                data-translate="logout">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Dashboard Content -->
+                <div class="content">
+                    <div class="dashboard-content">
+                        <!-- Feature 1: Ticket Status Overview -->
+                        <section class="dashboard-section">
+                            <h2><i class="fas fa-ticket-alt"></i> <span data-translate="my_tickets_overview">My Tickets
+                                    Overview</span></h2>
+                            <div class="ticket-status-grid">
+                                <div class="status-card open">
+                                    <div class="count">5</div>
+                                    <div class="label" data-translate="open_tickets">Open Tickets</div>
+                                </div>
+                                <div class="status-card in-progress">
+                                    <div class="count">3</div>
+                                    <div class="label" data-translate="in_progress">In Progress</div>
+                                </div>
+                                <div class="status-card resolved">
+                                    <div class="count">12</div>
+                                    <div class="label" data-translate="resolved">Resolved</div>
+                                </div>
+                                <div class="status-card closed">
+                                    <div class="count">8</div>
+                                    <div class="label" data-translate="closed">Closed</div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Feature 2: Recent Activity -->
+                        <section class="dashboard-section">
+                            <h2><i class="fas fa-history"></i> <span data-translate="recent_activity">Recent
+                                    Activity</span></h2>
+                            <div class="activity-list">
+                                <div class="activity-item">
+                                    <div class="activity-icon ticket">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <div class="activity-title" data-translate="new_ticket_submitted">New ticket
+                                            submitted</div>
+                                        <div class="activity-meta" data-translate="login_issue">Issue with login
+                                            authentication</div>
+                                    </div>
+                                    <div class="activity-time" data-translate="hours_ago">2 hours ago</div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon update">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <div class="activity-title" data-translate="ticket_updated">Ticket updated</div>
+                                        <div class="activity-meta" data-translate="ticket_status_changed">Ticket
+                                            #TKT-4587 status changed to "In Progress"</div>
+                                    </div>
+                                    <div class="activity-time" data-translate="yesterday">Yesterday</div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon resolved">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <div class="activity-title" data-translate="ticket_resolved">Ticket resolved
+                                        </div>
+                                        <div class="activity-meta" data-translate="ticket_4219_resolved">Ticket
+                                            #TKT-4219 has been resolved</div>
+                                    </div>
+                                    <div class="activity-time" data-translate="days_ago">2 days ago</div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon ticket">
+                                        <i class="fas fa-comment"></i>
+                                    </div>
+                                    <div class="activity-details">
+                                        <div class="activity-title" data-translate="new_comment_added">New comment added
+                                        </div>
+                                        <div class="activity-meta" data-translate="agent_responded">Support agent
+                                            responded to your ticket #TKT-4587</div>
+                                    </div>
+                                    <div class="activity-time" data-translate="days_ago_3">3 days ago</div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Feature 3: Quick Actions -->
+                        <section class="dashboard-section">
+                            <h2><i class="fas fa-bolt"></i> <span data-translate="quick_actions">Quick Actions</span>
+                            </h2>
+                            <div class="quick-actions-grid">
+                                <a href="../../pages/user page/submit-ticket.html" class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                    <div class="action-title" data-translate="submit_ticket">Submit Ticket</div>
+                                    <div class="action-desc" data-translate="create_support_request">Create a new
+                                        support request</div>
+                                </a>
+                                <a href="../../pages/user page/my-tickets.html" class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-ticket-alt"></i>
+                                    </div>
+                                    <div class="action-title" data-translate="view_tickets">View Tickets</div>
+                                    <div class="action-desc" data-translate="check_support_tickets">Check all your
+                                        support tickets</div>
+                                </a>
+                                <a href="../../pages/user page/notifications.html" class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-bell"></i>
+                                    </div>
+                                    <div class="action-title" data-translate="notifications">Notifications</div>
+                                    <div class="action-desc" data-translate="view_recent_updates">View recent updates
+                                    </div>
+                                </a>
+                                <a href="../../pages/user page/profile-settings.html" class="action-card">
+                                    <div class="action-icon">
+                                        <i class="fas fa-user-cog"></i>
+                                    </div>
+                                    <div class="action-title" data-translate="profile_settings">Profile Settings</div>
+                                    <div class="action-desc" data-translate="update_account_details">Update your account
+                                        details</div>
+                                </a>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div data-translate="dashboard_template">Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Translation dictionary for dashboard page
+        const translations = {
+            'en': {
+                // PAGE-SPECIFIC translations only:
+                'dashboard_page_title': 'User Dashboard - AlliTrack',
+                'user_dashboard': 'User Dashboard',
+                'dashboard': 'Dashboard',
+                'support': 'Support',
+                'my_tickets': 'My Tickets',
+                'notifications': 'Notifications',
+                'submit_ticket': 'Submit a Ticket',
+                'management': 'Management',
+                'preferences': 'Preferences',
+                'profile_settings': 'Profile Settings',
+                'announcements': 'Announcements',
+                'system': 'System',
+                'account_security': 'Account Security',
+                'system_information': 'System Information',
+                'search_tickets': 'Search tickets, users, IDs...',
+                'profile': 'Profile',
+                'settings': 'Settings',
+                'logout': 'Logout',
+                'my_tickets_overview': 'My Tickets Overview',
+                'open_tickets': 'Open Tickets',
+                'in_progress': 'In Progress',
+                'resolved': 'Resolved',
+                'closed': 'Closed',
+                'recent_activity': 'Recent Activity',
+                'new_ticket_submitted': 'New ticket submitted',
+                'login_issue': 'Issue with login authentication',
+                'ticket_updated': 'Ticket updated',
+                'ticket_status_changed': 'Ticket #TKT-4587 status changed to "In Progress"',
+                'ticket_resolved': 'Ticket resolved',
+                'ticket_4219_resolved': 'Ticket #TKT-4219 has been resolved',
+                'new_comment_added': 'New comment added',
+                'agent_responded': 'Support agent responded to your ticket #TKT-4587',
+                'quick_actions': 'Quick Actions',
+                'view_tickets': 'View Tickets',
+                'check_support_tickets': 'Check all your support tickets',
+                'view_recent_updates': 'View recent updates',
+                'update_account_details': 'Update your account details',
+                'dashboard_template': 'Dashboard Template',
+                'hours_ago': '2 hours ago',
+                'yesterday': 'Yesterday',
+                'days_ago': '2 days ago',
+                'days_ago_3': '3 days ago',
+                'create_support_request': 'Create a new support request'
+            },
+            'fil': {
+                // PAGE-SPECIFIC translations only:
+                'dashboard_page_title': 'Dashboard ng User - AlliTrack',
+                'user_dashboard': 'Dashboard ng User',
+                'dashboard': 'Dashboard',
+                'support': 'Suporta',
+                'my_tickets': 'Aking mga Ticket',
+                'notifications': 'Mga Notipikasyon',
+                'submit_ticket': 'Magsumite ng Ticket',
+                'management': 'Pamamahala',
+                'preferences': 'Mga Kagustuhan',
+                'profile_settings': 'Mga Setting ng Profile',
+                'announcements': 'Mga Anunsyo',
+                'system': 'Sistema',
+                'account_security': 'Seguridad ng Account',
+                'system_information': 'Impormasyon ng Sistema',
+                'search_tickets': 'Maghanap ng mga ticket, user, ID...',
+                'profile': 'Profile',
+                'settings': 'Mga Setting',
+                'logout': 'Mag-logout',
+                'my_tickets_overview': 'Pangkalahatang-ideya ng Aking mga Ticket',
+                'open_tickets': 'Mga Bukas na Ticket',
+                'in_progress': 'Kasulukuyang Ginagawa',
+                'resolved': 'Naresolba',
+                'closed': 'Isinara',
+                'recent_activity': 'Kamakailang Aktibidad',
+                'new_ticket_submitted': 'Bagong ticket na isinumite',
+                'login_issue': 'Isyu sa pag-login authentication',
+                'ticket_updated': 'Na-update ang ticket',
+                'ticket_status_changed': 'Ang ticket #TKT-4587 ay binago ang status sa "Kasulukuyang Ginagawa"',
+                'ticket_resolved': 'Naresolba ang ticket',
+                'ticket_4219_resolved': 'Ang ticket #TKT-4219 ay naresolba na',
+                'new_comment_added': 'Bagong komento na idinagdag',
+                'agent_responded': 'Tumugon ang support agent sa iyong ticket #TKT-4587',
+                'quick_actions': 'Mabilisang Mga Aksyon',
+                'view_tickets': 'Tingnan ang mga Ticket',
+                'check_support_tickets': 'Suriin ang lahat ng iyong mga support ticket',
+                'view_recent_updates': 'Tingnan ang mga kamakailang update',
+                'update_account_details': 'I-update ang iyong mga detalye ng account',
+                'dashboard_template': 'Dashboard',
+                'hours_ago': '2 oras ang nakalipas',
+                'yesterday': 'Kahapon',
+                'days_ago': '2 araw ang nakalipas',
+                'days_ago_3': '3 araw ang nakalipas',
+                'create_support_request': 'Gumawa ng bagong support request'
+            }
+        };
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Dashboard: Starting initialization...');
+
+            // First, try to get user data from all possible localStorage sources
+            loadAndDisplayUserData();
+
+            // Initialize user data manager if available
+            if (window.userDataManager) {
+                console.log('User Data Manager found, initializing...');
+                window.userDataManager.initializeUserDisplay();
+
+                // Also load any existing data immediately
+                const userData = window.userDataManager.getUserData();
+                if (userData && userData.name) {
+                    console.log('User data from manager:', userData);
+                    updateUserDisplay(userData);
+                }
+            } else {
+                console.warn('User Data Manager not found, using localStorage fallback');
+            }
+
+            // Initialize preferences manager
+            if (window.preferencesManager) {
+                console.log('Dashboard: Initializing Preferences Manager...');
+                window.preferencesManager.initialize();
+
+                // Apply theme immediately
+                window.preferencesManager.applyTheme();
+
+                // Get current language from preferences manager
+                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
+                applyTranslations(currentLang);
+            } else {
+                console.error('Dashboard: preferencesManager not found!');
+                applyTranslations('en'); // Default to English
+            }
+
+            // Setup theme listener
+            setupThemeListener();
+
+            // Setup logout functionality
+            setupLogout();
+
+            // SETUP ACCOUNT DROPDOWN - CRITICAL ADDITION
+            setupAccountDropdown();
+
+            console.log('Dashboard page loaded');
+
+            // Listen for storage events to update user data in real-time
+            window.addEventListener('storage', function (e) {
+                if (e.key === 'userData' || e.key === 'userProfile' || e.key === 'loggedInUser' || e.key === 'currentUser') {
+                    console.log('User data changed in storage, reloading...');
+                    loadAndDisplayUserData();
+                }
+            });
+        });
+
+        // Load user data from all possible localStorage sources
+        function loadAndDisplayUserData() {
+            try {
+                console.log('Looking for user data in localStorage...');
+
+                // Try multiple possible keys where user data might be stored
+                const possibleKeys = [
+                    'userData',
+                    'userProfile',
+                    'loggedInUser',
+                    'currentUser',
+                    'user',
+                    'loginData',
+                    'authData'
+                ];
+
+                let userData = null;
+
+                // Check each possible key
+                for (const key of possibleKeys) {
+                    const storedData = localStorage.getItem(key);
+                    if (storedData) {
+                        try {
+                            const parsedData = JSON.parse(storedData);
+                            console.log(`Found data in key "${key}":`, parsedData);
+
+                            // Check if this looks like user data
+                            if (parsedData && (parsedData.name || parsedData.email || parsedData.username || parsedData.fullName)) {
+                                userData = parsedData;
+                                console.log(`Valid user data found in "${key}"`);
+                                break;
+                            }
+                        } catch (e) {
+                            console.log(`Data in "${key}" is not valid JSON`);
+                        }
+                    }
+                }
+
+                if (userData) {
+                    console.log('Loaded user data:', userData);
+                    updateUserDisplay(userData);
+                } else {
+                    console.warn('No valid user data found in localStorage');
+                    // Set default fallback - but check if this is actually a logged in user
+                    if (localStorage.getItem('isLoggedIn') === 'true') {
+                        console.log('User is logged in but no data found - using placeholder');
+                        updateUserDisplay({
+                            name: 'Logged In User',
+                            email: 'user@example.com',
+                            initials: 'LI'
+                        });
+                    } else {
+                        console.log('No login detected - using default placeholder');
+                        updateUserDisplay({
+                            name: 'User',
+                            email: 'user@example.com',
+                            initials: 'US'
+                        });
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                // Set default fallback
+                updateUserDisplay({
+                    name: 'User',
+                    email: 'user@example.com',
+                    initials: 'US'
+                });
+            }
+        }
+
+        // Update user display in header
+        function updateUserDisplay(userData) {
+            console.log('Updating user display with:', userData);
+
+            // Get display elements
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+            const userAvatar = document.getElementById('userAvatar');
+
+            // Update name - check multiple possible name fields
+            if (userNameDisplay && userData) {
+                const name = userData.name ||
+                    userData.fullName ||
+                    userData.username ||
+                    (userData.firstName && userData.lastName ? `${userData.firstName} ${userData.lastName}` : null) ||
+                    userData.email?.split('@')[0] ||
+                    'User';
+
+                userNameDisplay.textContent = name;
+                console.log('Set user name to:', name);
+            }
+
+            // Update email - check multiple possible email fields
+            if (userEmailDisplay && userData) {
+                const email = userData.email ||
+                    userData.userEmail ||
+                    userData.emailAddress ||
+                    'user@example.com';
+
+                userEmailDisplay.textContent = email;
+                console.log('Set user email to:', email);
+            }
+
+            // Update avatar with initials
+            if (userAvatar && userData) {
+                // Get initials from name
+                let initials = 'US';
+
+                // Try to get name for initials
+                const nameForInitials = userData.name ||
+                    userData.fullName ||
+                    userData.username ||
+                    (userData.firstName && userData.lastName ? `${userData.firstName} ${userData.lastName}` : null);
+
+                if (nameForInitials) {
+                    initials = nameForInitials
+                        .split(' ')
+                        .map(n => n[0])
+                        .join('')
+                        .toUpperCase()
+                        .substring(0, 2);
+                } else if (userData.email) {
+                    initials = userData.email.substring(0, 2).toUpperCase();
+                }
+
+                userAvatar.textContent = initials;
+                console.log('Set avatar initials to:', initials);
+
+                // If there's a photo URL, set it as background
+                if (userData.photo || userData.profilePicture || userData.avatar) {
+                    const photoUrl = userData.photo || userData.profilePicture || userData.avatar;
+                    userAvatar.style.backgroundImage = `url('${photoUrl}')`;
+                    userAvatar.style.backgroundSize = 'cover';
+                    userAvatar.style.backgroundPosition = 'center';
+                    userAvatar.textContent = ''; // Remove initials if we have photo
+                    console.log('Set avatar photo from URL:', photoUrl);
+                }
+            }
+        }
+
+        // Setup theme listener
+        function setupThemeListener() {
+            console.log('Setting up theme listener for dashboard...');
+
+            // Listen for theme changes via storage events
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'preferredTheme') {
+                    console.log('Theme changed via storage:', event.newValue);
+                    if (window.preferencesManager) {
+                        setTimeout(() => {
+                            window.preferencesManager.applyTheme();
+                        }, 100);
+                    }
+                }
+            });
+
+            // Listen for theme changes via broadcast
+            document.addEventListener('themeChanged', function (e) {
+                console.log('Theme changed via event:', e.detail.theme);
+                if (window.preferencesManager) {
+                    window.preferencesManager.applyTheme();
+                }
+            });
+        }
+
+        // Apply translations to the page
+        function applyTranslations(language) {
+            const lang = translations[language] ? language : 'en';
+            const dict = translations[lang];
+
+            // Translate all elements with data-translate attribute
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (dict[key]) {
+                    element.textContent = dict[key];
+                }
+            });
+
+            // Translate all placeholder texts
+            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-translate-placeholder');
+                if (dict[key]) {
+                    element.placeholder = dict[key];
+                }
+            });
+
+            // Update page title
+            if (dict['dashboard_page_title']) {
+                document.title = dict['dashboard_page_title'];
+            }
+        }
+
+        // Listen for language changes from preference-manager.js
+        document.addEventListener('languageChanged', function (e) {
+            console.log('Language changed to:', e.detail.language);
+            applyTranslations(e.detail.language);
+        });
+
+        // Account Dropdown Functionality - FIXED VERSION
+        function setupAccountDropdown() {
+            console.log('Setting up account dropdown...');
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
+
+            console.log('Dropdown elements:', { accountBtn, accountMenu });
+
+            if (accountBtn && accountMenu) {
+                // Clear any existing event listeners by cloning
+                const newBtn = accountBtn.cloneNode(true);
+                accountBtn.parentNode.replaceChild(newBtn, accountBtn);
+
+                const refreshedBtn = document.getElementById("accountBtn");
+                const refreshedMenu = document.getElementById("accountMenu");
+
+                // Add click event
+                refreshedBtn.addEventListener("click", function (e) {
+                    console.log('Account button clicked!');
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    const isShowing = refreshedMenu.classList.contains("show");
+                    console.log('Current show state:', isShowing);
+
+                    refreshedMenu.classList.toggle("show");
+                    refreshedBtn.setAttribute("aria-expanded", !isShowing);
+                    console.log('New show state:', !isShowing);
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener("click", function (e) {
+                    if (!refreshedBtn.contains(e.target) && !refreshedMenu.contains(e.target)) {
+                        refreshedMenu.classList.remove("show");
+                        refreshedBtn.setAttribute("aria-expanded", false);
+                    }
+                });
+
+                // Close dropdown when pressing Escape key
+                document.addEventListener("keydown", function (e) {
+                    if (e.key === "Escape" && refreshedMenu.classList.contains("show")) {
+                        refreshedMenu.classList.remove("show");
+                        refreshedBtn.setAttribute("aria-expanded", false);
+                    }
+                });
+
+                // Close dropdown when clicking menu items
+                const menuItems = refreshedMenu.querySelectorAll("a");
+                menuItems.forEach(item => {
+                    item.addEventListener("click", function () {
+                        refreshedMenu.classList.remove("show");
+                        refreshedBtn.setAttribute("aria-expanded", false);
+                    });
+                });
+
+                // Make sure button is clickable
+                refreshedBtn.style.cursor = 'pointer';
+
+                console.log('Account dropdown setup complete');
+            } else {
+                console.error('Account dropdown elements not found!');
+            }
+        }
+
+        // Logout functionality
+        function setupLogout() {
+            const logoutBtn = document.getElementById("logoutBtn");
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // Clear ALL user data from localStorage
+                    const keysToRemove = [
+                        'userData',
+                        'userProfile',
+                        'loggedInUser',
+                        'currentUser',
+                        'user',
+                        'loginData',
+                        'authData',
+                        'isLoggedIn'
+                    ];
+
+                    keysToRemove.forEach(key => {
+                        localStorage.removeItem(key);
+                    });
+
+                    // Also clear any session-related data
+                    sessionStorage.clear();
+
+                    // Redirect to login page
+                    window.location.href = '../../../index.html';
+                });
+            }
+        }
+
+        // Listen for user data changes
+        document.addEventListener('userDataChanged', function (e) {
+            console.log('User data changed event received:', e.detail);
+            if (e.detail && e.detail.userData) {
+                updateUserDisplay(e.detail.userData);
+            }
+        });
+    </script>
+</body>
+
+</html>

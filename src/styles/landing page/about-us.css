@@ -1,0 +1,310 @@
+/* ---------- ABOUT COMPANY PAGE – MISSION, VISION, CORE VALUES ---------- */
+/* fully synced with contact-us.css structure, using same card/container patterns */
+.about-hero-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    padding: 48px 44px;
+    transition: var(--transition);
+    margin: 32px 0 24px;
+    position: relative;
+    z-index: 5;
+}
+
+.about-hero-card:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--blue-200);
+    transform: translateY(-4px);
+}
+
+.about-hero-card h1 {
+    font-size: 2.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.about-hero-card h1 span {
+    color: var(--blue-500);
+    border-bottom: 3px solid var(--blue-200);
+    display: inline-block;
+}
+
+.company-description {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 1000px;
+}
+
+/* mission/vision grid – uses same two-column as contact-sync-grid */
+.mission-vision-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin: 40px 0 30px;
+}
+
+.mv-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    padding: 40px 36px;
+    transition: var(--transition);
+    height: fit-content;
+    position: relative;
+    z-index: 5;
+}
+
+.mv-card:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--blue-200);
+    transform: translateY(-4px);
+}
+
+.mv-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--blue-50);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue-500);
+    font-size: 2rem;
+    margin-bottom: 24px;
+    transition: all 0.2s ease;
+}
+
+.mv-card:hover .mv-icon {
+    background: var(--blue-100);
+    transform: scale(1.08);
+}
+
+.mv-card h2 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+}
+
+.mv-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mv-card li {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 16px;
+    padding-left: 28px;
+    position: relative;
+}
+
+.mv-card li::before {
+    content: "▹";
+    color: var(--blue-500);
+    font-weight: 700;
+    position: absolute;
+    left: 0;
+}
+
+/* core values section – uses message-card styling from contact-us.css */
+.core-values-section {
+    margin: 50px 0 30px;
+}
+
+.section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--blue-50);
+    color: var(--blue-700);
+    padding: 8px 22px;
+    border-radius: 60px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    border: 1px solid var(--blue-100);
+    margin-bottom: 24px;
+}
+
+.core-header h2 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+}
+
+.core-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    max-width: 700px;
+}
+
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-top: 48px;
+}
+
+.value-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 28px;
+    box-shadow: var(--shadow-sm);
+    padding: 32px 24px;
+    transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1);
+    text-align: center;
+}
+
+.value-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    border-color: var(--blue-300);
+    box-shadow: var(--shadow-lg);
+}
+
+.value-icon {
+    width: 70px;
+    height: 70px;
+    background: var(--blue-50);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 22px;
+    transition: all 0.2s ease;
+}
+
+.value-card:hover .value-icon {
+    background: var(--blue-100);
+    transform: scale(1.1);
+}
+
+.value-icon i {
+    font-size: 2rem;
+    color: var(--blue-500);
+}
+
+.value-card h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.value-card p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* back link – identical to contact page pattern */
+.back-home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--blue-500);
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 60px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+    margin: 20px 0 10px;
+}
+
+.back-home-link:hover {
+    background: var(--blue-50);
+    transform: translateX(-5px);
+}
+
+/* trust badge – like contact page "AVAILABLE CHANNELS" but for about */
+.about-badge {
+    background: var(--blue-50);
+    color: var(--blue-600);
+    padding: 6px 18px;
+    border-radius: 60px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    display: inline-block;
+    margin-bottom: 24px;
+}
+
+/* responsive */
+@media (max-width: 900px) {
+    .mission-vision-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+
+    .values-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .about-hero-card h1 {
+        font-size: 2.2rem;
+    }
+}
+
+@media (max-width: 580px) {
+    .about-hero-card {
+        padding: 32px 24px;
+    }
+
+    .about-hero-card h1 {
+        font-size: 1.9rem;
+    }
+
+    .mv-card {
+        padding: 28px 24px;
+    }
+
+    .values-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .core-header h2 {
+        font-size: 1.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .about-hero-card {
+        padding: 28px 20px;
+    }
+
+    .mv-card {
+        padding: 24px 20px;
+    }
+
+    .mv-card h2 {
+        font-size: 1.6rem;
+    }
+
+    .company-description {
+        font-size: 1rem;
+    }
+}
+
+/* focus highlight – consistent with contact-us.css override */
+body.focus-highlight .back-home-link:focus-visible,
+body.focus-highlight .value-card:focus-visible {
+    outline: 4px solid #ff0000 !important;
+    box-shadow: 0 0 0 6px rgba(255, 0, 0, 0.2) !important;
+}
+
+/* dark theme fine-tuning */
+body.dark-theme .about-badge {
+    background: rgba(96, 165, 250, 0.15);
+    color: #93c5fd;
+}
