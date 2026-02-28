@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title data-translate="submit_ticket_page_title">Submit Ticket - AlliTrack</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
+    <link rel="stylesheet" href="../../styles/user page/submit-ticket.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <script src="../../scripts/mobile-restriction.js"></script>
+    <script src="../../scripts/user-preference-manager.js"></script>
+    <script src="../../scripts/user-data-manager.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Access Denied Modal -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">User dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+                Home</button>
+        </div>
+    </div>
+
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="../../assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                            style="width: 32px; height: 32px;">
+                    </div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle" data-translate="user_dashboard">User Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../../pages/user page/index-user.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="support">Support</div>
+                    <a href="../../pages/user page/my-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> <span data-translate="my_tickets">Ticket</span>
+                    </a>
+                    <a href="../../pages/user page/notifications.html" data-section="notifications">
+                        <i class="fas fa-bell"></i> <span data-translate="notifications">Alert</span>
+                    </a>
+                    <a href="../../pages/user page/submit-ticket.html" class="active" data-section="submit-ticket">
+                        <i class="fas fa-plus-circle"></i> <span data-translate="submit_ticket">New</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="management">Manage</div>
+                    <a href="../../pages/user page/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Settings</span>
+                    </a>
+                    <a href="../../pages/user page/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile</span>
+                    </a>
+                    <a href="../../pages/user page/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Anunsyo</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="system">System</div>
+                    <a href="../../pages/user page/account-security.html" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> <span data-translate="account_security">Security</span>
+                    </a>
+                    <a href="../../pages/user page/system-information.html" data-section="system-information">
+                        <i class="fas fa-info-circle"></i> <span data-translate="system_information">Info</span>
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..."
+                            data-translate-placeholder="search_tickets" aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div id="userName" style="font-weight:700">User</div>
+                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">user@example.com</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div id="userAvatar" class="avatar">U</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="../../pages/user page/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="../../pages/user page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Submit Ticket Content -->
+                <div class="content">
+                    <div class="submit-ticket-content">
+                        <!-- Header with Container -->
+                        <div class="submit-ticket-header-container">
+                            <div class="submit-ticket-header">
+                                <h1><i class="fas fa-plus-circle"></i> <span data-translate="submit_ticket_title">Submit
+                                        a New Ticket</span></h1>
+                            </div>
+                        </div>
+
+                        <!-- Success Message -->
+                        <div class="success-message" id="successMessage">
+                            <div class="success-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <h2 class="success-title" data-translate="ticket_submitted">Ticket Submitted Successfully!
+                            </h2>
+                            <div class="success-details">
+                                <div data-translate="ticket_id_generated">Ticket ID: <strong
+                                        id="generatedTicketId">TKT-0000</strong></div>
+                                <div data-translate="ticket_under_review">Your ticket has been submitted and is under
+                                    review. We'll notify you of updates.</div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-secondary" onclick="resetForm()"
+                                    data-translate="submit_another">Submit Another Ticket</button>
+                                <button class="btn btn-primary" onclick="viewTicket()" data-translate="view_ticket">View
+                                    Ticket</button>
+                            </div>
+                        </div>
+
+                        <!-- Ticket Form -->
+                        <form class="ticket-form-container" id="ticketForm">
+                            <div class="form-grid">
+                                <!-- Subject -->
+                                <div class="form-group">
+                                    <label class="form-label" for="ticketSubject">
+                                        <span data-translate="subject">Subject</span> <span class="required">*</span>
+                                    </label>
+                                    <input type="text" id="ticketSubject" class="form-input"
+                                        placeholder="Brief description of your issue" required />
+                                    <div class="form-error" id="subjectError" data-translate="subject_required">Please
+                                        enter a subject for your ticket</div>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="form-group">
+                                    <label class="form-label" for="ticketDescription">
+                                        <span data-translate="description">Description</span> <span
+                                            class="required">*</span>
+                                    </label>
+                                    <textarea id="ticketDescription" class="form-textarea"
+                                        placeholder="Please provide detailed information about your issue..."
+                                        required></textarea>
+                                    <div class="form-hint" data-translate="description_hint">Include steps to reproduce,
+                                        error messages, and what you've tried</div>
+                                    <div class="form-error" id="descriptionError" data-translate="description_required">
+                                        Please provide a description of your issue</div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                    <i class="fas fa-times"></i> <span data-translate="cancel">Cancel</span>
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> <span data-translate="submit_ticket">Submit
+                                        Ticket</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div data-translate="dashboard_template">Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Account Dropdown Functionality - FIXED
+        function setupAccountDropdown() {
+            console.log('🔧 Setting up account dropdown...');
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
+
+            if (!accountBtn || !accountMenu) {
+                console.error('❌ Account dropdown elements not found!');
+                return;
+            }
+
+            console.log('✅ Elements found, setting up...');
+
+            // Remove ALL existing event listeners by cloning
+            const newBtn = accountBtn.cloneNode(true);
+            accountBtn.parentNode.replaceChild(newBtn, accountBtn);
+
+            const newMenu = accountMenu.cloneNode(true);
+            accountMenu.parentNode.replaceChild(newMenu, accountMenu);
+
+            // Get fresh references
+            const freshBtn = document.getElementById("accountBtn");
+            const freshMenu = document.getElementById("accountMenu");
+
+            // Add click event to toggle dropdown
+            freshBtn.addEventListener("click", function (e) {
+                console.log('🎯 Account button clicked!');
+                e.stopPropagation();
+                e.preventDefault();
+
+                const isShowing = freshMenu.classList.contains("show");
+                freshMenu.classList.toggle("show");
+                freshBtn.setAttribute("aria-expanded", freshMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", function (e) {
+                if (freshMenu.classList.contains("show") &&
+                    !freshBtn.contains(e.target) &&
+                    !freshMenu.contains(e.target)) {
+                    console.log('🔒 Closing dropdown (clicked outside)');
+                    freshMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && freshMenu.classList.contains("show")) {
+                    console.log('🔒 Closing dropdown (Escape key)');
+                    freshMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close when clicking menu items
+            const menuItems = freshMenu.querySelectorAll("a");
+            menuItems.forEach(item => {
+                item.addEventListener("click", function () {
+                    console.log('🔒 Closing dropdown (menu item clicked)');
+                    freshMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                });
+            });
+
+            // Ensure button is clickable
+            freshBtn.style.cursor = 'pointer';
+
+            console.log('✅ Account dropdown setup complete');
+        }
+
+        // Translation dictionary for submit ticket page
+        const translations = {
+            'en': {
+                // PAGE-SPECIFIC translations only:
+                'submit_ticket_page_title': 'Submit Ticket - AlliTrack',
+                'submit_ticket_title': 'Submit a New Ticket',
+                'search_tickets': 'Search tickets, users, IDs...',
+                'ticket_submitted': 'Ticket Submitted Successfully!',
+                'ticket_id_generated': 'Ticket ID: ',
+                'ticket_under_review': 'Your ticket has been submitted and is under review. We\'ll notify you of updates.',
+                'submit_another': 'Submit Another Ticket',
+                'view_ticket': 'View Ticket',
+                'subject': 'Subject',
+                'subject_required': 'Please enter a subject for your ticket',
+                'description': 'Description',
+                'description_hint': 'Include steps to reproduce, error messages, and what you\'ve tried',
+                'description_required': 'Please provide a description of your issue',
+                'cancel': 'Cancel',
+                'submit_ticket': 'Submit Ticket',
+
+                // Navigation (shared with dashboard)
+                'user_dashboard': 'User Dashboard',
+                'dashboard': 'Dashboard',
+                'support': 'Support',
+                'my_tickets': 'Ticket',
+                'notifications': 'Alert',
+                'submit_ticket': 'New',
+                'management': 'Manage',
+                'preferences': 'Settings',
+                'profile_settings': 'Profile',
+                'announcements': 'Anunsyo',
+                'system': 'System',
+                'account_security': 'Security',
+                'system_information': 'Info',
+                'profile': 'Profile',
+                'settings': 'Settings',
+                'logout': 'Logout',
+                'dashboard_template': 'Dashboard Template'
+            },
+            'fil': {
+                'submit_ticket_page_title': 'Magsumite ng Ticket - AlliTrack',
+                'submit_ticket_title': 'Magsumite ng Bagong Ticket',
+                'search_tickets': 'Maghanap...',
+                'ticket_submitted': 'Na-submit ang Ticket!',
+                'ticket_id_generated': 'Ticket ID: ',
+                'ticket_under_review': 'Na-submit ang ticket. I-update ka namin.',
+                'submit_another': 'Magsumite ng Isa Pa',
+                'view_ticket': 'Tingnan ang Ticket',
+                'subject': 'Pamagat',
+                'subject_required': 'Ilagay ang subject ng ticket',
+                'description': 'Deskripsyon',
+                'description_hint': 'Isama ang steps, error messages, at sinubukan mo na',
+                'description_required': 'Magbigay ng deskripsyon',
+                'cancel': 'Kanselahin',
+                'submit_ticket': 'I-submit ang Ticket',
+
+                // Navigation (shared with dashboard)
+                'user_dashboard': 'Dashboard',
+                'dashboard': 'Dashboard',
+                'support': 'Suporta',
+                'my_tickets': 'Ticket',
+                'notifications': 'Alert',
+                'submit_ticket': 'New',
+                'management': 'Pamahalaan',
+                'preferences': 'Mga Setting',
+                'profile_settings': 'Profile',
+                'announcements': 'Mga Anunsyo',
+                'system': 'Sistema',
+                'account_security': 'Seguridad',
+                'system_information': 'Impormasyon',
+                'profile': 'Profile',
+                'settings': 'Mga Setting',
+                'logout': 'Logout',
+                'dashboard_template': 'Dashboard'
+            }
+        };
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🚀 Submit Ticket: Starting initialization...');
+
+            // Initialize user data manager FIRST
+            if (window.userDataManager) {
+                console.log('👤 Initializing User Data Manager...');
+                window.userDataManager.initializeUserDisplay();
+            } else {
+                console.error('❌ User Data Manager not found!');
+            }
+
+            // Initialize preferences manager
+            if (window.preferencesManager) {
+                console.log('⚙️ Initializing Preferences Manager...');
+                window.preferencesManager.initialize();
+
+                // Apply theme immediately
+                window.preferencesManager.applyTheme();
+
+                // Get current language from preferences manager
+                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
+                applyTranslations(currentLang);
+            } else {
+                console.error('❌ Preferences Manager not found!');
+                applyTranslations('en'); // Default to English
+            }
+
+            // Setup theme listener
+            setupThemeListener();
+
+            // Initialize form functionality
+            initForm();
+
+            // Setup logout functionality
+            setupLogout();
+
+            // SETUP ACCOUNT DROPDOWN - CALL THIS LAST
+            // Wait a tiny bit to ensure all CSS is loaded
+            setTimeout(() => {
+                console.log('🔄 Setting up account dropdown (delayed)...');
+                setupAccountDropdown();
+            }, 100);
+
+            console.log('✅ Submit Ticket page loaded');
+        });
+
+        // Setup theme listener
+        function setupThemeListener() {
+            console.log('🌙 Setting up theme listener...');
+
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'preferredTheme') {
+                    console.log('Theme changed via storage:', event.newValue);
+                    if (window.preferencesManager) {
+                        setTimeout(() => {
+                            window.preferencesManager.applyTheme();
+                        }, 100);
+                    }
+                }
+            });
+
+            document.addEventListener('themeChanged', function (e) {
+                console.log('Theme changed via event:', e.detail.theme);
+                if (window.preferencesManager) {
+                    window.preferencesManager.applyTheme();
+                }
+            });
+        }
+
+        // Apply translations to the page
+        function applyTranslations(language) {
+            const lang = translations[language] ? language : 'en';
+            const dict = translations[lang];
+
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (dict[key]) {
+                    element.textContent = dict[key];
+                }
+            });
+
+            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-translate-placeholder');
+                if (dict[key]) {
+                    element.placeholder = dict[key];
+                }
+            });
+
+            if (dict['submit_ticket_page_title']) {
+                document.title = dict['submit_ticket_page_title'];
+            }
+        }
+
+        // Listen for language changes from preference-manager.js
+        document.addEventListener('languageChanged', function (e) {
+            console.log('Language changed to:', e.detail.language);
+            applyTranslations(e.detail.language);
+        });
+
+        // Setup logout functionality
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Clear user data from localStorage
+                localStorage.removeItem('userData');
+                localStorage.removeItem('userProfile');
+
+                // Clear preferences
+                localStorage.removeItem('dashboardLanguage');
+                localStorage.removeItem('preferredTheme');
+                localStorage.removeItem('notificationSettings');
+
+                // Redirect to login page
+                window.location.href = '../../../index.html';
+            });
+        }
+
+        // Initialize form functionality
+        function initForm() {
+            console.log('Initializing form functionality...');
+            const ticketForm = document.getElementById('ticketForm');
+            if (ticketForm) {
+                console.log('Ticket form found, adding submit handler');
+                ticketForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+
+                    if (validateForm()) {
+                        submitTicket();
+                    }
+                });
+            } else {
+                console.error('Ticket form not found!');
+            }
+
+            // NOTE: setupAccountDropdown() is already called with delay
+            // DO NOT call it again here
+        }
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+
+            // Reset errors
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.classList.remove('show');
+            });
+            document.querySelectorAll('.form-input, .form-textarea').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            // Validate required fields
+            const requiredFields = ['ticketSubject', 'ticketDescription'];
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field);
+                if (!input.value.trim()) {
+                    const errorElement = document.getElementById(field.replace('ticket', '').toLowerCase() + 'Error');
+                    if (errorElement) errorElement.classList.add('show');
+                    if (input) input.classList.add('error');
+                    isValid = false;
+                }
+            });
+
+            return isValid;
+        }
+
+        function submitTicket() {
+            try {
+                // Get form values
+                const subject = document.getElementById('ticketSubject').value;
+                const description = document.getElementById('ticketDescription').value;
+
+                // Generate ticket ID
+                const ticketId = 'TKT-' + Math.floor(1000 + Math.random() * 9000);
+
+                // Get user data
+                const userData = window.userDataManager ?
+                    window.userDataManager.getUserData() :
+                    JSON.parse(localStorage.getItem('userData') || '{}');
+
+                // Create ticket object
+                const ticket = {
+                    id: ticketId,
+                    subject: subject,
+                    description: description,
+                    status: 'open',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    createdBy: {
+                        name: userData.fullName || userData.name || 'User',
+                        email: userData.email || 'user@example.com'
+                    }
+                };
+
+                // Save to localStorage
+                let tickets = JSON.parse(localStorage.getItem('userTickets') || '[]');
+                tickets.push(ticket);
+                localStorage.setItem('userTickets', JSON.stringify(tickets));
+
+                // Update generated ticket ID in success message
+                document.getElementById('generatedTicketId').textContent = ticketId;
+
+                // Show success message
+                const successMessage = document.getElementById('successMessage');
+                const ticketForm = document.getElementById('ticketForm');
+
+                if (successMessage) successMessage.classList.add('show');
+                if (ticketForm) ticketForm.style.display = 'none';
+
+                console.log('Ticket submitted:', ticket);
+            } catch (error) {
+                console.error('Error submitting ticket:', error);
+                alert('Error submitting ticket. Please try again.');
+            }
+        }
+
+        function resetForm() {
+            // Hide success message
+            const successMessage = document.getElementById('successMessage');
+            const ticketForm = document.getElementById('ticketForm');
+
+            if (successMessage) successMessage.classList.remove('show');
+            if (ticketForm) ticketForm.style.display = 'block';
+
+            // Reset form fields
+            document.getElementById('ticketForm').reset();
+
+            // Reset errors
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.classList.remove('show');
+            });
+            document.querySelectorAll('.form-input, .form-textarea').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+
+        function viewTicket() {
+            const ticketId = document.getElementById('generatedTicketId').textContent;
+            alert(`Viewing ticket: ${ticketId}\n\nYou will be redirected to My Tickets page.`);
+            window.location.href = '../pages/my-tickets.html';
+        }
+
+        // Listen for user data changes
+        document.addEventListener('userDataChanged', function (e) {
+            console.log('User data changed event received:', e.detail);
+        });
+    </script>
+</body>
+
+</html>

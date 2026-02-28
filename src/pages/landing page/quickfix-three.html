@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Quick Fix – GSM Alarm · AlliTrack</title>
+    <!-- same font + icons, to feel familiar but clean PDF style -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../styles/shared/landing-style.css">
+    <link rel="stylesheet" href="../../styles/landing page/quickfix-three.css">
+    <script src="../../scripts/landing-accessibility.js"></script>
+</head>
+
+<body>
+    <div class="document-wrapper">
+        <div class="back-home-wrapper">
+            <a href="../../../index.html#home-section" class="back-home-link">
+                <i class="fas fa-arrow-left"></i> Back to AlliTrack Home
+            </a>
+        </div>
+
+        <div class="doc-title">
+            <i class="fas fa-broadcast-tower"></i>
+            <h1>GSM Alarm · Quick Fix</h1>
+        </div>
+
+        <div class="doc-meta">
+            <span><i class="fas fa-sim-card"></i> FIELD GUIDE v3.1</span>
+            <span><i class="fas fa-shield"></i> AlliTrack security response</span>
+            <span><i class="fas fa-clock"></i> 2‑minute carrier diagnosis</span>
+        </div>
+
+        <p style="font-size:1.05rem; margin-bottom:28px; color: var(--text-secondary);">
+            This guide covers signal integrity, SIM registration, and communication failures for 2G/3G/4G alarm panels.
+        </p>
+
+        <div class="section-title">
+            <i class="fas fa-signal"></i> Signal & network registration
+        </div>
+        <div class="card-grid">
+            <div class="fix-card">
+                <div class="fix-icon"><i class="fas fa-tower-cell"></i></div>
+                <h3>No service / searching</h3>
+                <p style="margin-bottom: 10px;">Check RSSI and operator lock:</p>
+                <div style="background: var(--gray-100); padding: 8px 12px; border-radius: 12px; font-family: monospace; font-size:0.8rem; overflow-x: auto;">
+                    AT+CSQ  (0–31 · 99 = no signal)
+                </div>
+                <ul style="margin-top: 16px; list-style: none; padding-left: 0;">
+                    <li style="display: flex; gap: 8px; margin-bottom: 6px;"><span style="color: var(--blue-500);">✓</span> <span>Force 2G only: <span style="font-family: monospace;">AT+CNMP=13</span></span></li>
+                    <li style="display: flex; gap: 8px; margin-bottom: 6px;"><span style="color: var(--blue-500);">✓</span> <span>Check APN: <span style="font-family: monospace;">AT+CGDCONT=1,"IP","iot.telenor"</span></span></li>
+                </ul>
+            </div>
+            <div class="fix-card">
+                <div class="fix-icon"><i class="fas fa-sim-card"></i></div>
+                <h3>SIM rejected / PIN locked</h3>
+                <p>PUK locked or carrier blacklist.</p>
+                <div style="margin-top: 16px;">
+                    <span class="badge"><i class="fas fa-unlock-alt"></i> Quick fix</span>
+                    <p style="margin-top: 10px;">Disable PIN via phone, then insert. <br><span style="font-family: monospace;">AT+CPIN?</span> → READY.</p>
+                    <p style="margin-top: 6px; font-size:0.85rem;">Check IMEI white‑list: <span style="font-family: monospace;">AT+GSN</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-comment-sms"></i> SMS / voice / data failures
+        </div>
+        <div class="table-diag">
+            <table>
+                <tr>
+                    <td style="font-weight:600; width: 30px;">1.</td>
+                    <td style="font-weight:600;">Outgoing SMS stuck</td>
+                    <td>Check service centre: <span style="font-family: monospace;">AT+CSCA?</span> / overwrite +46701111111</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:600;">2.</td>
+                    <td style="font-weight:600;">Voice call failure</td>
+                    <td>Enable speaker: <span style="font-family: monospace;">AT+CLVL=5</span> ; check microphone gain</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:600;">3.</td>
+                    <td style="font-weight:600;">GPRS context drop</td>
+                    <td>Re-attach: <span style="font-family: monospace;">AT+CGATT=1</span> ; set PDP type IPv4/v6</td>
+                </tr>
+                <tr>
+                    <td style="font-weight:600;">4.</td>
+                    <td style="font-weight:600;">No heartbeat / keep‑alive</td>
+                    <td>Use shorter AT+QIMURD=300 or modify server interval</td>
+                </tr>
+            </table>
+        </div>
+        <div class="code-block">
+            <i class="fas fa-terminal" style="margin-right: 8px; color: var(--blue-500);"></i>
+            Force network re‑registration: AT+COPS=2 &nbsp;→&nbsp; AT+COPS=0
+        </div>
+
+        <div class="section-title">
+            <i class="fas fa-shield-halved"></i> Tamper / battery / AC fail
+        </div>
+        <ul class="step-list">
+            <li><span class="step-num">1</span> <strong>Tamper loop open</strong> – measure resistance across terminals. Bypass with 1kΩ resistor for testing.</li>
+            <li><span class="step-num">2</span> <strong>Battery low / missing</strong> – lead‑acid voltage >13.2V (float). Replace if <12V under load.</li>
+            <li><span class="step-num">3</span> <strong>AC fail false alarm</strong> – check transformer secondary (16–18V AC). Loose connector.</li>
+            <li><span class="step-num">4</span> <strong>Power supply ripple</strong> – use oscilloscope; >500mVpp may reset GSM module.</li>
+        </ul>
+
+        <div class="two-col-grid">
+            <div style="background: var(--blue-50); padding: 20px; border-radius: 20px;">
+                <i class="fas fa-map-pin" style="color: var(--blue-500); font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
+                <h3 style="font-size: 1.2rem; margin-bottom: 8px;">GPS / LBS not reporting</h3>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Fix antenna, clear sky view. Cold start: <span style="font-family: monospace;">AT+CGNSPWR=1</span>. Fix time up to 3 min.</p>
+            </div>
+            <div style="background: var(--gray-50); padding: 20px; border-radius: 20px; border:1px solid var(--border-color);">
+                <i class="fas fa-cloud-upload-alt" style="color: var(--blue-500); font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
+                <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Firmware / OTA stuck</h3>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Interrupted update → bootloop. Reflash via UART or SD card. Force DFU: hold tamper + reset.</p>
+            </div>
+        </div>
+
+        <div style="margin: 32px 0 16px;">
+            <span class="badge"><i class="fas fa-toolbox"></i> 30‑second resolution</span>
+        </div>
+        <div class="two-col-grid">
+            <div class="tip-box">
+                <h4><i class="fas fa-exchange-alt" style="color:var(--blue-500);"></i> SMS not received</h4>
+                <p style="color: var(--text-secondary);">Memory full: <span style="font-family: monospace;">AT+CMGD=1,4</span> delete all. Disable new SMS indication temporarily.</p>
+            </div>
+            <div class="tip-box">
+                <h4><i class="fas fa-tachometer-alt" style="color:var(--blue-500);"></i> Slow alarm delivery</h4>
+                <p style="color: var(--text-secondary);">Use UDP instead of TCP, port 5000. Lower keep‑alive from 10 min to 2 min.</p>
+            </div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 32px 0 24px;">
+        <div style="margin-top: 24px;">
+            <h3 style="font-weight: 600; font-size: 1.1rem; display: flex; gap: 8px; margin-bottom: 16px;">
+                <i class="fas fa-table"></i> Error code matrix – GSM alarm
+            </h3>
+            <div style="overflow-x: auto;">
+                <table class="error-matrix">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Indication</th>
+                            <th>Quick fix</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight: 600;">+CME ERROR: 10</td>
+                            <td>SIM not inserted / broken contact</td>
+                            <td>clean pads, re‑seat, check push‑in holder</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">+CMS ERROR: 512</td>
+                            <td>SMS centre invalid</td>
+                            <td>re‑write CSCA; use international format</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">+CME ERROR: 29</td>
+                            <td>PIN code required</td>
+                            <td>AT+CPIN="0000" or disable PIN via phone</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: 600;">+CME ERROR: 50</td>
+                            <td>IMSI / operator mismatch</td>
+                            <td>unlock carrier? check domestic roaming flag</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="open-ticket-section">
+            <button class="btn-open-ticket" id="submitTicketBtn">
+                <i class="fas fa-ticket-alt"></i> Still having trouble? Submit a ticket
+            </button>
+            <p style="font-size:0.8rem; color: var(--text-secondary); margin-top: 16px;">
+                Submit a support ticket — we’ll help you further.
+            </p>
+        </div>
+
+        <div class="footnote-pdf">
+            <span><i class="fas fa-print"></i> print‑ready · AlliTrack intelligent ticketing · generated 2025</span>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="feedbackModal">
+        <div class="modal-card">
+            <button class="close-modal-x" id="closeModalX" aria-label="Close modal">&times;</button>
+            <div class="modal-icon">
+                <i class="fas fa-headset"></i>
+            </div>
+            <h2>How was the system?</h2>
+            <p>Your feedback helps us improve the<br>GSM Alarm Quick Fix.</p>
+
+            <div class="rating-group">
+                <button class="rating-btn" data-rating="good"><i class="fas fa-smile"></i> Good</button>
+                <button class="rating-btn" data-rating="neutral"><i class="fas fa-meh"></i> Neutral</button>
+                <button class="rating-btn" data-rating="bad"><i class="fas fa-frown"></i> Bad</button>
+            </div>
+
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-primary" id="submitRating">Submit & continue</button>
+                <button class="modal-btn modal-btn-secondary" id="closeModalBtn">Cancel</button>
+            </div>
+            <p style="font-size:0.75rem; color: var(--text-secondary); margin-top: 20px;">
+                After submitting, you'll be redirected to login.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const STORAGE_PREFIX = 'alliTrack_';
+            let fontSizeLevel = 1;
+            let highContrast = false;
+            let focusHighlight = false;
+            let theme = 'light';
+
+            try {
+                fontSizeLevel = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'fontSize') || '1');
+                highContrast = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'highContrast') || 'false');
+                focusHighlight = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'focusHighlight') || 'false');
+                theme = localStorage.getItem(STORAGE_PREFIX + 'theme') || 'light';
+            } catch (e) { }
+
+            const FONT_VALUES = ['80%', '100%', '120%', '140%'];
+            const FONT_NAMES = ['Small', 'Medium', 'Large', 'X-Large'];
+            const body = document.body;
+
+            function applyFontSize() {
+                document.documentElement.style.fontSize = FONT_VALUES[fontSizeLevel];
+                const lbl = document.getElementById('currentFontSize');
+                if (lbl) lbl.textContent = FONT_NAMES[fontSizeLevel];
+                localStorage.setItem(STORAGE_PREFIX + 'fontSize', JSON.stringify(fontSizeLevel));
+            }
+
+            function applyTheme() {
+                body.classList.remove('dark-theme', 'light-theme');
+                if (theme === 'dark') body.classList.add('dark-theme');
+                else body.classList.add('light-theme');
+                localStorage.setItem(STORAGE_PREFIX + 'theme', theme);
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.theme === theme);
+                });
+            }
+
+            function applyContrast() {
+                body.classList.toggle('high-contrast', highContrast);
+                localStorage.setItem(STORAGE_PREFIX + 'highContrast', JSON.stringify(highContrast));
+                const btn = document.getElementById('toggleContrast');
+                if (btn) {
+                    btn.classList.toggle('active', highContrast);
+                    btn.setAttribute('aria-pressed', highContrast);
+                }
+            }
+
+            function applyFocus() {
+                body.classList.toggle('focus-highlight', focusHighlight);
+                localStorage.setItem(STORAGE_PREFIX + 'focusHighlight', JSON.stringify(focusHighlight));
+                const btn = document.getElementById('toggleFocus');
+                if (btn) {
+                    btn.classList.toggle('active', focusHighlight);
+                    btn.setAttribute('aria-pressed', focusHighlight);
+                }
+            }
+
+            function setFontSize(level) { if (level >= 0 && level < FONT_VALUES.length) { fontSizeLevel = level; applyFontSize(); } }
+            function setTheme(t) { theme = t; applyTheme(); }
+            function setHighContrast(v) { highContrast = v; applyContrast(); }
+            function setFocus(v) { focusHighlight = v; applyFocus(); }
+            function resetAll() { setFontSize(1); setTheme('light'); setHighContrast(false); setFocus(false); }
+
+            applyFontSize(); applyTheme(); applyContrast(); applyFocus();
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const toggleBtn = document.getElementById('accessibilityToggle');
+                const panel = document.getElementById('accessibilityPanel');
+                const closeBtn = document.getElementById('closeAccessibility');
+                if (toggleBtn && panel) {
+                    toggleBtn.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        panel.classList.toggle('open');
+                        toggleBtn.setAttribute('aria-expanded', panel.classList.contains('open'));
+                    });
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', function () {
+                            panel.classList.remove('open');
+                            toggleBtn.setAttribute('aria-expanded', 'false');
+                        });
+                    }
+                    document.addEventListener('click', function (e) {
+                        if (panel.classList.contains('open') && !panel.contains(e.target) && !toggleBtn.contains(e.target)) {
+                            panel.classList.remove('open');
+                            toggleBtn.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                }
+
+                // theme buttons
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.addEventListener('click', function (e) { e.preventDefault(); setTheme(this.dataset.theme); });
+                });
+
+                document.getElementById('decreaseFont')?.addEventListener('click', function () { setFontSize(fontSizeLevel - 1); });
+                document.getElementById('increaseFont')?.addEventListener('click', function () { setFontSize(fontSizeLevel + 1); });
+                document.getElementById('toggleContrast')?.addEventListener('click', function () { setHighContrast(!highContrast); });
+                document.getElementById('toggleFocus')?.addEventListener('click', function () { setFocus(!focusHighlight); });
+                document.getElementById('resetAccessibility')?.addEventListener('click', resetAll);
+
+                const modal = document.getElementById('feedbackModal');
+                const triggerBtn = document.getElementById('submitTicketBtn');
+                const closeModalBtn = document.getElementById('closeModalBtn');
+                const closeModalX = document.getElementById('closeModalX');
+                const submitRating = document.getElementById('submitRating');
+
+                function openModal() {
+                    if (modal) modal.classList.add('active');
+                }
+                function closeModal() {
+                    if (modal) modal.classList.remove('active');
+                }
+
+                if (triggerBtn) {
+                    triggerBtn.addEventListener('click', openModal);
+                }
+
+                if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+                if (closeModalX) closeModalX.addEventListener('click', closeModal);
+
+                if (submitRating) {
+                    submitRating.addEventListener('click', function () {
+                        const selectedRating = document.querySelector('.rating-btn[style*="background: var(--blue-500)"]');
+                        closeModal();
+                        window.location.href = '../../pages/landing page/unified-auth-modal.html';
+                    });
+                }
+
+                // rating button interaction (visual selection)
+                document.querySelectorAll('.rating-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        // remove selected style from all
+                        document.querySelectorAll('.rating-btn').forEach(b => {
+                            b.style.background = '';
+                            b.style.color = '';
+                            b.style.borderColor = '';
+                            const icon = b.querySelector('i');
+                            if (icon) icon.style.color = '';
+                        });
+                        // apply selected style
+                        this.style.background = 'var(--blue-500)';
+                        this.style.color = 'white';
+                        this.style.borderColor = 'var(--blue-500)';
+                        const icon = this.querySelector('i');
+                        if (icon) icon.style.color = 'white';
+                    });
+                });
+
+                // close modal when clicking overlay
+                if (modal) {
+                    modal.addEventListener('click', function (e) {
+                        if (e.target === modal) closeModal();
+                    });
+                }
+
+            }); // DOMContentLoaded
+
+            // escape key for accessibility panel + modal
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    const panel = document.getElementById('accessibilityPanel');
+                    const toggleBtn = document.getElementById('accessibilityToggle');
+                    if (panel?.classList.contains('open')) {
+                        panel.classList.remove('open');
+                        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+                    }
+                    const modal = document.getElementById('feedbackModal');
+                    if (modal?.classList.contains('active')) {
+                        modal.classList.remove('active');
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+
+</html>

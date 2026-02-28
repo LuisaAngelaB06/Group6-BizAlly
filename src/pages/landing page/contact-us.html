@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>AlliTrack · Contact (submit a message) · a11y synced</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../styles/shared/landing-style.css">
+    <link rel="stylesheet" href="../../styles/landing page/contact-us.css">    
+    <script src="../../scripts/landing-accessibility.js"></script>
+</head>
+
+<body>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="brand">
+                <a href="../../../index.html#home-section" aria-label="AlliTrack Home">
+                    <span>AlliTrack</span>
+                </a>
+            </div>
+            <nav class="primary-nav" role="navigation" data-visible="false" aria-label="Primary navigation">
+                <ul class="nav-list">
+                    <li><a href="../../../index.html#home-section" class="nav-link">Home</a></li>
+                    <li><a href="../../../index.html#about-section" class="nav-link">About</a></li>
+                    <li><a href="../../../index.html#services-section" class="nav-link">Services</a></li>
+                    <li><a href="../../../index.html#contact-section" class="nav-link active">Contact</a></li>
+                    <li><a href="../../pages/landing page/unified-auth-modal.html" class="btn-login"><i class="fas fa-user" style="margin-right: 6px;"></i>Login</a>
+                    </li>
+                </ul>
+            </nav>
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation" aria-expanded="false">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div style="text-align: center; margin-top: 20px; margin-bottom: 8px;">
+                <div class="module-header" style="margin-bottom: 8px;">
+                    <h2
+                        style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                        <span>Contact & send a message</span>
+                    </h2>
+                    <p class="subhead" style="max-width: 750px; margin: 16px auto 0;">
+                        <i class="fas fa-info-circle" style="color: var(--blue-400);"></i>
+                        You <strong>cannot create a support ticket here</strong>. Use this form to send a general
+                        message, or reach us via phone/email.
+                        To open a ticket, please <a href="../../../index.html#service-module"
+                            style="color: var(--blue-500); font-weight: 700;">log in to your account</a>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="contact-sync-grid">
+                <div class="contact-info-card">
+                    <span
+                        style="background: var(--blue-50); color: var(--blue-600); padding: 6px 18px; border-radius: 60px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.3px; display: inline-block; margin-bottom: 24px;">
+                        <i class="fas fa-comment-dots" style="margin-right: 6px;"></i> AVAILABLE CHANNELS
+                    </span>
+                    <h3
+                        style="font-size: 1.9rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text-primary); margin-bottom: 8px;">
+                        Talk to our team
+                    </h3>
+                    <p style="color: var(--text-secondary); font-size: 1.05rem; margin-bottom: 36px; max-width: 90%;">
+                        Reply in <strong>&lt;30 min</strong> (business hours) · enterprise support 24/7.
+                    </p>
+
+                    <!-- contact methods -->
+                    <div style="display: flex; flex-direction: column; gap: 28px; margin-bottom: 36px;">
+                        <!-- office -->
+                        <div class="contact-method-item" style="display: flex; align-items: flex-start; gap: 18px;">
+                            <div class="contact-method-icon-custom">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div>
+                                <span
+                                    style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600;">visit
+                                    office</span>
+                                <div style="font-weight: 700; color: var(--text-primary); font-size: 1.1rem;">Unit 204
+                                    K-Juan Building</div>
+                                <span style="color: var(--gray-500); font-size: 0.9rem;">Kamuning, Quezon City (by
+                                    appointment)</span>
+                            </div>
+                        </div>
+                        <!-- phone -->
+                        <div class="contact-method-item" style="display: flex; align-items: center; gap: 18px;">
+                            <div class="contact-method-icon-custom">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div>
+                                <span
+                                    style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600;">call
+                                    / sms</span>
+                                <div style="font-weight: 700; color: var(--text-primary); font-size: 1.25rem;">+63 (917)
+                                    152-4105</div>
+                                <span style="color: var(--gray-500); font-size: 0.9rem;">Mon–Fri, 8am–6pm</span>
+                            </div>
+                        </div>
+                        <!-- email -->
+                        <div class="contact-method-item" style="display: flex; align-items: center; gap: 18px;">
+                            <div class="contact-method-icon-custom">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <span
+                                    style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600;">email</span>
+                                <div
+                                    style="font-weight: 700; color: var(--text-primary); font-size: 1.1rem; word-break: break-all;">
+                                    sales.businessalliance@gmail.com</div>
+                                <span style="color: var(--gray-500); font-size: 0.9rem;">response within 4h</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- socials -->
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 28px;">
+                        <span
+                            style="font-weight: 600; color: var(--text-primary); display: block; margin-bottom: 18px;">Direct
+                            message</span>
+                        <div style="display: flex; gap: 16px;">
+                            <a href="https://www.facebook.com/profile.php?id=61558917757365" class="socials"
+                                style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: var(--gray-50); border-radius: 50%; color: var(--blue-500); transition: var(--transition);">
+                                <i class="fab fa-facebook-f" style="font-size: 1.3rem;"></i>
+                            </a>
+                            <a href="#"
+                                style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: var(--gray-50); border-radius: 50%; color: var(--blue-500); transition: var(--transition);">
+                                <i class="fab fa-linkedin-in" style="font-size: 1.3rem;"></i>
+                            </a>
+                            <a href="mailto:sales.businessalliance@gmail.com"
+                                style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: var(--gray-50); border-radius: 50%; color: var(--blue-500); transition: var(--transition);">
+                                <i class="fas fa-envelope" style="font-size: 1.3rem;"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="message-card">
+                    <h3 style="font-size: 1.8rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
+                        Send us a message
+                    </h3>
+                    <form id="contactMessageForm"
+                        onsubmit="event.preventDefault(); alert('✅ Message sent (demo). In production this would connect to your CRM.'); this.reset();"
+                        style="display: flex; flex-direction: column; gap: 22px;">
+                        <!-- name field -->
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">Your name
+                                *</label>
+                            <div style="position: relative;">
+                                <i class="fas fa-user"
+                                    style="position: absolute; left: 18px; top: 15px; color: var(--gray-400); z-index: 2;"></i>
+                                <input type="text" placeholder="e.g. Maria Santos" required class="form-input" value="">
+                            </div>
+                        </div>
+                        <!-- email field -->
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">Email
+                                address *</label>
+                            <div style="position: relative;">
+                                <i class="fas fa-envelope"
+                                    style="position: absolute; left: 18px; top: 15px; color: var(--gray-400);"></i>
+                                <input type="email" placeholder="you@company.com" required class="form-input" value="">
+                            </div>
+                        </div>
+                        <!-- message field -->
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">Message
+                                *</label>
+                            <textarea rows="4"
+                                placeholder="How can we help you? (this is not a ticket – for technical issues please log in)"
+                                required class="form-input"
+                                style="border-radius: 24px; resize: vertical; padding: 16px 20px;"></textarea>
+                        </div>
+
+                        <!-- SUBMIT BUTTON – live, interactive, clearly labeled as message, not ticket -->
+                        <div style="margin-top: 12px;">
+                            <button type="submit" class="btn-submit-message">
+                                <i class="fas fa-paper-plane"></i> Submit message
+                            </button>
+                        </div>
+                        <p
+                            style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-info-circle"></i> This is a general contact form — not a ticket. Ticket
+                            creation is disabled here.
+                        </p>
+                    </form>
+                </div>
+            </div>
+
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-top: 40px; margin-bottom: 20px; padding: 16px 0; border-top: 1px solid var(--border-color); flex-wrap: wrap; gap: 16px;">
+                <a href="../../../index.html#home-section" class="back-home-link">
+                    <i class="fas fa-arrow-left"></i> Back to AlliTrack home
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER – exact copy from index -->
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <strong>AlliTrack</strong>
+                <div class="footer-note">© 2025 AlliTrack · Business Alliance Inc. · All Rights Reserved</div>
+                <div class="footer-links"><a href="../../pages/landing page/privacy.html">Privacy</a><a
+                        href="../../pages/landing page/cookies.html">Cookies</a><a href="../../pages/landing page/terms.html">Terms</a></div>
+            </div>
+            <div class="footer-actions">
+                <span class="follow">Connect</span>
+                <div class="socials">
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61558917757365" aria-label="Facebook"><i
+                            class="fab fa-facebook-f"></i></a>
+                    <a href="mailto:sales.businessalliance@gmail.com" aria-label="Email"><i
+                            class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="accessibility-menu">
+        <button class="accessibility-toggle" id="accessibilityToggle" aria-label="Open accessibility menu"
+            aria-expanded="false">
+            <i class="fas fa-universal-access" aria-hidden="true"></i>
+        </button>
+        <div class="accessibility-panel" id="accessibilityPanel">
+            <div class="accessibility-header">
+                <h3>Accessibility Settings</h3>
+                <button class="close-panel" id="closeAccessibility" aria-label="Close accessibility menu"><i
+                        class="fas fa-times" aria-hidden="true"></i></button>
+            </div>
+            <div class="accessibility-controls">
+                <div class="control-group">
+                    <h4>Theme</h4>
+                    <div class="theme-toggle">
+                        <button class="theme-btn active" data-theme="light" aria-label="Switch to light mode"><i
+                                class="fas fa-sun" aria-hidden="true"></i><span>Light</span></button>
+                        <button class="theme-btn" data-theme="dark" aria-label="Switch to dark mode"><i
+                                class="fas fa-moon" aria-hidden="true"></i><span>Dark</span></button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <h4>Text Size</h4>
+                    <div class="text-size-controls">
+                        <button class="size-btn" id="decreaseFont" aria-label="Decrease text size"><i
+                                class="fas fa-minus"></i></button>
+                        <span class="size-label" id="currentFontSize">Medium</span>
+                        <button class="size-btn" id="increaseFont" aria-label="Increase text size"><i
+                                class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <h4>Contrast Mode</h4>
+                    <button class="contrast-btn" id="toggleContrast" aria-pressed="false">
+                        <span class="btn-label">High Contrast</span>
+                        <span class="toggle-switch"></span>
+                    </button>
+                </div>
+                <div class="control-group">
+                    <h4>Focus Enhancement</h4>
+                    <button class="focus-btn" id="toggleFocus" aria-pressed="false">
+                        <span class="btn-label">Highlight Focus</span>
+                        <span class="toggle-switch"></span>
+                    </button>
+                </div>
+                <div class="control-group">
+                    <h4>Reset All</h4>
+                    <button class="reset-btn" id="resetAccessibility" aria-label="Reset all accessibility settings">
+                        <i class="fas fa-redo"></i> Reset to Default
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

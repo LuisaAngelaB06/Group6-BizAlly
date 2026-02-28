@@ -1,0 +1,24 @@
+/* tiny PBX‑specific touch – only additive, no overrides that break original */
+.fix-card .pbx-code-snippet {
+    background: var(--gray-100);
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+.extension-table td:first-child {
+    font-weight: 600;
+    color: var(--blue-700);
+}
+
+.sip-tag {
+    background: var(--blue-50);
+    color: var(--blue-700);
+    border-radius: 30px;
+    padding: 2px 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-block;
+}

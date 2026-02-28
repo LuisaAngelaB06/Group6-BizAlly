@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title data-translate="system_settings_page_title">System Settings - AlliTrack Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
+    <link rel="stylesheet" href="../../styles/admin page/system-settings.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <script src="../../scripts/mobile-restriction.js"></script>
+    <script src="../../scripts/admin-preference-manager.js"></script>
+    <script src="../../scripts/admin-data-manager.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Access Denied Modal -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn" onclick="window.location.href='../../../index.html'"
+                data-translate="go_back">Back to Home</button>
+        </div>
+    </div>
+
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="../../assets/images/AlliTrack Logo.png" alt="AlliTrack Logo" class="logo-img"
+                            style="width: 32px; height: 32px;">
+                    </div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle" data-translate="admin_dashboard">Admin Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../../pages/admin page/index-admin.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
+                    <a href="../../pages/admin page/all-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
+                    </a>
+                    <a href="../../pages/admin page/staff-management.html" data-section="users">
+                        <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
+                    </a>
+                    <a href="../../pages/admin page/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="system_management">System Management</div>
+                    <a href="../../pages/admin page/system-settings.html" class="active" data-section="system-settings">
+                        <i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span>
+                    </a>
+                    <a href="../../pages/admin page/system-analytics.html" data-section="analytics">
+                        <i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span>
+                    </a>
+                    <a href="../../pages/admin page/system-logs.html" data-section="logs">
+                        <i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
+                    <a href="../../pages/admin page/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
+                    </a>
+                    <a href="../../pages/admin page/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..."
+                            data-translate-placeholder="search_tickets" aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div id="userName" style="font-weight:700">Admin</div>
+                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">admin@allitrack.com</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div id="userAvatar" class="avatar">A</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="../../pages/admin page/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="../../pages/admin page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- System Settings Content -->
+                <div class="content">
+                    <div class="settings-content">
+                        <!-- Header with Container -->
+                        <div class="settings-header-container">
+                            <div class="settings-header">
+                                <h1><i class="fas fa-cogs"></i> <span
+                                        data-translate="system_settings_title">System Settings</span></h1>
+                                <p class="settings-subtitle" data-translate="system_settings_description">
+                                    Configure and manage your AlliTrack system settings, preferences, and integrations.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- System Settings Form -->
+                        <form class="settings-container" id="systemSettingsForm">
+                            <!-- General Settings -->
+                            <div class="settings-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-sliders-h"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title" data-translate="general_settings">General Settings</h2>
+                                        <p class="section-description" data-translate="general_settings_description">
+                                            Configure basic system preferences and behavior
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="settings-form">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label" for="systemName">
+                                                <i class="fas fa-signature"></i> <span
+                                                    data-translate="system_name">System Name</span> <span
+                                                    class="required">*</span>
+                                            </label>
+                                            <input type="text" id="systemName" class="form-input"
+                                                placeholder="Enter system name" value="AlliTrack" required />
+                                            <div class="form-hint" data-translate="system_name_hint">Display name shown
+                                                throughout the system</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="timezone">
+                                                <i class="fas fa-globe"></i> <span
+                                                    data-translate="timezone">Timezone</span> <span
+                                                    class="required">*</span>
+                                            </label>
+                                            <select id="timezone" class="form-input">
+                                                <option value="UTC-12:00">(UTC-12:00) International Date Line West
+                                                </option>
+                                                <option value="UTC-08:00" selected>(UTC-08:00) Pacific Time (US &
+                                                    Canada)</option>
+                                                <option value="UTC-05:00">(UTC-05:00) Eastern Time (US & Canada)
+                                                </option>
+                                                <option value="UTC+00:00">(UTC+00:00) Greenwich Mean Time</option>
+                                                <option value="UTC+01:00">(UTC+01:00) Central European Time</option>
+                                                <option value="UTC+05:30">(UTC+05:30) India Standard Time</option>
+                                                <option value="UTC+08:00">(UTC+08:00) Singapore Standard Time</option>
+                                                <option value="UTC+09:00">(UTC+09:00) Japan Standard Time</option>
+                                            </select>
+                                            <div class="form-hint" data-translate="timezone_hint">Default timezone for
+                                                all users</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="dateFormat">
+                                                <i class="fas fa-calendar-alt"></i> <span
+                                                    data-translate="date_format">Date Format</span> <span
+                                                    class="required">*</span>
+                                            </label>
+                                            <select id="dateFormat" class="form-input">
+                                                <option value="MM/DD/YYYY" selected>MM/DD/YYYY (US)</option>
+                                                <option value="DD/MM/YYYY">DD/MM/YYYY (European)</option>
+                                                <option value="YYYY-MM-DD">YYYY-MM-DD (ISO)</option>
+                                            </select>
+                                            <div class="form-hint" data-translate="date_format_hint">How dates are
+                                                displayed</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="itemsPerPage">
+                                                <i class="fas fa-list-ol"></i> <span data-translate="items_per_page">
+                                                    Items Per Page</span> <span class="required">*</span>
+                                            </label>
+                                            <select id="itemsPerPage" class="form-input">
+                                                <option value="10">10 items</option>
+                                                <option value="25" selected>25 items</option>
+                                                <option value="50">50 items</option>
+                                                <option value="100">100 items</option>
+                                            </select>
+                                            <div class="form-hint" data-translate="items_per_page_hint">Default number
+                                                of items in lists</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Toggle Settings -->
+                                    <div class="toggle-settings">
+                                        <div class="preference-item">
+                                            <div class="preference-content">
+                                                <h3 data-translate="enable_maintenance_mode">Enable Maintenance Mode
+                                                </h3>
+                                                <p data-translate="maintenance_mode_description">Temporarily disable
+                                                    system access for non-admin users</p>
+                                            </div>
+                                            <label class="switch">
+                                                <input type="checkbox" id="maintenanceMode">
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+
+                                        <div class="preference-item">
+                                            <div class="preference-content">
+                                                <h3 data-translate="enable_two_factor">Enable Two-Factor
+                                                    Authentication</h3>
+                                                <p data-translate="two_factor_description">Require 2FA for all admin
+                                                    accounts</p>
+                                            </div>
+                                            <label class="switch">
+                                                <input type="checkbox" id="twoFactorAuth" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+
+                                        <div class="preference-item">
+                                            <div class="preference-content">
+                                                <h3 data-translate="enable_email_notifications">Enable Email
+                                                    Notifications</h3>
+                                                <p data-translate="email_notifications_description">Send email
+                                                    notifications for system events</p>
+                                            </div>
+                                            <label class="switch">
+                                                <input type="checkbox" id="emailNotifications" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+
+                                        <div class="preference-item">
+                                            <div class="preference-content">
+                                                <h3 data-translate="enable_auto_backup">Enable Automatic Backups</h3>
+                                                <p data-translate="auto_backup_description">Automatically backup system
+                                                    data daily</p>
+                                            </div>
+                                            <label class="switch">
+                                                <input type="checkbox" id="autoBackup" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Security Settings -->
+                            <div class="settings-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title" data-translate="security_settings">Security Settings
+                                        </h2>
+                                        <p class="section-description" data-translate="security_settings_description">
+                                            Configure system security and access controls
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="settings-form">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label" for="sessionTimeout">
+                                                <i class="fas fa-clock"></i> <span
+                                                    data-translate="session_timeout">Session Timeout</span> <span
+                                                    class="required">*</span>
+                                            </label>
+                                            <select id="sessionTimeout" class="form-input">
+                                                <option value="15">15 minutes</option>
+                                                <option value="30">30 minutes</option>
+                                                <option value="60" selected>1 hour</option>
+                                                <option value="120">2 hours</option>
+                                                <option value="240">4 hours</option>
+                                            </select>
+                                            <div class="form-hint" data-translate="session_timeout_hint">Inactivity
+                                                timeout before auto-logout</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="passwordPolicy">
+                                                <i class="fas fa-key"></i> <span
+                                                    data-translate="password_policy">Password Policy</span> <span
+                                                    class="required">*</span>
+                                            </label>
+                                            <select id="passwordPolicy" class="form-input">
+                                                <option value="basic">Basic (6+ characters)</option>
+                                                <option value="medium" selected>Medium (8+ chars, mixed case)</option>
+                                                <option value="strong">Strong (12+ chars, special chars)</option>
+                                                <option value="strict">Strict (16+ chars, no repeats)</option>
+                                            </select>
+                                            <div class="form-hint" data-translate="password_policy_hint">Password
+                                                requirements for all users</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="maxLoginAttempts">
+                                                <i class="fas fa-ban"></i> <span data-translate="max_login_attempts">Max
+                                                    Login Attempts</span> <span class="required">*</span>
+                                            </label>
+                                            <select id="maxLoginAttempts" class="form-input">
+                                                <option value="3">3 attempts</option>
+                                                <option value="5" selected>5 attempts</option>
+                                                <option value="10">10 attempts</option>
+                                                <option value="unlimited">Unlimited</option>
+                                            </select>
+                                            <div class="form-hint" data-translate="max_login_attempts_hint">Before
+                                                account lockout</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="ipWhitelist">
+                                                <i class="fas fa-network-wired"></i> <span
+                                                    data-translate="ip_whitelist">IP Whitelist</span>
+                                            </label>
+                                            <textarea id="ipWhitelist" class="form-input" rows="3"
+                                                placeholder="Enter IP addresses (one per line)"></textarea>
+                                            <div class="form-hint" data-translate="ip_whitelist_hint">Optional: Restrict
+                                                access to specific IPs</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Email Configuration -->
+                            <div class="settings-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title" data-translate="email_configuration">Email
+                                            Configuration</h2>
+                                        <p class="section-description" data-translate="email_configuration_description">
+                                            Set up system email notifications and SMTP settings
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="settings-form">
+                                    <div class="form-grid">
+                                        <div class="form-group full-width">
+                                            <label class="form-label" for="smtpHost">
+                                                <i class="fas fa-server"></i> <span data-translate="smtp_host">SMTP
+                                                    Host</span> <span class="required">*</span>
+                                            </label>
+                                            <input type="text" id="smtpHost" class="form-input"
+                                                placeholder="smtp.gmail.com" value="smtp.allitrack.com" />
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="smtpPort">
+                                                <i class="fas fa-plug"></i> <span data-translate="smtp_port">SMTP
+                                                    Port</span> <span class="required">*</span>
+                                            </label>
+                                            <input type="number" id="smtpPort" class="form-input" placeholder="587"
+                                                value="587" />
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="smtpUsername">
+                                                <i class="fas fa-user"></i> <span data-translate="smtp_username">SMTP
+                                                    Username</span> <span class="required">*</span>
+                                            </label>
+                                            <input type="text" id="smtpUsername" class="form-input"
+                                                placeholder="username@domain.com" value="noreply@allitrack.com" />
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="smtpPassword">
+                                                <i class="fas fa-key"></i> <span data-translate="smtp_password">SMTP
+                                                    Password</span> <span class="required">*</span>
+                                            </label>
+                                            <input type="password" id="smtpPassword" class="form-input"
+                                                placeholder="Enter SMTP password" />
+                                            <div class="form-hint" data-translate="smtp_password_hint">Leave blank to
+                                                keep current password</div>
+                                        </div>
+
+                                        <div class="form-group full-width">
+                                            <label class="form-label" for="fromEmail">
+                                                <i class="fas fa-at"></i> <span data-translate="from_email">From Email
+                                                    Address</span> <span class="required">*</span>
+                                            </label>
+                                            <input type="email" id="fromEmail" class="form-input"
+                                                placeholder="noreply@allitrack.com" value="noreply@allitrack.com" />
+                                            <div class="form-hint" data-translate="from_email_hint">Sender address for
+                                                all system emails</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Advanced Settings -->
+                            <div class="settings-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-code"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title" data-translate="advanced_settings">Advanced Settings
+                                        </h2>
+                                        <p class="section-description" data-translate="advanced_settings_description">
+                                            Technical configuration and system optimization
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="settings-form">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label" for="apiRateLimit">
+                                                <i class="fas fa-tachometer-alt"></i> <span
+                                                    data-translate="api_rate_limit">API Rate Limit</span> <span
+                                                    class="required">*</span>
+                                            </label>
+                                            <select id="apiRateLimit" class="form-input">
+                                                <option value="10">10 requests/minute</option>
+                                                <option value="30">30 requests/minute</option>
+                                                <option value="60" selected>60 requests/minute</option>
+                                                <option value="100">100 requests/minute</option>
+                                                <option value="unlimited">Unlimited</option>
+                                            </select>
+                                            <div class="form-hint" data-translate="api_rate_limit_hint">Per user/IP
+                                                address</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="cacheDuration">
+                                                <i class="fas fa-bolt"></i> <span data-translate="cache_duration">Cache
+                                                    Duration</span> <span class="required">*</span>
+                                            </label>
+                                            <select id="cacheDuration" class="form-input">
+                                                <option value="0">No caching</option>
+                                                <option value="300">5 minutes</option>
+                                                <option value="900" selected>15 minutes</option>
+                                                <option value="3600">1 hour</option>
+                                                <option value="86400">1 day</option>
+                                            </select>
+                                            <div class="form-hint" data-translate="cache_duration_hint">How long data is
+                                                cached</div>
+                                        </div>
+
+                                        <div class="form-group full-width">
+                                            <label class="form-label" for="customCss">
+                                                <i class="fas fa-paint-brush"></i> <span
+                                                    data-translate="custom_css">Custom CSS</span>
+                                            </label>
+                                            <textarea id="customCss" class="form-input" rows="4"
+                                                placeholder="Enter custom CSS code"></textarea>
+                                            <div class="form-hint" data-translate="custom_css_hint">Custom styles to
+                                                override default styling</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Danger Zone -->
+                            <div class="settings-section danger-zone">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title" data-translate="danger_zone">Danger Zone</h2>
+                                        <p class="section-description" data-translate="danger_zone_description">
+                                            These actions are irreversible. Proceed with caution.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="danger-actions">
+                                    <div class="danger-action">
+                                        <div class="danger-action-content">
+                                            <h3><i class="fas fa-trash"></i> <span
+                                                    data-translate="clear_all_logs">Clear All System Logs</span></h3>
+                                            <p data-translate="clear_all_logs_description">Permanently delete all system
+                                                logs and audit trails</p>
+                                        </div>
+                                        <button type="button" class="btn btn-danger"
+                                            onclick="showModal('clearLogsModal')" data-translate="clear_logs">Clear
+                                            Logs</button>
+                                    </div>
+
+                                    <div class="danger-action">
+                                        <div class="danger-action-content">
+                                            <h3><i class="fas fa-database"></i> <span
+                                                    data-translate="reset_database">Reset Database to Defaults</span>
+                                            </h3>
+                                            <p data-translate="reset_database_description">Reset all data to factory
+                                                defaults (cannot be undone)</p>
+                                        </div>
+                                        <button type="button" class="btn btn-danger"
+                                            onclick="showModal('resetDatabaseModal')" data-translate="reset_database">
+                                            Reset Database</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="resetSettings()">
+                                    <i class="fas fa-times"></i> <span data-translate="discard_changes">Discard
+                                        Changes</span>
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> <span data-translate="save_settings">Save
+                                        Settings</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Clear Logs Modal -->
+    <div class="modal" id="clearLogsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle" style="color: #EF4444;"></i> <span
+                        data-translate="confirm_clear_logs">Confirm Clear Logs</span></h3>
+                <button class="modal-close" onclick="closeModal('clearLogsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p data-translate="clear_logs_warning">Are you sure you want to clear all system logs? This action
+                    cannot be undone. All audit trails, error logs, and activity records will be permanently deleted.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('clearLogsModal')"
+                    data-translate="cancel">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="clearSystemLogs()" data-translate="clear_logs">
+                    Clear All Logs</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Database Modal -->
+    <div class="modal" id="resetDatabaseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle" style="color: #EF4444;"></i> <span
+                        data-translate="confirm_reset_database">Confirm Database Reset</span></h3>
+                <button class="modal-close" onclick="closeModal('resetDatabaseModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p data-translate="reset_database_warning">
+                    <strong>WARNING:</strong> This will reset the entire database to factory defaults. All user data,
+                    tickets, settings, and configurations will be permanently deleted. This action cannot be undone.
+                </p>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label class="form-label" for="confirmReset">
+                        <span data-translate="type_to_confirm">Type "RESET" to confirm:</span>
+                    </label>
+                    <input type="text" id="confirmReset" class="form-input"
+                        placeholder='Type "RESET"' data-translate-placeholder="type_reset_placeholder" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('resetDatabaseModal')"
+                    data-translate="cancel">Cancel</button>
+                <button type="button" class="btn btn-danger" id="resetDatabaseBtn" onclick="resetDatabase()"
+                    disabled data-translate="reset_database">Reset Database</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Account Dropdown Functionality - Same as profile settings
+        function setupAccountDropdown() {
+            console.log('🔧 Setting up account dropdown...');
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
+
+            if (!accountBtn || !accountMenu) {
+                console.error('❌ Account dropdown elements not found!');
+                return;
+            }
+
+            console.log('✅ Elements found, setting up...');
+
+            // Don't clone elements - just work with existing ones
+            // Remove any existing click listeners
+            const newBtn = accountBtn.cloneNode(true);
+            accountBtn.parentNode.replaceChild(newBtn, accountBtn);
+
+            // Get fresh reference
+            const freshBtn = document.getElementById("accountBtn");
+
+            // Add click event to toggle dropdown
+            freshBtn.addEventListener("click", function (e) {
+                console.log('🎯 Account button clicked!');
+                e.stopPropagation();
+                e.preventDefault();
+
+                const isShowing = accountMenu.classList.contains("show");
+                accountMenu.classList.toggle("show");
+                freshBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", function (e) {
+                if (accountMenu.classList.contains("show") &&
+                    !freshBtn.contains(e.target) &&
+                    !accountMenu.contains(e.target)) {
+                    console.log('🔒 Closing dropdown (clicked outside)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    console.log('🔒 Closing dropdown (Escape key)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close when clicking menu items (except logout)
+            const menuItems = accountMenu.querySelectorAll("a");
+            menuItems.forEach(item => {
+                item.addEventListener("click", function () {
+                    console.log('🔒 Closing dropdown (menu item clicked)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                });
+            });
+
+            // Ensure button is clickable
+            freshBtn.style.cursor = 'pointer';
+
+            console.log('✅ Account dropdown setup complete');
+        }
+
+        // Translation dictionary for system settings page
+        const translations = {
+            'en': {
+                // PAGE-SPECIFIC translations
+                'system_settings_page_title': 'System Settings - AlliTrack Admin',
+                'system_settings_title': 'System Settings',
+                'system_settings_description': 'Configure and manage your AlliTrack system settings, preferences, and integrations.',
+                'search_tickets': 'Search tickets, users, IDs...',
+                'general_settings': 'General Settings',
+                'general_settings_description': 'Configure basic system preferences and behavior',
+                'system_name': 'System Name',
+                'system_name_hint': 'Display name shown throughout the system',
+                'timezone': 'Timezone',
+                'timezone_hint': 'Default timezone for all users',
+                'date_format': 'Date Format',
+                'date_format_hint': 'How dates are displayed',
+                'items_per_page': 'Items Per Page',
+                'items_per_page_hint': 'Default number of items in lists',
+                'enable_maintenance_mode': 'Enable Maintenance Mode',
+                'maintenance_mode_description': 'Temporarily disable system access for non-admin users',
+                'enable_two_factor': 'Enable Two-Factor Authentication',
+                'two_factor_description': 'Require 2FA for all admin accounts',
+                'enable_email_notifications': 'Enable Email Notifications',
+                'email_notifications_description': 'Send email notifications for system events',
+                'enable_auto_backup': 'Enable Automatic Backups',
+                'auto_backup_description': 'Automatically backup system data daily',
+                'security_settings': 'Security Settings',
+                'security_settings_description': 'Configure system security and access controls',
+                'session_timeout': 'Session Timeout',
+                'session_timeout_hint': 'Inactivity timeout before auto-logout',
+                'password_policy': 'Password Policy',
+                'password_policy_hint': 'Password requirements for all users',
+                'max_login_attempts': 'Max Login Attempts',
+                'max_login_attempts_hint': 'Before account lockout',
+                'ip_whitelist': 'IP Whitelist',
+                'ip_whitelist_hint': 'Optional: Restrict access to specific IPs',
+                'email_configuration': 'Email Configuration',
+                'email_configuration_description': 'Set up system email notifications and SMTP settings',
+                'smtp_host': 'SMTP Host',
+                'smtp_port': 'SMTP Port',
+                'smtp_username': 'SMTP Username',
+                'smtp_password': 'SMTP Password',
+                'smtp_password_hint': 'Leave blank to keep current password',
+                'from_email': 'From Email Address',
+                'from_email_hint': 'Sender address for all system emails',
+                'advanced_settings': 'Advanced Settings',
+                'advanced_settings_description': 'Technical configuration and system optimization',
+                'api_rate_limit': 'API Rate Limit',
+                'api_rate_limit_hint': 'Per user/IP address',
+                'cache_duration': 'Cache Duration',
+                'cache_duration_hint': 'How long data is cached',
+                'custom_css': 'Custom CSS',
+                'custom_css_hint': 'Custom styles to override default styling',
+                'danger_zone': 'Danger Zone',
+                'danger_zone_description': 'These actions are irreversible. Proceed with caution.',
+                'clear_all_logs': 'Clear All System Logs',
+                'clear_all_logs_description': 'Permanently delete all system logs and audit trails',
+                'clear_logs': 'Clear Logs',
+                'reset_database': 'Reset Database to Defaults',
+                'reset_database_description': 'Reset all data to factory defaults (cannot be undone)',
+                'confirm_clear_logs': 'Confirm Clear Logs',
+                'clear_logs_warning': 'Are you sure you want to clear all system logs? This action cannot be undone. All audit trails, error logs, and activity records will be permanently deleted.',
+                'confirm_reset_database': 'Confirm Database Reset',
+                'reset_database_warning': 'WARNING: This will reset the entire database to factory defaults. All user data, tickets, settings, and configurations will be permanently deleted. This action cannot be undone.',
+                'type_to_confirm': 'Type "RESET" to confirm:',
+                'type_reset_placeholder': 'Type "RESET"',
+                'discard_changes': 'Discard Changes',
+                'save_settings': 'Save Settings',
+                'cancel': 'Cancel',
+                'save_changes': 'Save Changes',
+
+                // Navigation (admin specific) - Same as profile settings
+                'admin_dashboard': 'Admin Dashboard',
+                'dashboard': 'Dashboard',
+                'ticket_management': 'Ticket Management',
+                'all_tickets': 'All Tickets',
+                'users_management': 'Users Management',
+                'announcements': 'Announcements',
+                'system_management': 'System Management',
+                'system_settings': 'System Settings',
+                'analytics': 'Analytics',
+                'system_logs': 'System Logs',
+                'admin_tools': 'Admin Tools',
+                'preferences': 'Preferences',
+                'profile_settings': 'Profile Settings',
+                'profile': 'Profile',
+                'settings': 'Settings',
+                'logout': 'Logout',
+                'admin_dashboard_template': 'AlliTrack Admin Dashboard'
+            },
+            'fil': {
+                'system_settings_page_title': 'Mga Setting ng Sistema - AlliTrack Admin',
+                'system_settings_title': 'Mga Setting ng Sistema',
+                'system_settings_description': 'I-configure at pamahalaan ang mga setting, kagustuhan, at integrasyon ng iyong AlliTrack system.',
+                'search_tickets': 'Maghanap...',
+                'general_settings': 'Pangkalahatang Setting',
+                'general_settings_description': 'I-configure ang mga pangunahing kagustuhan ng sistema',
+                'system_name': 'Pangalan ng Sistema',
+                'system_name_hint': 'Pangalan na ipinapakita sa buong sistema',
+                'timezone': 'Timezone',
+                'timezone_hint': 'Default timezone para sa lahat ng user',
+                'date_format': 'Format ng Petsa',
+                'date_format_hint': 'Paano ipinapakita ang mga petsa',
+                'items_per_page': 'Mga Item Bawat Pahina',
+                'items_per_page_hint': 'Default na bilang ng item sa mga listahan',
+                'enable_maintenance_mode': 'I-enable ang Maintenance Mode',
+                'maintenance_mode_description': 'Pansamantalang i-disable ang access ng non-admin users',
+                'enable_two_factor': 'I-enable ang Two-Factor Authentication',
+                'two_factor_description': 'Kailangan ang 2FA para sa lahat ng admin accounts',
+                'enable_email_notifications': 'I-enable ang Email Notifications',
+                'email_notifications_description': 'Magpadala ng email notifications para sa system events',
+                'enable_auto_backup': 'I-enable ang Automatic Backups',
+                'auto_backup_description': 'Awtomatikong i-backup ang system data araw-araw',
+                'security_settings': 'Mga Setting ng Seguridad',
+                'security_settings_description': 'I-configure ang seguridad ng sistema at access controls',
+                'session_timeout': 'Session Timeout',
+                'session_timeout_hint': 'Timeout ng pagkawalang-galaw bago ang auto-logout',
+                'password_policy': 'Password Policy',
+                'password_policy_hint': 'Mga kinakailangan sa password para sa lahat ng user',
+                'max_login_attempts': 'Max na Pagtatangkang Mag-login',
+                'max_login_attempts_hint': 'Bago ang lockout ng account',
+                'ip_whitelist': 'IP Whitelist',
+                'ip_whitelist_hint': 'Opsyon: I-restrict ang access sa mga tiyak na IP',
+                'email_configuration': 'Configuration ng Email',
+                'email_configuration_description': 'I-set up ang system email notifications at SMTP settings',
+                'smtp_host': 'SMTP Host',
+                'smtp_port': 'SMTP Port',
+                'smtp_username': 'SMTP Username',
+                'smtp_password': 'SMTP Password',
+                'smtp_password_hint': 'Iwanang blangko upang panatilihin ang kasalukuyang password',
+                'from_email': 'From Email Address',
+                'from_email_hint': 'Sender address para sa lahat ng system emails',
+                'advanced_settings': 'Mga Advanced na Setting',
+                'advanced_settings_description': 'Teknikal na configuration at optimization ng sistema',
+                'api_rate_limit': 'API Rate Limit',
+                'api_rate_limit_hint': 'Bawat user/IP address',
+                'cache_duration': 'Tagal ng Cache',
+                'cache_duration_hint': 'Gaano katagal na-cache ang data',
+                'custom_css': 'Custom CSS',
+                'custom_css_hint': 'Custom styles para i-override ang default styling',
+                'danger_zone': 'Danger Zone',
+                'danger_zone_description': 'Ang mga aksyon na ito ay hindi na mababawi. Magpatuloy nang may pag-iingat.',
+                'clear_all_logs': 'Burahin ang Lahat ng System Logs',
+                'clear_all_logs_description': 'Permanenteng burahin ang lahat ng system logs at audit trails',
+                'clear_logs': 'Burahin ang Logs',
+                'reset_database': 'I-reset ang Database sa Defaults',
+                'reset_database_description': 'I-reset ang lahat ng data sa factory defaults (hindi na mababawi)',
+                'confirm_clear_logs': 'Kumpirmahin ang Pagbubura ng Logs',
+                'clear_logs_warning': 'Sigurado ka bang gusto mong burahin ang lahat ng system logs? Ang aksyon na ito ay hindi na mababawi. Ang lahat ng audit trails, error logs, at activity records ay permanenteng mabubura.',
+                'confirm_reset_database': 'Kumpirmahin ang Pag-reset ng Database',
+                'reset_database_warning': 'BABALA: Ito ay magre-reset ng buong database sa factory defaults. Ang lahat ng user data, tickets, settings, at configurations ay permanenteng mabubura. Ang aksyon na ito ay hindi na mababawi.',
+                'type_to_confirm': 'I-type ang "RESET" upang kumpirmahin:',
+                'type_reset_placeholder': 'I-type ang "RESET"',
+                'discard_changes': 'I-discard ang Mga Pagbabago',
+                'save_settings': 'I-save ang Mga Setting',
+                'cancel': 'Kanselahin',
+                'save_changes': 'I-save'
+            }
+        };
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🚀 System Settings: Starting initialization...');
+
+            // Add Toast HTML element to body
+            const toast = document.createElement('div');
+            toast.id = 'toast';
+            toast.className = 'toast';
+            document.body.appendChild(toast);
+
+            // Initialize user data manager FIRST
+            if (window.userDataManager) {
+                console.log('👤 Initializing User Data Manager...');
+                window.userDataManager.initializeUserDisplay();
+
+                // Set admin-specific default data
+                const userData = window.userDataManager.getUserData();
+                if (!userData.name) {
+                    window.userDataManager.updateUserData({
+                        name: 'Admin User',
+                        email: 'admin@allitrack.com',
+                        role: 'Administrator'
+                    });
+                }
+            } else {
+                console.error('❌ User Data Manager not found!');
+            }
+
+            // Initialize preferences manager
+            if (window.preferencesManager) {
+                console.log('⚙️ Initializing Preferences Manager...');
+                window.preferencesManager.initialize();
+
+                // Apply theme immediately
+                window.preferencesManager.applyTheme();
+
+                // Get current language from preferences manager
+                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
+                applyTranslations(currentLang);
+            } else {
+                console.error('❌ Preferences Manager not found!');
+                applyTranslations('en'); // Default to English
+            }
+
+            // Setup theme listener
+            setupThemeListener();
+
+            // Load system settings from localStorage
+            loadSystemSettings();
+
+            // Initialize form functionality
+            initForm();
+
+            // Setup logout functionality FIRST
+            setupLogout();
+
+            // SETUP ACCOUNT DROPDOWN - CALL THIS AFTER setupLogout
+            setTimeout(() => {
+                console.log('🔄 Setting up account dropdown...');
+                setupAccountDropdown();
+            }, 50);
+
+            // Initialize modal functionality
+            initModals();
+
+            console.log('✅ System Settings page loaded');
+        });
+
+        // Setup theme listener
+        function setupThemeListener() {
+            console.log('🌙 Setting up theme listener...');
+
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'preferredTheme') {
+                    console.log('Theme changed via storage:', event.newValue);
+                    if (window.preferencesManager) {
+                        setTimeout(() => {
+                            window.preferencesManager.applyTheme();
+                        }, 100);
+                    }
+                }
+            });
+
+            document.addEventListener('themeChanged', function (e) {
+                console.log('Theme changed via event:', e.detail.theme);
+                if (window.preferencesManager) {
+                    window.preferencesManager.applyTheme();
+                }
+            });
+        }
+
+        // Apply translations to the page
+        function applyTranslations(language) {
+            const lang = translations[language] ? language : 'en';
+            const dict = translations[lang];
+
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (dict[key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') {
+                        if (element.type !== 'text' && element.type !== 'email' && element.type !== 'password' && element.type !== 'tel' && element.type !== 'number') {
+                            element.textContent = dict[key];
+                        }
+                    } else if (element.tagName === 'OPTION') {
+                        element.textContent = dict[key];
+                    } else {
+                        element.textContent = dict[key];
+                    }
+                }
+            });
+
+            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-translate-placeholder');
+                if (dict[key]) {
+                    element.placeholder = dict[key];
+                }
+            });
+
+            if (dict['system_settings_page_title']) {
+                document.title = dict['system_settings_page_title'];
+            }
+        }
+
+        // Listen for language changes from preference-manager.js
+        document.addEventListener('languageChanged', function (e) {
+            console.log('Language changed to:', e.detail.language);
+            applyTranslations(e.detail.language);
+        });
+
+        // Load saved system settings
+        function loadSystemSettings() {
+            try {
+                const savedSettings = localStorage.getItem('systemSettings');
+                if (savedSettings) {
+                    const settings = JSON.parse(savedSettings);
+
+                    // General Settings
+                    document.getElementById('systemName').value = settings.systemName || 'AlliTrack';
+                    document.getElementById('timezone').value = settings.timezone || 'UTC-08:00';
+                    document.getElementById('dateFormat').value = settings.dateFormat || 'MM/DD/YYYY';
+                    document.getElementById('itemsPerPage').value = settings.itemsPerPage || '25';
+
+                    // Toggle Settings
+                    document.getElementById('maintenanceMode').checked = settings.maintenanceMode || false;
+                    document.getElementById('twoFactorAuth').checked = settings.twoFactorAuth !== false; // Default true
+                    document.getElementById('emailNotifications').checked = settings.emailNotifications !== false;
+                    document.getElementById('autoBackup').checked = settings.autoBackup !== false;
+
+                    // Security Settings
+                    document.getElementById('sessionTimeout').value = settings.sessionTimeout || '60';
+                    document.getElementById('passwordPolicy').value = settings.passwordPolicy || 'medium';
+                    document.getElementById('maxLoginAttempts').value = settings.maxLoginAttempts || '5';
+                    document.getElementById('ipWhitelist').value = settings.ipWhitelist || '';
+
+                    // Email Settings
+                    document.getElementById('smtpHost').value = settings.smtpHost || 'smtp.allitrack.com';
+                    document.getElementById('smtpPort').value = settings.smtpPort || '587';
+                    document.getElementById('smtpUsername').value = settings.smtpUsername || 'noreply@allitrack.com';
+                    document.getElementById('fromEmail').value = settings.fromEmail || 'noreply@allitrack.com';
+
+                    // Advanced Settings
+                    document.getElementById('apiRateLimit').value = settings.apiRateLimit || '60';
+                    document.getElementById('cacheDuration').value = settings.cacheDuration || '900';
+                    document.getElementById('customCss').value = settings.customCss || '';
+
+                    console.log('✅ System settings loaded from localStorage');
+                } else {
+                    console.log('ℹ️ No saved system settings found, using defaults');
+                }
+            } catch (error) {
+                console.error('❌ Error loading system settings:', error);
+            }
+        }
+
+        // Logout functionality - FIXED VERSION (same as profile settings)
+        function setupLogout() {
+            console.log('🔐 Setting up logout functionality...');
+
+            // First remove any existing logout buttons to avoid duplicates
+            const existingLogoutBtns = document.querySelectorAll('#logoutBtn');
+            existingLogoutBtns.forEach(btn => {
+                const parent = btn.parentNode;
+                const newBtn = btn.cloneNode(true);
+                parent.replaceChild(newBtn, btn);
+            });
+
+            // Now attach the event listener to the fresh logout button
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                console.log('✅ Logout button found, attaching handler...');
+
+                // Create a robust logout handler
+                const logoutHandler = function (e) {
+                    console.log('🚪 Logout button clicked!');
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Clear user data from localStorage
+                    localStorage.removeItem('userData');
+                    localStorage.removeItem('userProfile');
+                    localStorage.removeItem('adminPreferences');
+                    localStorage.removeItem('preferredTheme');
+                    localStorage.removeItem('preferredLanguage');
+
+                    console.log('🧹 Cleared localStorage, redirecting to login...');
+
+                    // Redirect to admin login page
+                    window.location.href = '../../../index.html';
+                };
+
+                // Remove any existing listeners and attach fresh one
+                logoutBtn.removeEventListener('click', logoutHandler);
+                logoutBtn.addEventListener('click', logoutHandler);
+
+            } else {
+                console.error('❌ Logout button not found!');
+            }
+        }
+
+        // Initialize form functionality
+        function initForm() {
+            const systemSettingsForm = document.getElementById('systemSettingsForm');
+            if (systemSettingsForm) {
+                systemSettingsForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    saveSystemSettings();
+                });
+            }
+
+            // Setup reset database confirmation
+            const confirmResetInput = document.getElementById('confirmReset');
+            const resetDatabaseBtn = document.getElementById('resetDatabaseBtn');
+
+            if (confirmResetInput && resetDatabaseBtn) {
+                confirmResetInput.addEventListener('input', function () {
+                    resetDatabaseBtn.disabled = this.value.trim().toUpperCase() !== 'RESET';
+                });
+            }
+        }
+
+        // Initialize modal functionality
+        function initModals() {
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) {
+                        modal.classList.remove('show');
+                    }
+                });
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal.show').forEach(modal => {
+                        modal.classList.remove('show');
+                    });
+                }
+            });
+        }
+
+        // Show modal
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
+
+                // Clear reset confirmation
+                if (modalId === 'resetDatabaseModal') {
+                    document.getElementById('confirmReset').value = '';
+                    document.getElementById('resetDatabaseBtn').disabled = true;
+                }
+            }
+        }
+
+        // Save system settings
+        function saveSystemSettings() {
+            try {
+                const settings = {
+                    // General Settings
+                    systemName: document.getElementById('systemName').value,
+                    timezone: document.getElementById('timezone').value,
+                    dateFormat: document.getElementById('dateFormat').value,
+                    itemsPerPage: document.getElementById('itemsPerPage').value,
+
+                    // Toggle Settings
+                    maintenanceMode: document.getElementById('maintenanceMode').checked,
+                    twoFactorAuth: document.getElementById('twoFactorAuth').checked,
+                    emailNotifications: document.getElementById('emailNotifications').checked,
+                    autoBackup: document.getElementById('autoBackup').checked,
+
+                    // Security Settings
+                    sessionTimeout: document.getElementById('sessionTimeout').value,
+                    passwordPolicy: document.getElementById('passwordPolicy').value,
+                    maxLoginAttempts: document.getElementById('maxLoginAttempts').value,
+                    ipWhitelist: document.getElementById('ipWhitelist').value,
+
+                    // Email Settings
+                    smtpHost: document.getElementById('smtpHost').value,
+                    smtpPort: document.getElementById('smtpPort').value,
+                    smtpUsername: document.getElementById('smtpUsername').value,
+                    fromEmail: document.getElementById('fromEmail').value,
+
+                    // Advanced Settings
+                    apiRateLimit: document.getElementById('apiRateLimit').value,
+                    cacheDuration: document.getElementById('cacheDuration').value,
+                    customCss: document.getElementById('customCss').value,
+
+                    lastUpdated: new Date().toISOString()
+                };
+
+                // Save to localStorage
+                localStorage.setItem('systemSettings', JSON.stringify(settings));
+
+                // Apply custom CSS if exists
+                if (settings.customCss) {
+                    applyCustomCss(settings.customCss);
+                }
+
+                showToast('System settings saved successfully', 'success');
+                console.log('✅ System settings saved:', settings);
+            } catch (error) {
+                console.error('❌ Error saving system settings:', error);
+                showToast('Error saving system settings', 'error');
+            }
+        }
+
+        // Apply custom CSS
+        function applyCustomCss(css) {
+            // Remove existing custom style tag if exists
+            const existingStyle = document.getElementById('customSystemCss');
+            if (existingStyle) {
+                existingStyle.remove();
+            }
+
+            if (css && css.trim()) {
+                const style = document.createElement('style');
+                style.id = 'customSystemCss';
+                style.textContent = css;
+                document.head.appendChild(style);
+            }
+        }
+
+        // Reset settings to defaults
+        function resetSettings() {
+            if (confirm('Are you sure you want to discard all changes and reset to defaults?')) {
+                // Clear form values
+                document.getElementById('systemSettingsForm').reset();
+
+                // Reset specific values to defaults
+                document.getElementById('systemName').value = 'AlliTrack';
+                document.getElementById('timezone').value = 'UTC-08:00';
+                document.getElementById('dateFormat').value = 'MM/DD/YYYY';
+                document.getElementById('itemsPerPage').value = '25';
+                document.getElementById('sessionTimeout').value = '60';
+                document.getElementById('passwordPolicy').value = 'medium';
+                document.getElementById('maxLoginAttempts').value = '5';
+                document.getElementById('ipWhitelist').value = '';
+                document.getElementById('smtpHost').value = 'smtp.allitrack.com';
+                document.getElementById('smtpPort').value = '587';
+                document.getElementById('smtpUsername').value = 'noreply@allitrack.com';
+                document.getElementById('smtpPassword').value = '';
+                document.getElementById('fromEmail').value = 'noreply@allitrack.com';
+                document.getElementById('apiRateLimit').value = '60';
+                document.getElementById('cacheDuration').value = '900';
+                document.getElementById('customCss').value = '';
+
+                // Reset toggles
+                document.getElementById('maintenanceMode').checked = false;
+                document.getElementById('twoFactorAuth').checked = true;
+                document.getElementById('emailNotifications').checked = true;
+                document.getElementById('autoBackup').checked = true;
+
+                // Remove custom CSS
+                const existingStyle = document.getElementById('customSystemCss');
+                if (existingStyle) {
+                    existingStyle.remove();
+                }
+
+                showToast('Settings reset to defaults', 'success');
+            }
+        }
+
+        // Clear system logs
+        function clearSystemLogs() {
+            // In a real app, this would call an API
+            // For now, simulate with localStorage
+            localStorage.removeItem('systemLogs');
+            localStorage.removeItem('auditTrail');
+            localStorage.removeItem('errorLogs');
+
+            closeModal('clearLogsModal');
+            showToast('All system logs cleared successfully', 'success');
+            console.log('✅ System logs cleared');
+        }
+
+        // Reset database
+        function resetDatabase() {
+            // In a real app, this would call an API
+            // For now, simulate with confirmation
+
+            // Clear all relevant localStorage items
+            const itemsToKeep = ['systemSettings', 'preferredTheme', 'preferredLanguage'];
+            const allKeys = Object.keys(localStorage);
+
+            allKeys.forEach(key => {
+                if (!itemsToKeep.includes(key)) {
+                    localStorage.removeItem(key);
+                }
+            });
+
+            // Reset system settings to defaults
+            localStorage.removeItem('systemSettings');
+
+            closeModal('resetDatabaseModal');
+            showToast('Database reset to factory defaults', 'success');
+            console.log('✅ Database reset to defaults');
+
+            // Reload the page to reflect changes
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        }
+
+        // Show toast message (same as profile settings)
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            if (!toast) {
+                console.error('Toast element not found');
+                return;
+            }
+
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>
