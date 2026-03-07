@@ -219,15 +219,16 @@
                     userAvatarElement.textContent = initials.toUpperCase();
                 }
             } else {
-                // If no user data, redirect to login page
-                window.location.href = '../../landing page/pages/index.html';
+                console.log("No userData found — skipping redirect for testing");
             }
         }
         
         // Call the function when page loads
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             loadUserData();
-            initializeTicketsPage();
+            await loadTicketsFromServer();   // ← LOAD FROM FLASK
+            setupTicketsEventListeners();
+            initializeChart();
         });
 
         // Dropdown toggle - EXACTLY as in index-admin.html
@@ -262,17 +263,7 @@
             });
         }
 
-        // Sample ticket data
-        let tickets = [
-            { id: "#142", subject: "Login issue", requester: "John D.", status: "Open", priority: "High", date: "2025-11-24" },
-            { id: "#141", subject: "Payment failure", requester: "Jane S.", status: "In Progress", priority: "Medium", date: "2025-11-23" },
-            { id: "#140", subject: "Feature request", requester: "Mike R.", status: "Resolved", priority: "Low", date: "2025-11-23" },
-            { id: "#139", subject: "Password reset", requester: "Sarah L.", status: "Open", priority: "Medium", date: "2025-11-22" },
-            { id: "#138", subject: "Bug report", requester: "Alex K.", status: "In Progress", priority: "High", date: "2025-11-22" },
-            { id: "#137", subject: "Account verification", requester: "Tom B.", status: "Resolved", priority: "Low", date: "2025-11-21" },
-            { id: "#136", subject: "API integration", requester: "Emma W.", status: "Open", priority: "High", date: "2025-11-21" },
-            { id: "#135", subject: "UI feedback", requester: "Chris M.", status: "Resolved", priority: "Low", date: "2025-11-20" }
-        ];
+        let tickets = [];
 
         // DOM Elements for tickets functionality
         const ticketsTbody = document.getElementById("ticketsTbody");
@@ -288,11 +279,44 @@
 
         let currentEditingTicket = null;
 
-        // Initialize tickets page
-        function initializeTicketsPage() {
-            renderTickets(tickets);
+        async function loadTicketsFromServer() {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/api/tickets");
+                const data = await response.json();
+
+                tickets = data.map(t => ({
+                    id: "#" + t.Ticket_ID,
+                    subject: t.Concern_Title,
+                    requester: "User " + t.User_ID,
+                    status: convertStatus(t.Status_ID),
+                    priority: t.Priority,
+                    date: formatDate(t.Date_Created)
+                }));
+
+                renderTickets(tickets);
+
+            } catch (error) {
+                console.error("Failed to load tickets:", error);
+            }
+        }
+
+        async function initializeTicketsPage() {
+            await loadTicketsFromServer();   // 🔥 load from backend
             setupTicketsEventListeners();
             initializeChart();
+        }
+
+        function convertStatus(statusId) {
+            // Adjust depending on your DB values
+            if (statusId == 1) return "Open";
+            if (statusId == 2) return "In Progress";
+            if (statusId == 3) return "Resolved";
+            return "Open";
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toISOString().split("T")[0];
         }
 
         // Set up event listeners for tickets functionality
@@ -472,23 +496,38 @@
         }
 
         // Handle status update
-        function handleStatusUpdate(event) {
+        async function handleStatusUpdate(event) {
             const newStatus = event.target.getAttribute('data-status');
-            
-            // Update the ticket in our data
+
             const ticketIndex = tickets.findIndex(ticket => ticket.id === currentEditingTicket);
-            if (ticketIndex !== -1) {
+            if (ticketIndex === -1) return;
+
+            // Convert "#5" → 5
+            const ticketId = currentEditingTicket.replace("#", "");
+
+            try {
+                await fetch(`http://127.0.0.1:5000/api/tickets/${ticketId}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        Status_ID: convertStatusToId(newStatus),
+                        Priority: tickets[ticketIndex].priority
+                    })
+                });
+
+                // Update frontend after DB success
                 tickets[ticketIndex].status = newStatus;
-                
-                // Update active state
-                if (statusOptions) {
-                    statusOptions.forEach(opt => opt.classList.remove('active'));
-                    event.target.classList.add('active');
-                }
-                
-                // Re-render tickets
                 applyFilters(tickets);
+
+            } catch (err) {
+                console.error("Update failed:", err);
             }
+        }
+
+        function convertStatusToId(status) {
+            if (status === "Open") return 1;
+            if (status === "In Progress") return 2;
+            if (status === "Resolved") return 3;
         }
 
         // Handle priority update
