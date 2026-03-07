@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>AlliTrack · intelligent support ticketing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="src/scripts/landing-accessibility.js"></script>
+    <link rel="stylesheet" href="src/styles/shared/landing-style.css">
+</head>
+
+<body>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="brand">
+                <a href="index.html" aria-label="AlliTrack Home">
+                    <img src="src/assets/images/AlliTrack Logo.png" alt="AlliTrack" width="140" height="40">
+                </a>
+            </div>
+            <nav class="primary-nav" role="navigation" data-visible="false" aria-label="Primary navigation">
+                <ul class="nav-list">
+                    <li><a href="#home-section" class="nav-link active">Home</a></li>
+                    <li><a href="#about-section" class="nav-link">About</a></li>
+                    <li><a href="#services-section" class="nav-link">Services</a></li>
+                    <li><a href="#contact-section" class="nav-link">Contact</a></li>
+                    <li><a href="src/pages/landing page/unified-auth-modal.html" class="btn-login"><i
+                                class="fas fa-user" style="margin-right: 6px;"></i>Login</a>
+                    </li>
+                </ul>
+            </nav>
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation" aria-expanded="false">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- HOME section -->
+            <section id="home-section" class="hero">
+                <div class="hero-content">
+                    <h1>Support that <span>flows</span><br>without friction.</h1>
+                    <p>AlliTrack centralizes requests, automates workflows, and gives your team back hours every day.
+                    </p>
+                    <div class="hero-cta">
+                        <a href="#service-module" class="btn-primary"><i class="fas fa-ticket-alt"></i> Open ticket</a>
+                        <a href="#contact-section" class="btn-outline">Contact sales <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="hero-graphic">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+            </section>
+
+            <!-- TRUST BAR -->
+            <div class="trust-section">
+                <div class="trust-bar">
+                    <div class="trust-item">
+                        <i class="fas fa-headset"></i>
+                        <div class="trust-text"><strong>2.5k+</strong><span>daily tickets</span></div>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-clock"></i>
+                        <div class="trust-text"><strong>&lt; 4 min</strong><span>first reply</span></div>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-building"></i>
+                        <div class="trust-text"><strong>380+</strong><span>enterprises</span></div>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-cloud"></i>
+                        <div class="trust-text"><strong>99.99%</strong><span>uptime</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SERVICE MODULE -->
+            <section id="service-module" class="service-module">
+                <div class="module-header">
+                    <h2>Service modules</h2>
+                    <p class="subhead">One platform, infinite adaptivity — for every layer of your infrastructure.</p>
+                </div>
+                <div style="text-align: center;">
+                    <div class="note-box">
+                        <i class="fas fa-lightbulb"></i> Click any card to access detailed troubleshooting guides.
+                    </div>
+                </div>
+                <div class="service-grid">
+                    <div class="service-card">
+                        <div class="service-icon"><i class="fas fa-video"></i></div>
+                        <h3>IP Surveillance</h3>
+                        <p class="service-description">Camera health, recording verification, motion alerts — all in one
+                            view.</p>
+                        <a href="src/pages/landing page/quickfix-one.html" class="card-link">Start diagnosis <i
+                                class="fas fa-arrow-right"></i></a>
+                        <a href="src/pages/landing page/quickfix-one.html" class="quick-question-link"><i
+                                class="fas fa-chart-simple"></i> Quick fix</a>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon"><i class="fas fa-phone"></i></div>
+                        <h3>IP PBX (Yeastar)</h3>
+                        <p class="service-description">Call routing, extension provisioning, voicemail-to-email, SBC
+                            status.</p>
+                        <a href="src/pages/landing page/quickfix-two.html" class="card-link">Start diagnosis <i
+                                class="fas fa-arrow-right"></i></a>
+                        <a href="src/pages/landing page/quickfix-two.html" class="quick-question-link"><i
+                                class="fas fa-chart-simple"></i> Quick fix</a>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon"><i class="fas fa-bell"></i></div>
+                        <h3>GSM Alarm</h3>
+                        <p class="service-description">Sensor communication, backup battery, cellular failover, instant
+                            alerts.</p>
+                        <a href="src/pages/landing page/quickfix-three.html" class="card-link">Start diagnosis <i
+                                class="fas fa-arrow-right"></i></a>
+                        <a href="src/pages/landing page/quickfix-three.html" class="quick-question-link"><i
+                                class="fas fa-chart-simple"></i> Quick fix</a>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon"><i class="fas fa-fingerprint"></i></div>
+                        <h3>Door Access</h3>
+                        <p class="service-description">Enrollment, credential sync, lock schedules, audit trails.</p>
+                        <a href="src/pages/landing page/quickfix-four.html" class="card-link">Start diagnosis <i
+                                class="fas fa-arrow-right"></i></a>
+                        <a href="src/pages/landing page/quickfix-four.html" class="quick-question-link"><i
+                                class="fas fa-chart-simple"></i> Quick fix</a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="about-section" class="about-preview">
+                <div class="about-content">
+                    <h2>About <span>AlliTrack</span></h2>
+                    <p>We are Business Alliance Inc., an IT company providing comprehensive business solutions in
+                        telecommunications, VoIP, system integration, and security solutions. With over a decade of
+                        excellence, we help businesses streamline operations and enhance customer satisfaction.</p>
+                    <div class="about-stats">
+                        <div class="about-stat-item"><span class="about-stat-number">10+</span><span
+                                class="about-stat-label">Years</span></div>
+                        <div class="about-stat-item"><span class="about-stat-number">500+</span><span
+                                class="about-stat-label">Clients</span></div>
+                        <div class="about-stat-item"><span class="about-stat-number">100+</span><span
+                                class="about-stat-label">Projects</span></div>
+                    </div>
+                    <a href="src/pages/landing page/about-us.html" class="btn-about">Learn more about us <i
+                            class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="about-image">
+                    <i class="fas fa-building"></i>
+                </div>
+            </section>
+
+            <section id="services-section" class="services-preview">
+                <div class="services-preview-header">
+                    <h2>Our Services</h2>
+                    <p>Comprehensive technology and security solutions tailored to modern business needs</p>
+                </div>
+                <div class="preview-grid">
+                    <div class="preview-card">
+                        <div class="preview-icon"><i class="fas fa-video"></i></div>
+                        <h3>IP Surveillance</h3>
+                        <p>24/7 security monitoring with high-resolution video, remote viewing, and long-term storage.
+                        </p><a href="#services-section" class="preview-link">Learn more <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="preview-card">
+                        <div class="preview-icon"><i class="fas fa-phone"></i></div>
+                        <h3>IP PBX (Yeastar)</h3>
+                        <p>Install and configure IP PBX systems that integrate internal communication with modern VoIP.
+                        </p><a href="#services-section" class="preview-link">Learn more <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="preview-card">
+                        <div class="preview-icon"><i class="fas fa-bell"></i></div>
+                        <h3>GSM Alarm</h3>
+                        <p>Comprehensive GSM alarm systems for real-time alerts and monitoring of your premises.</p><a
+                            href="#services-section" class="preview-link">Learn more <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="preview-card">
+                        <div class="preview-icon"><i class="fas fa-fingerprint"></i></div>
+                        <h3>Biometrics / Door Access</h3>
+                        <p>Secure, reliable entry control with advanced authentication methods for your business.</p><a
+                            href="#services-section" class="preview-link">Learn more <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="preview-card">
+                        <div class="preview-icon"><i class="fas fa-headset"></i></div>
+                        <h3>Free Consultation</h3>
+                        <p>Get expert advice on the best solutions for your business with a free consultation.</p><a
+                            href="#contact-section" class="preview-link">Learn more <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <div class="preview-card">
+                        <div class="preview-icon"><i class="fas fa-cogs"></i></div>
+                        <h3>System Integration</h3>
+                        <p>Seamless integration of various systems for a unified, efficient business infrastructure.</p>
+                        <a href="#services-section" class="preview-link">Learn more <i
+                                class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact-section" class="contact-preview">
+                <div class="contact-preview-content">
+                    <h2>Get in <span>Touch</span></h2>
+                    <p>We're here to help you streamline your support ticket management. Reach out to us with any
+                        questions or concerns about our services and solutions.</p>
+                    <div class="contact-methods-preview">
+                        <div class="contact-method-preview">
+                            <div class="contact-method-icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div class="contact-method-text"><span class="contact-method-label">Visit our
+                                    office</span><span class="contact-method-value">Unit 204 K-Juan Building, Kamuning,
+                                    Quezon City</span></div>
+                        </div>
+                        <div class="contact-method-preview">
+                            <div class="contact-method-icon"><i class="fas fa-phone"></i></div>
+                            <div class="contact-method-text"><span class="contact-method-label">Call us</span><span
+                                    class="contact-method-value">+63 (917) 152-4105</span></div>
+                        </div>
+                        <div class="contact-method-preview">
+                            <div class="contact-method-icon"><i class="fas fa-envelope"></i></div>
+                            <div class="contact-method-text"><span class="contact-method-label">Email us</span><span
+                                    class="contact-method-value">sales.businessalliance@gmail.com</span></div>
+                        </div>
+                    </div>
+                    <a href="src/pages/landing page/contact-us.html" class="btn-contact">Contact us today <i
+                            class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="contact-preview-image">
+                    <i class="fas fa-headset"></i>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <strong>AlliTrack</strong>
+                <div class="footer-note">© 2025 AlliTrack · Business Alliance Inc. · All Rights Reserved</div>
+                <div class="footer-links"><a href="src/pages/landing page/privacy.html">Privacy</a><a
+                        href="src/pages/landing page/cookies.html">Cookies</a><a
+                        href="src/pages/landing page/terms.html">Terms</a></div>
+            </div>
+            <div class="footer-actions">
+                <span class="follow">Connect</span>
+                <div class="socials">
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61558917757365" aria-label="Facebook"><i
+                            class="fab fa-facebook-f"></i></a>
+                    <a href="mailto:sales.businessalliance@gmail.com" aria-label="Email"><i
+                            class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="accessibility-menu">
+        <button class="accessibility-toggle" id="accessibilityToggle" aria-label="Open accessibility menu"
+            aria-expanded="false">
+            <i class="fas fa-universal-access" aria-hidden="true"></i>
+        </button>
+        <div class="accessibility-panel" id="accessibilityPanel">
+            <div class="accessibility-header">
+                <h3>Accessibility Settings</h3>
+                <button class="close-panel" id="closeAccessibility" aria-label="Close accessibility menu"><i
+                        class="fas fa-times" aria-hidden="true"></i></button>
+            </div>
+            <div class="accessibility-controls">
+                <div class="control-group">
+                    <h4>Theme</h4>
+                    <div class="theme-toggle"><button class="theme-btn active" data-theme="light"
+                            aria-label="Switch to light mode"><i class="fas fa-sun"
+                                aria-hidden="true"></i><span>Light</span></button><button class="theme-btn"
+                            data-theme="dark" aria-label="Switch to dark mode"><i class="fas fa-moon"
+                                aria-hidden="true"></i><span>Dark</span></button></div>
+                </div>
+                <div class="control-group">
+                    <h4>Text Size</h4>
+                    <div class="text-size-controls"><button class="size-btn" id="decreaseFont"
+                            aria-label="Decrease text size"><i class="fas fa-minus"></i></button><span
+                            class="size-label" id="currentFontSize">Medium</span><button class="size-btn"
+                            id="increaseFont" aria-label="Increase text size"><i class="fas fa-plus"></i></button></div>
+                </div>
+                <div class="control-group">
+                    <h4>Contrast Mode</h4><button class="contrast-btn" id="toggleContrast" aria-pressed="false"><span
+                            class="btn-label">High Contrast</span><span class="toggle-switch"></span></button>
+                </div>
+                <div class="control-group">
+                    <h4>Focus Enhancement</h4><button class="focus-btn" id="toggleFocus" aria-pressed="false"><span
+                            class="btn-label">Highlight Focus</span><span class="toggle-switch"></span></button>
+                </div>
+                <div class="control-group">
+                    <h4>Reset All</h4><button class="reset-btn" id="resetAccessibility"
+                        aria-label="Reset all accessibility settings"><i class="fas fa-redo"></i> Reset to
+                        Default</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

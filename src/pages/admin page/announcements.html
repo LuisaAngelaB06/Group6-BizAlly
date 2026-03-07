@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title data-translate="announcements_page_title">Announcements - AlliTrack Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
+    <link rel="stylesheet" href="../../styles/admin page/announcements.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <script src="../../scripts/mobile-restriction.js"></script>
+    <script src="../../scripts/admin-preference-manager.js"></script>
+    <script src="../../scripts/admin-data-manager.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Access Denied Modal -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+                Home</button>
+        </div>
+    </div>
+
+    <div class="app">
+        <div class="shell">
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="../../../src/assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                            style="width: 32px; height: 32px;">
+                    </div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle" data-translate="admin_dashboard">Admin Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../../pages/admin page/index-admin.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
+                    <a href="../../pages/admin page/all-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
+                    </a>
+                    <a href="../../pages/admin page/staff-management.html" data-section="users">
+                        <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
+                    </a>
+                    <a href="../../pages/admin page/announcements.html" class="active" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="system_management">System Management</div>
+                    <a href="../../pages/admin page/system-settings.html" data-section="system-settings">
+                        <i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span>
+                    </a>
+                    <a href="../../pages/admin page/system-analytics.html" data-section="analytics">
+                        <i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span>
+                    </a>
+                    <a href="../../pages/admin page/system-logs.html" data-section="logs">
+                        <i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
+                    <a href="../../pages/admin page/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
+                    </a>
+                    <a href="../../pages/admin page/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Announcements">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="announcementSearch" placeholder="Search announcements by title or content..."
+                            data-translate-placeholder="search_announcements" aria-label="Search announcements" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div id="userName" style="font-weight:700">Admin</div>
+                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">admin@allitrack.com</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div id="userAvatar" class="avatar">A</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="../../pages/admin page/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="../../pages/admin page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="../../../index.html" id="logoutBtn" data-translate="logout">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="content">
+                    <div class="page-header">
+                        <div class="header-content">
+                            <h1><i class="fas fa-bullhorn"></i> <span
+                                    data-translate="announcements_title">Announcements</span></h1>
+                            <p class="subtitle" data-translate="announcements_description">Create, manage, and publish
+                                system-wide announcements</p>
+                        </div>
+                    </div>
+
+                    <div class="announcements-container">
+                        <div class="form-card">
+                            <div class="form-header">
+                                <i class="fas fa-pen-to-square"></i>
+                                <h2 id="formTitle" data-translate="create_announcement">Create new announcement</h2>
+                            </div>
+
+                            <form id="announcementForm">
+                                <input type="hidden" id="announcementId" value="">
+
+                                <div class="form-group">
+                                    <label><i class="far fa-heading"></i> <span
+                                            data-translate="title">Title</span></label>
+                                    <input type="text" id="title"
+                                        placeholder="e.g. Server maintenance, feature update..."
+                                        data-translate-placeholder="announcement_title_placeholder" required>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label><i class="fas fa-flag"></i> <span
+                                                data-translate="priority">Priority</span></label>
+                                        <select id="priority" class="filter-select">
+                                            <option value="high" data-translate="high">🔴 High</option>
+                                            <option value="normal" selected data-translate="normal">🟡 Normal</option>
+                                            <option value="low" data-translate="low">🟢 Low</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label><i class="fas fa-calendar"></i> <span data-translate="expires_on">Expires
+                                                on</span></label>
+                                        <input type="date" id="expiryDate" class="filter-select">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label><i class="fas fa-align-left"></i> <span
+                                            data-translate="content">Content</span></label>
+                                    <textarea id="content" rows="4" placeholder="Write the full announcement message..."
+                                        data-translate-placeholder="announcement_content_placeholder"
+                                        required></textarea>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                                        <i class="fas fa-paper-plane"></i> <span id="submitBtnText"
+                                            data-translate="publish_announcement">Publish announcement</span>
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" id="cancelEditBtn"
+                                        onclick="resetForm()">
+                                        <i class="fas fa-times"></i> <span data-translate="cancel">Cancel</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="list-card">
+                            <div class="list-header">
+                                <h3>
+                                    <i class="fas fa-list-check"></i> <span data-translate="all_announcements">All
+                                        announcements</span>
+                                </h3>
+                                <span class="badge" id="announcementCounter">0</span>
+                            </div>
+
+                            <div class="filter-bar">
+                                <input type="text" id="searchInput" placeholder="🔍 Search by title or content..."
+                                    data-translate-placeholder="filter_announcements" onkeyup="filterAnnouncements()">
+                                <button class="btn btn-secondary" onclick="filterAnnouncements()"><i
+                                        class="fas fa-search"></i></button>
+                            </div>
+
+                            <div id="announcementListContainer" class="announcement-list">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal" id="deleteConfirmationModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i> <span
+                        data-translate="confirm_delete">Confirm Delete</span></h3>
+                <button class="modal-close" id="closeDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteMessage"></p>
+                <div id="selectedAnnouncementsList" class="selected-tickets-list"
+                    style="display: none; margin-top: 15px; max-height: 200px; overflow-y: auto;">
+                    <h4 style="margin-bottom: 10px; font-size: 0.9rem;" data-translate="selected_announcements">Selected
+                        Announcements:</h4>
+                    <ul id="announcementsToDeleteList"></ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelDeleteBtn" data-translate="cancel">Cancel</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn" data-translate="delete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const translations = {
+            'en': {
+                'announcements_page_title': 'Announcements - AlliTrack Admin',
+                'announcements_title': 'Announcements',
+                'announcements_description': 'Create, manage, and publish system-wide announcements',
+                'search_announcements': 'Search announcements by title or content...',
+                'filter_announcements': 'Search by title or content...',
+                'create_announcement': 'Create new announcement',
+                'edit_announcement': 'Edit announcement',
+                'publish_announcement': 'Publish announcement',
+                'update_announcement': 'Update announcement',
+                'title': 'Title',
+                'priority': 'Priority',
+                'expires_on': 'Expires on',
+                'content': 'Content',
+                'all_announcements': 'All announcements',
+                'high': 'High',
+                'normal': 'Normal',
+                'low': 'Low',
+                'cancel': 'Cancel',
+                'delete': 'Delete',
+                'confirm_delete': 'Confirm Delete',
+                'selected_announcements': 'Selected Announcements:',
+                'delete_announcement_confirm': 'Are you sure you want to delete this announcement?',
+                'delete_announcements_confirm': 'Are you sure you want to delete {count} selected announcements?',
+                'delete_success': 'Announcement deleted successfully',
+                'delete_error': 'Error deleting announcement',
+                'no_announcements_found': 'No announcements found',
+                'create_first_announcement': 'Create your first announcement.',
+                'try_different_search': 'Try a different search term.',
+                'announcement_saved': 'Announcement saved successfully',
+                'announcement_updated': 'Announcement updated successfully',
+                'announcement_deleted': 'Announcement deleted',
+                'no_expiry': 'No expiry',
+                'created': 'Created',
+                'expires': 'Expires',
+                'search': 'Search',
+                'announcement_title_placeholder': 'e.g. Server maintenance, feature update...',
+                'announcement_content_placeholder': 'Write the full announcement message...',
+                'clear_filters': 'Clear Filters',
+                'refresh': 'Refresh',
+
+                // Navigation (inherited)
+                'admin_dashboard': 'Admin Dashboard',
+                'dashboard': 'Dashboard',
+                'ticket_management': 'Ticket Management',
+                'all_tickets': 'All Tickets',
+                'users_management': 'Users Management',
+                'announcements': 'Announcements',
+                'system_management': 'System Management',
+                'system_settings': 'System Settings',
+                'analytics': 'Analytics',
+                'system_logs': 'System Logs',
+                'admin_tools': 'Admin Tools',
+                'preferences': 'Preferences',
+                'profile_settings': 'Profile Settings',
+                'profile': 'Profile',
+                'settings': 'Settings',
+                'logout': 'Logout',
+                'admin_dashboard_template': 'AlliTrack Admin Dashboard'
+            },
+            'fil': {
+                'announcements_page_title': 'Mga Anunsyo - AlliTrack Admin',
+                'announcements_title': 'Mga Anunsyo',
+                'announcements_description': 'Lumikha, mamahala, at mag-publish ng mga anunsyo sa buong sistema',
+                'search_announcements': 'Maghanap ng anunsyo sa pamamagitan ng pamagat o nilalaman...',
+                'filter_announcements': 'Maghanap sa pamagat o nilalaman...',
+                'create_announcement': 'Lumikha ng bagong anunsyo',
+                'edit_announcement': 'I-edit ang anunsyo',
+                'publish_announcement': 'I-publish ang anunsyo',
+                'update_announcement': 'I-update ang anunsyo',
+                'title': 'Pamagat',
+                'priority': 'Prayoridad',
+                'expires_on': 'Nag-e-expire sa',
+                'content': 'Nilalaman',
+                'all_announcements': 'Lahat ng anunsyo',
+                'high': 'Mataas',
+                'normal': 'Katamtaman',
+                'low': 'Mababa',
+                'cancel': 'Kanselahin',
+                'delete': 'I-delete',
+                'confirm_delete': 'Kumpirmahin ang Pag-delete',
+                'selected_announcements': 'Mga Napiling Anunsyo:',
+                'delete_announcement_confirm': 'Sigurado ka bang gusto mong i-delete ang anunsyong ito?',
+                'delete_announcements_confirm': 'Sigurado ka bang gusto mong i-delete ang {count} napiling mga anunsyo?',
+                'delete_success': 'Matagumpay na na-delete ang anunsyo',
+                'delete_error': 'Error sa pag-delete ng anunsyo',
+                'no_announcements_found': 'Walang nahanap na anunsyo',
+                'create_first_announcement': 'Lumikha ng iyong unang anunsyo.',
+                'try_different_search': 'Subukan ang ibang termino sa paghahanap.',
+                'announcement_saved': 'Matagumpay na na-save ang anunsyo',
+                'announcement_updated': 'Matagumpay na na-update ang anunsyo',
+                'announcement_deleted': 'Na-delete ang anunsyo',
+                'no_expiry': 'Walang expiration',
+                'created': 'Nilikha',
+                'expires': 'Nag-e-expire',
+                'search': 'Maghanap',
+                'announcement_title_placeholder': 'Hal: Server maintenance, feature update...',
+                'announcement_content_placeholder': 'Isulat ang buong mensahe ng anunsyo...',
+                'clear_filters': 'Tanggalin ang Filters',
+                'refresh': 'I-refresh',
+
+                // Navigation
+                'admin_dashboard': 'Admin Dashboard',
+                'dashboard': 'Dashboard',
+                'ticket_management': 'Pamamahala ng Ticket',
+                'all_tickets': 'Lahat ng Ticket',
+                'users_management': 'Pamamahala ng User',
+                'announcements': 'Mga Anunsyo',
+                'system_management': 'Pamamahala ng Sistema',
+                'system_settings': 'Mga Setting ng Sistema',
+                'analytics': 'Analitika',
+                'system_logs': 'Mga Log ng Sistema',
+                'admin_tools': 'Mga Tool ng Admin',
+                'preferences': 'Mga Kagustuhan',
+                'profile_settings': 'Mga Setting ng Profile',
+                'profile': 'Profile',
+                'settings': 'Mga Setting',
+                'logout': 'Logout',
+                'admin_dashboard_template': 'AlliTrack Admin Dashboard'
+            }
+        };
+
+        let sampleAnnouncements = [
+            {
+                id: 'ann-001',
+                title: '🛠️ Platform upgrade: Dec 10',
+                priority: 'high',
+                expiryDate: '2025-12-15',
+                content: 'Critical security update. All services may experience short downtime from 02:00 to 04:00 UTC.',
+                createdAt: '2025-11-28',
+                author: 'System Admin'
+            },
+            {
+                id: 'ann-002',
+                title: '📊 New analytics dashboard',
+                priority: 'normal',
+                expiryDate: '2026-01-20',
+                content: 'We\'ve launched enhanced metrics for enterprise plans. Check your workspace settings.',
+                createdAt: '2025-12-01',
+                author: 'Product Team'
+            },
+            {
+                id: 'ann-003',
+                title: '🎉 Holiday office closure',
+                priority: 'low',
+                expiryDate: '2025-12-31',
+                content: 'Our team will be offline on Dec 24–26. Support responses may be delayed.',
+                createdAt: '2025-11-30',
+                author: 'HR'
+            }
+        ];
+
+        let currentFilteredAnnouncements = [];
+        let selectedAnnouncements = new Set();
+        let currentPage = 1;
+        let itemsPerPage = 10;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🚀 Announcements: Starting initialization...');
+
+            // Toast element
+            if (!document.getElementById('toast')) {
+                const toast = document.createElement('div');
+                toast.id = 'toast';
+                toast.className = 'toast';
+                document.body.appendChild(toast);
+            }
+
+            // Initialize user data manager
+            if (window.userDataManager) {
+                window.userDataManager.initializeUserDisplay();
+            }
+
+            // Initialize preferences manager
+            if (window.preferencesManager) {
+                window.preferencesManager.initialize();
+                window.preferencesManager.applyTheme();
+
+                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
+                applyTranslations(currentLang);
+            } else {
+                applyTranslations('en');
+            }
+
+            // Setup logout functionality
+            setupLogout();
+
+            // Setup account dropdown (reuse from all-tickets)
+            setTimeout(() => {
+                setupAccountDropdown();
+            }, 50);
+
+            // Load announcements and display
+            loadAnnouncementsFromStorage();
+            renderAnnouncements();
+
+            // Setup event listeners
+            setupEventListeners();
+
+            console.log('✅ Announcements page loaded');
+        });
+
+        const STORAGE_KEY = 'allitrack_announcements';
+
+        function loadAnnouncementsFromStorage() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    sampleAnnouncements = JSON.parse(stored);
+                } catch (e) {
+                    // fallback to default
+                }
+            } else {
+                // seed defaults
+                saveAnnouncementsToStorage();
+            }
+        }
+
+        function saveAnnouncementsToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleAnnouncements));
+        }
+
+        // ---------- TRANSLATION & UI HELPERS ----------
+        function applyTranslations(language) {
+            const lang = translations[language] ? language : 'en';
+            const dict = translations[lang];
+
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (dict[key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+                        if (el.type !== 'text' && el.type !== 'email' && el.type !== 'password' && el.type !== 'tel') {
+                            el.textContent = dict[key];
+                        }
+                    } else if (el.tagName === 'OPTION') {
+                        el.textContent = dict[key];
+                    } else {
+                        el.textContent = dict[key];
+                    }
+                }
+            });
+
+            document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-translate-placeholder');
+                if (dict[key]) {
+                    el.placeholder = dict[key];
+                }
+            });
+
+            if (dict['announcements_page_title']) {
+                document.title = dict['announcements_page_title'];
+            }
+        }
+
+        // ---------- ACCOUNT DROPDOWN ----------
+        function setupAccountDropdown() {
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
+            if (!accountBtn || !accountMenu) return;
+
+            const newBtn = accountBtn.cloneNode(true);
+            accountBtn.parentNode.replaceChild(newBtn, accountBtn);
+            const freshBtn = document.getElementById("accountBtn");
+
+            freshBtn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                accountMenu.classList.toggle("show");
+                freshBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            document.addEventListener("click", function (e) {
+                if (accountMenu.classList.contains("show") &&
+                    !freshBtn.contains(e.target) &&
+                    !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            const menuItems = accountMenu.querySelectorAll("a");
+            menuItems.forEach(item => {
+                item.addEventListener("click", function () {
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                });
+            });
+
+            freshBtn.style.cursor = 'pointer';
+        }
+
+        // ---------- LOGOUT ----------
+        function setupLogout() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    localStorage.removeItem('userData');
+                    localStorage.removeItem('userProfile');
+                    localStorage.removeItem('adminPreferences');
+                    localStorage.removeItem('preferredTheme');
+                    localStorage.removeItem('preferredLanguage');
+                    window.location.href = '../../../index.html';
+                });
+            }
+        }
+
+        // ---------- RENDER ANNOUNCEMENT LIST (admin style, with badges, hover, etc) ----------
+        function renderAnnouncements(filterText = '') {
+            const container = document.getElementById('announcementListContainer');
+            const counterSpan = document.getElementById('announcementCounter');
+
+            // filter
+            let filtered = sampleAnnouncements;
+            if (filterText.trim() !== '') {
+                const lower = filterText.toLowerCase();
+                filtered = sampleAnnouncements.filter(a =>
+                    a.title.toLowerCase().includes(lower) ||
+                    a.content.toLowerCase().includes(lower)
+                );
+            }
+
+            // sort: high > normal > low, then newest first
+            const priorityWeight = { 'high': 3, 'normal': 2, 'low': 1 };
+            filtered.sort((a, b) => {
+                if (priorityWeight[a.priority] !== priorityWeight[b.priority]) {
+                    return priorityWeight[b.priority] - priorityWeight[a.priority];
+                }
+                return (b.createdAt || '').localeCompare(a.createdAt || '');
+            });
+
+            currentFilteredAnnouncements = filtered;
+            counterSpan.innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
+                const dict = translations[currentLang];
+                container.innerHTML = `<div class="empty-state" style="display: flex;">
+                    <i class="fas fa-bullhorn" style="font-size: 2.5rem; opacity: 0.5; margin-bottom: 1rem;"></i>
+                    <h4>${dict['no_announcements_found']}</h4>
+                    <p style="color: var(--text-secondary);">${filterText ? dict['try_different_search'] : dict['create_first_announcement']}</p>
+                </div>`;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(item => {
+                const expiry = item.expiryDate ? item.expiryDate.split('-').reverse().join('/') : 'No expiry';
+                const created = item.createdAt ? item.createdAt.split('-').reverse().join('/') : '—';
+
+                let priorityClass = 'badge-normal';
+                let priorityLabel = 'Normal';
+                if (item.priority === 'high') { priorityClass = 'badge-high'; priorityLabel = 'High'; }
+                else if (item.priority === 'low') { priorityClass = 'badge-low'; priorityLabel = 'Low'; }
+
+                const editingId = document.getElementById('announcementId')?.value || '';
+                const activeClass = (editingId === item.id) ? 'active-edit' : '';
+
+                const isSelected = selectedAnnouncements.has(item.id);
+                const checkedAttr = isSelected ? 'checked' : '';
+
+                html += `<div class="announcement-item ${activeClass}" data-announcement-id="${item.id}">
+                    <div class="item-badge">
+                        <span class="badge ${priorityClass}">${priorityLabel}</span>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                        <input type="checkbox" class="announcement-checkbox ticket-checkbox" data-id="${item.id}" ${checkedAttr} style="margin-top: 4px; width: 16px; height: 16px; accent-color: var(--accent);">
+                        <div style="flex:1;">
+                            <div class="item-title">${escapeHTML(item.title)}</div>
+                            <div class="item-meta">
+                                <span><i class="fas fa-clock"></i> ${dict_expires()}: ${expiry}</span>
+                                <span><i class="fas fa-edit"></i> ${dict_created()}: ${created}</span>
+                                ${item.author ? `<span><i class="fas fa-user"></i> ${item.author}</span>` : ''}
+                            </div>
+                            <div class="item-excerpt">${escapeHTML(item.content.substring(0, 100))}${item.content.length > 100 ? '…' : ''}</div>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-action btn-edit" onclick="editAnnouncement('${item.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button>
+                        <button class="btn-action btn-delete" onclick="deleteAnnouncement('${item.id}')" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+
+            // attach checkbox listeners
+            document.querySelectorAll('.announcement-checkbox').forEach(cb => {
+                cb.addEventListener('change', function (e) {
+                    const id = this.getAttribute('data-id');
+                    if (this.checked) selectedAnnouncements.add(id);
+                    else selectedAnnouncements.delete(id);
+                    updateDeleteButtonVisibility();
+                });
+            });
+        }
+
+        // helper for dictionary
+        function dict_expires() {
+            const lang = window.preferencesManager?.getCurrentLanguage() || 'en';
+            return translations[lang]['expires'] || 'Expires';
+        }
+        function dict_created() {
+            const lang = window.preferencesManager?.getCurrentLanguage() || 'en';
+            return translations[lang]['created'] || 'Created';
+        }
+
+        function escapeHTML(unsafe) {
+            if (!unsafe) return '';
+            return unsafe.replace(/[&<>"]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                if (m === '"') return '&quot;';
+                return m;
+            });
+        }
+
+        // ---------- FORM RESET (FIXED: Only update text content, not HTML) ----------
+        window.resetForm = function () {
+            document.getElementById('announcementForm').reset();
+            document.getElementById('announcementId').value = '';
+            document.getElementById('submitBtnText').innerText = document.querySelector('[data-translate="publish_announcement"]')?.innerText || 'Publish announcement';
+
+            // FIX: Update only the text content, don't touch innerHTML
+            const formTitle = document.getElementById('formTitle');
+            const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
+            const dict = translations[currentLang];
+            formTitle.textContent = dict['create_announcement'] || 'Create new announcement';
+
+            renderAnnouncements(document.getElementById('searchInput')?.value || '');
+        };
+
+        // ---------- EDIT ANNOUNCEMENT (FIXED: Only update text content, not HTML) ----------
+        window.editAnnouncement = function (id) {
+            const ann = sampleAnnouncements.find(a => a.id === id);
+            if (!ann) return;
+
+            document.getElementById('announcementId').value = ann.id;
+            document.getElementById('title').value = ann.title || '';
+            document.getElementById('priority').value = ann.priority || 'normal';
+            document.getElementById('expiryDate').value = ann.expiryDate || '';
+            document.getElementById('content').value = ann.content || '';
+
+            const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
+            const dict = translations[currentLang];
+            document.getElementById('submitBtnText').innerText = dict['update_announcement'] || 'Update announcement';
+
+            // FIX: Update only the text content, don't touch innerHTML
+            const formTitle = document.getElementById('formTitle');
+            formTitle.textContent = dict['edit_announcement'] || 'Edit announcement';
+
+            renderAnnouncements(document.getElementById('searchInput')?.value || '');
+        };
+
+        // ---------- DELETE ANNOUNCEMENT (single) ----------
+        window.deleteAnnouncement = function (id) {
+            const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
+            const dict = translations[currentLang];
+            if (confirm(dict['delete_announcement_confirm'] || 'Are you sure you want to delete this announcement?')) {
+                sampleAnnouncements = sampleAnnouncements.filter(a => a.id !== id);
+                selectedAnnouncements.delete(id);
+                saveAnnouncementsToStorage();
+                if (document.getElementById('announcementId').value === id) resetForm();
+                renderAnnouncements(document.getElementById('searchInput')?.value || '');
+                showToast(dict['delete_success'], 'success');
+            }
+        };
+
+        // ---------- BULK DELETE MODAL ----------
+        function showDeleteConfirmation(ids) {
+            const modal = document.getElementById('deleteConfirmationModal');
+            const deleteMessage = document.getElementById('deleteMessage');
+            const listContainer = document.getElementById('selectedAnnouncementsList');
+            const listEl = document.getElementById('announcementsToDeleteList');
+            const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
+            const dict = translations[currentLang];
+
+            listEl.innerHTML = '';
+            if (ids.length === 1) {
+                deleteMessage.textContent = dict['delete_announcement_confirm'];
+                listContainer.style.display = 'none';
+            } else {
+                deleteMessage.textContent = dict['delete_announcements_confirm'].replace('{count}', ids.length);
+                ids.forEach(id => {
+                    const ann = sampleAnnouncements.find(a => a.id === id);
+                    if (ann) {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<strong>${ann.title}</strong>`;
+                        listEl.appendChild(li);
+                    }
+                });
+                listContainer.style.display = 'block';
+            }
+            modal.classList.add('show');
+        }
+
+        function confirmDeleteAnnouncements() {
+            const ids = Array.from(selectedAnnouncements);
+            sampleAnnouncements = sampleAnnouncements.filter(a => !selectedAnnouncements.has(a.id));
+            selectedAnnouncements.clear();
+            saveAnnouncementsToStorage();
+            renderAnnouncements(document.getElementById('searchInput')?.value || '');
+            closeDeleteModal();
+            const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
+            showToast(translations[currentLang]['delete_success'], 'success');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteConfirmationModal').classList.remove('show');
+        }
+
+        // ---------- FILTER FUNCTION ----------
+        window.filterAnnouncements = function () {
+            const searchInput = document.getElementById('searchInput');
+            renderAnnouncements(searchInput.value);
+        };
+
+        // ---------- UPDATE DELETE BUTTON (bulk) ----------
+        function updateDeleteButtonVisibility() {
+            // we can add a floating delete button for announcements if needed, but for simplicity we add a bulk action bar.
+            let bulkBar = document.getElementById('bulkActionBar');
+            if (!bulkBar) {
+                const listCard = document.querySelector('.list-card');
+                if (listCard) {
+                    bulkBar = document.createElement('div');
+                    bulkBar.id = 'bulkActionBar';
+                    bulkBar.className = 'bulk-action-bar';
+                    bulkBar.style.cssText = 'display: none; justify-content: flex-end; margin-bottom: 12px;';
+                    listCard.insertBefore(bulkBar, document.getElementById('announcementListContainer'));
+                }
+            }
+            if (bulkBar) {
+                if (selectedAnnouncements.size > 0) {
+                    bulkBar.style.display = 'flex';
+                    const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
+                    const dict = translations[currentLang];
+                    bulkBar.innerHTML = `<span style="margin-right: 12px; font-weight: 600;">${selectedAnnouncements.size} selected</span>
+                                         <button class="btn btn-danger" onclick="showDeleteConfirmation(Array.from(selectedAnnouncements))"><i class="fas fa-trash-alt"></i> ${dict['delete']} (${selectedAnnouncements.size})</button>`;
+                } else {
+                    bulkBar.style.display = 'none';
+                }
+            }
+        }
+
+        // ---------- FORM SUBMIT (CREATE/UPDATE) ----------
+        document.getElementById('announcementForm')?.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const idField = document.getElementById('announcementId');
+            const title = document.getElementById('title').value.trim();
+            const priority = document.getElementById('priority').value;
+            const expiryDate = document.getElementById('expiryDate').value;
+            const content = document.getElementById('content').value.trim();
+            const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
+            const dict = translations[currentLang];
+
+            if (!title || !content) {
+                showToast('Title and content are required', 'error');
+                return;
+            }
+
+            const editingId = idField.value;
+
+            if (editingId) {
+                const index = sampleAnnouncements.findIndex(a => a.id === editingId);
+                if (index !== -1) {
+                    sampleAnnouncements[index] = {
+                        ...sampleAnnouncements[index],
+                        title, priority, expiryDate, content
+                    };
+                }
+                showToast(dict['announcement_updated'] || 'Announcement updated successfully', 'success');
+            } else {
+                const newId = 'ann-' + Date.now();
+                const today = new Date().toISOString().split('T')[0];
+                sampleAnnouncements.push({
+                    id: newId,
+                    title,
+                    priority,
+                    expiryDate: expiryDate || '',
+                    content,
+                    createdAt: today,
+                    author: document.getElementById('userName')?.innerText || 'Admin'
+                });
+                showToast(dict['announcement_saved'] || 'Announcement saved successfully', 'success');
+            }
+
+            saveAnnouncementsToStorage();
+            resetForm();
+            renderAnnouncements(document.getElementById('searchInput')?.value || '');
+        });
+
+        // ---------- TOAST ----------
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // ---------- EVENT LISTENERS ----------
+        function setupEventListeners() {
+            // search input with debounce
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function () {
+                    renderAnnouncements(this.value);
+                });
+            }
+
+            // cancel edit button
+            document.getElementById('cancelEditBtn')?.addEventListener('click', resetForm);
+
+            // delete modal buttons
+            document.getElementById('closeDeleteModal')?.addEventListener('click', closeDeleteModal);
+            document.getElementById('cancelDeleteBtn')?.addEventListener('click', closeDeleteModal);
+            document.getElementById('confirmDeleteBtn')?.addEventListener('click', confirmDeleteAnnouncements);
+
+            // close delete modal when clicking outside
+            const deleteModal = document.getElementById('deleteConfirmationModal');
+            if (deleteModal) {
+                deleteModal.addEventListener('click', function (e) {
+                    if (e.target === this) closeDeleteModal();
+                });
+            }
+
+            // refresh button (optional)
+            const refreshBtn = document.getElementById('refreshTickets'); // not present, but we can add one later
+        }
+
+        // Listen for language changes
+        document.addEventListener('languageChanged', function (e) {
+            applyTranslations(e.detail.language);
+            renderAnnouncements(document.getElementById('searchInput')?.value || '');
+        });
+    </script>
+</body>
+
+</html>

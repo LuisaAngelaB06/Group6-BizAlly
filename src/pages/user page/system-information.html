@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title data-translate="system_information_page_title">System Information - AlliTrack</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
+    <link rel="stylesheet" href="../../styles/user page/system-information.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <script src="../../scripts/mobile-restriction.js"></script>
+    <script src="../../scripts/user-preference-manager.js"></script>
+    <script src="../../scripts/user-data-manager.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Access Denied Modal -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">User dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+                Home</button>
+        </div>
+    </div>
+
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="../../assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                            style="width: 32px; height: 32px;">
+                    </div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle" data-translate="user_dashboard">User Dashboard</div>
+                        <!-- ADDED data-translate -->
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../../pages/user page/index-user.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
+                        <!-- ADDED span -->
+                    </a>
+
+                    <div class="nav-section" data-translate="support">Support</div> <!-- ADDED data-translate -->
+                    <a href="../../pages/user page/my-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> <span data-translate="my_tickets">My Tickets</span>
+                        <!-- ADDED span -->
+                    </a>
+                    <a href="../../pages/user page/notifications.html" data-section="notifications">
+                        <i class="fas fa-bell"></i> <span data-translate="notifications">Notifications</span>
+                        <!-- ADDED span -->
+                    </a>
+                    <a href="../../pages/user page/submit-ticket.html" data-section="submit-ticket">
+                        <i class="fas fa-plus-circle"></i> <span data-translate="submit_ticket">Submit a Ticket</span>
+                        <!-- ADDED span -->
+                    </a>
+
+                    <div class="nav-section" data-translate="management">Management</div> <!-- ADDED data-translate -->
+                    <a href="../../pages/user page/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
+                        <!-- ADDED span -->
+                    </a>
+                    <a href="../../pages/user page/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
+                        <!-- ADDED span -->
+                    </a>
+                    <a href="../../pages/user page/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+                        <!-- ADDED span -->
+                    </a>
+
+                    <div class="nav-section" data-translate="system">System</div> <!-- ADDED data-translate -->
+                    <a href="../../pages/user page/account-security.html" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> <span data-translate="account_security">Account
+                            Security</span> <!-- ADDED span -->
+                    </a>
+                    <a href="../../pages/user page/system-information.html" class="active" data-section="system-information">
+                        <i class="fas fa-info-circle"></i> <span data-translate="system_information">System
+                            Information</span> <!-- ADDED span -->
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..."
+                            data-translate-placeholder="search_tickets" aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div id="userName" style="font-weight:700">User</div>
+                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">user@example.com</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div id="userAvatar" class="avatar">U</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="../../pages/user page/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="../../pages/user page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="../../../index.html" id="logoutBtn" data-translate="logout">Logout</a> <!-- ADDED data-translate -->
+                        </div>
+                    </div>
+                </header>
+
+                <!-- System Information Content -->
+                <div class="content">
+                    <div class="system-content">
+                        <!-- Header with Container -->
+                        <div class="system-header-container">
+                            <div class="system-header">
+                                <h1><i class="fas fa-info-circle"></i> <span data-translate="system_info_title">System
+                                        Information</span></h1>
+                            </div>
+                        </div>
+
+                        <div class="system-container">
+                            <div class="system-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-cube"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title" data-translate="app_info_title">Application
+                                            Information</h2>
+                                        <p class="section-description" data-translate="app_info_desc">Details about your
+                                            AlliTrack application</p>
+                                    </div>
+                                </div>
+
+                                <div class="info-cards">
+                                    <div class="info-card">
+                                        <div class="info-card-icon">
+                                            <i class="fas fa-rocket"></i>
+                                        </div>
+                                        <div class="info-card-title" data-translate="app_version_title">Application
+                                            Version</div>
+                                        <div class="info-card-value">v1.2.0</div>
+                                        <div class="info-card-meta" data-translate="stable_release">Stable Release</div>
+                                        <div class="info-card-description" data-translate="app_version_desc">
+                                            Current version of your AlliTrack dashboard with latest features and
+                                            security updates.
+                                        </div>
+                                    </div>
+
+                                    <div class="info-card">
+                                        <div class="info-card-icon">
+                                            <i class="fas fa-calendar"></i>
+                                        </div>
+                                        <div class="info-card-title" data-translate="last_updated_title">Last Updated
+                                        </div>
+                                        <div class="info-card-value">March 15, 2025</div>
+                                        <div class="info-card-meta" data-translate="two_weeks_ago">2 weeks ago</div>
+                                        <div class="info-card-description" data-translate="last_updated_desc">
+                                            Most recent system update with performance improvements and bug fixes.
+                                        </div> 
+                                    </div>
+
+                                    <div class="info-card">
+                                        <div class="info-card-icon">
+                                            <i class="fas fa-database"></i>
+                                        </div>
+                                        <div class="info-card-title" data-translate="server_location_title">Server
+                                            Location</div>
+                                        <div class="info-card-value">Singapore</div>
+                                        <div class="info-card-meta" data-translate="data_center">Data Center</div>
+                                        <div class="info-card-description" data-translate="server_location_desc">
+                                            Primary data center location for optimal performance and low latency.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Technical Details -->
+                                <div class="technical-details">
+                                    <div class="technical-title" data-translate="tech_specs_title">Technical
+                                        Specifications</div> 
+                                    <div class="detail-grid">
+                                        <div class="detail-item">
+                                            <div class="detail-label" data-translate="api_version">API Version</div>
+                                            <div class="detail-value">v2.1.0</div> 
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label" data-translate="database">Database</div>
+                                            <div class="detail-value">PostgreSQL 15</div> 
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label" data-translate="framework">Framework</div>
+                                            <div class="detail-value">Node.js 18</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label" data-translate="build_date">Build Date</div>
+                                            <div class="detail-value">2025-03-01</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label" data-translate="environment">Environment</div>
+                                            <div class="detail-value">Production</div> 
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label" data-translate="support_level">Support Level</div>
+                                            <div class="detail-value">24/7 Enterprise</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Legal & Compliance -->
+                            <div class="system-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-gavel"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title" data-translate="legal_compliance_title">Legal &
+                                            Compliance</h2> 
+                                        <p class="section-description" data-translate="legal_compliance_desc">Important
+                                            legal documents and policies</p> 
+                                    </div>
+                                </div>
+
+                                <div class="legal-links">
+                                    <a href="../../pages/user page/help/user-terms.html" class="legal-link">
+                                        <div class="legal-link-icon">
+                                            <i class="fas fa-file-contract"></i>
+                                        </div>
+                                        <div class="legal-link-content">
+                                            <div class="legal-link-title" data-translate="terms_title">Terms &
+                                                Conditions</div>
+                                            <div class="legal-link-description" data-translate="terms_desc">
+                                                Read our terms of service, user agreements, and acceptable use policies.
+                                            </div>
+                                        </div>
+                                        <div class="legal-link-arrow">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </div>
+                                    </a>
+
+                                    <a href="../../pages/user page/help/user-privacy.html" class="legal-link">
+                                        <div class="legal-link-icon">
+                                            <i class="fas fa-shield-alt"></i>
+                                        </div>
+                                        <div class="legal-link-content">
+                                            <div class="legal-link-title" data-translate="privacy_title">Privacy Policy
+                                            </div>
+                                            <div class="legal-link-description" data-translate="privacy_desc">
+                                                Learn how we collect, use, and protect your personal information and
+                                                data.
+                                            </div>
+                                        </div>
+                                        <div class="legal-link-arrow">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </div>
+                                    </a>
+
+                                    <a href="../../pages/user page/help/user-agreement.html" class="legal-link">
+                                        <div class="legal-link-icon">
+                                            <i class="fas fa-handshake"></i>
+                                        </div>
+                                        <div class="legal-link-content">
+                                            <div class="legal-link-title" data-translate="sla_title">Service Level
+                                                Agreement</div>
+                                            <div class="legal-link-description" data-translate="sla_desc">
+                                                Review our commitment to service availability, support, and performance.
+                                            </div>
+                                        </div>
+                                        <div class="legal-link-arrow">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </div>
+                                    </a>
+                                    <a href="../../pages/user page/help/user-data.html" class="legal-link">
+                                        <div class="legal-link-icon">
+                                            <i class="fas fa-database"></i>
+                                        </div>
+                                        <div class="legal-link-content">
+                                            <div class="legal-link-title" data-translate="dpa_title">Data Processing
+                                                Agreement</div>
+                                            <div class="legal-link-description" data-translate="dpa_desc">
+                                                Understand how we process and protect your data in compliance with
+                                                regulations.
+                                            </div> 
+                                        </div>
+                                        <div class="legal-link-arrow">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div data-translate="dashboard_template">Dashboard Template</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Translation dictionary for submit ticket page
+        const translations = {
+            'en': {
+                // PAGE-SPECIFIC translations only:
+                'submit_ticket_page_title': 'Submit Ticket - AlliTrack',
+                'submit_ticket_title': 'Submit a New Ticket',
+                'search_tickets': 'Search tickets, users, IDs...',
+                'ticket_submitted': 'Ticket Submitted Successfully!',
+                'ticket_id_generated': 'Ticket ID: ',
+                'ticket_under_review': 'Your ticket has been submitted and is under review. We\'ll notify you of updates.',
+                'submit_another': 'Submit Another Ticket',
+                'view_ticket': 'View Ticket',
+                'subject': 'Subject',
+                'subject_required': 'Please enter a subject for your ticket',
+                'description': 'Description',
+                'description_hint': 'Include steps to reproduce, error messages, and what you\'ve tried',
+                'description_required': 'Please provide a description of your issue',
+                'cancel': 'Cancel',
+                'submit_ticket': 'Submit Ticket',
+
+                // Navigation (shared with dashboard)
+                'user_dashboard': 'User Dashboard',
+                'dashboard': 'Dashboard',
+                'support': 'Support',
+                'my_tickets': 'Ticket',
+                'notifications': 'Alert',
+                'submit_ticket': 'New',
+                'management': 'Manage',
+                'preferences': 'Settings',
+                'profile_settings': 'Profile',
+                'announcements': 'Anunsyo',
+                'system': 'System',
+                'account_security': 'Security',
+                'system_information': 'Info',
+                'profile': 'Profile',
+                'settings': 'Settings',
+                'logout': 'Logout',
+                'dashboard_template': 'Dashboard Template'
+            },
+            'fil': {
+                'submit_ticket_page_title': 'Magsumite ng Ticket - AlliTrack',
+                'submit_ticket_title': 'Magsumite ng Bagong Ticket',
+                'search_tickets': 'Maghanap...',
+                'ticket_submitted': 'Na-submit ang Ticket!',
+                'ticket_id_generated': 'Ticket ID: ',
+                'ticket_under_review': 'Na-submit ang ticket. I-update ka namin.',
+                'submit_another': 'Magsumite ng Isa Pa',
+                'view_ticket': 'Tingnan ang Ticket',
+                'subject': 'Pamagat',
+                'subject_required': 'Ilagay ang subject ng ticket',
+                'description': 'Deskripsyon',
+                'description_hint': 'Isama ang steps, error messages, at sinubukan mo na',
+                'description_required': 'Magbigay ng deskripsyon',
+                'cancel': 'Kanselahin',
+                'submit_ticket': 'I-submit ang Ticket',
+
+                // Navigation (shared with dashboard)
+                'user_dashboard': 'Dashboard',
+                'dashboard': 'Dashboard',
+                'support': 'Suporta',
+                'my_tickets': 'Ticket',
+                'notifications': 'Alert',
+                'submit_ticket': 'New',
+                'management': 'Pamahalaan',
+                'preferences': 'Mga Setting',
+                'profile_settings': 'Profile',
+                'announcements': 'Mga Anunsyo',
+                'system': 'Sistema',
+                'account_security': 'Seguridad',
+                'system_information': 'Impormasyon',
+                'profile': 'Profile',
+                'settings': 'Mga Setting',
+                'logout': 'Logout',
+                'dashboard_template': 'Dashboard'
+            }
+        };
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Submit Ticket: Starting initialization...');
+
+            // Initialize user data manager FIRST
+            if (window.userDataManager) {
+                console.log('User Data Manager found, initializing user display...');
+                window.userDataManager.initializeUserDisplay();
+
+                // Check what user data is available
+                const userData = window.userDataManager.getUserData();
+                console.log('User Data from manager:', userData);
+                console.log('Profile picture URL:', userData.photo);
+            } else {
+                console.error('User Data Manager NOT FOUND! Check if user-data-manager.js is loaded.');
+            }
+
+            // Initialize preferences manager
+            if (window.preferencesManager) {
+                console.log('Submit Ticket: Initializing Preferences Manager...');
+                window.preferencesManager.initialize();
+
+                // Apply theme immediately
+                window.preferencesManager.applyTheme();
+
+                // Get current language from preferences manager
+                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
+                applyTranslations(currentLang);
+            } else {
+                console.error('Submit Ticket: preferencesManager not found!');
+                applyTranslations('en'); // Default to English
+            }
+
+            // Setup theme listener
+            setupThemeListener();
+
+            // Initialize form functionality
+            initForm();
+
+            // Setup logout functionality
+            setupLogout();
+
+            // SETUP ACCOUNT DROPDOWN - CRITICAL ADDITION
+            setupAccountDropdown();
+
+            console.log('Submit Ticket page loaded');
+        });
+
+        // Setup theme listener
+        function setupThemeListener() {
+            console.log('Setting up theme listener for submit ticket...');
+
+            // Listen for theme changes via storage events
+            window.addEventListener('storage', (event) => {
+                if (event.key === 'preferredTheme') {
+                    console.log('Theme changed via storage:', event.newValue);
+                    if (window.preferencesManager) {
+                        setTimeout(() => {
+                            window.preferencesManager.applyTheme();
+                        }, 100);
+                    }
+                }
+            });
+
+            // Listen for theme changes via broadcast
+            document.addEventListener('themeChanged', function (e) {
+                console.log('Theme changed via event:', e.detail.theme);
+                if (window.preferencesManager) {
+                    window.preferencesManager.applyTheme();
+                }
+            });
+        }
+
+        // Apply translations to the page
+        function applyTranslations(language) {
+            const lang = translations[language] ? language : 'en';
+            const dict = translations[lang];
+
+            // Translate all elements with data-translate attribute
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (dict[key]) {
+                    element.textContent = dict[key];
+                }
+            });
+
+            // Translate all placeholder texts
+            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-translate-placeholder');
+                if (dict[key]) {
+                    element.placeholder = dict[key];
+                }
+            });
+
+            // Update page title
+            if (dict['submit_ticket_page_title']) {
+                document.title = dict['submit_ticket_page_title'];
+            }
+        }
+
+        // Listen for language changes from preference-manager.js
+        document.addEventListener('languageChanged', function (e) {
+            console.log('Language changed to:', e.detail.language);
+            applyTranslations(e.detail.language);
+        });
+
+        // Logout functionality
+        function setupLogout() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // Clear user data from localStorage
+                    localStorage.removeItem('userData');
+                    localStorage.removeItem('userProfile');
+
+                    // Redirect to login page
+                    window.location.href = '../../../index.html';
+                });
+            }
+        }
+
+        // Initialize form functionality
+        function initForm() {
+            const ticketForm = document.getElementById('ticketForm');
+            if (ticketForm) {
+                ticketForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+
+                    if (validateForm()) {
+                        submitTicket();
+                    }
+                });
+            }
+
+            // Setup account dropdown is now called from DOMContentLoaded
+        }
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+
+            // Reset errors
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.classList.remove('show');
+            });
+            document.querySelectorAll('.form-input, .form-textarea').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            // Validate required fields
+            const requiredFields = ['ticketSubject', 'ticketDescription'];
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field);
+                if (!input.value.trim()) {
+                    const errorElement = document.getElementById(field.replace('ticket', '').toLowerCase() + 'Error');
+                    if (errorElement) errorElement.classList.add('show');
+                    if (input) input.classList.add('error');
+                    isValid = false;
+                }
+            });
+
+            return isValid;
+        }
+
+        function submitTicket() {
+            try {
+                // Get form values
+                const subject = document.getElementById('ticketSubject').value;
+                const description = document.getElementById('ticketDescription').value;
+
+                // Generate ticket ID
+                const ticketId = 'TKT-' + Math.floor(1000 + Math.random() * 9000);
+
+                // Get user data
+                const userData = window.userDataManager ?
+                    window.userDataManager.getUserData() :
+                    JSON.parse(localStorage.getItem('userData') || '{}');
+
+                // Create ticket object
+                const ticket = {
+                    id: ticketId,
+                    subject: subject,
+                    description: description,
+                    status: 'open',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    createdBy: {
+                        name: userData.fullName || userData.name || 'User',
+                        email: userData.email || 'user@example.com'
+                    }
+                };
+
+                // Save to localStorage
+                let tickets = JSON.parse(localStorage.getItem('userTickets') || '[]');
+                tickets.push(ticket);
+                localStorage.setItem('userTickets', JSON.stringify(tickets));
+
+                // Update generated ticket ID in success message
+                document.getElementById('generatedTicketId').textContent = ticketId;
+
+                // Show success message
+                const successMessage = document.getElementById('successMessage');
+                const ticketForm = document.getElementById('ticketForm');
+
+                if (successMessage) successMessage.classList.add('show');
+                if (ticketForm) ticketForm.style.display = 'none';
+
+                console.log('Ticket submitted:', ticket);
+            } catch (error) {
+                console.error('Error submitting ticket:', error);
+                alert('Error submitting ticket. Please try again.');
+            }
+        }
+
+        function resetForm() {
+            // Hide success message
+            const successMessage = document.getElementById('successMessage');
+            const ticketForm = document.getElementById('ticketForm');
+
+            if (successMessage) successMessage.classList.remove('show');
+            if (ticketForm) ticketForm.style.display = 'block';
+
+            // Reset form fields
+            document.getElementById('ticketForm').reset();
+
+            // Reset errors
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.classList.remove('show');
+            });
+            document.querySelectorAll('.form-input, .form-textarea').forEach(input => {
+                input.classList.remove('error');
+            });
+        }
+
+        function viewTicket() {
+            const ticketId = document.getElementById('generatedTicketId').textContent;
+            alert(`Viewing ticket: ${ticketId}\n\nYou will be redirected to My Tickets page.`);
+            window.location.href = '../pages/my-tickets.html';
+        }
+
+        // Account Dropdown Functionality
+        function setupAccountDropdown() {
+            console.log('Setting up account dropdown...');
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
+
+            console.log('Dropdown elements:', { accountBtn, accountMenu });
+
+            if (accountBtn && accountMenu) {
+                // Clear any existing event listeners by cloning
+                const newBtn = accountBtn.cloneNode(true);
+                accountBtn.parentNode.replaceChild(newBtn, accountBtn);
+
+                const refreshedBtn = document.getElementById("accountBtn");
+                const refreshedMenu = document.getElementById("accountMenu");
+
+                // Add click event
+                refreshedBtn.addEventListener("click", function (e) {
+                    console.log('Account button clicked!');
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    const isShowing = refreshedMenu.classList.contains("show");
+                    console.log('Current show state:', isShowing);
+
+                    refreshedMenu.classList.toggle("show");
+                    refreshedBtn.setAttribute("aria-expanded", !isShowing);
+                    console.log('New show state:', !isShowing);
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener("click", function (e) {
+                    if (!refreshedBtn.contains(e.target) && !refreshedMenu.contains(e.target)) {
+                        refreshedMenu.classList.remove("show");
+                        refreshedBtn.setAttribute("aria-expanded", false);
+                    }
+                });
+
+                // Close dropdown when pressing Escape key
+                document.addEventListener("keydown", function (e) {
+                    if (e.key === "Escape" && refreshedMenu.classList.contains("show")) {
+                        refreshedMenu.classList.remove("show");
+                        refreshedBtn.setAttribute("aria-expanded", false);
+                    }
+                });
+
+                // Close dropdown when clicking menu items
+                const menuItems = refreshedMenu.querySelectorAll("a");
+                menuItems.forEach(item => {
+                    item.addEventListener("click", function () {
+                        refreshedMenu.classList.remove("show");
+                        refreshedBtn.setAttribute("aria-expanded", false);
+                    });
+                });
+
+                // Make sure button is clickable
+                refreshedBtn.style.cursor = 'pointer';
+
+                console.log('Account dropdown setup complete');
+            } else {
+                console.error('Account dropdown elements not found!');
+            }
+        }
+
+        // Listen for user data changes
+        document.addEventListener('userDataChanged', function (e) {
+            console.log('User data changed event received:', e.detail);
+        });
+    </script>
+</body>
+
+</html>

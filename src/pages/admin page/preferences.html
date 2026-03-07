@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title data-translate="preferences_page_title">Preferences - AlliTrack</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
+    <link rel="stylesheet" href="../../styles/admin page/preferences.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <script src="../../scripts/mobile-restriction.js"></script>
+    <script src="../../scripts/admin-preference-manager.js"></script>
+    <script src="../../scripts/admin-data-manager.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Access Denied Modal -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn" onclick="window.location.href='../../../index.html'"
+                data-translate="go_back">Back to Home</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="app" id="preferencesContent">
+        <div class="shell">
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="../../../src/assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                            style="width: 32px; height: 32px;">
+                    </div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle" data-translate="admin_dashboard">Admin Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../../pages/admin page/index-admin.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
+                    <a href="../../pages/admin page/all-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
+                    </a>
+                    <a href="../../pages/admin page/staff-management.html" data-section="users">
+                        <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
+                    </a>
+                    <a href="../../pages/admin page/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="system_management">System Management</div>
+                    <a href="../../pages/admin page/system-settings.html" data-section="system-settings">
+                        <i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span>
+                    </a>
+                    <a href="../../pages/admin page/system-analytics.html" data-section="analytics">
+                        <i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span>
+                    </a>
+                    <a href="../../pages/admin page/system-logs.html" data-section="logs">
+                        <i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
+                    <a href="../../pages/admin page/preferences.html" class="active" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
+                    </a>
+                    <a href="../../pages/admin page/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="globalSearch" placeholder="Search tickets, users, IDs..."
+                            data-translate-placeholder="search_tickets" aria-label="Search tickets, users, IDs" />
+                    </div>
+
+                    <div class="header-actions">
+                        <div class="user-info">
+                            <div style="font-weight:700" id="userNameDisplay">Admin</div>
+                            <div style="font-size:.82rem;color:var(--muted)" id="userEmailDisplay">admin@allitrack.com
+                            </div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div class="avatar" id="userAvatar">AD</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="../../pages/admin page/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="../../pages/admin page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- NEW: Preferences Header Container -->
+                <div class="preferences-header-container">
+                    <div class="preferences-header">
+                        <h1><i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span></h1>
+                    </div>
+                </div>
+
+                <!-- NEW: Preferences Tabs -->
+                <div class="preferences-tabs">
+                    <button class="tab-btn active" data-tab="appearance">
+                        <i class="fas fa-palette"></i>
+                        <span data-translate="appearance">Appearance</span>
+                    </button>
+                    <button class="tab-btn" data-tab="language">
+                        <i class="fas fa-language"></i>
+                        <span data-translate="language">Language</span>
+                    </button>
+                    <button class="tab-btn" data-tab="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span data-translate="notifications">Notifications</span>
+                    </button>
+                </div>
+
+                <!-- Preferences Content -->
+                <div class="content">
+                    <div class="preferences-content">
+
+                        <!-- Appearance Tab (Active by default) -->
+                        <div class="preferences-tab active" id="appearance-tab">
+                            <section class="preferences-section card-section">
+                                <div class="section-header">
+                                    <h2><i class="fas fa-palette"></i> <span data-translate="theme_settings">Theme
+                                            Settings</span></h2>
+                                    <p class="section-description" data-translate="choose_appearance">Choose how
+                                        AlliTrack looks and feels</p>
+                                </div>
+
+                                <div class="theme-options-grid">
+                                    <div class="theme-card" data-theme="auto">
+                                        <div class="theme-card-header">
+                                            <div class="theme-icon-circle">
+                                                <i class="fas fa-adjust"></i>
+                                            </div>
+                                            <div class="theme-radio">
+                                                <input type="radio" name="theme" id="theme-auto" value="auto">
+                                                <span class="radio-check"></span>
+                                            </div>
+                                        </div>
+                                        <div class="theme-card-content">
+                                            <h3 class="theme-title" data-translate="auto_theme">Auto (System)</h3>
+                                            <p class="theme-description" data-translate="auto_theme_desc">Automatically
+                                                switches between light and dark based on your system settings</p>
+                                        </div>
+                                        <div class="theme-card-preview auto-preview"></div>
+                                    </div>
+
+                                    <div class="theme-card" data-theme="light">
+                                        <div class="theme-card-header">
+                                            <div class="theme-icon-circle light">
+                                                <i class="fas fa-sun"></i>
+                                            </div>
+                                            <div class="theme-radio">
+                                                <input type="radio" name="theme" id="theme-light" value="light">
+                                                <span class="radio-check"></span>
+                                            </div>
+                                        </div>
+                                        <div class="theme-card-content">
+                                            <h3 class="theme-title" data-translate="light_theme">Light Mode</h3>
+                                            <p class="theme-description" data-translate="light_theme_desc">Clean and
+                                                bright interface for daytime use</p>
+                                        </div>
+                                        <div class="theme-card-preview light-preview"></div>
+                                    </div>
+
+                                    <div class="theme-card" data-theme="dark">
+                                        <div class="theme-card-header">
+                                            <div class="theme-icon-circle dark">
+                                                <i class="fas fa-moon"></i>
+                                            </div>
+                                            <div class="theme-radio">
+                                                <input type="radio" name="theme" id="theme-dark" value="dark">
+                                                <span class="radio-check"></span>
+                                            </div>
+                                        </div>
+                                        <div class="theme-card-content">
+                                            <h3 class="theme-title" data-translate="dark_theme">Dark Mode</h3>
+                                            <p class="theme-description" data-translate="dark_theme_desc">Easier on the
+                                                eyes in low-light environments</p>
+                                        </div>
+                                        <div class="theme-card-preview dark-preview"></div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+                        <!-- Language Tab -->
+                        <div class="preferences-tab" id="language-tab">
+                            <section class="preferences-section card-section">
+                                <div class="section-header">
+                                    <h2><i class="fas fa-language"></i> <span
+                                            data-translate="language_settings">Language Settings</span></h2>
+                                    <p class="section-description" data-translate="choose_language">Select your
+                                        preferred language for the entire dashboard</p>
+                                </div>
+
+                                <div class="language-cards">
+                                    <div class="language-card" data-language="en">
+                                        <div class="language-card-header">
+                                            <div class="language-flag large">🇺🇸</div>
+                                            <div class="language-radio">
+                                                <input type="radio" name="language" id="language-en" value="en">
+                                                <span class="radio-check"></span>
+                                            </div>
+                                        </div>
+                                        <div class="language-card-content">
+                                            <h3 class="language-title" data-translate="english">English</h3>
+                                            <p class="language-description" data-translate="english_desc">United States
+                                                English - Default language</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="language-card" data-language="fil">
+                                        <div class="language-card-header">
+                                            <div class="language-flag large">🇵🇭</div>
+                                            <div class="language-radio">
+                                                <input type="radio" name="language" id="language-fil" value="fil">
+                                                <span class="radio-check"></span>
+                                            </div>
+                                        </div>
+                                        <div class="language-card-content">
+                                            <h3 class="language-title" data-translate="filipino">Filipino</h3>
+                                            <p class="language-description" data-translate="filipino_desc">Tagalog
+                                                (Pilipinas) - Wikang Filipino</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="language-help">
+                                    <i class="fas fa-info-circle"></i>
+                                    <p data-translate="language_help">Language changes will apply immediately to the
+                                        entire dashboard interface.</p>
+                                </div>
+                            </section>
+                        </div>
+
+                        <!-- Notifications Tab -->
+                        <div class="preferences-tab" id="notifications-tab">
+                            <section class="preferences-section card-section">
+                                <div class="section-header">
+                                    <h2><i class="fas fa-bell"></i> <span
+                                            data-translate="notification_settings">Notification Settings</span></h2>
+                                    <p class="section-description" data-translate="notification_settings_desc">Manage
+                                        how and when you receive notifications from AlliTrack</p>
+                                </div>
+
+                                <div class="notification-settings">
+                                    <!-- Email Notifications -->
+                                    <div class="notification-category">
+                                        <h3 class="notification-category-title">
+                                            <i class="fas fa-envelope"></i>
+                                            <span data-translate="email_notifications">Email Notifications</span>
+                                        </h3>
+                                        <div class="notification-items">
+                                            <div class="notification-item">
+                                                <div class="notification-item-content">
+                                                    <h4 data-translate="new_ticket_emails">New Ticket Emails</h4>
+                                                    <p data-translate="new_ticket_emails_desc">Receive email when a new
+                                                        ticket is created</p>
+                                                </div>
+                                                <label class="switch">
+                                                    <input type="checkbox" id="emailNewTickets" checked>
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+
+                                            <div class="notification-item">
+                                                <div class="notification-item-content">
+                                                    <h4 data-translate="ticket_updates">Ticket Updates</h4>
+                                                    <p data-translate="ticket_updates_desc">Email notifications when
+                                                        tickets you're assigned to are updated</p>
+                                                </div>
+                                                <label class="switch">
+                                                    <input type="checkbox" id="emailTicketUpdates" checked>
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+
+                                            <div class="notification-item">
+                                                <div class="notification-item-content">
+                                                    <h4 data-translate="daily_digest">Daily Digest</h4>
+                                                    <p data-translate="daily_digest_desc">Daily summary of ticket
+                                                        activity and statistics</p>
+                                                </div>
+                                                <label class="switch">
+                                                    <input type="checkbox" id="emailDailyDigest">
+                                                    <span class="slider"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Notification Frequency -->
+                                    <div class="notification-category">
+                                        <h3 class="notification-category-title">
+                                            <i class="fas fa-clock"></i>
+                                            <span data-translate="notification_frequency">Notification Frequency</span>
+                                        </h3>
+                                        <div class="frequency-options">
+                                            <div class="frequency-option">
+                                                <label class="frequency-label">
+                                                    <input type="radio" name="frequency" value="realtime" checked>
+                                                    <div class="frequency-content">
+                                                        <h4 data-translate="realtime">Real-time</h4>
+                                                        <p data-translate="realtime_desc">Receive notifications
+                                                            immediately as they happen</p>
+                                                    </div>
+                                                </label>
+                                            </div>
+
+                                            <div class="frequency-option">
+                                                <label class="frequency-label">
+                                                    <input type="radio" name="frequency" value="hourly">
+                                                    <div class="frequency-content">
+                                                        <h4 data-translate="hourly_digest">Hourly Digest</h4>
+                                                        <p data-translate="hourly_digest_desc">Group notifications and
+                                                            receive them every hour</p>
+                                                    </div>
+                                                </label>
+                                            </div>
+
+                                            <div class="frequency-option">
+                                                <label class="frequency-label">
+                                                    <input type="radio" name="frequency" value="important">
+                                                    <div class="frequency-content">
+                                                        <h4 data-translate="important_only">Important Only</h4>
+                                                        <p data-translate="important_only_desc">Only receive
+                                                            notifications for high priority items</p>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="notification-help">
+                                    <i class="fas fa-info-circle"></i>
+                                    <p data-translate="notification_help">Notification settings are saved automatically.
+                                        Changes take effect immediately.</p>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Message -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Simplified translation dictionary that works with preference-manager.js
+        const translationMap = {
+            'en': {
+                // Page titles
+                'preferences_page_title': 'Preferences - AlliTrack',
+                'preferences': 'Preferences',
+                'customize_experience': 'Customize your experience with AlliTrack',
+                'search_tickets': 'Search tickets, users, IDs...',
+
+                // Tabs
+                'appearance': 'Appearance',
+                'language': 'Language',
+                'notifications': 'Notifications',
+
+                // Theme section
+                'theme_settings': 'Theme Settings',
+                'choose_appearance': 'Choose how AlliTrack looks and feels',
+                'auto_theme': 'Auto (System)',
+                'auto_theme_desc': 'Automatically switches between light and dark based on your system settings',
+                'light_theme': 'Light Mode',
+                'light_theme_desc': 'Clean and bright interface for daytime use',
+                'dark_theme': 'Dark Mode',
+                'dark_theme_desc': 'Easier on the eyes in low-light environments',
+
+                // Language section
+                'language_settings': 'Language Settings',
+                'choose_language': 'Select your preferred language for the entire dashboard',
+                'english': 'English',
+                'english_desc': 'United States English - Default language',
+                'filipino': 'Filipino',
+                'filipino_desc': 'Tagalog (Pilipinas) - Wikang Filipino',
+                'language_help': 'Language changes will apply immediately to the entire dashboard interface.',
+
+                // Notification section
+                'notification_settings': 'Notification Settings',
+                'notification_settings_desc': 'Manage how and when you receive notifications from AlliTrack',
+
+                'email_notifications': 'Email Notifications',
+                'new_ticket_emails': 'New Ticket Emails',
+                'new_ticket_emails_desc': 'Receive email when a new ticket is created',
+                'ticket_updates': 'Ticket Updates',
+                'ticket_updates_desc': 'Email notifications when tickets you\'re assigned to are updated',
+                'daily_digest': 'Daily Digest',
+                'daily_digest_desc': 'Daily summary of ticket activity and statistics',
+
+                'notification_frequency': 'Notification Frequency',
+                'realtime': 'Real-time',
+                'realtime_desc': 'Receive notifications immediately as they happen',
+                'hourly_digest': 'Hourly Digest',
+                'hourly_digest_desc': 'Group notifications and receive them every hour',
+                'important_only': 'Important Only',
+                'important_only_desc': 'Only receive notifications for high priority items',
+
+                'notification_help': 'Notification settings are saved automatically. Changes take effect immediately.',
+
+                // Buttons (removed)
+                'reset_defaults': 'Reset to Defaults',
+                'save_changes': 'Save Changes'
+            },
+            'fil': {
+                // Page titles
+                'preferences_page_title': 'Mga Kagustuhan - AlliTrack',
+                'preferences': 'Mga Kagustuhan',
+                'customize_experience': 'Ipasadya ang iyong karanasan sa AlliTrack',
+                'search_tickets': 'Maghanap ng tickets, users, IDs...',
+
+                // Tabs
+                'appearance': 'Itsura',
+                'language': 'Wika',
+                'notifications': 'Mga Notipikasyon',
+
+                // Theme section
+                'theme_settings': 'Mga Setting ng Tema',
+                'choose_appearance': 'Piliin kung paano magmumukha at mararamdaman ang AlliTrack',
+                'auto_theme': 'Awtomatiko (Sistema)',
+                'auto_theme_desc': 'Awtomatikong nagpapalit sa pagitan ng light at dark base sa iyong system settings',
+                'light_theme': 'Light Mode',
+                'light_theme_desc': 'Malinis at maliwanag na interface para sa araw-araw na gamit',
+                'dark_theme': 'Dark Mode',
+                'dark_theme_desc': 'Mas madali sa mata sa mga low-light na kapaligiran',
+
+                // Language section
+                'language_settings': 'Mga Setting ng Wika',
+                'choose_language': 'Piliin ang iyong gustong wika para sa buong dashboard',
+                'english': 'Ingles',
+                'english_desc': 'United States English - Default na wika',
+                'filipino': 'Filipino',
+                'filipino_desc': 'Tagalog (Pilipinas) - Wikang Filipino',
+                'language_help': 'Ang mga pagbabago sa wika ay agad na maa-apply sa buong dashboard interface.',
+
+                // Notification section
+                'notification_settings': 'Mga Setting ng Notipikasyon',
+                'notification_settings_desc': 'Pamahalaan kung paano at kailan ka makakatanggap ng notipikasyon mula sa AlliTrack',
+
+                'email_notifications': 'Mga Notipikasyon sa Email',
+                'new_ticket_emails': 'Mga Email para sa Bagong Ticket',
+                'new_ticket_emails_desc': 'Tumanggap ng email kapag may bagong ticket na ginawa',
+                'ticket_updates': 'Mga Update sa Ticket',
+                'ticket_updates_desc': 'Mga notipikasyon sa email kapag na-update ang mga ticket na itinalaga sa iyo',
+                'daily_digest': 'Araw-araw na Buod',
+                'daily_digest_desc': 'Araw-araw na buod ng aktibidad at estadistika ng ticket',
+
+                'notification_frequency': 'Dalas ng Notipikasyon',
+                'realtime': 'Real-time',
+                'realtime_desc': 'Tumanggap ng mga notipikasyon kaagad habang nangyayari ang mga ito',
+                'hourly_digest': 'Oras-oras na Buod',
+                'hourly_digest_desc': 'Ipangkat ang mga notipikasyon at tanggapin ang mga ito bawat oras',
+                'important_only': 'Mahahalaga Lang',
+                'important_only_desc': 'Tumanggap lamang ng mga notipikasyon para sa mga high priority na item',
+
+                'notification_help': 'Ang mga setting ng notipikasyon ay awtomatikong nai-save. Ang mga pagbabago ay magkakabisa kaagad.',
+
+                // Buttons (removed)
+                'reset_defaults': 'I-reset sa Default',
+                'save_changes': 'I-save ang mga Pagbabago'
+            }
+        };
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Preferences: Starting initialization...');
+
+            // Load user data
+            loadAndDisplayUserData();
+
+            // Initialize preference manager
+            if (window.preferencesManager) {
+                console.log('Preferences Manager found, initializing...');
+
+                // Apply theme and language first
+                window.preferencesManager.applyTheme();
+
+                // Get saved language
+                const savedLang = window.preferencesManager.getCurrentLanguage();
+                console.log('Saved language:', savedLang);
+
+                // Apply translations
+                applyTranslations(savedLang);
+
+                // Load current preferences
+                loadCurrentPreferences();
+            } else {
+                console.error('Preferences Manager not found!');
+                applyTranslations('en');
+            }
+
+            // Setup tabs
+            setupTabs();
+
+            // Setup theme selection
+            setupThemeSelection();
+
+            // Setup language selection
+            setupLanguageSelection();
+
+            // Setup notification controls
+            setupNotificationControls();
+
+            // Setup account dropdown
+            setupAccountDropdown();
+
+            // Setup logout functionality
+            setupLogout();
+
+            // Setup search functionality
+            setupSearch();
+
+            // Listen for user data changes (NEW - THIS IS THE FIX)
+            setupUserDataListeners();
+
+            // Listen for language changes
+            document.addEventListener('languageChanged', function (e) {
+                console.log('Language changed event received:', e.detail.language);
+                applyTranslations(e.detail.language);
+            });
+
+            // Listen for theme changes
+            document.addEventListener('themeChanged', function (e) {
+                console.log('Theme changed event received:', e.detail.theme);
+                loadCurrentPreferences();
+            });
+
+            console.log('Preferences page initialized');
+        });
+
+        // NEW FUNCTION: Setup user data change listeners
+        function setupUserDataListeners() {
+            console.log('Setting up user data listeners...');
+
+            // Listen for custom events from user-data-manager
+            document.addEventListener('userDataChanged', function (e) {
+                console.log('User data changed event received:', e.detail);
+                updateUserDisplay(e.detail);
+            });
+
+            // Listen for storage events (for cross-tab updates)
+            window.addEventListener('storage', function (e) {
+                if (e.key === 'userData' || e.key === 'userProfile') {
+                    console.log('Storage event detected for user data');
+                    loadAndDisplayUserData();
+                }
+            });
+        }
+
+        // UPDATED FUNCTION: Load and display user data
+        function loadAndDisplayUserData() {
+            console.log('Loading and displaying user data...');
+
+            // Try to use the userDataManager first
+            if (window.userDataManager) {
+                console.log('Using userDataManager to get user data');
+                const userData = window.userDataManager.getUserData();
+                updateUserDisplay(userData);
+            } else {
+                console.log('userDataManager not available, falling back to localStorage');
+                // Fallback to localStorage
+                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+
+                const combinedData = {
+                    ...userData,
+                    ...userProfile,
+                    fullName: `${userProfile.firstName || userData.firstName || ''} ${userProfile.lastName || userData.lastName || ''}`.trim() || userData.name || 'Admin',
+                    email: userProfile.email || userData.email || 'admin@allitrack.com'
+                };
+
+                updateUserDisplay(combinedData);
+            }
+        }
+
+        // NEW FUNCTION: Update user display in header
+        function updateUserDisplay(userData) {
+            console.log('Updating user display with:', userData);
+
+            // Update user name display
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            if (userNameDisplay) {
+                userNameDisplay.textContent = userData.fullName || userData.name || 'Admin';
+            }
+
+            // Update user email display
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+            if (userEmailDisplay) {
+                userEmailDisplay.textContent = userData.email || 'admin@allitrack.com';
+            }
+
+            // Update avatar
+            const userAvatar = document.getElementById('userAvatar');
+            if (userAvatar) {
+                if (userData.photo) {
+                    // If there's a photo, create img element
+                    userAvatar.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = userData.photo;
+                    img.alt = 'Profile Picture';
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.borderRadius = '50%';
+                    img.style.objectFit = 'cover';
+                    userAvatar.appendChild(img);
+                } else {
+                    // Use initials
+                    const firstName = userData.firstName || userData.name?.split(' ')[0] || 'A';
+                    const lastName = userData.lastName || userData.name?.split(' ')[1] || 'D';
+                    const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+                    userAvatar.textContent = initials;
+                }
+            }
+        }
+
+        // Setup tab switching
+        function setupTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.preferences-tab');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const tabId = this.dataset.tab;
+
+                    // Update active tab button
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Show selected tab content
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+        }
+
+        // Setup theme selection
+        function setupThemeSelection() {
+            const themeCards = document.querySelectorAll('.theme-card');
+
+            themeCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    const theme = this.dataset.theme;
+
+                    // Update radio button
+                    const radio = this.querySelector('input[type="radio"]');
+                    if (radio) {
+                        radio.checked = true;
+
+                        // Update card selection
+                        themeCards.forEach(c => c.classList.remove('selected'));
+                        this.classList.add('selected');
+
+                        // Apply theme immediately
+                        if (window.preferencesManager) {
+                            window.preferencesManager.setTheme(theme);
+                            showToast('Theme updated', 'success');
+                        }
+                    }
+                });
+            });
+        }
+
+        // Setup language selection
+        function setupLanguageSelection() {
+            const languageCards = document.querySelectorAll('.language-card');
+
+            languageCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    const language = this.dataset.language;
+
+                    // Update radio button
+                    const radio = this.querySelector('input[type="radio"]');
+                    if (radio) {
+                        radio.checked = true;
+
+                        // Update card selection
+                        languageCards.forEach(c => c.classList.remove('selected'));
+                        this.classList.add('selected');
+
+                        // Apply language immediately using preference manager
+                        if (window.preferencesManager) {
+                            console.log('Setting language via preference manager:', language);
+                            window.preferencesManager.setLanguage(language);
+
+                            // Force immediate translation
+                            applyTranslations(language);
+
+                            showToast('Language updated', 'success');
+
+                            // Dispatch event for other components
+                            document.dispatchEvent(new CustomEvent('languageChanged', {
+                                detail: { language: language }
+                            }));
+                        }
+                    }
+                });
+            });
+        }
+
+        // Setup notification controls
+        function setupNotificationControls() {
+            // Setup toggle switches
+            const switches = document.querySelectorAll('.switch input[type="checkbox"]');
+            switches.forEach(switchEl => {
+                switchEl.addEventListener('change', function () {
+                    const settingId = this.id;
+                    const value = this.checked;
+
+                    // Save to localStorage
+                    if (window.preferencesManager) {
+                        window.preferencesManager.saveNotificationSetting(settingId, value);
+                    }
+
+                    showToast('Notification setting updated', 'success');
+                });
+            });
+
+            // Setup frequency options
+            const frequencyRadios = document.querySelectorAll('input[name="frequency"]');
+            frequencyRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (this.checked) {
+                        const value = this.value;
+
+                        // Save to localStorage
+                        if (window.preferencesManager) {
+                            window.preferencesManager.saveNotificationSetting('notificationFrequency', value);
+                        }
+
+                        showToast('Notification frequency updated', 'success');
+                    }
+                });
+            });
+
+            // Load saved notification settings
+            loadNotificationSettings();
+        }
+
+        function loadNotificationSettings() {
+            if (!window.preferencesManager) return;
+
+            // Load toggle settings
+            const settings = [
+                'emailNewTickets', 'emailTicketUpdates', 'emailDailyDigest',
+                'appNewTickets', 'appMentions', 'appSounds'
+            ];
+
+            settings.forEach(settingId => {
+                const savedValue = window.preferencesManager.getNotificationSetting(settingId);
+                const input = document.getElementById(settingId);
+                if (input && savedValue !== null) {
+                    input.checked = savedValue === 'true' || savedValue === true;
+                }
+            });
+
+            // Load frequency setting
+            const frequency = window.preferencesManager.getNotificationSetting('notificationFrequency');
+            const frequencyRadio = document.querySelector(`input[name="frequency"][value="${frequency}"]`);
+            if (frequencyRadio) {
+                frequencyRadio.checked = true;
+            }
+        }
+
+        // Setup search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('globalSearch');
+            if (searchInput) {
+                // Translate placeholder
+                const lang = translationMap[window.preferencesManager?.getCurrentLanguage() || 'en'];
+                if (lang['search_tickets']) {
+                    searchInput.placeholder = lang['search_tickets'];
+                }
+
+                searchInput.addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        const query = this.value.trim();
+                        if (query) {
+                            // Navigate to all tickets page with search query
+                            window.location.href = `../pages/all-tickets.html?search=${encodeURIComponent(query)}`;
+                        }
+                    }
+                });
+            }
+        }
+
+        // Load and apply translations
+        function applyTranslations(language) {
+            console.log('Applying translations for:', language);
+
+            const lang = translationMap[language] || translationMap['en'];
+
+            // Translate all elements with data-translate attribute
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (lang[key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = lang[key];
+                    } else {
+                        element.textContent = lang[key];
+                    }
+                }
+            });
+
+            // Update page title
+            if (lang['preferences_page_title']) {
+                document.title = lang['preferences_page_title'];
+            }
+
+            // Update search placeholder if it exists
+            const searchInput = document.getElementById('globalSearch');
+            if (searchInput && lang['search_tickets']) {
+                searchInput.placeholder = lang['search_tickets'];
+            }
+
+            console.log('Translations applied successfully');
+        }
+
+        // Load current preferences
+        function loadCurrentPreferences() {
+            if (!window.preferencesManager) return;
+
+            const theme = window.preferencesManager.getCurrentTheme();
+            const language = window.preferencesManager.getCurrentLanguage();
+
+            console.log('Loading preferences:', { theme, language });
+
+            // Set theme
+            const themeRadio = document.querySelector(`input[name="theme"][value="${theme}"]`);
+            if (themeRadio) {
+                themeRadio.checked = true;
+                themeRadio.closest('.theme-card')?.classList.add('selected');
+            }
+
+            // Set language
+            const languageRadio = document.querySelector(`input[name="language"][value="${language}"]`);
+            if (languageRadio) {
+                languageRadio.checked = true;
+                languageRadio.closest('.language-card')?.classList.add('selected');
+            }
+        }
+
+        // Show toast message
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function setupAccountDropdown() {
+            const accountBtn = document.getElementById('accountBtn');
+            const accountMenu = document.getElementById('accountMenu');
+
+            if (accountBtn && accountMenu) {
+                accountBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const isVisible = accountMenu.classList.contains('show');
+
+                    // Close any other open dropdowns
+                    document.querySelectorAll('.account-menu.show').forEach(menu => {
+                        if (menu !== accountMenu) {
+                            menu.classList.remove('show');
+                            menu.previousElementSibling?.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+
+                    // Toggle current dropdown
+                    accountMenu.classList.toggle('show');
+                    this.setAttribute('aria-expanded', isVisible ? 'false' : 'true');
+                });
+
+                // Close menu when clicking elsewhere
+                document.addEventListener('click', function (e) {
+                    // Only close if click is outside both the button and menu
+                    if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                        accountMenu.classList.remove('show');
+                        accountBtn.setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                // Prevent menu from closing when clicking inside it
+                accountMenu.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                });
+
+                // Close dropdown when clicking on menu links
+                accountMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', function () {
+                        accountMenu.classList.remove('show');
+                        accountBtn.setAttribute('aria-expanded', 'false');
+                    });
+                });
+            }
+        }
+
+        function setupLogout() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    // Clear user session
+                    if (typeof window.userDataManager !== 'undefined') {
+                        window.userDataManager.clearUserData();
+                    }
+                    // Redirect to login page
+                    window.location.href = '../../../index.html';
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

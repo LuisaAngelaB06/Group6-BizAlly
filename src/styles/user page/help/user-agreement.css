@@ -1,0 +1,319 @@
+:root {
+    /* Light theme variables (default) */
+    --accent: #0d6efd;
+    --accent-2: #0056d2;
+    --bg: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+    --bg-dark: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    --muted: #6b7280;
+    --muted-dark: #94a3b8;
+    --card-bg: #ffffff;
+    --card-bg-dark: #1e293b;
+    --radius: 12px;
+    --shadow-sm: 0 6px 20px rgba(16, 24, 40, 0.06);
+    --shadow-dark: 0 6px 20px rgba(0, 0, 0, 0.2);
+    --table-header-bg: #f8f9fa;
+    --table-header-bg-dark: rgba(255, 255, 255, 0.05);
+    --table-border: #dee2e6;
+    --table-border-dark: rgba(255, 255, 255, 0.1);
+    --text-primary: #111827;
+    --text-secondary: #374151;
+    --text-muted: #64748b;
+    --text-primary-dark: #f8fafc;
+    --text-secondary-dark: #cbd5e1;
+    --text-muted-dark: #94a3b8;
+    --border-color: rgba(15, 23, 42, 0.1);
+    --border-color-dark: rgba(255, 255, 255, 0.1);
+    --highlight-bg: #fff3cd;
+    --highlight-border: #ffeaa7;
+    --highlight-bg-dark: rgba(255, 243, 205, 0.15);
+    --highlight-border-dark: rgba(255, 234, 167, 0.4);
+    --footer-border: rgba(0, 0, 0, 0.1);
+    --footer-border-dark: rgba(255, 255, 255, 0.1);
+    --button-bg: #0d6efd;
+    --button-hover: #0056d2;
+    --button-text: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light Mode */
+body.light-theme {
+    background: var(--bg);
+    color: var(--text-primary);
+}
+
+/* Dark Mode */
+body.dark-theme {
+    background: var(--bg-dark);
+    color: var(--text-primary-dark);
+    font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.legal-container {
+    max-width: 800px;
+    margin: 100px auto 50px;
+    padding: 0 20px;
+}
+
+.legal-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.legal-header h1 {
+    color: var(--accent);
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.legal-header p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+body.dark-theme .legal-header p {
+    color: var(--text-muted-dark);
+}
+
+.legal-content {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.dark-theme .legal-content {
+    background: var(--card-bg-dark);
+    box-shadow: var(--shadow-dark);
+}
+
+.section {
+    margin-bottom: 30px;
+}
+
+.section h2 {
+    color: var(--accent);
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 5px;
+}
+
+.section p {
+    color: var(--text-primary);
+    margin-bottom: 15px;
+    line-height: 1.7;
+}
+
+body.dark-theme .section p {
+    color: var(--text-primary-dark);
+}
+
+.section ul {
+    color: var(--text-primary);
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+body.dark-theme .section ul {
+    color: var(--text-primary-dark);
+}
+
+.section li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.section strong {
+    color: var(--text-primary);
+}
+
+body.dark-theme .section strong {
+    color: var(--text-primary-dark);
+}
+
+.highlight-box {
+    background: var(--highlight-bg);
+    border: 1px solid var(--highlight-border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    color: var(--text-primary);
+}
+
+body.dark-theme .highlight-box {
+    background: var(--highlight-bg-dark);
+    border-color: var(--highlight-border-dark);
+    color: var(--text-primary-dark);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    color: var(--text-primary);
+}
+
+body.dark-theme table {
+    color: var(--text-primary-dark);
+}
+
+thead tr {
+    background-color: var(--table-header-bg);
+}
+
+body.dark-theme thead tr {
+    background-color: var(--table-header-bg-dark);
+}
+
+th,
+td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid var(--table-border);
+}
+
+body.dark-theme th,
+body.dark-theme td {
+    border-color: var(--table-border-dark);
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: var(--button-text);
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.back-button:hover {
+    background: var(--accent-2);
+    transform: translateY(-2px);
+}
+
+.legal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--footer-border);
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+body.dark-theme .legal-footer {
+    border-top: 1px solid var(--footer-border-dark);
+}
+
+/* Responsive */
+@media (max-width: 780px) {
+    .legal-container {
+        margin: 80px auto 30px;
+    }
+
+    .legal-content {
+        padding: 20px;
+    }
+
+    .legal-header h1 {
+        font-size: 2rem;
+    }
+
+    .legal-footer {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+    }
+
+    table {
+        font-size: 0.9rem;
+    }
+
+    th,
+    td {
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .legal-header h1 {
+        font-size: 1.8rem;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .section h2 {
+        font-size: 1.3rem;
+    }
+
+    table {
+        font-size: 0.85rem;
+    }
+
+    th,
+    td {
+        padding: 6px;
+    }
+}
+
+/* Theme transition for smooth switching */
+body.light-theme,
+body.dark-theme,
+.legal-content,
+.section p,
+.section h2,
+.highlight-box,
+table,
+th,
+td,
+.back-button {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+
+    body,
+    body.light-theme,
+    body.dark-theme,
+    .legal-content,
+    .section p,
+    .section h2,
+    .highlight-box,
+    table,
+    th,
+    td,
+    .back-button {
+        transition: none;
+    }
+
+    .back-button:hover {
+        transform: none;
+    }
+}

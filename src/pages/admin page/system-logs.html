@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title data-translate="system_logs_page_title">System Logs - AlliTrack Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
+    <link rel="stylesheet" href="../../styles/admin page/system-logs.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <script src="../../scripts/mobile-restriction.js"></script>
+    <script src="../../scripts/admin-preference-manager.js"></script>
+    <script src="../../scripts/admin-data-manager.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Access Denied Modal -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+                Home</button>
+        </div>
+    </div>
+
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="../../../src/assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                            style="width: 32px; height: 32px;">
+                    </div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle" data-translate="admin_dashboard">Admin Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="../../pages/admin page/index-admin.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
+                    <a href="../../pages/admin page/all-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
+                    </a>
+                    <a href="../../pages/admin page/staff-management.html" data-section="users">
+                        <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
+                    </a>
+                    <a href="../../pages/admin page/announcements.html" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="system_management">System Management</div>
+                    <a href="../../pages/admin page/system-settings.html" data-section="system-settings">
+                        <i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span>
+                    </a>
+                    <a href="../../pages/admin page/system-analytics.html" data-section="analytics">
+                        <i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span>
+                    </a>
+                    <a href="../../pages/admin page/system-logs.html" class="active" data-section="logs">
+                        <i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
+                    <a href="../../pages/admin page/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
+                    </a>
+                    <a href="../../pages/admin page/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search logs, users, actions..."
+                            data-translate-placeholder="search_logs" aria-label="Search logs, users, actions" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div id="userName" style="font-weight:700">Admin</div>
+                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">admin@allitrack.com</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div id="userAvatar" class="avatar">A</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="../../pages/admin page/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="../../pages/admin page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- System Logs Content -->
+                <div class="content">
+                    <!-- Page Header -->
+                    <div class="page-header">
+                        <div class="header-content">
+                            <h1><i class="fas fa-clipboard-list"></i> <span data-translate="system_logs_title">System
+                                    Logs</span></h1>
+                            <p class="subtitle" data-translate="system_logs_description">Monitor and review system
+                                activities, user actions, and security events</p>
+                        </div>
+                    </div>
+
+                    <!-- Logs Container -->
+                    <div class="logs-container">
+                        <!-- Filters and Actions -->
+                        <div class="logs-toolbar">
+                            <div class="filters">
+                                <div class="filter-group">
+                                    <label for="logLevel" class="filter-label" data-translate="log_level">Log
+                                        Level</label>
+                                    <select id="logLevel" class="filter-select">
+                                        <option value="all" data-translate="all_levels">All Levels</option>
+                                        <option value="info" data-translate="info">Info</option>
+                                        <option value="warning" data-translate="warning">Warning</option>
+                                        <option value="error" data-translate="error">Error</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="timeRange" class="filter-label" data-translate="time_range">Time
+                                        Range</label>
+                                    <select id="timeRange" class="filter-select">
+                                        <option value="today" data-translate="today">Today</option>
+                                        <option value="yesterday" data-translate="yesterday">Yesterday</option>
+                                        <option value="week" data-translate="last_week">Last 7 Days</option>
+                                        <option value="month" data-translate="last_month">Last 30 Days</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-secondary" id="clearFilters">
+                                    <i class="fas fa-times"></i> <span data-translate="clear_filters">Clear
+                                        Filters</span>
+                                </button>
+                            </div>
+                            <div class="actions">
+                                <button class="btn btn-secondary" id="refreshLogs">
+                                    <i class="fas fa-sync-alt"></i> <span data-translate="refresh">Refresh</span>
+                                </button>
+                                <button class="btn btn-primary" id="exportLogs">
+                                    <i class="fas fa-download"></i> <span data-translate="export_logs">Export to
+                                        Excel</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Logs Table -->
+                        <div class="logs-table-container">
+                            <div class="table-responsive">
+                                <table class="logs-table" id="logsTable">
+                                    <thead>
+                                        <tr>
+                                            <th data-translate="timestamp">Timestamp</th>
+                                            <th data-translate="level">Level</th>
+                                            <th data-translate="user">User</th>
+                                            <th data-translate="action">Action</th>
+                                            <th data-translate="details">Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Log entries will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div class="empty-state" id="emptyState">
+                            <div class="empty-icon">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <h3 data-translate="no_logs_found">No Logs Found</h3>
+                            <p data-translate="no_logs_description">No system logs match your current filters. Try
+                                adjusting your search criteria.</p>
+                        </div>
+
+                        <!-- Log Details Modal -->
+                        <div class="modal" id="logDetailsModal">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3><i class="fas fa-search"></i> <span data-translate="log_details">Log
+                                            Details</span></h3>
+                                    <button class="modal-close" id="closeModal">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="log-details-content" id="logDetailsContent">
+                                        <!-- Details will be populated here -->
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" id="closeDetailsBtn"
+                                        data-translate="close">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Translation dictionary for system logs page
+        const translations = {
+            'en': {
+                'system_logs_page_title': 'System Logs - AlliTrack Admin',
+                'system_logs_title': 'System Logs',
+                'system_logs_description': 'Monitor and review system activities, user actions, and security events',
+                'search_logs': 'Search logs, users, actions...',
+                'log_level': 'Log Level',
+                'all_levels': 'All Levels',
+                'info': 'Info',
+                'warning': 'Warning',
+                'error': 'Error',
+                'time_range': 'Time Range',
+                'today': 'Today',
+                'yesterday': 'Yesterday',
+                'last_week': 'Last 7 Days',
+                'last_month': 'Last 30 Days',
+                'clear_filters': 'Clear Filters',
+                'export_logs': 'Export',
+                'refresh': 'Refresh',
+                'timestamp': 'Timestamp',
+                'level': 'Level',
+                'user': 'User',
+                'action': 'Action',
+                'details': 'Details',
+                'no_logs_found': 'No Logs Found',
+                'no_logs_description': 'No system logs match your current filters. Try adjusting your search criteria.',
+                'log_details': 'Log Details',
+                'close': 'Close',
+                'view_details': 'View',
+                'log_id': 'Log ID',
+                'session_id': 'Session ID',
+                'browser': 'Browser',
+                'device': 'Device',
+                'location': 'Location',
+                'duration': 'Duration',
+                'status': 'Status',
+                'export_success': 'Logs exported successfully to Excel file',
+                'export_error': 'Error exporting logs',
+                'logs_refreshed': 'Logs refreshed successfully',
+                'exporting': 'Exporting logs...',
+                'export_complete': 'Export complete!',
+                'no_data_export': 'No data to export',
+
+                // Navigation (shared with other pages)
+                'admin_dashboard': 'Admin Dashboard',
+                'dashboard': 'Dashboard',
+                'ticket_management': 'Ticket Management',
+                'all_tickets': 'All Tickets',
+                'users_management': 'Users Management',
+                'announcements': 'Announcements',
+                'system_management': 'System Management',
+                'system_settings': 'System Settings',
+                'analytics': 'Analytics',
+                'system_logs': 'System Logs',
+                'admin_tools': 'Admin Tools',
+                'preferences': 'Preferences',
+                'profile_settings': 'Profile Settings',
+                'profile': 'Profile',
+                'settings': 'Settings',
+                'logout': 'Logout',
+                'admin_dashboard_template': 'AlliTrack Admin Dashboard'
+            },
+            'fil': {
+                'system_logs_page_title': 'System Logs - AlliTrack Admin',
+                'system_logs_title': 'Log ng System',
+                'system_logs_description': 'Subaybayan ang mga aktibidad ng system at user',
+                'search_logs': 'Maghanap ng logs...',
+                'log_level': 'Antas ng Log',
+                'all_levels': 'Lahat ng Antas',
+                'info': 'Impormasyon',
+                'warning': 'Babala',
+                'error': 'Error',
+                'time_range': 'Saklaw ng Oras',
+                'today': 'Ngayon',
+                'yesterday': 'Kahapon',
+                'last_week': 'Nakaraang 7 Araw',
+                'last_month': 'Nakaraang 30 Araw',
+                'clear_filters': 'Tanggalin ang Filters',
+                'export_logs': 'I-export',
+                'refresh': 'I-refresh',
+                'timestamp': 'Petsa/Oras',
+                'level': 'Antas',
+                'user': 'User',
+                'action': 'Aksyon',
+                'details': 'Detalye',
+                'no_logs_found': 'Walang Natagpuang Logs',
+                'no_logs_description': 'Walang logs na tumutugma sa iyong filters. Subukang baguhin ang iyong search.',
+                'log_details': 'Detalye ng Log',
+                'close': 'Isara',
+                'view_details': 'View',
+                'log_id': 'ID ng Log',
+                'session_id': 'ID ng Session',
+                'browser': 'Browser',
+                'device': 'Device',
+                'location': 'Lokasyon',
+                'duration': 'Tagal',
+                'status': 'Status',
+                'export_success': 'Matagumpay na na-export ang logs sa Excel file',
+                'export_error': 'Error sa pag-export ng logs',
+                'logs_refreshed': 'Matagumpay na na-refresh ang logs',
+                'exporting': 'Ini-export ang logs...',
+                'export_complete': 'Tapos na ang pag-export!',
+                'no_data_export': 'Walang data na ma-export',
+
+                // Navigation (shared with other pages)
+                'admin_dashboard': 'Admin Dashboard',
+                'dashboard': 'Dashboard',
+                'ticket_management': 'Pamamahala ng Ticket',
+                'all_tickets': 'Lahat ng Ticket',
+                'users_management': 'Pamamahala ng User',
+                'announcements': 'Mga Anunsyo',
+                'system_management': 'Pamamahala ng Sistema',
+                'system_settings': 'Mga Setting ng Sistema',
+                'analytics': 'Analitika',
+                'system_logs': 'Mga Log ng Sistema',
+                'admin_tools': 'Mga Tool ng Admin',
+                'preferences': 'Mga Kagustuhan',
+                'profile_settings': 'Mga Setting ng Profile',
+                'profile': 'Profile',
+                'settings': 'Mga Setting',
+                'logout': 'Logout',
+                'admin_dashboard_template': 'AlliTrack Admin Dashboard'
+            }
+        };
+
+        const sampleLogs = [
+            {
+                id: 'LOG-001',
+                timestamp: '2025-02-09 09:15:23',
+                level: 'info',
+                user: 'admin@allitrack.com',
+                action: 'User Login',
+                description: 'Successful administrator login',
+                ipAddress: '192.168.1.100',
+                sessionId: 'SESS-789012',
+                browser: 'Chrome 121',
+                device: 'Desktop Windows 11',
+                location: 'Manila, Philippines',
+                duration: '2h 15m',
+                status: 'Completed'
+            },
+            {
+                id: 'LOG-002',
+                timestamp: '2025-02-09 10:30:45',
+                level: 'warning',
+                user: 'user123@company.com',
+                action: 'Failed Login Attempt',
+                description: '3 consecutive failed login attempts',
+                ipAddress: '203.177.45.67',
+                sessionId: 'SESS-345678',
+                browser: 'Firefox 122',
+                device: 'Desktop Ubuntu 22.04',
+                location: 'Cebu, Philippines',
+                duration: 'N/A',
+                status: 'Blocked Temporarily'
+            },
+            {
+                id: 'LOG-003',
+                timestamp: '2025-02-09 11:45:12',
+                level: 'info',
+                user: 'admin@allitrack.com',
+                action: 'Ticket Update',
+                description: 'Updated ticket #TKT-789 priority to High',
+                ipAddress: '192.168.1.100',
+                sessionId: 'SESS-789012',
+                browser: 'Chrome 121',
+                device: 'Desktop Windows 11',
+                location: 'Manila, Philippines',
+                duration: '5m',
+                status: 'Completed'
+            },
+            {
+                id: 'LOG-004',
+                timestamp: '2025-02-09 13:20:33',
+                level: 'error',
+                user: 'system',
+                action: 'Database Connection',
+                description: 'Failed to connect to primary database server',
+                ipAddress: '127.0.0.1',
+                sessionId: 'SYS-001',
+                browser: 'N/A',
+                device: 'Server Ubuntu 22.04',
+                location: 'Data Center',
+                duration: '45s',
+                status: 'Resolved (Failover activated)'
+            },
+            {
+                id: 'LOG-005',
+                timestamp: '2025-02-09 14:55:18',
+                level: 'info',
+                user: 'analyst@allitrack.com',
+                action: 'Report Generation',
+                description: 'Generated monthly performance report',
+                ipAddress: '192.168.1.150',
+                sessionId: 'SESS-901234',
+                browser: 'Safari 17',
+                device: 'MacBook Pro M3',
+                location: 'Makati, Philippines',
+                duration: '12m',
+                status: 'Completed'
+            }
+        ];
+
+        // Current filtered logs
+        let currentFilteredLogs = [];
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🚀 System Logs: Starting initialization...');
+
+            // Add Toast HTML element to body
+            const toast = document.createElement('div');
+            toast.id = 'toast';
+            toast.className = 'toast';
+            document.body.appendChild(toast);
+
+            // Initialize user data manager
+            if (window.userDataManager) {
+                window.userDataManager.initializeUserDisplay();
+            }
+
+            // Initialize preferences manager
+            if (window.preferencesManager) {
+                window.preferencesManager.initialize();
+                window.preferencesManager.applyTheme();
+
+                // Get current language from preferences manager
+                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
+                applyTranslations(currentLang);
+            } else {
+                applyTranslations('en');
+            }
+
+            // Setup logout functionality FIRST
+            setupLogout();
+
+            // Setup account dropdown - USING THE FIXED VERSION
+            setTimeout(() => {
+                console.log('🔄 Setting up account dropdown...');
+                setupAccountDropdown();
+            }, 50);
+
+            // Load and display logs
+            loadLogs();
+
+            // Setup event listeners
+            setupEventListeners();
+
+            console.log('✅ System Logs page loaded');
+        });
+
+        // Account Dropdown Functionality - FIXED VERSION
+        function setupAccountDropdown() {
+            console.log('🔧 Setting up account dropdown...');
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
+
+            if (!accountBtn || !accountMenu) {
+                console.error('❌ Account dropdown elements not found!');
+                return;
+            }
+
+            console.log('✅ Elements found, setting up...');
+
+            // Don't clone elements - just work with existing ones
+            // Remove any existing click listeners by cloning
+            const newBtn = accountBtn.cloneNode(true);
+            accountBtn.parentNode.replaceChild(newBtn, accountBtn);
+
+            // Get fresh reference
+            const freshBtn = document.getElementById("accountBtn");
+
+            // Add click event to toggle dropdown
+            freshBtn.addEventListener("click", function (e) {
+                console.log('🎯 Account button clicked!');
+                e.stopPropagation();
+                e.preventDefault();
+
+                const isShowing = accountMenu.classList.contains("show");
+                accountMenu.classList.toggle("show");
+                freshBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", function (e) {
+                if (accountMenu.classList.contains("show") &&
+                    !freshBtn.contains(e.target) &&
+                    !accountMenu.contains(e.target)) {
+                    console.log('🔒 Closing dropdown (clicked outside)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    console.log('🔒 Closing dropdown (Escape key)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close when clicking menu items (except logout)
+            const menuItems = accountMenu.querySelectorAll("a");
+            menuItems.forEach(item => {
+                item.addEventListener("click", function () {
+                    console.log('🔒 Closing dropdown (menu item clicked)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                });
+            });
+
+            // Ensure button is clickable
+            freshBtn.style.cursor = 'pointer';
+
+            console.log('✅ Account dropdown setup complete');
+        }
+
+        // Apply translations to the page
+        function applyTranslations(language) {
+            const lang = translations[language] ? language : 'en';
+            const dict = translations[lang];
+
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (dict[key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') {
+                        if (element.type !== 'text' && element.type !== 'email' && element.type !== 'password' && element.type !== 'tel') {
+                            element.textContent = dict[key];
+                        }
+                    } else if (element.tagName === 'OPTION') {
+                        element.textContent = dict[key];
+                    } else {
+                        element.textContent = dict[key];
+                    }
+                }
+            });
+
+            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-translate-placeholder');
+                if (dict[key]) {
+                    element.placeholder = dict[key];
+                }
+            });
+
+            if (dict['system_logs_page_title']) {
+                document.title = dict['system_logs_page_title'];
+            }
+        }
+
+        // Logout functionality - FIXED VERSION
+        function setupLogout() {
+            console.log('🔐 Setting up logout functionality...');
+
+            // First remove any existing logout buttons to avoid duplicates
+            const existingLogoutBtns = document.querySelectorAll('#logoutBtn');
+            existingLogoutBtns.forEach(btn => {
+                const parent = btn.parentNode;
+                const newBtn = btn.cloneNode(true);
+                parent.replaceChild(newBtn, btn);
+            });
+
+            // Now attach the event listener to the fresh logout button
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                console.log('✅ Logout button found, attaching handler...');
+
+                // Create a robust logout handler
+                const logoutHandler = function (e) {
+                    console.log('🚪 Logout button clicked!');
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Clear user data from localStorage
+                    localStorage.removeItem('userData');
+                    localStorage.removeItem('userProfile');
+                    localStorage.removeItem('adminPreferences');
+                    localStorage.removeItem('preferredTheme');
+                    localStorage.removeItem('preferredLanguage');
+
+                    console.log('🧹 Cleared localStorage, redirecting to login...');
+
+                    // Redirect to admin login page
+                    window.location.href = '../../../index.html';
+                };
+
+                // Remove any existing listeners and attach fresh one
+                logoutBtn.removeEventListener('click', logoutHandler);
+                logoutBtn.addEventListener('click', logoutHandler);
+
+            } else {
+                console.error('❌ Logout button not found!');
+            }
+        }
+
+        // Load logs and populate table
+        function loadLogs() {
+            const logsTableBody = document.querySelector('#logsTable tbody');
+            const emptyState = document.getElementById('emptyState');
+
+            if (!logsTableBody) return;
+
+            logsTableBody.innerHTML = '';
+
+            // Get current filter values
+            const logLevel = document.getElementById('logLevel').value;
+            const timeRange = document.getElementById('timeRange').value;
+
+            // Filter logs (in a real app, this would be server-side)
+            currentFilteredLogs = sampleLogs.filter(log => {
+                if (logLevel !== 'all' && log.level !== logLevel) {
+                    return false;
+                }
+
+                // Simple time filtering (in a real app, this would compare actual dates)
+                if (timeRange === 'yesterday') {
+                    // Filter for yesterday's logs
+                    return log.timestamp.includes('2025-02-08');
+                }
+
+                return true;
+            });
+
+            if (currentFilteredLogs.length === 0) {
+                logsTableBody.closest('.logs-table-container').style.display = 'none';
+                emptyState.style.display = 'flex';
+            } else {
+                logsTableBody.closest('.logs-table-container').style.display = 'block';
+                emptyState.style.display = 'none';
+
+                currentFilteredLogs.forEach(log => {
+                    const row = createLogRow(log);
+                    logsTableBody.appendChild(row);
+                });
+            }
+        }
+
+        // Create a table row for a log entry
+        function createLogRow(log) {
+            const row = document.createElement('tr');
+            row.dataset.logId = log.id;
+
+            // Format level badge
+            let levelBadge = '';
+            switch (log.level) {
+                case 'info':
+                    levelBadge = '<span class="badge badge-info"><i class="fas fa-info-circle"></i> Info</span>';
+                    break;
+                case 'warning':
+                    levelBadge = '<span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> Warning</span>';
+                    break;
+                case 'error':
+                    levelBadge = '<span class="badge badge-error"><i class="fas fa-times-circle"></i> Error</span>';
+                    break;
+            }
+
+            row.innerHTML = `
+            <td>${log.timestamp}</td>
+            <td>${levelBadge}</td>
+            <td>${log.user}</td>
+            <td>${log.action}</td>
+            <td>
+                <button class="btn-view-details" data-log-id="${log.id}">
+                    <i class="fas fa-eye"></i> <span data-translate="view_details">View</span>
+                </button>
+            </td>
+        `;
+
+            // Add click event to view details button
+            row.querySelector('.btn-view-details').addEventListener('click', function () {
+                showLogDetails(log.id);
+            });
+
+            return row;
+        }
+
+        // Show log details in modal
+        function showLogDetails(logId) {
+            const log = sampleLogs.find(l => l.id === logId);
+            if (!log) return;
+
+            const detailsContent = document.getElementById('logDetailsContent');
+            const modal = document.getElementById('logDetailsModal');
+
+            const currentLang = window.preferencesManager ?
+                window.preferencesManager.getCurrentLanguage() : 'en';
+            const dict = translations[currentLang] || translations['en'];
+
+            detailsContent.innerHTML = `
+            <div class="detail-section">
+                <h4><i class="fas fa-id-card"></i> ${dict['log_details'] || 'Log Details'}</h4>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">${dict['log_id'] || 'Log ID'}:</span>
+                        <span class="detail-value">${log.id}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">${dict['timestamp'] || 'Timestamp'}:</span>
+                        <span class="detail-value">${log.timestamp}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">${dict['level'] || 'Level'}:</span>
+                        <span class="detail-value badge badge-${log.level}">
+                            <i class="fas fa-${log.level === 'info' ? 'info-circle' : log.level === 'warning' ? 'exclamation-triangle' : 'times-circle'}"></i> 
+                            ${log.level.charAt(0).toUpperCase() + log.level.slice(1)}
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">${dict['user'] || 'User'}:</span>
+                        <span class="detail-value">${log.user}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-section">
+                <h4><i class="fas fa-tasks"></i> ${dict['action'] || 'Action'}</h4>
+                <div class="detail-grid">
+                    <div class="detail-item full-width">
+                        <span class="detail-label">${dict['action'] || 'Action'}:</span>
+                        <span class="detail-value">${log.action}</span>
+                    </div>
+                    <div class="detail-item full-width">
+                        <span class="detail-label">${dict['description'] || 'Description'}:</span>
+                        <span class="detail-value">${log.description}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">${dict['status'] || 'Status'}:</span>
+                        <span class="detail-value">${log.status}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">${dict['duration'] || 'Duration'}:</span>
+                        <span class="detail-value">${log.duration}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="detail-section">
+                <h4><i class="fas fa-network-wired"></i> ${dict['details'] || 'Technical Details'}</h4>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">${dict['ip_address'] || 'IP Address'}:</span>
+                        <span class="detail-value">${log.ipAddress}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">${dict['session_id'] || 'Session ID'}:</span>
+                        <span class="detail-value">${log.sessionId}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">${dict['browser'] || 'Browser'}:</span>
+                        <span class="detail-value">${log.browser}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">${dict['device'] || 'Device'}:</span>
+                        <span class="detail-value">${log.device}</span>
+                    </div>
+                    <div class="detail-item full-width">
+                        <span class="detail-label">${dict['location'] || 'Location'}:</span>
+                        <span class="detail-value">${log.location}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+
+            modal.classList.add('show');
+        }
+
+        // Export logs to Excel function
+        function exportLogsToExcel() {
+            const currentLang = window.preferencesManager ?
+                window.preferencesManager.getCurrentLanguage() : 'en';
+            const dict = translations[currentLang] || translations['en'];
+
+            if (currentFilteredLogs.length === 0) {
+                showToast(dict['no_data_export'] || 'No data to export', 'error');
+                return;
+            }
+
+            // Show exporting notification
+            showToast(dict['exporting'] || 'Exporting logs...', 'info');
+
+            // Create worksheet data
+            const worksheetData = [
+                // Headers
+                [
+                    dict['log_id'] || 'Log ID',
+                    dict['timestamp'] || 'Timestamp',
+                    dict['level'] || 'Level',
+                    dict['user'] || 'User',
+                    dict['action'] || 'Action',
+                    dict['description'] || 'Description',
+                    dict['ip_address'] || 'IP Address',
+                    dict['session_id'] || 'Session ID',
+                    dict['browser'] || 'Browser',
+                    dict['device'] || 'Device',
+                    dict['location'] || 'Location',
+                    dict['duration'] || 'Duration',
+                    dict['status'] || 'Status'
+                ],
+                // Data rows
+                ...currentFilteredLogs.map(log => [
+                    log.id,
+                    log.timestamp,
+                    log.level.toUpperCase(),
+                    log.user,
+                    log.action,
+                    log.description,
+                    log.ipAddress,
+                    log.sessionId,
+                    log.browser,
+                    log.device,
+                    log.location,
+                    log.duration,
+                    log.status
+                ])
+            ];
+
+            // Create workbook and worksheet
+            const workbook = XLSX.utils.book_new();
+            const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+            // Auto-size columns
+            const colWidths = worksheetData[0].map((header, index) => {
+                const maxLength = Math.max(
+                    header.length,
+                    ...worksheetData.slice(1).map(row => row[index] ? row[index].toString().length : 0)
+                );
+                return { wch: Math.min(maxLength + 2, 50) }; // Max width 50 chars
+            });
+
+            worksheet['!cols'] = colWidths;
+
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'System Logs');
+
+            // Generate Excel file
+            const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+            // Create blob and download
+            const blob = new Blob([excelBuffer], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            });
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+
+            // Generate filename with timestamp
+            const now = new Date();
+            const timestamp = now.toISOString().slice(0, 19).replace(/[:]/g, '-');
+            a.download = `AlliTrack_System_Logs_${timestamp}.xlsx`;
+
+            document.body.appendChild(a);
+            a.click();
+
+            // Cleanup
+            setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                // Show success message
+                showToast(dict['export_success'] || 'Logs exported successfully to Excel file', 'success');
+
+                // Show export complete notification
+                setTimeout(() => {
+                    showToast(dict['export_complete'] || 'Export complete!', 'success');
+                }, 500);
+            }, 100);
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Filter change listeners
+            document.getElementById('logLevel').addEventListener('change', loadLogs);
+            document.getElementById('timeRange').addEventListener('change', loadLogs);
+
+            // Clear filters button
+            const clearFiltersBtn = document.getElementById('clearFilters');
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', function () {
+                    document.getElementById('logLevel').value = 'all';
+                    document.getElementById('timeRange').value = 'today';
+                    loadLogs();
+                    showToast('Filters cleared', 'success');
+                });
+            }
+
+            // Refresh logs button
+            const refreshBtn = document.getElementById('refreshLogs');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', function () {
+                    loadLogs();
+                    const currentLang = window.preferencesManager ?
+                        window.preferencesManager.getCurrentLanguage() : 'en';
+                    const dict = translations[currentLang] || translations['en'];
+                    showToast(dict['logs_refreshed'] || 'Logs refreshed successfully', 'success');
+                });
+            }
+
+            // Export logs button - UPDATED: Now exports to Excel
+            const exportBtn = document.getElementById('exportLogs');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function () {
+                    exportLogsToExcel();
+                });
+            }
+
+            // Search functionality
+            const searchInput = document.getElementById('q');
+            let searchTimeout;
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        // In a real app, this would trigger a search
+                        console.log('Searching for:', this.value);
+                    }, 500);
+                });
+            }
+
+            // Modal close buttons
+            const closeModalBtn = document.getElementById('closeModal');
+            const closeDetailsBtn = document.getElementById('closeDetailsBtn');
+
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', closeModal);
+            }
+            if (closeDetailsBtn) {
+                closeDetailsBtn.addEventListener('click', closeModal);
+            }
+
+            // Close modal when clicking outside
+            const modalElement = document.getElementById('logDetailsModal');
+            if (modalElement) {
+                modalElement.addEventListener('click', function (e) {
+                    if (e.target === this) {
+                        closeModal();
+                    }
+                });
+            }
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('logDetailsModal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        }
+
+        // Show toast message
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Listen for language changes
+        document.addEventListener('languageChanged', function (e) {
+            applyTranslations(e.detail.language);
+        });
+    </script>
+</body>
+
+</html>
