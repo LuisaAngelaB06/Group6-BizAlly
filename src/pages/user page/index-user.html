@@ -22,7 +22,7 @@
             <h2 data-translate="mobile_restricted">Desktop only</h2>
             <p data-translate="mobile_block_message">User dashboard is optimized for larger screens. Please open on a
                 desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to
                 Home</button>
         </div>
     </div>
@@ -34,7 +34,7 @@
             <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
                 <div class="brand">
                     <div class="logo">
-                        <img src="../../../src/assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
                             style="width: 32px; height: 32px;">
                     </div>
                     <div>
@@ -43,38 +43,40 @@
                     </div>
                 </div>
                 <nav class="nav">
-                    <a href="../../pages/user page/index-user.html" class="active" data-section="dashboard">
+                    <a href="/user/index-user.html" class="active" data-section="dashboard">
                         <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
                     </a>
 
                     <div class="nav-section" data-translate="support">Support</div>
-                    <a href="../../pages/user page/my-tickets.html" data-section="tickets">
+                    <a href="/user/my-tickets.html" data-section="tickets">
                         <i class="fas fa-ticket-alt"></i> <span data-translate="my_tickets">My Tickets</span>
                     </a>
-                    <a href="../../pages/user page/notifications.html" data-section="notifications">
+                    </a>
+                    <a href="/user/notifications.html" data-section="notifications">
                         <i class="fas fa-bell"></i> <span data-translate="notifications">Notifications</span>
                     </a>
-                    <a href="../../pages/user page/submit-ticket.html" data-section="submit-ticket">
+                    <a href="/user/submit-ticket.html" data-section="submit-ticket">
                         <i class="fas fa-plus-circle"></i> <span data-translate="submit_ticket">Submit a Ticket</span>
                     </a>
 
                     <div class="nav-section" data-translate="management">Management</div>
-                    <a href="../../pages/user page/preferences.html" data-section="preferences">
+                    <a href="/user/preferences.html" data-section="preferences">
                         <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
                     </a>
-                    <a href="../../pages/user page/profile-settings.html" data-section="profile-settings">
+                    <a href="/user/profile-settings.html" data-section="profile-settings">
                         <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
                     </a>
-                    <a href="../../pages/user page/announcements.html" data-section="announcements">
-                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+                    <a href="/user/announcements.html" id="announcementLink">
+                        <i class="fas fa-bullhorn"></i> Announcements
+                        <span id="navRedDot" class="red-dot" style="display: none;"></span>
                     </a>
 
                     <div class="nav-section" data-translate="system">System</div>
-                    <a href="../../pages/user page/account-security.html" data-section="account-security">
+                    <a href="/user/account-security.html" data-section="account-security">
                         <i class="fas fa-shield-alt"></i> <span data-translate="account_security">Account
                             Security</span>
                     </a>
-                    <a href="../../pages/user page/system-information.html" data-section="system-information">
+                    <a href="/user/system-information.html" data-section="system-information">
                         <i class="fas fa-info-circle"></i> <span data-translate="system_information">System
                             Information</span>
                     </a>
@@ -106,9 +108,9 @@
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="../../pages/user page/profile-settings.html" data-translate="profile">Profile</a>
-                            <a href="../../pages/user page/preferences.html" data-translate="settings">Settings</a>
-                            <a href="../../../landing page/pages/index.html" id="logoutBtn"
+                            <a href="/user/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="/user/preferences.html" data-translate="settings">Settings</a>
+                            <a href="/" id="logoutBtn"
                                 data-translate="logout">Logout</a>
                         </div>
                     </div>
@@ -201,7 +203,7 @@
                             <h2><i class="fas fa-bolt"></i> <span data-translate="quick_actions">Quick Actions</span>
                             </h2>
                             <div class="quick-actions-grid">
-                                <a href="../../pages/user page/submit-ticket.html" class="action-card">
+                                <a href="/user/submit-ticket.html" class="action-card">
                                     <div class="action-icon">
                                         <i class="fas fa-plus"></i>
                                     </div>
@@ -209,7 +211,7 @@
                                     <div class="action-desc" data-translate="create_support_request">Create a new
                                         support request</div>
                                 </a>
-                                <a href="../../pages/user page/my-tickets.html" class="action-card">
+                                <a href="/user/my-tickets.html" class="action-card">
                                     <div class="action-icon">
                                         <i class="fas fa-ticket-alt"></i>
                                     </div>
@@ -217,7 +219,7 @@
                                     <div class="action-desc" data-translate="check_support_tickets">Check all your
                                         support tickets</div>
                                 </a>
-                                <a href="../../pages/user page/notifications.html" class="action-card">
+                                <a href="/user/notifications.html" class="action-card">
                                     <div class="action-icon">
                                         <i class="fas fa-bell"></i>
                                     </div>
@@ -225,7 +227,7 @@
                                     <div class="action-desc" data-translate="view_recent_updates">View recent updates
                                     </div>
                                 </a>
-                                <a href="../../pages/user page/profile-settings.html" class="action-card">
+                                <a href="/user/profile-settings.html" class="action-card">
                                     <div class="action-icon">
                                         <i class="fas fa-user-cog"></i>
                                     </div>
@@ -693,7 +695,7 @@
                     sessionStorage.clear();
 
                     // Redirect to login page
-                    window.location.href = '../../../index.html';
+                    window.location.href = '/';
                 });
             }
         }

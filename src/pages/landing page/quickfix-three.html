@@ -18,7 +18,7 @@
 <body>
     <div class="document-wrapper">
         <div class="back-home-wrapper">
-            <a href="../../../index.html#home-section" class="back-home-link">
+            <a href="/" class="back-home-link">
                 <i class="fas fa-arrow-left"></i> Back to AlliTrack Home
             </a>
         </div>
@@ -336,10 +336,30 @@
                 if (closeModalX) closeModalX.addEventListener('click', closeModal);
 
                 if (submitRating) {
-                    submitRating.addEventListener('click', function () {
-                        const selectedRating = document.querySelector('.rating-btn[style*="background: var(--blue-500)"]');
+                    submitRating.addEventListener('click', async function () {
+                        // 1. Find which button the user selected
+                        const selectedBtn = document.querySelector('.rating-btn[style*="background: var(--blue-500)"]');
+                        const ratingValue = selectedBtn ? selectedBtn.getAttribute('data-rating') : 'neutral'; // Defaults to neutral
+
+                        try {
+                            // 2. Send the rating to your Flask backend
+                            await fetch("http://127.0.0.1:5000/api/feedback/submit", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    source: document.title, // Sends "Quick Fix - GSM Alarm", etc.
+                                    rating: ratingValue     // Sends "good", "neutral", or "bad"
+                                })
+                            });
+                        } catch (error) {
+                            console.error("Feedback failed to send:", error);
+                        }
+
+                        // 3. Close the modal and redirect
                         closeModal();
-                        window.location.href = '../../pages/landing page/unified-auth-modal.html';
+                        
+                        // Note: Adjusted this path slightly. Make sure this points to your actual login/auth file!
+                        window.location.href = '/'; 
                     });
                 }
 

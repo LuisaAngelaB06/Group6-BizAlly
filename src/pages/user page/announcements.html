@@ -22,7 +22,7 @@
             <h2 data-translate="mobile_restricted">Desktop only</h2>
             <p data-translate="mobile_block_message">User dashboard is optimized for larger screens. Please open on a
                 desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to
                 Home</button>
         </div>
     </div>
@@ -32,7 +32,7 @@
             <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
                 <div class="brand">
                     <div class="logo">
-                        <img src="../../../src/assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
                             style="width: 32px; height: 32px;">
                     </div>
                     <div>
@@ -41,40 +41,37 @@
                     </div>
                 </div>
                 <nav class="nav">
-                    <a href="../../pages/user page/index-user.html" data-section="dashboard">
+                    <a href="/user/index-user.html" data-section="dashboard">
                         <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
                     </a>
 
                     <div class="nav-section" data-translate="support">Support</div>
-                    <a href="../../pages/user page/my-tickets.html" data-section="tickets">
+                    <a href="/user/my-tickets.html" data-section="tickets">
                         <i class="fas fa-ticket-alt"></i> <span data-translate="my_tickets">My Tickets</span>
                     </a>
-                    <a href="../../pages/user page/notifications.html" data-section="notifications">
+                    <a href="/user/notifications.html" data-section="notifications">
                         <i class="fas fa-bell"></i> <span data-translate="notifications">Notifications</span>
                     </a>
-                    <a href="../../pages/user page/submit-ticket.html" data-section="submit-ticket">
+                    <a href="/user/submit-ticket.html" data-section="submit-ticket">
                         <i class="fas fa-plus-circle"></i> <span data-translate="submit_ticket">Submit a Ticket</span>
                     </a>
 
                     <div class="nav-section" data-translate="management">Management</div>
-                    <a href="../../pages/user page/preferences.html" data-section="preferences">
+                    <a href="/user/preferences.html" data-section="preferences">
                         <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
                     </a>
-                    <a href="../../pages/user page/profile-settings.html" data-section="profile-settings">
+                    <a href="/user/profile-settings.html" data-section="profile-settings">
                         <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
                     </a>
-                    <a href="../../pages/user page/announcements.html" class="active" data-section="announcements">
-                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+                    <a href="/user/announcements.html" id="announcementLink" class="active" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> 
+                        <span data-translate="announcements">Announcements</span>
+                        <span id="navRedDot" class="red-dot" style="display: none;"></span>
                     </a>
 
                     <div class="nav-section" data-translate="system">System</div>
-                    <a href="../../pages/user page/account-security.html" data-section="account-security">
-                        <i class="fas fa-shield-alt"></i> <span data-translate="account_security">Account
-                            Security</span>
-                    </a>
-                    <a href="../../pages/user page/system-information.html" data-section="system-information">
-                        <i class="fas fa-info-circle"></i> <span data-translate="system_information">System
-                            Information</span>
+                    <a href="/user/account-security.html" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> <span data-translate="account_security">Account Security</span>
                     </a>
                 </nav>
                 <div class="sidebar-footer">
@@ -103,8 +100,8 @@
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="../../pages/user page/profile-settings.html" data-translate="profile">Profile</a>
-                            <a href="../../pages/user page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="/user/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="/user/preferences.html" data-translate="settings">Settings</a>
                             <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
                         </div>
                     </div>
@@ -120,16 +117,8 @@
                                         data-translate="announcements_title">Announcements</span></h1>
                                 <div class="announcements-controls">
                                     <div class="filter-group">
-                                        <button class="filter-btn active" data-filter="all"
-                                            data-translate="filter_all">All</button>
-                                        <button class="filter-btn" data-filter="notice"
-                                            data-translate="filter_notice">Notices</button>
-                                        <button class="filter-btn" data-filter="maintenance"
-                                            data-translate="filter_maintenance">Maintenance</button>
-                                        <button class="filter-btn" data-filter="feature"
-                                            data-translate="filter_feature">Features</button>
-                                        <button class="filter-btn" data-filter="unread"
-                                            data-translate="filter_unread">Unread</button>
+                                        <button class="filter-btn active" data-filter="all" data-translate="filter_all">All</button>
+                                        <button class="filter-btn" data-filter="unread" data-translate="filter_unread">Unread</button>
                                     </div>
                                 </div>
                             </div>
@@ -138,32 +127,17 @@
                         <!-- Statistics -->
                         <div class="announcement-stats">
                             <div class="stat-card">
-                                <div class="stat-icon icon-notice">
-                                    <i class="fas fa-building"></i>
-                                </div>
+                                <div class="stat-icon icon-notice"><i class="fas fa-bullhorn"></i></div>
                                 <div class="stat-info">
-                                    <div class="stat-count" id="totalAnnouncements">12</div>
-                                    <div class="stat-label" data-translate="total_announcements">Total Announcements
-                                    </div>
+                                    <div class="stat-count" id="totalAnnouncements">0</div>
+                                    <div class="stat-label" data-translate="total_announcements">Total Announcements</div>
                                 </div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-icon icon-maintenance">
-                                    <i class="fas fa-tools"></i>
-                                </div>
+                                <div class="stat-icon icon-maintenance"><i class="fas fa-envelope-open"></i></div>
                                 <div class="stat-info">
-                                    <div class="stat-count" id="unreadCount">3</div>
-                                    <div class="stat-label" data-translate="unread_announcements">Unread Announcements
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon icon-feature">
-                                    <i class="fas fa-star"></i>
-                                </div>
-                                <div class="stat-info">
-                                    <div class="stat-count" id="featureCount">5</div>
-                                    <div class="stat-label" data-translate="new_features">New Features</div>
+                                    <div class="stat-count" id="unreadCount">0</div>
+                                    <div class="stat-label" data-translate="unread_announcements">Unread Announcements</div>
                                 </div>
                             </div>
                         </div>
@@ -439,216 +413,111 @@
                     localStorage.removeItem('userProfile');
 
                     // Redirect to login page
-                    window.location.href = '../../../index.html';
+                    window.location.href = '/';
                 });
             }
         }
 
-        // Initialize announcements functionality
-        function initAnnouncements() {
-            // Add event listeners for filters and search
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            const searchInput = document.getElementById('q');
+        let announcements = []; 
 
-            // Filter buttons
-            if (filterButtons) {
-                filterButtons.forEach(btn => {
-                    btn.addEventListener('click', function () {
-                        filterButtons.forEach(b => b.classList.remove('active'));
-                        this.classList.add('active');
-                        filterAnnouncements(this.getAttribute('data-filter'));
+            async function initAnnouncements() {
+                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                const userId = userData.User_ID || userData.user_id;
+
+                if (!userId) {
+                    console.error("User ID not found.");
+                    return;
+                }
+
+                try {
+                    // 1. Fetch ALL announcements (including read ones)
+                    const response = await fetch(`http://127.0.0.1:5000/api/user/announcements/all/${userId}`);
+                    const data = await response.json();
+                    
+                    if (Array.isArray(data)) {
+                        // 2. Map data while PRESERVING your categories (Notice, Maintenance, Feature)
+                        announcements = data.map(ann => ({
+                            id: ann.Announcement_ID,
+                            title: ann.Title,
+                            message: ann.Message,
+                            // Maps Priority/Role to the types your CSS expects
+                            type: ann.Priority === 'high' ? 'notice' : (ann.Target_Role || 'notice'),
+                            category: ann.Target_Role || 'notice',
+                            priority: (ann.Priority || 'normal').toLowerCase(),
+                            unread: ann.is_read === 0, // 0 means unread in SQL
+                            date: ann.Created_At,
+                            author: ann.Created_By || 'System Admin'
+                        }));
+
+                        // 3. Update the UI counts and display
+                        updateStats();
+                        filterAnnouncements('all');
+                    }
+                } catch (error) {
+                    console.error("Failed to receive announcements:", error);
+                }
+
+                // 4. KEEPING YOUR ORIGINAL LISTENERS (Do not delete these!)
+                const filterButtons = document.querySelectorAll('.filter-btn');
+                if (filterButtons) {
+                    filterButtons.forEach(btn => {
+                        btn.addEventListener('click', function () {
+                            filterButtons.forEach(b => b.classList.remove('active'));
+                            this.classList.add('active');
+                            filterAnnouncements(this.getAttribute('data-filter'));
+                        });
                     });
-                });
+                }
+
+                const searchInput = document.getElementById('q');
+                if (searchInput) {
+                    searchInput.addEventListener('input', () => filterAnnouncements(getActiveFilter()));
+                }
             }
 
-            // Search input
-            if (searchInput) {
-                searchInput.addEventListener('input', () => filterAnnouncements(getActiveFilter()));
-            }
-
-            // Initial render
-            updateStats();
-            filterAnnouncements('all');
-        }
-
-        // Sample announcement data
-        const announcements = [
-            {
-                id: 1,
-                type: "notice",
-                title: "Quarterly Company Meeting Schedule",
-                message: "We're excited to announce the schedule for our upcoming quarterly company meetings. All team members are required to attend their respective department meetings. The meetings will cover Q1 performance reviews and Q2 strategic planning.",
-                category: "company_notice",
-                priority: "medium",
-                date: "2025-03-20T10:00:00",
-                unread: true,
-                details: [
-                    "IT Department: March 25, 2025 - 10:00 AM",
-                    "Support Team: March 26, 2025 - 2:00 PM",
-                    "All Hands: March 27, 2025 - 3:00 PM"
-                ],
-                author: "HR Department"
-            },
-            {
-                id: 2,
-                type: "maintenance",
-                title: "Scheduled System Maintenance",
-                message: "We will be performing essential system maintenance to improve performance and security. The maintenance window is scheduled for this weekend. During this time, the system may be temporarily unavailable.",
-                category: "maintenance_alert",
-                priority: "high",
-                date: "2025-03-18T14:30:00",
-                unread: true,
-                details: [
-                    "Date: March 22, 2025",
-                    "Time: 2:00 AM - 6:00 AM UTC",
-                    "Impact: System may be temporarily unavailable",
-                    "Contact: support@allitrack.com for emergencies"
-                ],
-                author: "System Administration"
-            },
-            {
-                id: 3,
-                type: "feature",
-                title: "New Reporting Dashboard Released",
-                message: "We're thrilled to announce the release of our new advanced reporting dashboard! This update includes enhanced analytics, customizable reports, and real-time data visualization to help you make better decisions.",
-                category: "new_feature",
-                priority: "medium",
-                date: "2025-03-15T09:15:00",
-                unread: false,
-                details: [
-                    "Custom report builder",
-                    "Real-time analytics",
-                    "Export to PDF/Excel",
-                    "Scheduled reporting"
-                ],
-                author: "Product Team"
-            },
-            {
-                id: 4,
-                type: "notice",
-                title: "Updated Remote Work Policy",
-                message: "Effective immediately, we're updating our remote work policy to provide more flexibility while maintaining productivity standards. Please review the new guidelines in the employee handbook.",
-                category: "company_notice",
-                priority: "medium",
-                date: "2025-03-12T16:45:00",
-                unread: false,
-                details: [
-                    "Flexible working hours",
-                    "Required weekly check-ins",
-                    "Updated equipment policies",
-                    "Security protocols"
-                ],
-                author: "HR Department"
-            },
-            {
-                id: 5,
-                type: "maintenance",
-                title: "Database Optimization Complete",
-                message: "The recent database optimization has been successfully completed. Users should experience improved system performance and faster response times when accessing ticket history and reports.",
-                category: "maintenance_update",
-                priority: "medium",
-                date: "2025-03-10T11:20:00",
-                unread: false,
-                details: [
-                    "Improved query performance",
-                    "Reduced loading times",
-                    "Enhanced data integrity",
-                    "Better backup efficiency"
-                ],
-                author: "Technical Team"
-            },
-            {
-                id: 6,
-                type: "feature",
-                title: "Mobile App Update Available",
-                message: "A new version of the AlliTrack mobile app is now available in the app stores. This update includes bug fixes, performance improvements, and new notification features.",
-                category: "new_feature",
-                priority: "medium",
-                date: "2025-03-08T13:10:00",
-                unread: false,
-                details: [
-                    "Push notification enhancements",
-                    "Offline ticket viewing",
-                    "Improved camera integration",
-                    "Battery optimization"
-                ],
-                author: "Mobile Development Team"
-            },
-            {
-                id: 7,
-                type: "notice",
-                title: "Holiday Schedule - Memorial Day",
-                message: "Please be advised that our offices will be closed on Memorial Day, May 26th, 2025. Emergency support will remain available through our on-call team.",
-                category: "company_notice",
-                priority: "medium",
-                date: "2025-03-05T08:30:00",
-                unread: false,
-                details: [
-                    "Office closed: May 26, 2025",
-                    "Emergency support available",
-                    "Normal operations resume May 27",
-                    "Contact: emergency@allitrack.com"
-                ],
-                author: "Administration"
-            },
-            {
-                id: 8,
-                type: "feature",
-                title: "Enhanced Security Features",
-                message: "We've implemented new security features including two-factor authentication and enhanced password requirements to better protect your account and data.",
-                category: "new_feature",
-                priority: "high",
-                date: "2025-03-01T15:45:00",
-                unread: false,
-                details: [
-                    "Two-factor authentication",
-                    "Enhanced password requirements",
-                    "Session management",
-                    "Security notifications"
-                ],
-                author: "Security Team"
-            }
-        ];
-
-        // Format date function
+        // 1. Updated Date Formatter: Shows the time in YOUR local timezone
         function formatDate(dateString) {
+            if (!dateString) return "—";
             const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', {
+            
+            // This converts the GMT/UTC from the database to your local Manila time
+            return date.toLocaleString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                hour12: true
             });
         }
 
-        // Format relative time WITH TRANSLATIONS
         function formatRelativeTime(dateString) {
-            const date = new Date(dateString);
+            if (!dateString) return "—";
+
+            // REMOVE the + 'Z'. Just use replace(' ', 'T')
+            // This tells the browser: "This time is already in my local timezone."
+            const date = new Date(dateString.replace(' ', 'T')); 
             const now = new Date();
-            const diffInMs = now - date;
+            
+            const diffInMs = now.getTime() - date.getTime();
+
+            if (diffInMs < 60000) {
+                const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
+                return translations[currentLang]['just_now'] || 'Just now';
+            }
+
             const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
             const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
             const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
-            // Get current language
-            const currentLang = window.preferencesManager ?
-                window.preferencesManager.getCurrentLanguage() : 'en';
+            const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
             const dict = translations[currentLang] || translations['en'];
 
-            if (diffInMinutes < 1) {
-                return dict['just_now'] || 'Just now';
-            } else if (diffInMinutes < 60) {
-                return `${diffInMinutes} ${dict['min_ago'] || 'min ago'}`;
-            } else if (diffInHours < 24) {
-                return `${diffInHours} ${dict['hr_ago'] || 'hr ago'}`;
-            } else if (diffInDays === 1) {
-                return dict['yesterday'] || 'Yesterday';
-            } else if (diffInDays < 7) {
-                return `${diffInDays} ${dict['days_ago'] || 'days ago'}`;
-            } else {
-                return formatDate(dateString);
-            }
+            if (diffInMinutes < 60) return `${diffInMinutes} ${dict['min_ago']}`;
+            if (diffInHours < 24) return `${diffInHours} ${dict['hr_ago']}`;
+            if (diffInDays === 1) return dict['yesterday'];
+            
+            return formatDate(dateString);
         }
 
         // Get icon class based on announcement type
@@ -723,17 +592,17 @@
         function updateStats() {
             const totalAnnouncementsEl = document.getElementById('totalAnnouncements');
             const unreadCountEl = document.getElementById('unreadCount');
-            const featureCountEl = document.getElementById('featureCount');
 
-            if (!totalAnnouncementsEl || !unreadCountEl || !featureCountEl) return;
+            // Remove the featureCountEl line since we deleted that card!
+            if (!totalAnnouncementsEl || !unreadCountEl) return;
 
             const total = announcements.length;
             const unread = announcements.filter(a => a.unread).length;
-            const features = announcements.filter(a => a.type === 'feature').length;
 
             totalAnnouncementsEl.textContent = total;
             unreadCountEl.textContent = unread;
-            featureCountEl.textContent = features;
+            
+            console.log(`Stats Updated: Total ${total}, Unread ${unread}`);
         }
 
         // Render announcements
@@ -780,44 +649,31 @@
                 }
 
                 announcementElement.innerHTML = `
-                <div class="announcement-header">
-                    <div class="announcement-type">
-                        <div class="announcement-icon ${getIconClass(announcement.type)}">
-                            <i class="${getIcon(announcement.type)}"></i>
-                        </div>
-                        <div>
-                            <div class="announcement-title">${announcement.title}</div>
-                            <div class="announcement-meta">
-                                <div class="announcement-category ${getCategoryClass(announcement.type)}">
-                                    ${getCategoryText(announcement.category || announcement.type, currentLang)}
-                                </div>
-                                ${announcement.priority === 'high' ? `
-                                    <div class="announcement-priority priority-high">
-                                        <i class="fas fa-exclamation-circle"></i> ${dict['high_priority'] || 'High Priority'}
+                    <div class="announcement-header">
+                        <div class="announcement-type">
+                            <div class="announcement-icon ${getIconClass(announcement.type)}">
+                                <i class="${getIcon(announcement.type)}"></i>
+                            </div>
+                            <div>
+                                <div class="announcement-title">${announcement.title}</div>
+                                <div class="announcement-meta">
+                                    <div class="announcement-date">
+                                        <i class="far fa-clock"></i>
+                                        ${formatRelativeTime(announcement.date)}
                                     </div>
-                                ` : ''}
-                                <div class="announcement-date">
-                                    <i class="far fa-clock"></i>
-                                    ${formatRelativeTime(announcement.date)}
-                                </div>
-                                <div class="announcement-date">
-                                    <i class="far fa-user"></i>
-                                    ${announcement.author}
-                                </div>
+                                    </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="announcement-content">
-                    <div class="announcement-message">${announcement.message}</div>
-                    ${detailsHtml}
-                </div>
-                <div class="announcement-actions">
-                    ${announcement.unread ? `
-                        <button class="action-btn" data-id="${announcement.id}" data-action="mark-read">
-                            <i class="fas fa-check"></i> ${dict['mark_as_read'] || 'Mark as Read'}
-                        </button>
-                    ` : ''}
+                    <div class="announcement-content">
+                        <div class="announcement-message">${announcement.message}</div>
+                    </div>
+                    <div class="announcement-actions">
+                        ${announcement.unread ? `
+                            <button class="action-btn" data-id="${announcement.id}" data-action="mark-read">
+                                <i class="fas fa-check"></i> ${dict['mark_as_read'] || 'Mark as Read'}
+                            </button>
+                        ` : ''}
                     <button class="action-btn" data-id="${announcement.id}" data-action="view">
                         <i class="fas fa-eye"></i> ${dict['view_details'] || 'View Details'}
                     </button>
@@ -886,13 +742,33 @@
         }
 
         // Mark announcement as read
-        function markAsRead(id) {
-            const announcement = announcements.find(a => a.id === id);
-            if (announcement) {
-                announcement.unread = false;
-                updateStats();
-                filterAnnouncements(getActiveFilter());
-            }
+        async function markAsRead(id) {
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            const userId = userData.User_ID || userData.user_id;
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/api/user/announcements/read", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: userId, announcement_id: id })
+                });
+
+                if (response.ok) {
+                    // Update the local list status instead of deleting it
+                    const target = announcements.find(a => a.id === id);
+                    if (target) target.unread = false;
+
+                    updateStats();
+                    filterAnnouncements(getActiveFilter());
+                    
+                    // THE FIX: Only hide the dot if NO unread announcements remain
+                    const stillUnread = announcements.some(a => a.unread);
+                    if (!stillUnread) {
+                        const redDot = document.getElementById('navRedDot');
+                        if (redDot) redDot.style.display = 'none';
+                    }
+                }
+            } catch (error) { console.error("Error marking as read:", error); }
         }
 
         // View announcement details
@@ -937,7 +813,7 @@
             console.log('User data changed event received:', e.detail);
             // The userDataManager will handle updating the avatar automatically
         });
-    </script>
+        </script>
 </body>
 
 </html>

@@ -22,7 +22,7 @@
             <h2 data-translate="mobile_restricted">Desktop only</h2>
             <p data-translate="mobile_block_message">User dashboard is optimized for larger screens. Please open on a
                 desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to
                 Home</button>
         </div>
     </div>
@@ -33,7 +33,7 @@
             <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
                 <div class="brand">
                     <div class="logo">
-                        <img src="../../assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                        <img src="/src/assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
                             style="width: 32px; height: 32px;">
                     </div>
                     <div>
@@ -42,37 +42,38 @@
                     </div>
                 </div>
                 <nav class="nav">
-                    <a href="../../pages/user page/index-user.html" data-section="dashboard">
+                    <a href="/user/index-user.html" data-section="dashboard">
                         <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
                     </a>
 
                     <div class="nav-section" data-translate="support">Support</div>
-                    <a href="../../pages/user page/my-tickets.html" data-section="tickets">
+                    <a href="/user/my-tickets.html" data-section="tickets">
                         <i class="fas fa-ticket-alt"></i> <span data-translate="my_tickets">Ticket</span>
                     </a>
-                    <a href="../../pages/user page/notifications.html" data-section="notifications">
+                    <a href="/user/notifications.html" data-section="notifications">
                         <i class="fas fa-bell"></i> <span data-translate="notifications">Alert</span>
                     </a>
-                    <a href="../../pages/user page/submit-ticket.html" data-section="submit-ticket">
+                    <a href="/user/submit-ticket.html" data-section="submit-ticket">
                         <i class="fas fa-plus-circle"></i> <span data-translate="submit_ticket">New</span>
                     </a>
 
                     <div class="nav-section" data-translate="management">Manage</div>
-                    <a href="../../pages/user page/preferences.html" data-section="preferences">
+                    <a href="/user/preferences.html" data-section="preferences">
                         <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Settings</span>
                     </a>
-                    <a href="../../pages/user page/profile-settings.html" class="active" data-section="profile-settings">
+                    <a href="/user/profile-settings.html" class="active" data-section="profile-settings">
                         <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile</span>
                     </a>
-                    <a href="../../pages/user page/announcements.html" data-section="announcements">
-                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Anunsyo</span>
+                    <a href="/user/announcements.html" id="announcementLink">
+                        <i class="fas fa-bullhorn"></i> Announcements
+                        <span id="navRedDot" class="red-dot" style="display: none;"></span>
                     </a>
 
                     <div class="nav-section" data-translate="system">System</div>
-                    <a href="../../pages/user page/account-security.html" data-section="account-security">
+                    <a href="/user/account-security.html" data-section="account-security">
                         <i class="fas fa-shield-alt"></i> <span data-translate="account_security">Security</span>
                     </a>
-                    <a href="../../pages/user page/system-information.html" data-section="system-information">
+                    <a href="/user/system-information.html" data-section="system-information">
                         <i class="fas fa-info-circle"></i> <span data-translate="system_information">Info</span>
                     </a>
                 </nav>
@@ -102,8 +103,8 @@
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="../../pages/user page/profile-settings.html" data-translate="profile">Profile</a>
-                            <a href="../../pages/user page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="/user/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="/user/preferences.html" data-translate="settings">Settings</a>
                             <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
                         </div>
                     </div>
@@ -317,7 +318,8 @@
                                 <button type="button" class="btn btn-secondary" onclick="resetForm()">
                                     <i class="fas fa-times"></i> <span data-translate="cancel">Cancel</span>
                                 </button>
-                                <button type="submit" class="btn btn-primary">
+                                
+                                <button type="submit" class="btn btn-primary" id="updatePasswordBtn">
                                     <i class="fas fa-save"></i> <span data-translate="save_changes">Save Changes</span>
                                 </button>
                             </div>
@@ -700,7 +702,7 @@
                     console.log('🧹 Cleared localStorage, redirecting to login...');
 
                     // Redirect to login page
-                    window.location.href = '../../../index.html';
+                    window.location.href = '/';
                 };
 
                 // Remove any existing listeners and attach fresh one
@@ -1011,6 +1013,81 @@
                 console.error('Error resetting form:', error);
             }
         }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            
+            // Find the button you just added the ID to
+            const updatePasswordBtn = document.getElementById("updatePasswordBtn");
+
+            if (updatePasswordBtn) {
+                updatePasswordBtn.addEventListener("click", async function (e) {
+                    e.preventDefault(); // Stop the page from reloading
+
+                    // Grab the exact IDs from your HTML
+                    const oldPassword = document.getElementById("currentPassword").value;
+                    const newPassword = document.getElementById("newPassword").value;
+                    const confirmPassword = document.getElementById("confirmPassword").value;
+
+                    // 1. Basic Validation
+                    if (!oldPassword || !newPassword || !confirmPassword) {
+                        alert("Please fill in all password fields.");
+                        return;
+                    }
+
+                    if (newPassword !== confirmPassword) {
+                        // You can also change this to use your #confirmPasswordError div!
+                        alert("Your new passwords do not match!"); 
+                        return;
+                    }
+
+                    // 2. Grab the logged-in User's ID from local storage
+                    const userDataStr = localStorage.getItem("userData");
+                    if (!userDataStr) {
+                        alert("You must be logged in to do this.");
+                        return;
+                    }
+                    const userData = JSON.parse(userDataStr);
+
+                    // Change button text so they know it's loading
+                    const originalText = updatePasswordBtn.innerHTML;
+                    updatePasswordBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+                    updatePasswordBtn.disabled = true;
+
+                    // 3. Send the request to your Python server!
+                    try {
+                        const response = await fetch("http://127.0.0.1:5000/api/user/change-password", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                user_id: userData.User_ID,
+                                old_password: oldPassword,
+                                new_password: newPassword
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok && result.status === "success") {
+                            alert("✅ Success! " + result.message);
+                            
+                            // Clear the text boxes so it looks clean
+                            document.getElementById("currentPassword").value = "";
+                            document.getElementById("newPassword").value = "";
+                            document.getElementById("confirmPassword").value = "";
+                        } else {
+                            alert("❌ Failed: " + result.message); 
+                        }
+                    } catch (error) {
+                        console.error("Change Password Error:", error);
+                        alert("Unable to connect to the server. Please try again later.");
+                    } finally {
+                        // Reset the button back to normal
+                        updatePasswordBtn.innerHTML = originalText;
+                        updatePasswordBtn.disabled = false;
+                    }
+                });
+            }
+        });
     </script>
 </body>
 

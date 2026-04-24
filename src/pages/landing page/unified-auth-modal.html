@@ -19,8 +19,8 @@
         <div class="modal-content">
             <div class="compact-header">
                 <div>
-                    <a href="../../../index.html#home-section" aria-label="AlliTrack Home">
-                        <img src="../../assets/images/AlliTrack Logo.png" alt="AlliTrack" width="140" height="40">
+                    <a href="/" aria-label="AlliTrack Home">
+                        <img src="../../assets/images/AlliTrack-Logo.png" alt="AlliTrack" width="140" height="40">
                     </a>
                     <div class="compact-tagline">support that flows · frictionless</div>
                 </div>
@@ -78,7 +78,7 @@
                         <i class="fab fa-facebook"></i> Continue with Facebook
                     </div>
                     <p class="footer-text">
-                        Don't have an account? <a href="../../pages/landing page/unified-auth-modal.html" id="switchToSignupLink">Sign up</a>
+                        Don't have an account? <a href="/login" id="switchToSignupLink">Sign up</a>
                     </p>
                 </div>
 
@@ -137,7 +137,7 @@
                         <div class="terms-container">
                             <div class="terms">
                                 <input type="checkbox" id="modalTerms">
-                                <label for="modalTerms">I agree to the <a href="../../pages/landing page/terms.html">Terms</a> and <a href="../../pages/landing page/privacy.html">Privacy
+                                <label for="modalTerms">I agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy
                                         Policy</a></label>
                             </div>
                             <p id="modalTermsError" class="error-text"></p>
@@ -158,7 +158,7 @@
                         <i class="fab fa-facebook"></i> Sign up with Facebook
                     </div>
                     <p class="footer-text">
-                        Already have an account? <a href="../../pages/landing page/unified-auth-modal.html" id="switchToLoginLink">Log in</a>
+                        Already have an account? <a href="/login" id="switchToLoginLink">Log in</a>
                     </p>
                 </div>
             </div>
@@ -275,7 +275,9 @@
                 localStorage.setItem('userData', JSON.stringify(userData));
                 localStorage.setItem('authToken', 'simulated_token_' + Date.now());
 
-                const redirectPath = userData.role === 'admin'
+                const userType = (result.user.User_Type || "").toLowerCase();
+
+                const redirectPath = (userType === 'admin')
                     ? ADMIN_DASHBOARD_PATH
                     : USER_DASHBOARD_PATH;
 
@@ -451,15 +453,33 @@
                 modalLoginBtn.disabled = true;
 
                 try {
-                    const response = await simulateLoginAPI(emailValue, passwordValue);
+                    // Call the REAL Python backend!
+                    const response = await fetch("http://127.0.0.1:5000/api/login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email: emailValue, password: passwordValue })
+                    });
 
-                    if (response.success) {
-                        handleLoginSuccess(response.user);
+                    const result = await response.json();
+
+                    if (response.ok && result.status === "success") {
+                        // 1. Save the real user data to the browser
+                        localStorage.setItem('userData', JSON.stringify(result.user));
+                        
+                        // 2. Check their role and redirect them
+                        const redirectPath = (result.user.User_Type === 'admin' || result.user.User_Type === 'technician')
+                            ? ADMIN_DASHBOARD_PATH
+                            : USER_DASHBOARD_PATH;
+                            
+                        window.location.href = redirectPath;
                     } else {
-                        handleLoginFailure('Invalid credentials');
+                        // Shows "Invalid email or password" if they type it wrong
+                        handleLoginFailure(result.message || 'Invalid credentials');
                     }
                 } catch (error) {
-                    handleLoginFailure('Network error. Please try again.');
+                    console.error("Login Error:", error);
+                    // PERFECT UX ERROR MESSAGE:
+                    handleLoginFailure('Unable to connect to the server. Please try again later.');
                 }
             }
 
@@ -500,23 +520,31 @@
                 showLoading('Creating your account...');
                 signupBtn.disabled = true;
 
+                const fName = document.getElementById('modalFirstName').value.trim();
+                const lName = document.getElementById('modalLastName').value.trim();
+                const email = document.getElementById('modalSignupEmail').value.trim();
+                const pwd = document.getElementById('modalSignupPassword').value;
+
                 try {
-                    // Simulate signup API call
-                    await new Promise(resolve => setTimeout(resolve, 1600));
+                    // Call the real Python backend!
+                    const result = await registerUser(fName, lName, email, pwd);
 
                     hideLoading();
-                    alert('✅ Account created! Please log in.');
-                    activateLogin();
 
-                    // Reset form
-                    signupForm.reset();
-                    checkPasswordRequirements('');
-                    validateSignup();
+                    if (result.status === "success") {
+                        alert('✅ Account created! Please log in.');
+                        activateLogin();
+                        document.getElementById('modalSignupForm').reset();
+                    } else {
+                        alert(`Signup failed: ${result.message}`);
+                        signupBtn.disabled = false;
+                    }
 
                 } catch (error) {
                     hideLoading();
-                    alert('Signup failed. Please try again.');
+                    alert('Server connection failed. Please try again.');
                     signupBtn.disabled = false;
+                    console.error("Signup error:", error);
                 }
             }
 
@@ -584,11 +612,6 @@
                     if (el) el.addEventListener('paste', cleanPaste);
                 });
 
-                // Login form submit
-                if (loginForm) {
-                    loginForm.addEventListener('submit', handleEmailLogin);
-                }
-
                 // Signup form submit
                 const signupForm = document.getElementById('modalSignupForm');
                 if (signupForm) {
@@ -612,6 +635,8 @@
             init();
         })();
     </script>
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/login.js"></script>
 </body>
 
 </html>

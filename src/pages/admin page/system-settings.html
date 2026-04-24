@@ -22,7 +22,7 @@
             <h2 data-translate="mobile_restricted">Desktop only</h2>
             <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
                 desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='../../../index.html'"
+            <button class="btn" onclick="window.location.href='/'"
                 data-translate="go_back">Back to Home</button>
         </div>
     </div>
@@ -33,7 +33,7 @@
             <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
                 <div class="brand">
                     <div class="logo">
-                        <img src="../../assets/images/AlliTrack Logo.png" alt="AlliTrack Logo" class="logo-img"
+                        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
                             style="width: 32px; height: 32px;">
                     </div>
                     <div>
@@ -42,37 +42,37 @@
                     </div>
                 </div>
                 <nav class="nav">
-                    <a href="../../pages/admin page/index-admin.html" data-section="dashboard">
+                    <a href="/admin/index-admin.html" data-section="dashboard">
                         <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
                     </a>
 
                     <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
-                    <a href="../../pages/admin page/all-tickets.html" data-section="tickets">
+                    <a href="/admin/all-tickets.html" data-section="tickets">
                         <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
                     </a>
-                    <a href="../../pages/admin page/staff-management.html" data-section="users">
+                    <a href="/admin/staff-management.html" data-section="users">
                         <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
                     </a>
-                    <a href="../../pages/admin page/announcements.html" data-section="announcements">
+                    <a href="/admin/announcements.html" data-section="announcements">
                         <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
                     </a>
 
                     <div class="nav-section" data-translate="system_management">System Management</div>
-                    <a href="../../pages/admin page/system-settings.html" class="active" data-section="system-settings">
+                    <a href="/admin/system-settings.html" class="active" data-section="system-settings">
                         <i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span>
                     </a>
-                    <a href="../../pages/admin page/system-analytics.html" data-section="analytics">
+                    <a href="/admin/system-analytics.html" data-section="analytics">
                         <i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span>
                     </a>
-                    <a href="../../pages/admin page/system-logs.html" data-section="logs">
+                    <a href="/admin/system-logs.html" data-section="logs">
                         <i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span>
                     </a>
 
                     <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
-                    <a href="../../pages/admin page/preferences.html" data-section="preferences">
+                    <a href="/admin/preferences.html" data-section="preferences">
                         <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
                     </a>
-                    <a href="../../pages/admin page/profile-settings.html" data-section="profile-settings">
+                    <a href="/admin/profile-settings.html" data-section="profile-settings">
                         <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
                     </a>
                 </nav>
@@ -102,8 +102,8 @@
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="../../pages/admin page/profile-settings.html" data-translate="profile">Profile</a>
-                            <a href="../../pages/admin page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="/admin/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="/admin/preferences.html" data-translate="settings">Settings</a>
                             <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
                         </div>
                     </div>
@@ -1028,7 +1028,7 @@
                     console.log('🧹 Cleared localStorage, redirecting to login...');
 
                     // Redirect to admin login page
-                    window.location.href = '../../../index.html';
+                    window.location.href = '/';
                 };
 
                 // Remove any existing listeners and attach fresh one

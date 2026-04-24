@@ -130,3 +130,60 @@ class UserDataManager {
 
 // Create global instance
 window.userDataManager = new UserDataManager();
+
+// ==========================================
+// GLOBAL PROFILE SYNC: Runs on every page load
+// ==========================================
+document.addEventListener("DOMContentLoaded", function () {
+    
+    // 1. Check if they are logged in
+    const userDataStr = localStorage.getItem("userData");
+    if (!userDataStr) return; 
+    
+    const userData = JSON.parse(userDataStr);
+    
+    // 🔍 DEBUG: This will print your data to the console so we can see it!
+    console.log("DEBUG - User Data from Local Storage:", userData);
+
+    // 2. Find the header profile elements
+    const nameDisplay = document.getElementById("userName");
+    const emailDisplay = document.getElementById("userEmail");
+    const avatarDisplay = document.getElementById("userAvatar");
+
+    // 3. Cast a wider net! Check every possible variation of "Name" or "Username"
+    const fullName = userData.Name || userData.name || userData.Username || userData.username || userData.first_name || "User";
+    const email = userData.Email || userData.email || "No Email";
+
+    // 4. Inject the real data into the HTML header
+    if (nameDisplay) nameDisplay.textContent = fullName;
+    if (emailDisplay) emailDisplay.textContent = email;
+    if (avatarDisplay && fullName !== "User") {
+        avatarDisplay.textContent = fullName.charAt(0).toUpperCase();
+    }
+});
+
+async function checkNewAnnouncements() {
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    const userId = userData.User_ID || userData.user_id;
+    const redDot = document.getElementById('navRedDot');
+
+    if (!userId || !redDot) return;
+
+    try {
+        const response = await fetch(`http://127.0.0.1:5000/api/user/announcements/unread/${userId}`);
+        const unread = await response.json();
+
+        // If the array is empty (length is 0), the dot MUST be hidden
+        if (Array.isArray(unread) && unread.length > 0) {
+            redDot.style.display = 'inline-block';
+        } else {
+            redDot.style.display = 'none'; // This hides the dot!
+        }
+    } catch (e) {
+        console.log("Dot check failed, hiding for safety.");
+        redDot.style.display = 'none';
+    }
+}
+
+// Run this on every page load
+document.addEventListener('DOMContentLoaded', checkNewAnnouncements);

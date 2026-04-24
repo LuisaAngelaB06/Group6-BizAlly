@@ -12,6 +12,7 @@
     <script src="../../scripts/admin-preference-manager.js"></script>
     <script src="../../scripts/admin-data-manager.js"></script>
     <script src="../../scripts/mobile-restriction.js"></script>
+    <script src="../../scripts/admin-tickets.js"></script>
 </head>
 
 <body>
@@ -22,7 +23,7 @@
             <h2 data-translate="mobile_restricted">Desktop only</h2>
             <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
                 desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='../../../index.html'"
+            <button class="btn" onclick="window.location.href='/'"
                 data-translate="go_back">Back to Home</button>
         </div>
     </div>
@@ -33,7 +34,7 @@
             <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
                 <div class="brand">
                     <div class="logo">
-                        <img src="../../../src/assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
                             style="width: 32px; height: 32px;">
                     </div>
                     <div>
@@ -42,37 +43,37 @@
                     </div>
                 </div>
                 <nav class="nav">
-                    <a href="../../pages/admin page/index-admin.html" data-section="dashboard">
+                    <a href="/admin/index-admin.html" data-section="dashboard">
                         <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
                     </a>
 
                     <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
-                    <a href="../../pages/admin page/all-tickets.html" class="active" data-section="tickets">
+                    <a href="/admin/all-tickets.html" class="active" data-section="tickets">
                         <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
                     </a>
-                    <a href="../../pages/admin page/staff-management.html" data-section="users">
+                    <a href="/admin/staff-management.html" data-section="users">
                         <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
                     </a>
-                    <a href="../../pages/admin page/announcements.html" data-section="announcements">
+                    <a href="/admin/announcements.html" data-section="announcements">
                         <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
                     </a>
 
                     <div class="nav-section" data-translate="system_management">System Management</div>
-                    <a href="../../pages/admin page/system-settings.html" data-section="system-settings">
+                    <a href="/admin/system-settings.html" data-section="system-settings">
                         <i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span>
                     </a>
-                    <a href="../../pages/admin page/system-analytics.html" data-section="analytics">
+                    <a href="/admin/system-analytics.html" data-section="analytics">
                         <i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span>
                     </a>
-                    <a href="../../pages/admin page/system-logs.html" data-section="logs">
+                    <a href="/admin/system-logs.html" data-section="logs">
                         <i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span>
                     </a>
 
                     <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
-                    <a href="../../pages/admin page/preferences.html" data-section="preferences">
+                    <a href="/admin/preferences.html" data-section="preferences">
                         <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
                     </a>
-                    <a href="../../pages/admin page/profile-settings.html" data-section="profile-settings">
+                    <a href="/admin/profile-settings.html" data-section="profile-settings">
                         <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
                     </a>
                 </nav>
@@ -102,9 +103,9 @@
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="../../pages/admin page/profile-settings.html" data-translate="profile">Profile</a>
-                            <a href="../../pages/admin page/preferences.html" data-translate="settings">Settings</a>
-                            <a href="../../../index.html" id="logoutBtn" data-translate="logout">Logout</a>
+                            <a href="/admin/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="/admin/preferences.html" data-translate="settings">Settings</a>
+                            <a href="/" id="logoutBtn" data-translate="logout">Logout</a>
                         </div>
                     </div>
                 </header>
@@ -182,7 +183,7 @@
                                             <th data-translate="actions">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="ticketsTbody">
                                         <!-- Ticket entries will be populated here -->
                                     </tbody>
                                 </table>
@@ -494,200 +495,7 @@
         }
 
         // Sample tickets data
-        let sampleTickets = [
-            {
-                id: 'TKT-2025-001',
-                subject: 'Login issues after system update',
-                requester: 'john.doe@company.com',
-                requesterFirstName: 'John',
-                assignedTo: 'IT Support Team',
-                priority: 'high',
-                status: 'open',
-                created: '2025-02-09 09:15:23',
-                description: 'Users are experiencing login failures after the recent system update. Error code: AUTH-403. This issue affects multiple users across different departments.',
-                category: 'Authentication',
-                department: 'IT Support',
-                lastUpdated: '2025-02-09 14:30:00',
-                dueDate: '2025-02-12',
-                contactNumber: '+1 (555) 123-4567'
-            },
-            {
-                id: 'TKT-2025-002',
-                subject: 'Dashboard performance optimization',
-                requester: 'sarah.smith@partner.com',
-                requesterFirstName: 'Sarah',
-                assignedTo: 'Development Team',
-                priority: 'medium',
-                status: 'in_progress',
-                created: '2025-02-08 14:20:10',
-                description: 'Dashboard loading times have increased by 40% over the past week. Need optimization for better user experience. Particularly slow on mobile devices.',
-                category: 'Performance',
-                department: 'Development',
-                lastUpdated: '2025-02-09 11:45:00',
-                dueDate: '2025-02-15',
-                contactNumber: '+1 (555) 987-6543'
-            },
-            {
-                id: 'TKT-2025-003',
-                subject: 'Invoice export formatting issue',
-                requester: 'finance@allitrack.com',
-                requesterFirstName: 'Finance',
-                assignedTo: 'Admin Team',
-                priority: 'low',
-                status: 'resolved',
-                created: '2025-02-07 11:30:45',
-                description: 'PDF invoice export shows incorrect formatting for currency symbols. The issue occurs when exporting invoices with multiple currencies.',
-                category: 'Billing',
-                department: 'Finance',
-                lastUpdated: '2025-02-08 16:15:00',
-                dueDate: '2025-02-10',
-                contactNumber: '+1 (555) 456-7890'
-            },
-            {
-                id: 'TKT-2025-004',
-                subject: 'Mobile app crash on iOS',
-                requester: 'michael.brown@client.com',
-                requesterFirstName: 'Michael',
-                assignedTo: 'Mobile Team',
-                priority: 'urgent',
-                status: 'open',
-                created: '2025-02-10 08:45:12',
-                description: 'App crashes immediately after launch on iOS 17.2 devices. Users cannot access any features. Crash logs show memory allocation error.',
-                category: 'Bug',
-                department: 'Mobile Development',
-                lastUpdated: '2025-02-10 10:30:00',
-                dueDate: '2025-02-11',
-                contactNumber: '+1 (555) 789-0123'
-            },
-            {
-                id: 'TKT-2025-005',
-                subject: 'Data export timeout issue',
-                requester: 'analytics@company.com',
-                requesterFirstName: 'Analytics',
-                assignedTo: 'Backend Team',
-                priority: 'medium',
-                status: 'in_progress',
-                created: '2025-02-09 16:30:22',
-                description: 'Large data exports timeout after 5 minutes. Need to increase timeout or implement chunking functionality for better performance.',
-                category: 'Performance',
-                department: 'Backend',
-                lastUpdated: '2025-02-10 09:15:00',
-                dueDate: '2025-02-14',
-                contactNumber: '+1 (555) 234-5678'
-            },
-            {
-                id: 'TKT-2025-006',
-                subject: 'User permission issue',
-                requester: 'admin@company.com',
-                requesterFirstName: 'Admin',
-                assignedTo: 'Security Team',
-                priority: 'high',
-                status: 'open',
-                created: '2025-02-10 11:20:33',
-                description: 'Users cannot access their assigned modules after permission changes. This affects 15+ users in the sales department.',
-                category: 'Security',
-                department: 'IT Security',
-                lastUpdated: '2025-02-10 14:45:00',
-                dueDate: '2025-02-13',
-                contactNumber: '+1 (555) 345-6789'
-            },
-            {
-                id: 'TKT-2025-007',
-                subject: 'Email notifications not sending',
-                requester: 'support@allitrack.com',
-                requesterFirstName: 'Support',
-                assignedTo: 'Email Team',
-                priority: 'medium',
-                status: 'resolved',
-                created: '2025-02-08 09:10:45',
-                description: 'Users are not receiving email notifications for ticket updates. This affects customer communication and response times.',
-                category: 'Email',
-                department: 'Communication',
-                lastUpdated: '2025-02-09 15:20:00',
-                dueDate: '2025-02-09',
-                contactNumber: '+1 (555) 901-2345'
-            },
-            {
-                id: 'TKT-2025-008',
-                subject: 'Dashboard widget loading slowly',
-                requester: 'user123@company.com',
-                requesterFirstName: 'User',
-                assignedTo: 'Frontend Team',
-                priority: 'low',
-                status: 'closed',
-                created: '2025-02-07 14:55:18',
-                description: 'Chart widgets take more than 10 seconds to load on the dashboard. Users report frustration with the slow performance.',
-                category: 'Performance',
-                department: 'Frontend',
-                lastUpdated: '2025-02-08 11:30:00',
-                dueDate: '2025-02-10',
-                contactNumber: '+1 (555) 678-9012'
-            },
-            {
-                id: 'TKT-2025-009',
-                subject: 'API rate limiting too strict',
-                requester: 'developer@partner.com',
-                requesterFirstName: 'Developer',
-                assignedTo: 'API Team',
-                priority: 'medium',
-                status: 'in_progress',
-                created: '2025-02-10 13:40:27',
-                description: 'Current rate limit of 100 requests/hour is too low for our integration. Need to increase to 1000 requests/hour.',
-                category: 'API',
-                department: 'Integration',
-                lastUpdated: '2025-02-10 16:10:00',
-                dueDate: '2025-02-17',
-                contactNumber: '+1 (555) 012-3456'
-            },
-            {
-                id: 'TKT-2025-010',
-                subject: 'Payment gateway timeout',
-                requester: 'billing@company.com',
-                requesterFirstName: 'Billing',
-                assignedTo: 'Payment Team',
-                priority: 'high',
-                status: 'open',
-                created: '2025-02-11 10:05:39',
-                description: 'Payments failing due to 30-second timeout on gateway calls. This is causing transaction failures and customer complaints.',
-                category: 'Payment',
-                department: 'Finance',
-                lastUpdated: '2025-02-11 11:30:00',
-                dueDate: '2025-02-12',
-                contactNumber: '+1 (555) 567-8901'
-            },
-            {
-                id: 'TKT-2025-011',
-                subject: 'Report generation error',
-                requester: 'reports@allitrack.com',
-                requesterFirstName: 'Reports',
-                assignedTo: 'Reporting Team',
-                priority: 'medium',
-                status: 'resolved',
-                created: '2025-02-09 12:25:14',
-                description: 'Monthly reports fail with database connection error. The error occurs when generating reports with large datasets.',
-                category: 'Reporting',
-                department: 'Analytics',
-                lastUpdated: '2025-02-10 09:45:00',
-                dueDate: '2025-02-11',
-                contactNumber: '+1 (555) 890-1234'
-            },
-            {
-                id: 'TKT-2025-012',
-                subject: 'UI alignment issues on mobile',
-                requester: 'designer@company.com',
-                requesterFirstName: 'Designer',
-                assignedTo: 'UI Team',
-                priority: 'low',
-                status: 'open',
-                created: '2025-02-10 15:30:55',
-                description: 'Text and buttons misaligned on mobile devices below 320px width. This affects the user experience on smaller screens.',
-                category: 'UI',
-                department: 'Design',
-                lastUpdated: '2025-02-10 16:45:00',
-                dueDate: '2025-02-15',
-                contactNumber: '+1 (555) 123-8901'
-            }
-        ];
+        let sampleTickets = []
 
         // Global variables
         let currentFilteredTickets = [];
@@ -854,7 +662,7 @@
                     localStorage.removeItem('preferredTheme');
                     localStorage.removeItem('preferredLanguage');
                     console.log('🧹 Cleared localStorage, redirecting to login...');
-                    window.location.href = '../../../index.html';
+                    window.location.href = '/';
                 };
                 logoutBtn.removeEventListener('click', logoutHandler);
                 logoutBtn.addEventListener('click', logoutHandler);
@@ -946,7 +754,9 @@
                 <td>${ticket.assignedTo}</td>
                 <td>${priorityBadge}</td>
                 <td>${statusBadge}</td>
-                <td>${ticket.created.split(' ')[0]}</td>
+                <td>
+                    ${new Date(ticket.created).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
+                </td>
                 <td>
                     <div class="action-buttons">
                         <button class="btn-action btn-view" data-ticket-id="${ticket.id}" title="View Details">
@@ -1153,20 +963,14 @@
                                 
                                 <div class="form-section">
                                     <h4>${dict['new_values'] || 'New Values'}</h4>
-                                    
+
                                     <div class="form-group">
                                         <label for="editAssignedTo">${dict['assigned_to'] || 'Assigned To'}</label>
                                         <select id="editAssignedTo" class="form-select">
-                                            <option value="" disabled selected>Select team or person</option>
-                                            <option value="IT Support Team" ${ticket.assignedTo === 'IT Support Team' ? 'selected' : ''}>IT Support Team</option>
-                                            <option value="Development Team" ${ticket.assignedTo === 'Development Team' ? 'selected' : ''}>Development Team</option>
-                                            <option value="Admin Team" ${ticket.assignedTo === 'Admin Team' ? 'selected' : ''}>Admin Team</option>
-                                            <option value="Customer Support" ${ticket.assignedTo === 'Customer Support' ? 'selected' : ''}>Customer Support</option>
-                                            <option value="Quality Assurance" ${ticket.assignedTo === 'Quality Assurance' ? 'selected' : ''}>Quality Assurance</option>
-                                            <option value="Finance Department" ${ticket.assignedTo === 'Finance Department' ? 'selected' : ''}>Finance Department</option>
+                                            <option value="">Loading technicians...</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div class="form-group">
                                         <label for="editPriority">${dict['priority'] || 'Priority'}</label>
                                         <select id="editPriority" class="form-select">
@@ -1176,7 +980,7 @@
                                             <option value="urgent" ${ticket.priority === 'urgent' ? 'selected' : ''}>${dict['urgent'] || 'Urgent'}</option>
                                         </select>
                                     </div>
-                                    
+
                                     <div class="form-group">
                                         <label for="editStatus">${dict['status'] || 'Status'}</label>
                                         <select id="editStatus" class="form-select">
@@ -1186,12 +990,18 @@
                                             <option value="closed" ${ticket.status === 'closed' ? 'selected' : ''}>${dict['closed'] || 'Closed'}</option>
                                         </select>
                                     </div>
+
+                                    <div class="form-group">
+                                        <label for="editResolution">${dict['resolution_details'] || 'Resolution Notes'}</label>
+                                        <textarea id="editResolution" class="form-textarea" placeholder="Describe the fix or current progress...">${ticket.resolutionDetails}</textarea>
+                                    </div>
+
                                 </div>
                             </form>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-secondary" id="cancelEditBtn">${dict['cancel'] || 'Cancel'}</button>
-                            <button class="btn btn-primary" id="saveEditBtn">${dict['save_changes'] || 'Save Changes'}</button>
+                            <button type="button" class="btn btn-primary" id="saveEditBtn">${dict['save_changes'] || 'Save Changes'}</button>
                         </div>
                     </div>
                 </div>
@@ -1204,6 +1014,7 @@
             const editModal = document.getElementById('editTicketModal');
             editModal.classList.add('show');
 
+            loadTechnicians(ticket);
             addEditFormStyles();
             setupEditModalListeners();
         }
@@ -1273,36 +1084,79 @@
         }
 
         // Save ticket changes
-        function saveTicketChanges() {
+        async function saveTicketChanges() {
             if (!currentlyEditingTicketId) return;
 
-            const ticketIndex = sampleTickets.findIndex(t => t.id === currentlyEditingTicketId);
-            if (ticketIndex === -1) return;
-
-            const assignedTo = document.getElementById('editAssignedTo').value;
+            const technicianID = document.getElementById('editAssignedTo').value;
             const status = document.getElementById('editStatus').value;
             const priority = document.getElementById('editPriority').value;
+            const resolution = document.getElementById('editResolution').value.trim();
 
-            if (!assignedTo || assignedTo === "Select team or person") {
-                showToast('Please select a valid "Assigned To" value', 'error');
+            if (!technicianID || technicianID === "Select team or person") {
+                showToast('Please select a valid "Technician" value', 'error');
                 return;
             }
-            if (!status) { showToast('Please select a status', 'error'); return; }
-            if (!priority) { showToast('Please select a priority', 'error'); return; }
 
-            sampleTickets[ticketIndex].assignedTo = assignedTo;
-            sampleTickets[ticketIndex].status = status;
-            sampleTickets[ticketIndex].priority = priority;
-            sampleTickets[ticketIndex].lastUpdated = getCurrentDateTime();
+            if (!status) {
+                showToast('Please select a status', 'error');
+                return;
+            }
 
-            loadTickets();
+            if (!priority) {
+                showToast('Please select a priority', 'error');
+                return;
+            }
 
-            const currentLang = window.preferencesManager ?
-                window.preferencesManager.getCurrentLanguage() : 'en';
-            const dict = translations[currentLang] || translations['en'];
+            // 🔥 SMART CHECK: Require resolution notes if closing/resolving
+            if ((status === 'resolved' || status === 'closed') && resolution === "") {
+                showToast('Resolution Notes are required to resolve or close a ticket.', 'error');
+                // Optional: Highlight the box so the user knows what they missed
+                document.getElementById('editResolution').style.borderColor = '#ef4444';
+                return;
+            }
 
-            showToast(dict['ticket_saved'] || 'Ticket saved successfully', 'success');
-            closeEditModal();
+            // Extract numeric ticket ID (e.g., TKT-7 -> 7)
+            const ticketId = currentlyEditingTicketId.replace("TKT-", "");
+
+            // Convert status to DB number
+            const statusMap = {
+                open: 1,
+                in_progress: 2,
+                resolved: 3,
+                closed: 4
+            };
+
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/api/tickets/${ticketId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        Status_ID: statusMap[status],
+                        Priority: priority,
+                        Technician_ID: technicianID,
+                        Resolution_Details: resolution
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Server responded with an error");
+                }
+
+                // Fetch fresh data from the server (this automatically updates sampleTickets and calls loadTickets)
+                await fetchTicketsFromAPI();
+
+                const currentLang = window.preferencesManager ? window.preferencesManager.getCurrentLanguage() : 'en';
+                const dict = translations[currentLang] || translations['en'];
+                
+                showToast(dict['ticket_saved'] || 'Ticket saved successfully', 'success');
+                closeEditModal();
+
+            } catch (error) {
+                console.error("API update failed:", error);
+                showToast("Server update failed", "error");
+            }
         }
 
         // Helper function to get current date time
@@ -1412,19 +1266,46 @@
         }
 
         // Confirm and execute deletion
-        function confirmDeleteTickets() {
+        async function confirmDeleteTickets() {
+
             const ticketIdsToDelete = Array.from(selectedTickets);
-            sampleTickets = sampleTickets.filter(ticket => !selectedTickets.has(ticket.id));
+
+            try {
+
+                for (let ticketId of ticketIdsToDelete) {
+
+                    // Convert TKT-7 → 7
+                    const numericId = ticketId.replace("TKT-", "");
+
+                    await fetch(`http://127.0.0.1:5000/api/tickets/${numericId}`, {
+                        method: "DELETE"
+                    });
+
+                }
+
+                // Refresh tickets from API
+                fetchTicketsFromAPI();
+
+            } catch (error) {
+
+                console.error("Delete failed:", error);
+                showToast("Delete failed", "error");
+                return;
+
+            }
+
             selectedTickets.clear();
-            loadTickets();
 
             const modal = document.getElementById('deleteConfirmationModal');
             if (modal) modal.classList.remove('show');
 
             const currentLang = window.preferencesManager ?
                 window.preferencesManager.getCurrentLanguage() : 'en';
+
             const dict = translations[currentLang] || translations['en'];
+
             showToast(dict['delete_success'] || 'Tickets deleted successfully', 'success');
+
             updateDeleteButtonVisibility();
         }
 
@@ -1557,8 +1438,8 @@
 
             const refreshBtn = document.getElementById('refreshTickets');
             if (refreshBtn) {
-                refreshBtn.addEventListener('click', function () {
-                    loadTickets();
+                refreshBtn.addEventListener('click', async function refreshTickets() {
+                    await fetchTicketsFromAPI();
                     const currentLang = window.preferencesManager ?
                         window.preferencesManager.getCurrentLanguage() : 'en';
                     const dict = translations[currentLang] || translations['en'];
@@ -1647,6 +1528,92 @@
         document.addEventListener('languageChanged', function (e) {
             applyTranslations(e.detail.language);
         });
+
+        function convertStatus(statusId){
+
+            if (statusId == 1) return "open";
+            if (statusId == 2) return "in_progress";
+            if (statusId == 3) return "resolved";
+            if (statusId == 4) return "closed";
+            return "open";
+            
+        }
+        
+        async function fetchTicketsFromAPI(){
+
+            try{
+
+                const response = await fetch("http://127.0.0.1:5000/api/tickets");
+                const data = await response.json();
+
+                // Inside fetchTicketsFromAPI()
+                sampleTickets = data.map(ticket => {
+                    return {
+                        id: "TKT-" + ticket.Ticket_ID,
+                        subject: ticket.Concern_Title,
+                        requester: ticket.Email || "User",
+                        requesterFirstName: ticket.Email ? ticket.Email.split('@')[0] : "User",
+                        assignedTo: ticket.Technician_Name || "Unassigned",
+                        Technician_ID: ticket.Technician_ID,
+                        priority: ticket.Priority.toLowerCase(),
+                        status: convertStatus(ticket.Status_ID),
+                        created: ticket.Date_Created,
+                        description: ticket.Description || "",
+                        category: "Support",
+                        department: "IT",
+                        lastUpdated: ticket.Last_Updated || ticket.Date_Created,
+                        resolutionDetails: ticket.Resolution_Details || "" // <-- ADD THIS LINE
+                    }
+                });
+
+                loadTickets();
+
+            }catch(error){
+                console.error("Failed to load tickets:", error);
+            }
+
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            fetchTicketsFromAPI();
+        });
+
+        async function loadTechnicians(ticket){
+
+            try{
+
+                const response = await fetch("http://127.0.0.1:5000/api/technicians");
+                const techs = await response.json();
+
+                const select = document.getElementById("editAssignedTo");
+
+                if(!select) return;
+
+                select.innerHTML = "";
+
+                techs.forEach(t => {
+
+                    const option = document.createElement("option");
+
+                    option.value = t.Technician_ID;
+                    option.textContent = t.Name;
+
+                    // preselect assigned technician
+                    if(ticket && ticket.Technician_ID && t.Technician_ID == ticket.Technician_ID){
+                        option.selected = true;
+                    }
+
+                    select.appendChild(option);
+
+                });
+
+            }catch(error){
+
+                console.error("Failed to load technicians:", error);
+
+            }
+
+        }
     </script>
 </body>
 

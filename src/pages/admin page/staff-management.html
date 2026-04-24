@@ -22,7 +22,7 @@
             <h2 data-translate="mobile_restricted">Desktop only</h2>
             <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
                 desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to
                 Home</button>
         </div>
     </div>
@@ -33,7 +33,7 @@
             <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
                 <div class="brand">
                     <div class="logo">
-                        <img src="../../../src/assets/images/AlliTrack Icon.png" alt="AlliTrack Logo" class="logo-img"
+                        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
                             style="width: 32px; height: 32px;">
                     </div>
                     <div>
@@ -42,31 +42,31 @@
                     </div>
                 </div>
                 <nav class="nav">
-                    <a href="../../pages/admin page/index-admin.html" data-section="dashboard"><i
+                    <a href="/admin/index-admin.html" data-section="dashboard"><i
                             class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span></a>
                     <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
-                    <a href="../../pages/admin page/all-tickets.html" data-section="tickets"><i
+                    <a href="/admin/all-tickets.html" data-section="tickets"><i
                             class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span></a>
-                    <a href="../../pages/admin page/staff-management.html" class="active" data-section="users"><i
+                    <a href="/admin/staff-management.html" class="active" data-section="users"><i
                             class="fas fa-users"></i> <span data-translate="users_management">Staff
                             Management</span></a>
-                    <a href="../../pages/admin page/announcements.html" data-section="announcements"><i
+                    <a href="/admin/announcements.html" data-section="announcements"><i
                             class="fas fa-bullhorn"></i>
                         <span data-translate="announcements">Announcements</span></a>
                     <div class="nav-section" data-translate="system_management">System Management</div>
-                    <a href="../../pages/admin page/system-settings.html" data-section="system-settings"><i
+                    <a href="/admin/system-settings.html" data-section="system-settings"><i
                             class="fas fa-cogs"></i>
                         <span data-translate="system_settings">System Settings</span></a>
-                    <a href="../../pages/admin page/system-analytics.html" data-section="analytics"><i
+                    <a href="/admin/system-analytics.html" data-section="analytics"><i
                             class="fas fa-chart-bar"></i>
                         <span data-translate="analytics">Analytics</span></a>
-                    <a href="../../pages/admin page/system-logs.html" data-section="logs"><i
+                    <a href="/admin/system-logs.html" data-section="logs"><i
                             class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span></a>
                     <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
-                    <a href="../../pages/admin page/preferences.html" data-section="preferences"><i
+                    <a href="/admin/preferences.html" data-section="preferences"><i
                             class="fas fa-sliders-h"></i>
                         <span data-translate="preferences">Preferences</span></a>
-                    <a href="../../pages/admin page/profile-settings.html" data-section="profile-settings"><i
+                    <a href="/admin/profile-settings.html" data-section="profile-settings"><i
                             class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile
                             Settings</span></a>
                 </nav>
@@ -96,8 +96,8 @@
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="../../pages/admin page/profile-settings.html" data-translate="profile">Profile</a>
-                            <a href="../../pages/admin page/preferences.html" data-translate="settings">Settings</a>
+                            <a href="/admin/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="/admin/preferences.html" data-translate="settings">Settings</a>
                             <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
                         </div>
                     </div>
@@ -123,21 +123,13 @@
                         <div class="staff-toolbar">
                             <div class="filters">
                                 <div class="filter-group">
-                                    <label for="roleFilter" class="filter-label" data-translate="role">Role</label>
-                                    <select id="roleFilter" class="filter-select">
-                                        <option value="all" data-translate="all_roles">All Roles</option>
-                                        <option value="admin" data-translate="admin">Admin</option>
-                                        <option value="support" data-translate="support">Support Staff</option>
-                                        <option value="agent" data-translate="agent">Agent</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
                                     <label for="statusFilter" class="filter-label"
                                         data-translate="status">Status</label>
                                     <select id="statusFilter" class="filter-select">
                                         <option value="all" data-translate="all_status">All Status</option>
                                         <option value="active" data-translate="active">Active</option>
                                         <option value="inactive" data-translate="inactive">Inactive</option>
+                                        <option value="suspended" data-translate="suspended">Suspended</option>
                                     </select>
                                 </div>
                                 <button class="btn btn-secondary" id="clearFiltersBtn">
@@ -146,9 +138,6 @@
                                 </button>
                             </div>
                             <div class="actions">
-                                <button class="btn btn-primary" id="addStaffBtn">
-                                    <i class="fas fa-user-plus"></i> <span data-translate="add_staff">Add Staff</span>
-                                </button>
                                 <button class="btn btn-danger" id="deleteStaffBtn" style="display:none;">
                                     <i class="fas fa-trash-alt"></i> <span data-translate="delete_selected">Delete
                                         Selected</span>
@@ -165,15 +154,15 @@
                                 <table class="staff-table" id="staffTable">
                                     <thead>
                                         <tr>
-                                            <th style="width:30px;"><input type="checkbox" id="selectAllStaff"
-                                                    title="Select All"></th>
-                                            <th data-translate="staff_id">Staff ID</th>
+                                            <th style="width: 120px; text-align: center; padding-left: 35px;">
+                                                <input type="checkbox" id="selectAllStaff" title="Select All">
+                                            </th>
+                                            <th data-translate="staff_id" style="width: 140px; padding-left: 35px;">Staff ID</th>
                                             <th data-translate="name">Name</th>
-                                            <th data-translate="email">Email</th>
-                                            <th data-translate="role">Role</th>
-                                            <th data-translate="status">Status</th>
-                                            <th data-translate="admin_access">Admin</th>
-                                            <th data-translate="actions">Actions</th>
+                                            <th data-translate="email" style="width: 280px;">Email</th>
+                                            <th data-translate="role" style="width: 120px; padding-left: 35px;">Role</th>
+                                            <th data-translate="status" style="width: 110px;">Status</th>
+                                            <th data-translate="actions" style="width: 160px; text-align: center;">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="staffTableBody">
@@ -238,25 +227,11 @@
                         <input type="email" id="email" class="form-control" required placeholder="staff@allitrack.com">
                     </div>
                     <div class="form-group">
-                        <label for="role" data-translate="role">Role</label>
-                        <select id="role" class="form-control">
-                            <option value="admin">Admin</option>
-                            <option value="support">Support Staff</option>
-                            <option value="agent">Agent</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
                         <label for="status" data-translate="status">Status</label>
                         <select id="status" class="form-control">
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="isAdminToggle" data-translate="admin_access">Admin Access</label>
-                        <select id="isAdminToggle" class="form-control">
-                            <option value="true">Yes (Administrator)</option>
-                            <option value="false">No (Standard)</option>
+                            <option value="suspended">Suspended</option> 
                         </select>
                     </div>
                 </form>
@@ -318,11 +293,10 @@
                     actions: 'Actions',
                     all_roles: 'All Roles',
                     admin: 'Admin',
-                    support: 'Support Staff',
-                    agent: 'Agent',
                     all_status: 'All Status',
                     active: 'Active',
                     inactive: 'Inactive',
+                    suspended: 'Suspended',
                     edit: 'Edit',
                     delete: 'Delete',
                     toggle_admin: 'Toggle Admin',
@@ -368,8 +342,6 @@
                     actions: 'Mga Aksyon',
                     all_roles: 'Lahat ng Tungkulin',
                     admin: 'Admin',
-                    support: 'Support Staff',
-                    agent: 'Agent',
                     all_status: 'Lahat ng Status',
                     active: 'Aktibo',
                     inactive: 'Hindi Aktibo',
@@ -402,20 +374,36 @@
                 }
             };
 
-            // ---------- SAMPLE STAFF DATA ----------
-            let staffMembers = [
-                { id: 'STF-1001', name: 'John Carter', email: 'john.carter@allitrack.com', role: 'admin', status: 'active', isAdmin: true },
-                { id: 'STF-1002', name: 'Maria Santos', email: 'maria.santos@allitrack.com', role: 'support', status: 'active', isAdmin: false },
-                { id: 'STF-1003', name: 'Alex Rivera', email: 'alex.rivera@allitrack.com', role: 'agent', status: 'active', isAdmin: false },
-                { id: 'STF-1004', name: 'Jamie Smith', email: 'jamie.smith@allitrack.com', role: 'support', status: 'inactive', isAdmin: false },
-                { id: 'STF-1005', name: 'Taylor Wong', email: 'taylor.wong@allitrack.com', role: 'admin', status: 'active', isAdmin: true },
-                { id: 'STF-1006', name: 'Jordan Lee', email: 'jordan.lee@allitrack.com', role: 'agent', status: 'active', isAdmin: false },
-                { id: 'STF-1007', name: 'Casey Kim', email: 'casey.kim@allitrack.com', role: 'support', status: 'active', isAdmin: false },
-                { id: 'STF-1008', name: 'Riley Patel', email: 'riley.patel@allitrack.com', role: 'admin', status: 'inactive', isAdmin: true },
-                { id: 'STF-1009', name: 'Sam Johnson', email: 'sam.johnson@allitrack.com', role: 'agent', status: 'active', isAdmin: false },
-                { id: 'STF-1010', name: 'Morgan Chen', email: 'morgan.chen@allitrack.com', role: 'support', status: 'active', isAdmin: false },
-                { id: 'STF-1011', name: 'Dana White', email: 'dana.white@allitrack.com', role: 'agent', status: 'inactive', isAdmin: false }
-            ];
+            // ---------- REAL STAFF DATA FROM DATABASE ----------
+            let staffMembers = [];
+
+            async function fetchRealStaff() {
+                try {
+                    const response = await fetch("http://127.0.0.1:5000/api/admin/users");
+                    const realUsers = await response.json();
+                    
+                    if (!Array.isArray(realUsers)) return;
+                    
+                    staffMembers = realUsers
+                        .filter(user => {
+                            const type = (user.User_Type || user.user_type || "").toLowerCase();
+                            return type === 'admin';
+                        })
+                        // Replace the .map section inside fetchRealStaff with this:
+                        .map(user => ({
+                            id: String(user.User_ID || user.user_id || "0"), 
+                            name: user.Name || user.name || "Missing Name", 
+                            email: user.Email || user.email || "Missing Email", 
+                            role: 'Admin',
+                            // 🚀 THE FIX: Pull the actual Account_Status from Python
+                            status: (user.Account_Status || user.account_status || 'active').toLowerCase() 
+                        }));
+                    
+                    loadStaff();
+                } catch (error) {
+                    console.error("❌ THE FETCH FAILED:", error);
+                }
+            }
 
             // Global state
             let currentFilteredStaff = [];
@@ -458,17 +446,18 @@
             }
 
             // Load and render staff table
+            // Load and render staff table
             function loadStaff() {
                 const tbody = document.getElementById('staffTableBody');
                 if (!tbody) return;
                 tbody.innerHTML = '';
 
-                const roleFilter = document.getElementById('roleFilter').value;
+                // FIXED: Removed the broken roleFilter!
                 const statusFilter = document.getElementById('statusFilter').value;
                 const searchTerm = document.getElementById('staffSearch')?.value.toLowerCase() || '';
 
                 currentFilteredStaff = staffMembers.filter(staff => {
-                    if (roleFilter !== 'all' && staff.role !== roleFilter) return false;
+                    // FIXED: Removed the role filter check!
                     if (statusFilter !== 'all' && staff.status !== statusFilter) return false;
                     if (searchTerm) {
                         const haystack = `${staff.id} ${staff.name} ${staff.email} ${staff.role}`.toLowerCase();
@@ -487,17 +476,25 @@
                     row.dataset.staffId = staff.id;
                     const isChecked = selectedStaff.has(staff.id);
                     row.innerHTML = `
-                        <td style="width:30px; text-align:center;"><input type="checkbox" class="staff-checkbox" data-staff-id="${staff.id}" ${isChecked ? 'checked' : ''}></td>
-                        <td><strong>${staff.id}</strong></td>
+                        <td style="width: 120px; text-align: center; padding-left: 35px;">
+                            <input type="checkbox" class="staff-checkbox" data-staff-id="${staff.id}" ${isChecked ? 'checked' : ''}>
+                        </td>
+                        <td style="padding-left: 35px;"><strong>${staff.id}</strong></td>
                         <td>${staff.name}</td>
                         <td><span style="font-size:0.75rem; color:var(--text-secondary);">${staff.email}</span></td>
-                        <td><span class="badge ${staff.role === 'admin' ? 'badge-admin' : 'badge-staff'}">${staff.role === 'admin' ? 'Admin' : staff.role === 'support' ? 'Support' : 'Agent'}</span></td>
-                        <td><span class="badge ${staff.status === 'active' ? 'badge-active' : 'badge-inactive'}">${staff.status === 'active' ? 'Active' : 'Inactive'}</span></td>
-                        <td style="text-align:center;"><span class="badge ${staff.isAdmin ? 'badge-admin' : 'badge-inactive'}">${staff.isAdmin ? 'Yes' : 'No'}</span></td>
+                        <td style="padding-left: 35px;"><span class="badge badge-admin">Admin</span></td>
                         <td>
-                            <div class="action-buttons">
+                            <span class="badge ${
+                                staff.status === 'active' ? 'badge-active' : 
+                                staff.status === 'suspended' ? 'badge-suspended' : 'badge-inactive'
+                            }">
+                                ${staff.status.charAt(0).toUpperCase() + staff.status.slice(1)}
+                            </span>
+                        </td>
+                        <td style="text-align: center;">
+                            <div class="action-buttons" style="justify-content: center; display: flex; gap: 8px;">
                                 <button class="btn-action btn-edit" data-staff-id="${staff.id}" title="Edit"><i class="fas fa-edit"></i></button>
-                                <button class="btn-action btn-toggle-admin" data-staff-id="${staff.id}" title="Toggle Admin"><i class="fas fa-user-shield"></i></button>
+                                <button class="btn-action btn-reset-pwd" data-staff-id="${staff.id}" title="Reset Password" style="color: #f59e0b;"><i class="fas fa-key"></i></button>
                                 <button class="btn-action btn-delete" data-staff-id="${staff.id}" title="Delete"><i class="fas fa-trash-alt"></i></button>
                             </div>
                         </td>
@@ -512,21 +509,28 @@
             }
 
             function attachRowListeners() {
+                // Checkbox listeners
                 document.querySelectorAll('.staff-checkbox').forEach(cb => {
-                    cb.removeEventListener('change', handleCheckChange);
                     cb.addEventListener('change', handleCheckChange);
                 });
+
+                // Edit button listener
                 document.querySelectorAll('.btn-edit').forEach(btn => {
-                    btn.removeEventListener('click', handleEdit);
                     btn.addEventListener('click', handleEdit);
                 });
-                document.querySelectorAll('.btn-toggle-admin').forEach(btn => {
-                    btn.removeEventListener('click', handleToggleAdmin);
-                    btn.addEventListener('click', handleToggleAdmin);
-                });
+
+                // Delete button listener
                 document.querySelectorAll('.btn-delete').forEach(btn => {
-                    btn.removeEventListener('click', handleDeleteSingle);
                     btn.addEventListener('click', handleDeleteSingle);
+                });
+
+                // Reset Password Listener
+                document.querySelectorAll('.btn-reset-pwd').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        const rawId = e.currentTarget.dataset.staffId;
+                        const numericId = rawId.replace("STF-", ""); 
+                        forcePasswordReset(numericId);
+                    });
                 });
             }
 
@@ -544,16 +548,6 @@
                 if (staff) openEditModal(staff);
             }
 
-            function handleToggleAdmin(e) {
-                const id = e.currentTarget.dataset.staffId;
-                const staff = staffMembers.find(s => s.id === id);
-                if (staff) {
-                    staff.isAdmin = !staff.isAdmin;
-                    showToast(`Admin access toggled for ${staff.name}`, 'success');
-                    loadStaff();
-                }
-            }
-
             function handleDeleteSingle(e) {
                 const id = e.currentTarget.dataset.staffId;
                 selectedStaff.clear();
@@ -564,53 +558,98 @@
             // ---------- MODALS ----------
             function openAddModal() {
                 editingStaffId = null;
-                document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Add Staff';
+
+                document.getElementById('modalTitle').innerHTML =
+                    '<i class="fas fa-user-plus"></i> Add Staff';
+
                 document.getElementById('staffId').value = '';
                 document.getElementById('fullName').value = '';
                 document.getElementById('email').value = '';
-                document.getElementById('role').value = 'support';
                 document.getElementById('status').value = 'active';
-                document.getElementById('isAdminToggle').value = 'false';
+
                 document.getElementById('staffFormModal').classList.add('show');
             }
+            
+            // ---------- MODALS & FORM LOGIC ----------
 
+            // This function handles opening the Edit pop-up
             function openEditModal(staff) {
+                console.log("Attempting to open modal for ID:", staff.id);
                 editingStaffId = staff.id;
-                document.getElementById('modalTitle').innerHTML = '<i class="fas fa-user-edit"></i> Edit Staff';
-                document.getElementById('staffId').value = staff.id;
-                document.getElementById('fullName').value = staff.name;
-                document.getElementById('email').value = staff.email;
-                document.getElementById('role').value = staff.role;
-                document.getElementById('status').value = staff.status;
-                document.getElementById('isAdminToggle').value = staff.isAdmin ? 'true' : 'false';
-                document.getElementById('staffFormModal').classList.add('show');
-            }
+                
+                // Update text and IDs to match your HTML
+                const modalTitle = document.getElementById('modalTitle');
+                if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-user-edit"></i> Edit Staff';
+                
+                const saveBtn = document.getElementById('saveStaffBtn');
+                if (saveBtn) saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
 
-            function closeFormModal() {
-                document.getElementById('staffFormModal').classList.remove('show');
-            }
+                // Fill ONLY the fields that actually exist in your HTML form
+                const idField = document.getElementById('staffId');
+                const nameField = document.getElementById('fullName');
+                const emailField = document.getElementById('email');
+                const statusField = document.getElementById('status');
 
-            // Save staff (add/edit)
-            function saveStaff() {
-                const name = document.getElementById('fullName').value.trim();
-                const email = document.getElementById('email').value.trim();
-                const role = document.getElementById('role').value;
-                const status = document.getElementById('status').value;
-                const isAdmin = document.getElementById('isAdminToggle').value === 'true';
-                if (!name || !email) { showToast('Name and email required', 'error'); return; }
+                if (idField) idField.value = staff.id;
+                if (nameField) nameField.value = staff.name;
+                if (emailField) emailField.value = staff.email;
+                if (statusField) statusField.value = staff.status;
 
-                if (editingStaffId) {
-                    const index = staffMembers.findIndex(s => s.id === editingStaffId);
-                    if (index !== -1) {
-                        staffMembers[index] = { ...staffMembers[index], name, email, role, status, isAdmin };
-                    }
+                // Open the pop-up
+                const modal = document.getElementById('staffFormModal');
+                if (modal) {
+                    modal.classList.add('show');
                 } else {
-                    const newId = `STF-${Math.floor(2000 + staffMembers.length + 1)}`;
-                    staffMembers.push({ id: newId, name, email, role, status, isAdmin });
+                    console.error("Could not find modal with ID 'staffFormModal'");
                 }
-                showToast(translations[getCurrentLanguage()].staff_saved, 'success');
-                closeFormModal();
-                loadStaff();
+            }
+
+            // ---------- FIXED MODAL LOGIC (INSIDE THE BUBBLE) ----------
+            
+            // 1. This function closes the pop-up
+            function closeFormModal() {
+                const modal = document.getElementById('staffFormModal');
+                if (modal) {
+                    modal.classList.remove('show');
+                }
+            }
+
+            // 2. This function saves to the database
+            async function saveStaff() {
+                const nameField = document.getElementById('fullName');
+                const emailField = document.getElementById('email');
+                const statusField = document.getElementById('status');
+                
+                if (!nameField || !emailField) return;
+
+                const name = nameField.value.trim();
+                const email = emailField.value.trim();
+                const status = statusField.value;
+
+                try {
+                    const response = await fetch("http://127.0.0.1:5000/api/admin/update-user", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            user_id: editingStaffId.replace("STF-", ""), 
+                            name: name,
+                            email: email,
+                            status: status
+                        })
+                    });
+
+                    if (response.ok) {
+                        showToast('Account updated in database!', 'success');
+                        closeFormModal(); // Now it can find this function!
+                        fetchRealStaff(); // Refresh the table
+                    } else {
+                        const result = await response.json();
+                        showToast(result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error("Save failed:", error);
+                    showToast('Server connection lost', 'error');
+                }
             }
 
             // ---------- DELETE ----------
@@ -642,14 +681,32 @@
                 modal.classList.add('show');
             }
 
-            function confirmDelete() {
+            async function confirmDelete() {
                 const ids = Array.from(selectedStaff);
-                staffMembers = staffMembers.filter(s => !selectedStaff.has(s.id));
-                selectedStaff.clear();
-                loadStaff();
-                document.getElementById('deleteConfirmModal').classList.remove('show');
-                showToast(translations[getCurrentLanguage()].delete_success, 'success');
-                updateDeleteButtonVisibility();
+                
+                try {
+                    // Send the list of IDs to Python to hard delete from MySQL
+                    const response = await fetch("http://127.0.0.1:5000/api/admin/delete-users", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ user_ids: ids })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        showToast('Accounts permanently deleted!', 'success');
+                        selectedStaff.clear();
+                        document.getElementById('deleteConfirmModal').classList.remove('show');
+                        // Pull the fresh data from the database
+                        fetchRealStaff(); 
+                    } else {
+                        showToast(result.message, 'error');
+                    }
+                } catch (error) {
+                    console.error("Delete failed:", error);
+                    showToast('Server error during deletion', 'error');
+                }
             }
 
             // ---------- UI UPDATES ----------
@@ -721,23 +778,25 @@
 
             // ---------- EVENT LISTENERS ----------
             function setupEventListeners() {
-                // Filters
-                document.getElementById('roleFilter').addEventListener('change', () => { currentPage = 1; loadStaff(); });
+                // Filters (FIXED: Removed roleFilter listeners)
                 document.getElementById('statusFilter').addEventListener('change', () => { currentPage = 1; loadStaff(); });
                 document.getElementById('clearFiltersBtn').addEventListener('click', function () {
-                    document.getElementById('roleFilter').value = 'all';
                     document.getElementById('statusFilter').value = 'all';
                     document.getElementById('staffSearch').value = '';
                     currentPage = 1;
                     loadStaff();
                     showToast('Filters cleared', 'success');
                 });
-                document.getElementById('refreshStaffBtn').addEventListener('click', () => { loadStaff(); showToast('Refreshed', 'success'); });
-                document.getElementById('addStaffBtn').addEventListener('click', openAddModal);
+                
+                document.getElementById('refreshStaffBtn').addEventListener('click', () => { fetchRealStaff(); showToast('Refreshed', 'success'); });
+                
+                // FIXED: Removed the addStaffBtn listener because we deleted the button!
+                
                 document.getElementById('deleteStaffBtn').addEventListener('click', () => {
                     if (selectedStaff.size) showDeleteConfirmation(Array.from(selectedStaff));
                     else showToast(translations[getCurrentLanguage()].no_staff_selected, 'error');
                 });
+
                 // Search debounce
                 let timeout;
                 document.getElementById('staffSearch').addEventListener('input', function () {
@@ -783,7 +842,7 @@
                 document.getElementById('logoutBtn')?.addEventListener('click', function (e) {
                     e.preventDefault();
                     localStorage.clear();
-                    window.location.href = '../../../index.html';
+                    window.location.href = '/';
                 });
             }
 
@@ -806,7 +865,7 @@
                 menu.querySelectorAll("a").forEach(a => a.addEventListener("click", () => menu.classList.remove("show")));
             }
 
-            // ---------- INITIALIZE ----------
+        // ---------- INITIALIZE ----------
             document.addEventListener('DOMContentLoaded', function () {
                 // Inject toast
                 if (!document.getElementById('toast')) {
@@ -821,11 +880,39 @@
                     const lang = window.preferencesManager.getCurrentLanguage() || 'en';
                     applyTranslations(lang);
                 } else applyTranslations('en');
+                
                 setupAccountDropdown();
                 setupEventListeners();
-                loadStaff();
+                
+                // THIS IS THE FIX: We call fetchRealStaff() INSIDE the bubble!
+                fetchRealStaff(); 
             });
-        })();
+        })(); // <-- This closes the frontend developer's protective bubble
+
+        // ==========================================
+        // ADMIN TOOL: Reset User Password
+        // ==========================================
+        async function forcePasswordReset(userId) {
+            if(!confirm("Are you sure you want to reset this user's password?")) return;
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/api/admin/reset-password", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ target_user_id: userId })
+                });
+                
+                const result = await response.json();
+                if(response.ok) {
+                    alert("✅ " + result.message); 
+                } else {
+                    alert("❌ Failed: " + result.message);
+                }
+            } catch (error) {
+                alert("❌ Server Error: Could not reach the backend.");
+                console.error(error);
+            }
+        }
     </script>
 </body>
 

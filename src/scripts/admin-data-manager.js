@@ -130,3 +130,35 @@ class UserDataManager {
 
 // Create global instance
 window.userDataManager = new UserDataManager();
+
+// ==========================================
+// OVERRIDE THE FRONTEND'S DUMMY DATA
+// This forces their 'initializeUserDisplay' function to use our real database
+// ==========================================
+if (!window.userDataManager) {
+    window.userDataManager = {};
+}
+
+window.userDataManager.initializeUserDisplay = function() {
+    const userDataStr = localStorage.getItem("userData");
+    
+    if (userDataStr) {
+        const realUser = JSON.parse(userDataStr);
+        
+        // Find the boxes (checking both ID versions)
+        const nameBox = document.getElementById("userNameDisplay") || document.getElementById("userName");
+        const emailBox = document.getElementById("userEmailDisplay") || document.getElementById("userEmail");
+        const avatarBox = document.getElementById("userAvatar");
+
+        // Inject the real data!
+        if (nameBox && realUser.Name) {
+            nameBox.innerText = realUser.Name;
+        }
+        if (emailBox && realUser.Email) {
+            emailBox.innerText = realUser.Email;
+        }
+        if (avatarBox && realUser.Name) {
+            avatarBox.innerText = realUser.Name.charAt(0).toUpperCase();
+        }
+    }
+};

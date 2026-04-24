@@ -12,7 +12,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="src/scripts/landing-accessibility.js"></script>
-    <link rel="stylesheet" href="src/styles/shared/landing-style.css">
+    <link rel="stylesheet" href="/styles/shared/landing-style.css">
 </head>
 
 <body>
@@ -22,8 +22,8 @@
     <header class="site-header">
         <div class="container header-inner">
             <div class="brand">
-                <a href="index.html" aria-label="AlliTrack Home">
-                    <img src="src/assets/images/AlliTrack Logo.png" alt="AlliTrack" width="140" height="40">
+                <a href="/" aria-label="AlliTrack Home">
+                    <img src="/src/assets/images/AlliTrack-Logo.png" alt="AlliTrack" width="140" height="40">
                 </a>
             </div>
             <nav class="primary-nav" role="navigation" data-visible="false" aria-label="Primary navigation">
@@ -32,9 +32,7 @@
                     <li><a href="#about-section" class="nav-link">About</a></li>
                     <li><a href="#services-section" class="nav-link">Services</a></li>
                     <li><a href="#contact-section" class="nav-link">Contact</a></li>
-                    <li><a href="src/pages/landing page/unified-auth-modal.html" class="btn-login"><i
-                                class="fas fa-user" style="margin-right: 6px;"></i>Login</a>
-                    </li>
+                    <li><a href="/login" class="btn-login"><i class="fas fa-user" style="margin-right: 6px;"></i>Login</a></li>
                 </ul>
             </nav>
             <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation" aria-expanded="false">
@@ -99,21 +97,23 @@
                     <div class="service-card">
                         <div class="service-icon"><i class="fas fa-video"></i></div>
                         <h3>IP Surveillance</h3>
-                        <p class="service-description">Camera health, recording verification, motion alerts — all in one
-                            view.</p>
-                        <a href="src/pages/landing page/quickfix-one.html" class="card-link">Start diagnosis <i
-                                class="fas fa-arrow-right"></i></a>
-                        <a href="src/pages/landing page/quickfix-one.html" class="quick-question-link"><i
-                                class="fas fa-chart-simple"></i> Quick fix</a>
+                        <p class="service-description">Camera health, recording verification, motion alerts — all in one view.</p>
+                        
+                        <a href="/quickfix-one" class="card-link">
+                            Start diagnosis <i class="fas fa-arrow-right"></i>
+                        </a>
+                        <a href="/quickfix-one" class="quick-question-link">
+                            <i class="fas fa-chart-simple"></i> Quick fix
+                        </a>
                     </div>
                     <div class="service-card">
                         <div class="service-icon"><i class="fas fa-phone"></i></div>
                         <h3>IP PBX (Yeastar)</h3>
                         <p class="service-description">Call routing, extension provisioning, voicemail-to-email, SBC
                             status.</p>
-                        <a href="src/pages/landing page/quickfix-two.html" class="card-link">Start diagnosis <i
+                        <a href="/quickfix-two" class="card-link">Start diagnosis <i
                                 class="fas fa-arrow-right"></i></a>
-                        <a href="src/pages/landing page/quickfix-two.html" class="quick-question-link"><i
+                        <a href="/quickfix-two" class="quick-question-link"><i
                                 class="fas fa-chart-simple"></i> Quick fix</a>
                     </div>
                     <div class="service-card">
@@ -121,18 +121,18 @@
                         <h3>GSM Alarm</h3>
                         <p class="service-description">Sensor communication, backup battery, cellular failover, instant
                             alerts.</p>
-                        <a href="src/pages/landing page/quickfix-three.html" class="card-link">Start diagnosis <i
+                        <a href="/quickfix-three" class="card-link">Start diagnosis <i
                                 class="fas fa-arrow-right"></i></a>
-                        <a href="src/pages/landing page/quickfix-three.html" class="quick-question-link"><i
+                        <a href="/quickfix-three" class="quick-question-link"><i
                                 class="fas fa-chart-simple"></i> Quick fix</a>
                     </div>
                     <div class="service-card">
                         <div class="service-icon"><i class="fas fa-fingerprint"></i></div>
                         <h3>Door Access</h3>
                         <p class="service-description">Enrollment, credential sync, lock schedules, audit trails.</p>
-                        <a href="src/pages/landing page/quickfix-four.html" class="card-link">Start diagnosis <i
+                        <a href="/quickfix-four" class="card-link">Start diagnosis <i
                                 class="fas fa-arrow-right"></i></a>
-                        <a href="src/pages/landing page/quickfix-four.html" class="quick-question-link"><i
+                        <a href="/quickfix-four" class="quick-question-link"><i
                                 class="fas fa-chart-simple"></i> Quick fix</a>
                     </div>
                 </div>
@@ -152,7 +152,7 @@
                         <div class="about-stat-item"><span class="about-stat-number">100+</span><span
                                 class="about-stat-label">Projects</span></div>
                     </div>
-                    <a href="src/pages/landing page/about-us.html" class="btn-about">Learn more about us <i
+                    <a href="/about-us" class="btn-about">Learn more about us <i
                             class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="about-image">
@@ -234,7 +234,7 @@
                                     class="contact-method-value">sales.businessalliance@gmail.com</span></div>
                         </div>
                     </div>
-                    <a href="src/pages/landing page/contact-us.html" class="btn-contact">Contact us today <i
+                    <a href="/contact-us" class="btn-contact">Contact us today <i
                             class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="contact-preview-image">
@@ -249,9 +249,9 @@
             <div class="footer-brand">
                 <strong>AlliTrack</strong>
                 <div class="footer-note">© 2025 AlliTrack · Business Alliance Inc. · All Rights Reserved</div>
-                <div class="footer-links"><a href="src/pages/landing page/privacy.html">Privacy</a><a
-                        href="src/pages/landing page/cookies.html">Cookies</a><a
-                        href="src/pages/landing page/terms.html">Terms</a></div>
+                <div class="footer-links"><a href="/privacy">Privacy</a><a
+                        href="/cookies">Cookies</a><a
+                        href="/terms">Terms</a></div>
             </div>
             <div class="footer-actions">
                 <span class="follow">Connect</span>

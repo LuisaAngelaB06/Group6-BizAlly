@@ -22,7 +22,7 @@
             <h2 data-translate="mobile_restricted">Desktop only</h2>
             <p data-translate="mobile_block_message">User dashboard is optimized for larger screens. Please open on a
                 desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='../../../index.html'" data-translate="go_back">Back to
+            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to
                 Home</button>
         </div>
     </div>
@@ -33,7 +33,7 @@
             <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
                 <div class="brand">
                     <div class="logo">
-                        <img src="../../assets/images/AlliTrack Logo.png" alt="AlliTrack Logo" class="logo-img"
+                        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
                             style="width: 32px; height: 32px;">
                     </div>
                     <div>
@@ -42,37 +42,38 @@
                     </div>
                 </div>
                 <nav class="nav">
-                    <a href="../../pages/user page/index-user.html" data-section="dashboard">
+                    <a href="/user/index-user.html" data-section="dashboard">
                         <i class="fas fa-chart-line"></i> <span data-section="dashboard">Dashboard</span>
                     </a>
 
                     <div class="nav-section" data-section="support">Support</div>
-                    <a href="../../pages/user page/my-tickets.html" data-section="tickets">
+                    <a href="/user/my-tickets.html" data-section="tickets">
                         <i class="fas fa-ticket-alt"></i> <span data-section="myTickets">My Tickets</span>
                     </a>
-                    <a href="../../pages/user page/notifications.html" data-section="notifications">
+                    <a href="/user/notifications.html" data-section="notifications">
                         <i class="fas fa-bell"></i> <span data-section="notifications">Notifications</span>
                     </a>
-                    <a href="../../pages/user page/submit-ticket.html" data-section="submit-ticket">
+                    <a href="/user/submit-ticket.html" data-section="submit-ticket">
                         <i class="fas fa-plus-circle"></i> <span data-section="submitTicket">Submit a Ticket</span>
                     </a>
 
                     <div class="nav-section" data-section="management">Management</div>
-                    <a href="../../pages/user page/preferences.html" class="active" data-section="preferences">
+                    <a href="/user/preferences.html" class="active" data-section="preferences">
                         <i class="fas fa-sliders-h"></i> <span data-section="preferences">Preferences</span>
                     </a>
-                    <a href="../../pages/user page/profile-settings.html" data-section="profile-settings">
+                    <a href="/user/profile-settings.html" data-section="profile-settings">
                         <i class="fas fa-user-cog"></i> <span data-section="profileSettings">Profile Settings</span>
                     </a>
-                    <a href="../../pages/user page/announcements.html" data-section="announcements">
-                        <i class="fas fa-bullhorn"></i> <span data-section="announcements">Announcements</span>
+                    <a href="/user/announcements.html" id="announcementLink">
+                        <i class="fas fa-bullhorn"></i> Announcements
+                        <span id="navRedDot" class="red-dot" style="display: none;"></span>
                     </a>
 
                     <div class="nav-section" data-section="system">System</div>
-                    <a href="../../pages/user page/account-security.html" data-section="account-security">
+                    <a href="/user/account-security.html" data-section="account-security">
                         <i class="fas fa-shield-alt"></i> <span data-section="accountSecurity">Account Security</span>
                     </a>
-                    <a href="../../pages/user page/system-information.html" data-section="system-information">
+                    <a href="/user/system-information.html" data-section="system-information">
                         <i class="fas fa-info-circle"></i> <span data-section="systemInformation">System
                             Information</span>
                     </a>
@@ -103,8 +104,8 @@
                         </div>
                         <div class="account-menu" id="accountMenu">
                             <div class="arrow"></div>
-                            <a href="../../pages/user page/profile-settings.html" data-section="profile">Profile</a>
-                            <a href="../../pages/user page/preferences.html" data-section="settings">Settings</a>
+                            <a href="/user/profile-settings.html" data-section="profile">Profile</a>
+                            <a href="/user/preferences.html" data-section="settings">Settings</a>
                             <a href="#" id="logoutBtn" data-section="logout">Logout</a>
                         </div>
                     </div>
@@ -494,7 +495,7 @@
                     localStorage.removeItem('dashboardLanguage');
                     localStorage.removeItem('preferredTheme');
                     localStorage.removeItem('notificationSettings');
-                    window.location.href = '../../../index.html';
+                    window.location.href = '/';
                 });
             }
 
