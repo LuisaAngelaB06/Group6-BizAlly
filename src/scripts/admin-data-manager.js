@@ -1,11 +1,47 @@
-// user-data-manager.js
+/**
+ * AlliTrack Admin Data Manager
+ * FIXED: Added Security Bouncer and Multi-Tab Logout Sync
+ */
+
+// --- 1. GLOBAL SCOPE VARIABLES ---
+const userDataStr = localStorage.getItem("userData");
+const currentPath = window.location.pathname.toLowerCase();
+
+// --- 2. THE BOUNCER (Ensures Admin side is locked) ---
+(function() {
+    const isPublic = currentPath.endsWith('index.html') || currentPath === '/' || currentPath.includes('landing');
+
+    if (userDataStr && userDataStr !== "undefined") {
+        const user = JSON.parse(userDataStr);
+        const role = (user.User_Type || user.role || 'client').toLowerCase();
+
+        // Specific folder check for "admin page" and "user page"
+        const isTryingAdmin = currentPath.includes('admin');
+        const isTryingUser = currentPath.includes('user');
+
+        // BLOCK CLIENTS: Kick them out of the Admin section
+        if (isTryingAdmin && role === 'client') {
+            window.location.href = '/user/index-user.html';
+            return;
+        }
+        // BLOCK STAFF: Kick them out of the User section
+        if (isTryingUser && role !== 'client') {
+            window.location.href = '/admin/index-admin.html';
+            return;
+        }
+    } else if (!isPublic) {
+        // FORCE LOGIN: If no session exists
+        window.location.href = '/';
+    }
+})();
+
+// --- 3. ORIGINAL USER DATA MANAGER CLASS (Unchanged) ---
 class UserDataManager {
     constructor() {
         this.userDataKey = 'userData';
         this.userProfileKey = 'userProfile';
     }
 
-    // Get combined user data (from both userData and userProfile)
     getUserData() {
         const userData = JSON.parse(localStorage.getItem(this.userDataKey) || '{}');
         const userProfile = JSON.parse(localStorage.getItem(this.userProfileKey) || '{}');
@@ -17,35 +53,27 @@ class UserDataManager {
         };
     }
 
-    // Update user data
     updateUserData(updates) {
         const userData = JSON.parse(localStorage.getItem(this.userDataKey) || '{}');
         const updatedData = { ...userData, ...updates };
         localStorage.setItem(this.userDataKey, JSON.stringify(updatedData));
-        
-        // Dispatch event for other pages to update
         this.dispatchUserDataChanged();
         return updatedData;
     }
 
-    // Update user profile
     updateUserProfile(updates) {
         const userProfile = JSON.parse(localStorage.getItem(this.userProfileKey) || '{}');
         const updatedProfile = { ...userProfile, ...updates };
         localStorage.setItem(this.userProfileKey, JSON.stringify(updatedProfile));
-        
-        // Dispatch event for other pages to update
         this.dispatchUserDataChanged();
         return updatedProfile;
     }
 
-    // Get profile picture URL
     getProfilePicture() {
         const userProfile = JSON.parse(localStorage.getItem(this.userProfileKey) || '{}');
         return userProfile.photo || null;
     }
 
-    // Get user initials
     getUserInitials() {
         const userData = this.getUserData();
         const firstName = userData.firstName || userData.name?.split(' ')[0] || 'U';
@@ -53,20 +81,15 @@ class UserDataManager {
         return (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase();
     }
 
-    // Dispatch event when user data changes
     dispatchUserDataChanged() {
-        const event = new CustomEvent('userDataChanged', {
-            detail: this.getUserData()
-        });
+        const event = new CustomEvent('userDataChanged', { detail: this.getUserData() });
         document.dispatchEvent(event);
     }
 
-    // Initialize user data display on any page
     initializeUserDisplay() {
         this.updateHeaderAvatar();
         this.updateUserInfo();
         
-        // Listen for changes from other tabs/pages
         window.addEventListener('storage', (event) => {
             if (event.key === this.userDataKey || event.key === this.userProfileKey) {
                 this.updateHeaderAvatar();
@@ -74,35 +97,23 @@ class UserDataManager {
             }
         });
         
-        // Listen for custom events
         document.addEventListener('userDataChanged', () => {
             this.updateHeaderAvatar();
             this.updateUserInfo();
         });
     }
 
-    // Update header avatar across all pages
     updateHeaderAvatar() {
         const headerAvatar = document.getElementById('userAvatar');
         if (!headerAvatar) return;
-
         const profilePicture = this.getProfilePicture();
         const initials = this.getUserInitials();
         
         if (profilePicture) {
-            // Check if it's already an img element
             if (headerAvatar.querySelector('img')) {
                 headerAvatar.querySelector('img').src = profilePicture;
             } else {
-                headerAvatar.innerHTML = '';
-                const img = document.createElement('img');
-                img.src = profilePicture;
-                img.alt = 'Profile Picture';
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.borderRadius = '50%';
-                img.style.objectFit = 'cover';
-                headerAvatar.appendChild(img);
+                headerAvatar.innerHTML = `<img src="${profilePicture}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
             }
         } else {
             headerAvatar.innerHTML = '';
@@ -110,55 +121,56 @@ class UserDataManager {
         }
     }
 
-    // Update user info in header
     updateUserInfo() {
         const userData = this.getUserData();
-        
-        // Update user name
         const userNameElement = document.getElementById('userName');
-        if (userNameElement) {
-            userNameElement.textContent = userData.fullName;
-        }
-
-        // Update user email
+        if (userNameElement) userNameElement.textContent = userData.fullName;
         const userEmailElement = document.getElementById('userEmail');
-        if (userEmailElement && userData.email) {
-            userEmailElement.textContent = userData.email;
-        }
+        if (userEmailElement && userData.email) userEmailElement.textContent = userData.email;
     }
 }
 
-// Create global instance
 window.userDataManager = new UserDataManager();
 
-// ==========================================
-// OVERRIDE THE FRONTEND'S DUMMY DATA
-// This forces their 'initializeUserDisplay' function to use our real database
-// ==========================================
-if (!window.userDataManager) {
-    window.userDataManager = {};
-}
-
+// --- 4. YOUR ORIGINAL OVERRIDE LOGIC (Unchanged) ---
 window.userDataManager.initializeUserDisplay = function() {
     const userDataStr = localStorage.getItem("userData");
-    
     if (userDataStr) {
         const realUser = JSON.parse(userDataStr);
-        
-        // Find the boxes (checking both ID versions)
         const nameBox = document.getElementById("userNameDisplay") || document.getElementById("userName");
         const emailBox = document.getElementById("userEmailDisplay") || document.getElementById("userEmail");
         const avatarBox = document.getElementById("userAvatar");
 
-        // Inject the real data!
-        if (nameBox && realUser.Name) {
-            nameBox.innerText = realUser.Name;
-        }
-        if (emailBox && realUser.Email) {
-            emailBox.innerText = realUser.Email;
-        }
-        if (avatarBox && realUser.Name) {
-            avatarBox.innerText = realUser.Name.charAt(0).toUpperCase();
-        }
+        if (nameBox && realUser.Name) nameBox.innerText = realUser.Name;
+        if (emailBox && realUser.Email) emailBox.innerText = realUser.Email;
+        if (avatarBox && realUser.Name) avatarBox.innerText = realUser.Name.charAt(0).toUpperCase();
     }
 };
+
+// --- 5. MULTI-TAB SYNC (The Fix for Admin Logout) ---
+window.addEventListener('storage', (event) => {
+    if (event.key === 'userData') {
+        if (!event.newValue) {
+            // Logout detected in another tab! Redirect immediately.
+            window.location.href = '/';
+        } else {
+            // Account change detected! Reload to let bouncer check roles.
+            window.location.reload();
+        }
+    }
+});
+
+// Run initialization on load
+document.addEventListener("DOMContentLoaded", () => {
+    window.userDataManager.initializeUserDisplay();
+    
+    // Ensure logout button works
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = '/';
+        });
+    }
+});

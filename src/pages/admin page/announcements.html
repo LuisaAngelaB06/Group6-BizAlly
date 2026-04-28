@@ -120,8 +120,9 @@
                     <div class="announcements-container">
                         <div class="form-card">
                             <div class="form-header">
-                                <i class="fas fa-pen-to-square"></i>
-                                <h2 id="formTitle" data-translate="create_announcement">Create new announcement</h2>
+                                <div>
+                                    <h2 id="formTitle" data-translate="create_announcement">Create new announcement</h2>
+                                </div>
                             </div>
 
                             <form id="announcementForm">
@@ -140,23 +141,16 @@
                                         <label><i class="fas fa-flag"></i> <span
                                                 data-translate="priority">Priority</span></label>
                                         <select id="priority" class="filter-select">
-                                            <option value="high" data-translate="high">🔴 High</option>
-                                            <option value="normal" selected data-translate="normal">🟡 Normal</option>
-                                            <option value="low" data-translate="low">🟢 Low</option>
+                                            <option value="high" data-translate="high">High</option>
+                                            <option value="normal" selected data-translate="normal">Normal</option>
+                                            <option value="low" data-translate="low">Low</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label><i class="fas fa-calendar"></i> <span data-translate="expires_on">Expires
-                                                on</span></label>
+                                        <label>
+                                            <i class="fas fa-calendar"></i> <span data-translate="expires_on">Expires on</span>
+                                        </label>
                                         <input type="date" id="expiryDate" class="filter-select">
-                                    </div>
-                                    <div class="form-group">
-                                        <label><i class="fas fa-users"></i> <span>Target Audience</span></label>
-                                        <select id="targetRole" class="filter-select">
-                                            <option value="all">All Users</option>
-                                            <option value="admin">Admins Only</option>
-                                            <option value="client">Clients Only</option>
-                                        </select>
                                     </div>
                                 </div>
 
@@ -191,10 +185,17 @@
                             </div>
 
                             <div class="filter-bar">
-                                <input type="text" id="searchInput" placeholder="🔍 Search by title or content..."
+                                <input type="text" id="searchInput" placeholder="Search by title or content..."
                                     data-translate-placeholder="filter_announcements" onkeyup="filterAnnouncements()">
-                                <button class="btn btn-secondary" onclick="filterAnnouncements()"><i
-                                        class="fas fa-search"></i></button>
+                                <button class="btn btn-secondary" onclick="filterAnnouncements()">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                    <select id="priorityFilter" class="filter-select" aria-label="Filter by priority">
+                                    <option value="all">All priorities</option>
+                                    <option value="high">High</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="low">Low</option>
+                                </select>
                             </div>
 
                             <div id="announcementListContainer" class="announcement-list">
@@ -236,673 +237,739 @@
     </div>
 
     <div id="toast" class="toast"></div>
-
     <script>
+        const API_BASE_URL = "http://127.0.0.1:5000/api/admin";
+        const DEFAULT_TARGET_ROLE = "all";
+
         const translations = {
-            'en': {
-                'announcements_page_title': 'Announcements - AlliTrack Admin',
-                'announcements_title': 'Announcements',
-                'announcements_description': 'Create, manage, and publish system-wide announcements',
-                'search_announcements': 'Search announcements by title or content...',
-                'filter_announcements': 'Search by title or content...',
-                'create_announcement': 'Create new announcement',
-                'edit_announcement': 'Edit announcement',
-                'publish_announcement': 'Publish announcement',
-                'update_announcement': 'Update announcement',
-                'title': 'Title',
-                'priority': 'Priority',
-                'expires_on': 'Expires on',
-                'content': 'Content',
-                'all_announcements': 'All announcements',
-                'high': 'High',
-                'normal': 'Normal',
-                'low': 'Low',
-                'cancel': 'Cancel',
-                'delete': 'Delete',
-                'confirm_delete': 'Confirm Delete',
-                'selected_announcements': 'Selected Announcements:',
-                'delete_announcement_confirm': 'Are you sure you want to delete this announcement?',
-                'delete_announcements_confirm': 'Are you sure you want to delete {count} selected announcements?',
-                'delete_success': 'Announcement deleted successfully',
-                'delete_error': 'Error deleting announcement',
-                'no_announcements_found': 'No announcements found',
-                'create_first_announcement': 'Create your first announcement.',
-                'try_different_search': 'Try a different search term.',
-                'announcement_saved': 'Announcement saved successfully',
-                'announcement_updated': 'Announcement updated successfully',
-                'announcement_deleted': 'Announcement deleted',
-                'no_expiry': 'No expiry',
-                'created': 'Created',
-                'expires': 'Expires',
-                'search': 'Search',
-                'announcement_title_placeholder': 'e.g. Server maintenance, feature update...',
-                'announcement_content_placeholder': 'Write the full announcement message...',
-                'clear_filters': 'Clear Filters',
-                'refresh': 'Refresh',
+            en: {
+                announcements_page_title: "Announcements - AlliTrack Admin",
+                announcements_title: "Announcements",
+                announcements_description: "Create, manage, and publish system-wide announcements",
+                search_announcements: "Search announcements by title or content...",
+                filter_announcements: "Search by title or content...",
+                create_announcement: "Create new announcement",
+                edit_announcement: "Edit announcement",
+                publish_announcement: "Publish announcement",
+                update_announcement: "Update announcement",
+                title: "Title",
+                priority: "Priority",
+                expires_on: "Expires on",
+                content: "Content",
+                all_announcements: "All announcements",
+                high: "High",
+                normal: "Normal",
+                low: "Low",
+                cancel: "Cancel",
+                delete: "Delete",
+                confirm_delete: "Confirm Delete",
+                selected_announcements: "Selected Announcements:",
+                delete_announcement_confirm: "Are you sure you want to delete this announcement?",
+                delete_announcements_confirm: "Are you sure you want to delete {count} selected announcements?",
+                delete_success: "Announcement deleted successfully",
+                delete_error: "Error deleting announcement",
+                no_announcements_found: "No announcements found",
+                create_first_announcement: "Create your first announcement.",
+                try_different_search: "Try a different search term.",
+                no_expiry: "No expiry",
+                created: "Created",
+                expires: "Expires",
+                announcement_title_placeholder: "e.g. Server maintenance, feature update...",
+                announcement_content_placeholder: "Write the full announcement message...",
 
-                // Navigation (inherited)
-                'admin_dashboard': 'Admin Dashboard',
-                'dashboard': 'Dashboard',
-                'ticket_management': 'Ticket Management',
-                'all_tickets': 'All Tickets',
-                'users_management': 'Users Management',
-                'announcements': 'Announcements',
-                'system_management': 'System Management',
-                'system_settings': 'System Settings',
-                'analytics': 'Analytics',
-                'system_logs': 'System Logs',
-                'admin_tools': 'Admin Tools',
-                'preferences': 'Preferences',
-                'profile_settings': 'Profile Settings',
-                'profile': 'Profile',
-                'settings': 'Settings',
-                'logout': 'Logout',
-                'admin_dashboard_template': 'AlliTrack Admin Dashboard'
+                admin_dashboard: "Admin Dashboard",
+                dashboard: "Dashboard",
+                ticket_management: "Ticket Management",
+                all_tickets: "All Tickets",
+                users_management: "Users Management",
+                announcements: "Announcements",
+                system_management: "System Management",
+                system_settings: "System Settings",
+                analytics: "Analytics",
+                system_logs: "System Logs",
+                admin_tools: "Admin Tools",
+                preferences: "Preferences",
+                profile_settings: "Profile Settings",
+                profile: "Profile",
+                settings: "Settings",
+                logout: "Logout",
+                admin_dashboard_template: "AlliTrack Admin Dashboard"
             },
-            'fil': {
-                'announcements_page_title': 'Mga Anunsyo - AlliTrack Admin',
-                'announcements_title': 'Mga Anunsyo',
-                'announcements_description': 'Lumikha, mamahala, at mag-publish ng mga anunsyo sa buong sistema',
-                'search_announcements': 'Maghanap ng anunsyo sa pamamagitan ng pamagat o nilalaman...',
-                'filter_announcements': 'Maghanap sa pamagat o nilalaman...',
-                'create_announcement': 'Lumikha ng bagong anunsyo',
-                'edit_announcement': 'I-edit ang anunsyo',
-                'publish_announcement': 'I-publish ang anunsyo',
-                'update_announcement': 'I-update ang anunsyo',
-                'title': 'Pamagat',
-                'priority': 'Prayoridad',
-                'expires_on': 'Nag-e-expire sa',
-                'content': 'Nilalaman',
-                'all_announcements': 'Lahat ng anunsyo',
-                'high': 'Mataas',
-                'normal': 'Katamtaman',
-                'low': 'Mababa',
-                'cancel': 'Kanselahin',
-                'delete': 'I-delete',
-                'confirm_delete': 'Kumpirmahin ang Pag-delete',
-                'selected_announcements': 'Mga Napiling Anunsyo:',
-                'delete_announcement_confirm': 'Sigurado ka bang gusto mong i-delete ang anunsyong ito?',
-                'delete_announcements_confirm': 'Sigurado ka bang gusto mong i-delete ang {count} napiling mga anunsyo?',
-                'delete_success': 'Matagumpay na na-delete ang anunsyo',
-                'delete_error': 'Error sa pag-delete ng anunsyo',
-                'no_announcements_found': 'Walang nahanap na anunsyo',
-                'create_first_announcement': 'Lumikha ng iyong unang anunsyo.',
-                'try_different_search': 'Subukan ang ibang termino sa paghahanap.',
-                'announcement_saved': 'Matagumpay na na-save ang anunsyo',
-                'announcement_updated': 'Matagumpay na na-update ang anunsyo',
-                'announcement_deleted': 'Na-delete ang anunsyo',
-                'no_expiry': 'Walang expiration',
-                'created': 'Nilikha',
-                'expires': 'Nag-e-expire',
-                'search': 'Maghanap',
-                'announcement_title_placeholder': 'Hal: Server maintenance, feature update...',
-                'announcement_content_placeholder': 'Isulat ang buong mensahe ng anunsyo...',
-                'clear_filters': 'Tanggalin ang Filters',
-                'refresh': 'I-refresh',
+            fil: {
+                announcements_page_title: "Mga Anunsyo - AlliTrack Admin",
+                announcements_title: "Mga Anunsyo",
+                announcements_description: "Lumikha, mamahala, at mag-publish ng mga anunsyo sa buong sistema",
+                search_announcements: "Maghanap ng anunsyo sa pamamagitan ng pamagat o nilalaman...",
+                filter_announcements: "Maghanap sa pamagat o nilalaman...",
+                create_announcement: "Lumikha ng bagong anunsyo",
+                edit_announcement: "I-edit ang anunsyo",
+                publish_announcement: "I-publish ang anunsyo",
+                update_announcement: "I-update ang anunsyo",
+                title: "Pamagat",
+                priority: "Prayoridad",
+                expires_on: "Nag-e-expire sa",
+                content: "Nilalaman",
+                all_announcements: "Lahat ng anunsyo",
+                high: "Mataas",
+                normal: "Katamtaman",
+                low: "Mababa",
+                cancel: "Kanselahin",
+                delete: "I-delete",
+                confirm_delete: "Kumpirmahin ang Pag-delete",
+                selected_announcements: "Mga Napiling Anunsyo:",
+                delete_announcement_confirm: "Sigurado ka bang gusto mong i-delete ang anunsyong ito?",
+                delete_announcements_confirm: "Sigurado ka bang gusto mong i-delete ang {count} napiling mga anunsyo?",
+                delete_success: "Matagumpay na na-delete ang anunsyo",
+                delete_error: "Error sa pag-delete ng anunsyo",
+                no_announcements_found: "Walang nahanap na anunsyo",
+                create_first_announcement: "Lumikha ng iyong unang anunsyo.",
+                try_different_search: "Subukan ang ibang termino sa paghahanap.",
+                no_expiry: "Walang expiration",
+                created: "Nilikha",
+                expires: "Nag-e-expire",
+                announcement_title_placeholder: "Hal: Server maintenance, feature update...",
+                announcement_content_placeholder: "Isulat ang buong mensahe ng anunsyo...",
 
-                // Navigation
-                'admin_dashboard': 'Admin Dashboard',
-                'dashboard': 'Dashboard',
-                'ticket_management': 'Pamamahala ng Ticket',
-                'all_tickets': 'Lahat ng Ticket',
-                'users_management': 'Pamamahala ng User',
-                'announcements': 'Mga Anunsyo',
-                'system_management': 'Pamamahala ng Sistema',
-                'system_settings': 'Mga Setting ng Sistema',
-                'analytics': 'Analitika',
-                'system_logs': 'Mga Log ng Sistema',
-                'admin_tools': 'Mga Tool ng Admin',
-                'preferences': 'Mga Kagustuhan',
-                'profile_settings': 'Mga Setting ng Profile',
-                'profile': 'Profile',
-                'settings': 'Mga Setting',
-                'logout': 'Logout',
-                'admin_dashboard_template': 'AlliTrack Admin Dashboard'
+                admin_dashboard: "Admin Dashboard",
+                dashboard: "Dashboard",
+                ticket_management: "Pamamahala ng Ticket",
+                all_tickets: "Lahat ng Ticket",
+                users_management: "Pamamahala ng User",
+                announcements: "Mga Anunsyo",
+                system_management: "Pamamahala ng Sistema",
+                system_settings: "Mga Setting ng Sistema",
+                analytics: "Analitika",
+                system_logs: "Mga Log ng Sistema",
+                admin_tools: "Mga Tool ng Admin",
+                preferences: "Mga Kagustuhan",
+                profile_settings: "Mga Setting ng Profile",
+                profile: "Profile",
+                settings: "Mga Setting",
+                logout: "Logout",
+                admin_dashboard_template: "AlliTrack Admin Dashboard"
             }
         };
 
-        let sampleAnnouncements = [];
-
-        let currentFilteredAnnouncements = [];
+        let announcements = [];
         let selectedAnnouncements = new Set();
-        let currentPage = 1;
-        let itemsPerPage = 10;
 
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('🚀 Announcements: Starting initialization...');
+        document.addEventListener("DOMContentLoaded", initAnnouncementsPage);
 
-            // Toast element
-            if (!document.getElementById('toast')) {
-                const toast = document.createElement('div');
-                toast.id = 'toast';
-                toast.className = 'toast';
-                document.body.appendChild(toast);
-            }
+        async function initAnnouncementsPage() {
+            ensureToast();
+            initializeManagers();
+            setupExpiryDateRestriction();
+            setupLogout();
+            setTimeout(setupAccountDropdown, 50);
+            setupEventListeners();
+            await fetchAnnouncements();
+        }
 
-            // Initialize user data manager
-            if (window.userDataManager) {
-                window.userDataManager.initializeUserDisplay();
-            }
+        function setupExpiryDateRestriction() {
+            const expiryInput = document.getElementById("expiryDate");
+            if (!expiryInput) return;
 
-            // Initialize preferences manager
+            const today = getTodayDateString();
+            expiryInput.min = today;
+
+            expiryInput.addEventListener("change", function () {
+                if (this.value && this.value < today) {
+                    this.value = "";
+                    showToast("Expiry date cannot be in the past", "error");
+                }
+            });
+        }
+
+        function ensureToast() {
+            if (document.getElementById("toast")) return;
+
+            const toast = document.createElement("div");
+            toast.id = "toast";
+            toast.className = "toast";
+            document.body.appendChild(toast);
+        }
+
+        function initializeManagers() {
+            window.userDataManager?.initializeUserDisplay();
+
             if (window.preferencesManager) {
                 window.preferencesManager.initialize();
                 window.preferencesManager.applyTheme();
-
-                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
-                applyTranslations(currentLang);
-            } else {
-                applyTranslations('en');
+                applyTranslations(window.preferencesManager.getCurrentLanguage() || "en");
+                return;
             }
 
-            // Setup logout functionality
-            setupLogout();
+            applyTranslations("en");
+        }
 
-            // Setup account dropdown (reuse from all-tickets)
-            setTimeout(() => {
-                setupAccountDropdown();
-            }, 50);
-
-            // Load announcements and display
-            fetchAnnouncements();
-            renderAnnouncements();
-
-            // Setup event listeners
-            setupEventListeners();
-
-            console.log('✅ Announcements page loaded');
-        });
-
-        const STORAGE_KEY = 'allitrack_announcements';
-
-        // Replace the old storage functions with this:
         async function fetchAnnouncements() {
             try {
-                const response = await fetch("http://127.0.0.1:5000/api/admin/announcements/all");
+                const response = await fetch(`${API_BASE_URL}/announcements/all`);
+                if (!response.ok) throw new Error(`Server returned ${response.status}`);
+
                 const data = await response.json();
-                
-                if (Array.isArray(data)) {
-                    // Map the database columns to your frontend variables
-                    sampleAnnouncements = data.map(ann => ({
-                        id: ann.Announcement_ID,
-                        title: ann.Title,
-                        content: ann.Message,
-                        priority: (ann.Priority || 'normal').toLowerCase(),
-                        createdAt: ann.Created_At,
-                        expiryDate: ann.Expiry_Date, 
-                        targetRole: ann.Target_Role,
-                        author: ann.Created_By
-                    }));
-                    renderAnnouncements();
-                }
+                announcements = Array.isArray(data)
+                    ? data.map(mapAnnouncementFromServer)
+                    : [];
+
+                /* Remove selected IDs that no longer exist */
+                const existingIds = new Set(announcements.map(item => String(item.id)));
+                selectedAnnouncements = new Set(
+                    Array.from(selectedAnnouncements).filter(id => existingIds.has(String(id)))
+                );
+
+                /* Hide delete bar if nothing is selected */
+                updateBulkActionBar();
+
+                renderAnnouncements(getSearchValue());
             } catch (error) {
                 console.error("Database fetch failed:", error);
-                showToast('Could not load announcements from server', 'error');
+                showToast("Could not load announcements from server", "error");
             }
         }
 
-        // ---------- TRANSLATION & UI HELPERS ----------
+        function mapAnnouncementFromServer(ann) {
+            return {
+                id: ann.Announcement_ID,
+                title: ann.Title || "",
+                content: ann.Message || "",
+                priority: (ann.Priority || "normal").toLowerCase(),
+                createdAt: ann.Created_At,
+                expiryDate: ann.Expiry_Date,
+                targetRole: ann.Target_Role || DEFAULT_TARGET_ROLE,
+                author: ann.Created_By
+            };
+        }
+
+        function renderAnnouncements(filterText = "") {
+            const container = document.getElementById("announcementListContainer");
+            const counter = document.getElementById("announcementCounter");
+            if (!container || !counter) return;
+
+            const filtered = getFilteredAnnouncements(filterText);
+            counter.textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                selectedAnnouncements.clear();
+                updateBulkActionBar();
+                container.innerHTML = getEmptyStateHTML(filterText);
+                return;
+            }
+
+            container.innerHTML = filtered.map(getAnnouncementHTML).join("");
+            setupAnnouncementCheckboxes();
+        }
+
+        function getFilteredAnnouncements(filterText = "") {
+            const searchText = filterText.trim().toLowerCase();
+            const priorityFilter = document.getElementById("priorityFilter")?.value || "all";
+
+            return announcements
+                .filter(announcement => {
+                    const matchesSearch =
+                        !searchText ||
+                        announcement.title.toLowerCase().includes(searchText) ||
+                        announcement.content.toLowerCase().includes(searchText);
+
+                    const matchesPriority =
+                        priorityFilter === "all" ||
+                        announcement.priority === priorityFilter;
+
+                    return matchesSearch && matchesPriority;
+                })
+                .sort((a, b) => getNumericId(b.id) - getNumericId(a.id));
+        }
+
+        function getAnnouncementHTML(item) {
+            const priorityClass = getPriorityClass(item.priority);
+            const priorityLabel = capitalize(item.priority || "normal");
+            const isSelected = selectedAnnouncements.has(String(item.id));
+            const editingId = document.getElementById("announcementId")?.value || "";
+            const activeClass = String(editingId) === String(item.id) ? "active-edit" : "";
+            const expiry = item.expiryDate ? formatDateOnly(item.expiryDate) : getTranslation("no_expiry");
+            const created = item.createdAt ? formatDateOnly(item.createdAt) : "-";
+
+            return `
+            <div class="announcement-item ${activeClass}" data-announcement-id="${escapeAttribute(item.id)}">
+                <div class="announcement-card-main">
+                    <input
+                        type="checkbox"
+                        class="announcement-checkbox ticket-checkbox"
+                        data-id="${escapeAttribute(item.id)}"
+                        ${isSelected ? "checked" : ""}
+                        aria-label="Select announcement"
+                    >
+
+                    <div class="announcement-card-body">
+                        <div class="announcement-card-top">
+                            <span class="badge ${priorityClass}">${priorityLabel}</span>
+                        </div>
+
+                        <div class="item-title">${escapeHTML(item.title)}</div>
+
+                        <div class="item-meta">
+                            <span><i class="fas fa-clock"></i> ${getTranslation("expires")}: ${expiry}</span>
+                            <span><i class="fas fa-calendar-day"></i> ${getTranslation("created")}: ${created}</span>
+                            ${item.author ? `<span><i class="fas fa-user"></i> ${escapeHTML(String(item.author))}</span>` : ""}
+                        </div>
+
+                        <div class="item-excerpt">
+                            ${escapeHTML(getExcerpt(item.content))}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-actions">
+                    <button class="btn-action btn-edit" onclick="editAnnouncement('${escapeAttribute(item.id)}')" title="Edit">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                    <button class="btn-action btn-delete" onclick="deleteAnnouncement('${escapeAttribute(item.id)}')" title="Delete">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        }
+
+        function getEmptyStateHTML(filterText) {
+            return `
+            <div class="empty-state" style="display: flex;">
+                <i class="fas fa-bullhorn" style="font-size: 2.5rem; opacity: 0.5; margin-bottom: 1rem;"></i>
+                <h4>${getTranslation("no_announcements_found")}</h4>
+                <p style="color: var(--text-secondary);">
+                    ${filterText ? getTranslation("try_different_search") : getTranslation("create_first_announcement")}
+                </p>
+            </div>
+        `;
+        }
+
+        function setupAnnouncementCheckboxes() {
+            document.querySelectorAll(".announcement-checkbox").forEach(checkbox => {
+                checkbox.addEventListener("change", function () {
+                    const id = String(this.dataset.id);
+
+                    if (this.checked) selectedAnnouncements.add(id);
+                    else selectedAnnouncements.delete(id);
+
+                    updateBulkActionBar();
+                });
+            });
+        }
+
+        window.resetForm = function () {
+            const form = document.getElementById("announcementForm");
+            const announcementId = document.getElementById("announcementId");
+
+            form?.reset();
+            if (announcementId) announcementId.value = "";
+
+            setText("formTitle", getTranslation("create_announcement"));
+            setText("submitBtnText", getTranslation("publish_announcement"));
+
+            renderAnnouncements(getSearchValue());
+        };
+
+        window.editAnnouncement = function (id) {
+            const announcement = announcements.find(item => String(item.id) === String(id));
+            if (!announcement) return;
+
+            setValue("announcementId", announcement.id);
+            setValue("title", announcement.title);
+            setValue("priority", announcement.priority || "normal");
+            setValue("content", announcement.content);
+            setValue("expiryDate", announcement.expiryDate ? formatDateOnly(announcement.expiryDate) : "");
+
+            setText("formTitle", getTranslation("edit_announcement"));
+            setText("submitBtnText", getTranslation("update_announcement"));
+
+            renderAnnouncements(getSearchValue());
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        window.deleteAnnouncement = async function (id) {
+            if (!confirm(getTranslation("delete_announcement_confirm"))) return;
+
+            try {
+                const response = await deleteAnnouncementRequest(id);
+
+                if (!response.ok) {
+                    showToast("Failed to delete from server", "error");
+                    return;
+                }
+
+                selectedAnnouncements.delete(String(id));
+                showToast("Announcement removed from database", "success");
+                await fetchAnnouncements();
+            } catch (error) {
+                console.error("Delete failed:", error);
+                showToast("Server connection failed", "error");
+            }
+        };
+
+        window.filterAnnouncements = function () {
+            renderAnnouncements(getSearchValue());
+        };
+
+        window.showDeleteConfirmation = function (ids) {
+            const modal = document.getElementById("deleteConfirmationModal");
+            const deleteMessage = document.getElementById("deleteMessage");
+            const listContainer = document.getElementById("selectedAnnouncementsList");
+            const listEl = document.getElementById("announcementsToDeleteList");
+
+            if (!modal || !deleteMessage || !listContainer || !listEl) return;
+
+            listEl.innerHTML = "";
+
+            if (ids.length === 1) {
+                deleteMessage.textContent = getTranslation("delete_announcement_confirm");
+                listContainer.style.display = "none";
+            } else {
+                deleteMessage.textContent = getTranslation("delete_announcements_confirm").replace("{count}", ids.length);
+                ids.forEach(id => {
+                    const announcement = announcements.find(item => String(item.id) === String(id));
+                    if (!announcement) return;
+
+                    const li = document.createElement("li");
+                    li.textContent = announcement.title;
+                    listEl.appendChild(li);
+                });
+                listContainer.style.display = "block";
+            }
+
+            modal.classList.add("show");
+        };
+
+        async function confirmDeleteAnnouncements() {
+            const ids = Array.from(selectedAnnouncements);
+            if (ids.length === 0) return;
+
+            try {
+                const results = await Promise.all(ids.map(deleteAnnouncementRequest));
+
+                if (!results.every(response => response.ok)) {
+                    showToast("Failed to delete one or more announcements", "error");
+                    return;
+                }
+
+                selectedAnnouncements.clear();
+                closeDeleteModal();
+                updateBulkActionBar();
+                showToast(getTranslation("delete_success"), "success");
+                await fetchAnnouncements();
+            } catch (error) {
+                console.error("Bulk delete failed:", error);
+                showToast("Server connection failed", "error");
+            }
+        }
+
+        function deleteAnnouncementRequest(id) {
+            return fetch(`${API_BASE_URL}/announcements/delete`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ announcement_id: id })
+            });
+        }
+
+        function closeDeleteModal() {
+            document.getElementById("deleteConfirmationModal")?.classList.remove("show");
+        }
+
+        function updateBulkActionBar() {
+            let bulkBar = document.getElementById("bulkActionBar");
+            const listCard = document.querySelector(".list-card");
+
+            if (!bulkBar && listCard) {
+                bulkBar = document.createElement("div");
+                bulkBar.id = "bulkActionBar";
+                bulkBar.className = "bulk-action-bar";
+                listCard.insertBefore(bulkBar, document.getElementById("announcementListContainer"));
+            }
+
+            if (!bulkBar) return;
+
+            if (selectedAnnouncements.size === 0) {
+                bulkBar.style.display = "none";
+                bulkBar.innerHTML = "";
+                return;
+            }
+
+            bulkBar.style.display = "flex";
+            bulkBar.innerHTML = `
+            <span style="margin-right: 12px; font-weight: 600;">
+                ${selectedAnnouncements.size} selected
+            </span>
+            <button class="btn btn-danger" onclick="showDeleteConfirmation(Array.from(selectedAnnouncements))">
+                <i class="fas fa-trash-alt"></i> ${getTranslation("delete")} (${selectedAnnouncements.size})
+            </button>
+        `;
+        }
+
+        document.getElementById("announcementForm")?.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const editingId = document.getElementById("announcementId")?.value || "";
+            const submitBtn = document.getElementById("submitBtn");
+
+            const payload = {
+                announcement_id: editingId,
+                title: document.getElementById("title")?.value.trim() || "",
+                message: document.getElementById("content")?.value.trim() || "",
+                priority: document.getElementById("priority")?.value || "normal",
+                target: DEFAULT_TARGET_ROLE,
+                expiry_date: document.getElementById("expiryDate")?.value || null,
+                admin_id: getCurrentAdminIdentifier()
+            };
+
+            if (!payload.title || !payload.message) {
+                showToast("Please fill in the title and content", "error");
+                return;
+            }
+
+            try {
+                if (submitBtn) submitBtn.disabled = true;
+
+                const endpoint = editingId ? "announcements/update" : "announcements";
+                const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    showToast(result.message || "Failed to save announcement", "error");
+                    return;
+                }
+
+                showToast(editingId ? "Announcement updated!" : "Announcement published!", "success");
+                resetForm();
+                await fetchAnnouncements();
+            } catch (error) {
+                console.error("Announcement save failed:", error);
+                showToast("Server connection failed", "error");
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        });
+
+        function setupEventListeners() {
+            const searchInput = document.getElementById("searchInput");
+            const headerSearch = document.getElementById("announcementSearch");
+            const deleteModal = document.getElementById("deleteConfirmationModal");
+
+            searchInput?.addEventListener("input", () => renderAnnouncements(searchInput.value));
+
+            headerSearch?.addEventListener("input", function () {
+                if (searchInput) searchInput.value = this.value;
+                renderAnnouncements(this.value);
+            });
+
+            document.getElementById("priorityFilter")?.addEventListener("change", filterAnnouncements);
+            document.getElementById("cancelEditBtn")?.addEventListener("click", resetForm);
+            document.getElementById("closeDeleteModal")?.addEventListener("click", closeDeleteModal);
+            document.getElementById("cancelDeleteBtn")?.addEventListener("click", closeDeleteModal);
+            document.getElementById("confirmDeleteBtn")?.addEventListener("click", confirmDeleteAnnouncements);
+
+            deleteModal?.addEventListener("click", function (event) {
+                if (event.target === this) closeDeleteModal();
+            });
+        }
+
+        document.addEventListener("languageChanged", function (event) {
+            applyTranslations(event.detail.language);
+            renderAnnouncements(getSearchValue());
+        });
+
         function applyTranslations(language) {
-            const lang = translations[language] ? language : 'en';
-            const dict = translations[lang];
+            const dict = translations[translations[language] ? language : "en"];
 
-            document.querySelectorAll('[data-translate]').forEach(el => {
-                const key = el.getAttribute('data-translate');
-                if (dict[key]) {
-                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
-                        if (el.type !== 'text' && el.type !== 'email' && el.type !== 'password' && el.type !== 'tel') {
-                            el.textContent = dict[key];
-                        }
-                    } else if (el.tagName === 'OPTION') {
-                        el.textContent = dict[key];
-                    } else {
-                        el.textContent = dict[key];
-                    }
-                }
+            document.querySelectorAll("[data-translate]").forEach(element => {
+                const key = element.dataset.translate;
+                if (!dict[key]) return;
+                element.textContent = dict[key];
             });
 
-            document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
-                const key = el.getAttribute('data-translate-placeholder');
-                if (dict[key]) {
-                    el.placeholder = dict[key];
-                }
+            document.querySelectorAll("[data-translate-placeholder]").forEach(element => {
+                const key = element.dataset.translatePlaceholder;
+                if (dict[key]) element.placeholder = dict[key];
             });
 
-            if (dict['announcements_page_title']) {
-                document.title = dict['announcements_page_title'];
+            if (dict.announcements_page_title) {
+                document.title = dict.announcements_page_title;
             }
         }
 
-        // ---------- ACCOUNT DROPDOWN ----------
         function setupAccountDropdown() {
             const accountBtn = document.getElementById("accountBtn");
             const accountMenu = document.getElementById("accountMenu");
             if (!accountBtn || !accountMenu) return;
 
-            const newBtn = accountBtn.cloneNode(true);
-            accountBtn.parentNode.replaceChild(newBtn, accountBtn);
-            const freshBtn = document.getElementById("accountBtn");
+            const freshBtn = accountBtn.cloneNode(true);
+            accountBtn.parentNode.replaceChild(freshBtn, accountBtn);
 
-            freshBtn.addEventListener("click", function (e) {
-                e.stopPropagation();
-                e.preventDefault();
+            freshBtn.addEventListener("click", function (event) {
+                event.stopPropagation();
                 accountMenu.classList.toggle("show");
                 freshBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
             });
 
-            document.addEventListener("click", function (e) {
-                if (accountMenu.classList.contains("show") &&
-                    !freshBtn.contains(e.target) &&
-                    !accountMenu.contains(e.target)) {
-                    accountMenu.classList.remove("show");
-                    freshBtn.setAttribute("aria-expanded", false);
-                }
+            document.addEventListener("click", function (event) {
+                if (!accountMenu.classList.contains("show")) return;
+                if (freshBtn.contains(event.target) || accountMenu.contains(event.target)) return;
+
+                accountMenu.classList.remove("show");
+                freshBtn.setAttribute("aria-expanded", "false");
             });
 
-            document.addEventListener("keydown", function (e) {
-                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
-                    accountMenu.classList.remove("show");
-                    freshBtn.setAttribute("aria-expanded", false);
-                }
+            document.addEventListener("keydown", function (event) {
+                if (event.key !== "Escape") return;
+
+                accountMenu.classList.remove("show");
+                freshBtn.setAttribute("aria-expanded", "false");
             });
 
-            const menuItems = accountMenu.querySelectorAll("a");
-            menuItems.forEach(item => {
-                item.addEventListener("click", function () {
+            accountMenu.querySelectorAll("a").forEach(item => {
+                item.addEventListener("click", () => {
                     accountMenu.classList.remove("show");
-                    freshBtn.setAttribute("aria-expanded", false);
+                    freshBtn.setAttribute("aria-expanded", "false");
                 });
             });
 
-            freshBtn.style.cursor = 'pointer';
+            freshBtn.style.cursor = "pointer";
         }
 
-        // ---------- LOGOUT ----------
         function setupLogout() {
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    localStorage.removeItem('userData');
-                    localStorage.removeItem('userProfile');
-                    localStorage.removeItem('adminPreferences');
-                    localStorage.removeItem('preferredTheme');
-                    localStorage.removeItem('preferredLanguage');
-                    window.location.href = '/';
-                });
-            }
-        }
+            document.getElementById("logoutBtn")?.addEventListener("click", function (event) {
+                event.preventDefault();
 
-        // ---------- RENDER ANNOUNCEMENT LIST (admin style, with badges, hover, etc) ----------
-        function renderAnnouncements(filterText = '') {
-            const container = document.getElementById('announcementListContainer');
-            const counterSpan = document.getElementById('announcementCounter');
+                [
+                    "userData",
+                    "userProfile",
+                    "adminPreferences",
+                    "preferredTheme",
+                    "preferredLanguage"
+                ].forEach(key => localStorage.removeItem(key));
 
-            // filter
-            let filtered = sampleAnnouncements;
-            if (filterText.trim() !== '') {
-                const lower = filterText.toLowerCase();
-                filtered = sampleAnnouncements.filter(a =>
-                    a.title.toLowerCase().includes(lower) ||
-                    a.content.toLowerCase().includes(lower)
-                );
-            }
-
-            // sort: high > normal > low, then newest first
-            const priorityWeight = { 'high': 3, 'normal': 2, 'low': 1 };
-            // Replace your old sort block with this:
-            filtered.sort((a, b) => {
-                // 1. Convert IDs to numbers to ensure correct mathematical sorting
-                const idA = parseInt(String(a.id).replace('ann-', '')) || 0;
-                const idB = parseInt(String(b.id).replace('ann-', '')) || 0;
-
-                // 2. Sort by ID primarily (Newest ID = Top)
-                return idB - idA;
-            });
-
-            currentFilteredAnnouncements = filtered;
-            counterSpan.innerText = filtered.length;
-
-            if (filtered.length === 0) {
-                const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
-                const dict = translations[currentLang];
-                container.innerHTML = `<div class="empty-state" style="display: flex;">
-                    <i class="fas fa-bullhorn" style="font-size: 2.5rem; opacity: 0.5; margin-bottom: 1rem;"></i>
-                    <h4>${dict['no_announcements_found']}</h4>
-                    <p style="color: var(--text-secondary);">${filterText ? dict['try_different_search'] : dict['create_first_announcement']}</p>
-                </div>`;
-                return;
-            }
-
-            let html = '';
-            filtered.forEach(item => {
-                const expiry = item.expiryDate ? item.expiryDate.split('-').reverse().join('/') : 'No expiry';
-                const created = item.createdAt ? item.createdAt.split('-').reverse().join('/') : '—';
-
-                let priorityClass = 'badge-normal';
-                let priorityLabel = 'Normal';
-                if (item.priority === 'high') { priorityClass = 'badge-high'; priorityLabel = 'High'; }
-                else if (item.priority === 'low') { priorityClass = 'badge-low'; priorityLabel = 'Low'; }
-
-                const editingId = document.getElementById('announcementId')?.value || '';
-                const activeClass = (editingId === item.id) ? 'active-edit' : '';
-
-                const isSelected = selectedAnnouncements.has(item.id);
-                const checkedAttr = isSelected ? 'checked' : '';
-
-                html += `<div class="announcement-item ${activeClass}" data-announcement-id="${item.id}">
-                    <div class="item-badge">
-                        <span class="badge ${priorityClass}">${priorityLabel}</span>
-                    </div>
-                    <div style="display: flex; align-items: flex-start; gap: 12px;">
-                        <input type="checkbox" class="announcement-checkbox ticket-checkbox" data-id="${item.id}" ${checkedAttr} style="margin-top: 4px; width: 16px; height: 16px; accent-color: var(--accent);">
-                        <div style="flex:1;">
-                            <div class="item-title">${escapeHTML(item.title)}</div>
-                            <div class="item-meta">
-                                <span><i class="fas fa-clock"></i> ${dict_expires()}: ${expiry}</span>
-                                <span><i class="fas fa-edit"></i> ${dict_created()}: ${created}</span>
-                                ${item.author ? `<span><i class="fas fa-user"></i> ${item.author}</span>` : ''}
-                            </div>
-                            <div class="item-excerpt">${escapeHTML(item.content.substring(0, 100))}${item.content.length > 100 ? '…' : ''}</div>
-                        </div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn-action btn-edit" onclick="editAnnouncement('${item.id}')" title="Edit"><i class="fas fa-pencil-alt"></i></button>
-                        <button class="btn-action btn-delete" onclick="deleteAnnouncement('${item.id}')" title="Delete"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                </div>`;
-            });
-
-            container.innerHTML = html;
-
-            // attach checkbox listeners
-            document.querySelectorAll('.announcement-checkbox').forEach(cb => {
-                cb.addEventListener('change', function (e) {
-                    const id = this.getAttribute('data-id');
-                    if (this.checked) selectedAnnouncements.add(id);
-                    else selectedAnnouncements.delete(id);
-                    updateDeleteButtonVisibility();
-                });
+                window.location.href = "/";
             });
         }
 
-        // helper for dictionary
-        function dict_expires() {
-            const lang = window.preferencesManager?.getCurrentLanguage() || 'en';
-            return translations[lang]['expires'] || 'Expires';
-        }
-        function dict_created() {
-            const lang = window.preferencesManager?.getCurrentLanguage() || 'en';
-            return translations[lang]['created'] || 'Created';
-        }
+        function getCurrentAdminIdentifier() {
+            const userData = safeParseJSON(localStorage.getItem("userData"));
+            const userProfile = safeParseJSON(localStorage.getItem("userProfile"));
+            const user = { ...userProfile, ...userData };
 
-        function escapeHTML(unsafe) {
-            if (!unsafe) return '';
-            return unsafe.replace(/[&<>"]/g, function (m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                if (m === '"') return '&quot;';
-                return m;
-            });
+            return (
+                user.User_ID ||
+                user.user_id ||
+                user.id ||
+                user.Admin_ID ||
+                user.Technician_ID ||
+                user.Name ||
+                user.name ||
+                user.Email ||
+                user.email ||
+                "Admin"
+            );
         }
 
-        // ---------- FORM RESET (FIXED: Only update text content, not HTML) ----------
-        window.resetForm = function () {
-            // 1. Clear all input fields
-            document.getElementById('announcementForm').reset();
-            document.getElementById('announcementId').value = '';
-
-            // 2. Identify the current language
-            const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
-            const dict = translations[currentLang];
-
-            // 3. Update Title and Button text using the dictionary (to support translation)
-            const formTitle = document.getElementById('formTitle');
-            const submitBtnText = document.getElementById('submitBtnText');
-
-            if (formTitle) {
-                formTitle.textContent = dict['create_announcement'] || 'Create new announcement';
-            }
-            
-            if (submitBtnText) {
-                // This ensures the button also goes back to the correct language
-                submitBtnText.textContent = dict['publish_announcement'] || 'Publish announcement';
-            }
-
-            // 4. Refresh the list and clear visual highlights
-            renderAnnouncements(document.getElementById('searchInput')?.value || '');
-            document.querySelectorAll('.announcement-item').forEach(el => el.classList.remove('active-edit'));
-            
-            console.log("Form reset and highlights cleared.");
-        };
-        window.editAnnouncement = function (id) {
-            const ann = sampleAnnouncements.find(a => String(a.id) === String(id));
-            if (!ann) return;
-
-            document.getElementById('announcementId').value = ann.id;
-            document.getElementById('title').value = ann.title;
-
-            // THE FIX: Use .toLowerCase() to match <option value="high"> etc.
-            document.getElementById('priority').value = (ann.priority || 'normal').toLowerCase();
-            document.getElementById('targetRole').value = (ann.target || 'all').toLowerCase();
-            
-            document.getElementById('content').value = ann.content;
-
-            // Correct date formatting for the <input type="date">
-            if (ann.expiryDate && ann.expiryDate !== "null" && ann.expiryDate !== "No expiry") {
-                const date = new Date(ann.expiryDate);
-                document.getElementById('expiryDate').value = date.toISOString().split('T')[0];
-            } else {
-                document.getElementById('expiryDate').value = '';
-            }
-
-            document.getElementById('formTitle').textContent = 'Edit Announcement';
-            document.getElementById('submitBtnText').textContent = 'Update Announcement';
-            
-            document.querySelectorAll('.announcement-item').forEach(el => el.classList.remove('active-edit'));
-            const listItem = document.querySelector(`.announcement-item[data-announcement-id="${id}"]`);
-            if (listItem) listItem.classList.add('active-edit');
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        // ---------- DELETE ANNOUNCEMENT (single) ----------
-        window.deleteAnnouncement = async function (id) {
-            if (!confirm('Are you sure you want to delete this announcement?')) return;
-
-            try {
-                const response = await fetch("http://127.0.0.1:5000/api/admin/announcements/delete", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ announcement_id: id })
-                });
-
-                if (response.ok) {
-                    showToast('Announcement removed from database', 'success');
-                    // Refresh the list from the database immediately
-                    fetchAnnouncements(); 
-                } else {
-                    showToast('Failed to delete from server', 'error');
-                }
-            } catch (error) {
-                showToast('Server connection failed', 'error');
-            }
-        };
-
-        // ---------- BULK DELETE MODAL ----------
-        function showDeleteConfirmation(ids) {
-            const modal = document.getElementById('deleteConfirmationModal');
-            const deleteMessage = document.getElementById('deleteMessage');
-            const listContainer = document.getElementById('selectedAnnouncementsList');
-            const listEl = document.getElementById('announcementsToDeleteList');
-            const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
-            const dict = translations[currentLang];
-
-            listEl.innerHTML = '';
-            if (ids.length === 1) {
-                deleteMessage.textContent = dict['delete_announcement_confirm'];
-                listContainer.style.display = 'none';
-            } else {
-                deleteMessage.textContent = dict['delete_announcements_confirm'].replace('{count}', ids.length);
-                ids.forEach(id => {
-                    const ann = sampleAnnouncements.find(a => a.id === id);
-                    if (ann) {
-                        const li = document.createElement('li');
-                        li.innerHTML = `<strong>${ann.title}</strong>`;
-                        listEl.appendChild(li);
-                    }
-                });
-                listContainer.style.display = 'block';
-            }
-            modal.classList.add('show');
-        }
-
-        function confirmDeleteAnnouncements() {
-            const ids = Array.from(selectedAnnouncements);
-            sampleAnnouncements = sampleAnnouncements.filter(a => !selectedAnnouncements.has(a.id));
-            selectedAnnouncements.clear();
-            saveAnnouncementsToStorage();
-            renderAnnouncements(document.getElementById('searchInput')?.value || '');
-            closeDeleteModal();
-            const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
-            showToast(translations[currentLang]['delete_success'], 'success');
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('deleteConfirmationModal').classList.remove('show');
-        }
-
-        // ---------- FILTER FUNCTION ----------
-        window.filterAnnouncements = function () {
-            const searchInput = document.getElementById('searchInput');
-            renderAnnouncements(searchInput.value);
-        };
-
-        // ---------- UPDATE DELETE BUTTON (bulk) ----------
-        function updateDeleteButtonVisibility() {
-            // we can add a floating delete button for announcements if needed, but for simplicity we add a bulk action bar.
-            let bulkBar = document.getElementById('bulkActionBar');
-            if (!bulkBar) {
-                const listCard = document.querySelector('.list-card');
-                if (listCard) {
-                    bulkBar = document.createElement('div');
-                    bulkBar.id = 'bulkActionBar';
-                    bulkBar.className = 'bulk-action-bar';
-                    bulkBar.style.cssText = 'display: none; justify-content: flex-end; margin-bottom: 12px;';
-                    listCard.insertBefore(bulkBar, document.getElementById('announcementListContainer'));
-                }
-            }
-            if (bulkBar) {
-                if (selectedAnnouncements.size > 0) {
-                    bulkBar.style.display = 'flex';
-                    const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
-                    const dict = translations[currentLang];
-                    bulkBar.innerHTML = `<span style="margin-right: 12px; font-weight: 600;">${selectedAnnouncements.size} selected</span>
-                                         <button class="btn btn-danger" onclick="showDeleteConfirmation(Array.from(selectedAnnouncements))"><i class="fas fa-trash-alt"></i> ${dict['delete']} (${selectedAnnouncements.size})</button>`;
-                } else {
-                    bulkBar.style.display = 'none';
-                }
-            }
-        }
-
-        // ---------- FORM SUBMIT (CREATE/UPDATE) ----------
-        document.getElementById('announcementForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-
-            // Get the hidden ID to decide the action
-            const editingId = document.getElementById('announcementId').value;
-            
-            // Choose the endpoint based on whether we are editing
-            const endpoint = editingId ? "update" : "announcements";
-            
-            const title = document.getElementById('title').value.trim();
-            const content = document.getElementById('content').value.trim();
-            const priority = document.getElementById('priority').value;
-            const expiryDate = document.getElementById('expiryDate').value;
-            const target = "all"; // You can add a dropdown for this later
-
-            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-            const adminId = userData.User_ID || userData.user_id;
-
-            try {
-                // Inside your form submit listener
-                const editingId = document.getElementById('announcementId').value;
-
-                // THE FIX: Add 'announcements/' before 'update' to match your Python route
-                const endpoint = editingId ? "announcements/update" : "announcements";
-
-                const response = await fetch(`http://127.0.0.1:5000/api/admin/${endpoint}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        announcement_id: editingId,
-                        title: title,
-                        message: content,
-                        priority: priority,
-                        target: target,
-                        expiry_date: document.getElementById('expiryDate').value || null,
-                        admin_id: adminId
-                    })
-                });
-
-                if (response.ok) {
-                    showToast(editingId ? 'Announcement updated!' : 'Announcement published!', 'success');
-                    resetForm(); // This clears the hidden ID so the next one is "New"
-                    fetchAnnouncements(); // Refresh the list from the database
-                } else {
-                    showToast('Failed to save announcement', 'error');
-                }
-            } catch (error) {
-                showToast('Server connection failed', 'error');
-            }
-        });
-
-        // ---------- TOAST ----------
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
+        function showToast(message, type = "success") {
+            const toast = document.getElementById("toast");
             if (!toast) return;
+
             toast.textContent = message;
             toast.className = `toast ${type} show`;
-            setTimeout(() => toast.classList.remove('show'), 3000);
+
+            setTimeout(() => toast.classList.remove("show"), 3000);
         }
 
-        // ---------- EVENT LISTENERS ----------
-        function setupEventListeners() {
-            // search input with debounce
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.addEventListener('keyup', function () {
-                    renderAnnouncements(this.value);
-                });
-            }
-
-            // cancel edit button
-            document.getElementById('cancelEditBtn')?.addEventListener('click', resetForm);
-
-            // delete modal buttons
-            document.getElementById('closeDeleteModal')?.addEventListener('click', closeDeleteModal);
-            document.getElementById('cancelDeleteBtn')?.addEventListener('click', closeDeleteModal);
-            document.getElementById('confirmDeleteBtn')?.addEventListener('click', confirmDeleteAnnouncements);
-
-            // close delete modal when clicking outside
-            const deleteModal = document.getElementById('deleteConfirmationModal');
-            if (deleteModal) {
-                deleteModal.addEventListener('click', function (e) {
-                    if (e.target === this) closeDeleteModal();
-                });
-            }
-
-            // refresh button (optional)
-            const refreshBtn = document.getElementById('refreshTickets'); // not present, but we can add one later
+        function getTranslation(key) {
+            const lang = window.preferencesManager?.getCurrentLanguage() || "en";
+            return translations[lang]?.[key] || translations.en[key] || key;
         }
 
-        // Listen for language changes
-        document.addEventListener('languageChanged', function (e) {
-            applyTranslations(e.detail.language);
-            renderAnnouncements(document.getElementById('searchInput')?.value || '');
-        });
+        function getSearchValue() {
+            return document.getElementById("searchInput")?.value || "";
+        }
 
+        function getNumericId(id) {
+            return parseInt(String(id).replace(/\D/g, ""), 10) || 0;
+        }
+
+        function getPriorityClass(priority) {
+            if (priority === "high") return "badge-high";
+            if (priority === "low") return "badge-low";
+            return "badge-normal";
+        }
+
+        function getExcerpt(text, maxLength = 140) {
+            const value = String(text || "");
+            return value.length > maxLength ? `${value.substring(0, maxLength)}...` : value;
+        }
+
+        function formatDateOnly(value) {
+            if (!value) return "-";
+
+            const rawValue = String(value).trim();
+            const isoDate = rawValue.match(/^(\d{4}-\d{2}-\d{2})/);
+            if (isoDate) return isoDate[1];
+
+            const parsed = new Date(rawValue);
+            if (Number.isNaN(parsed.getTime())) return rawValue.split(" ")[0] || "-";
+
+            const year = parsed.getFullYear();
+            const month = String(parsed.getMonth() + 1).padStart(2, "0");
+            const day = String(parsed.getDate()).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+        }
+
+        function getTodayDateString() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, "0");
+            const day = String(today.getDate()).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+        }
+
+        function escapeHTML(value) {
+            return String(value || "").replace(/[&<>"']/g, char => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            }[char]));
+        }
+
+        function escapeAttribute(value) {
+            return escapeHTML(String(value || ""));
+        }
+
+        function capitalize(value) {
+            const text = String(value || "");
+            return text.charAt(0).toUpperCase() + text.slice(1);
+        }
+
+        function setText(id, value) {
+            const element = document.getElementById(id);
+            if (element) element.textContent = value;
+        }
+
+        function setValue(id, value) {
+            const element = document.getElementById(id);
+            if (element) element.value = value || "";
+        }
+
+        function safeParseJSON(value) {
+            try {
+                return JSON.parse(value || "{}");
+            } catch {
+                return {};
+            }
+        }
     </script>
 </body>
 

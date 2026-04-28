@@ -179,8 +179,8 @@
 
             // ========== CONFIGURATION ==========
             const ADMIN_EMAIL_DOMAIN = '@allitrack.com';
-            const USER_DASHBOARD_PATH = '../../pages/user page/index-user.html';
-            const ADMIN_DASHBOARD_PATH = '../../pages/admin page/index-admin.html';
+            const USER_DASHBOARD_PATH = '/user/dashboard';
+            const ADMIN_DASHBOARD_PATH = '/admin/dashboard';
 
             // ========== DOM ELEMENTS ==========
             const tabLogin = document.getElementById('tabLoginBtn');
@@ -263,7 +263,8 @@
                                 id: Math.random().toString(36).substr(2, 9),
                                 name: email.split('@')[0],
                                 email: email,
-                                role: isAdminUser(email) ? 'admin' : 'user',
+                                // FIXED: Changed 'user' to 'client' to match your DB
+                                role: isAdminUser(email) ? 'admin' : 'client', 
                                 lastLogin: new Date().toISOString()
                             }
                         });
@@ -272,16 +273,20 @@
             }
 
             function handleLoginSuccess(userData) {
+                // 1. Save the data
                 localStorage.setItem('userData', JSON.stringify(userData));
                 localStorage.setItem('authToken', 'simulated_token_' + Date.now());
 
-                const userType = (result.user.User_Type || "").toLowerCase();
+                // 2. FIXED: Use 'userData' directly (removed 'result' error)
+                // We check both role and User_Type for compatibility
+                const role = (userData.role || userData.User_Type || "client").toLowerCase();
 
-                const redirectPath = (userType === 'admin')
-                    ? ADMIN_DASHBOARD_PATH
-                    : USER_DASHBOARD_PATH;
+                // 3. FIXED: Use CLEAN routes to avoid 404s
+                const redirectPath = (role === 'admin' || role === 'technician')
+                    ? '/admin/dashboard'
+                    : '/user/dashboard';
 
-                console.log(`Login successful. Redirecting ${userData.role} to: ${redirectPath}`);
+                console.log(`Login successful. Redirecting ${role} to: ${redirectPath}`);
                 window.location.href = redirectPath;
             }
 
@@ -441,10 +446,7 @@
 
             async function handleEmailLogin(e) {
                 e.preventDefault();
-
-                if (!validateLoginForm()) {
-                    return;
-                }
+                if (!validateLoginForm()) return;
 
                 const emailValue = loginEmail.value.trim();
                 const passwordValue = loginPass.value.trim();
@@ -453,7 +455,6 @@
                 modalLoginBtn.disabled = true;
 
                 try {
-                    // Call the REAL Python backend!
                     const response = await fetch("http://127.0.0.1:5000/api/login", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -463,23 +464,21 @@
                     const result = await response.json();
 
                     if (response.ok && result.status === "success") {
-                        // 1. Save the real user data to the browser
                         localStorage.setItem('userData', JSON.stringify(result.user));
                         
-                        // 2. Check their role and redirect them
-                        const redirectPath = (result.user.User_Type === 'admin' || result.user.User_Type === 'technician')
-                            ? ADMIN_DASHBOARD_PATH
-                            : USER_DASHBOARD_PATH;
+                        // FIXED: Use clean routes here too
+                        const userType = (result.user.User_Type || "").toLowerCase();
+                        const redirectPath = (userType === 'admin' || userType === 'technician')
+                            ? '/admin/dashboard'
+                            : '/user/dashboard';
                             
                         window.location.href = redirectPath;
                     } else {
-                        // Shows "Invalid email or password" if they type it wrong
                         handleLoginFailure(result.message || 'Invalid credentials');
                     }
                 } catch (error) {
                     console.error("Login Error:", error);
-                    // PERFECT UX ERROR MESSAGE:
-                    handleLoginFailure('Unable to connect to the server. Please try again later.');
+                    handleLoginFailure('Server connection failed.');
                 }
             }
 
@@ -496,7 +495,7 @@
                                     name: `${provider} User`,
                                     email: `user@${provider.toLowerCase()}.com`,
                                     provider: provider,
-                                    role: 'user', // Social logins default to user role
+                                    role: 'client', // Social logins default to client role
                                     lastLogin: new Date().toISOString()
                                 }
                             });

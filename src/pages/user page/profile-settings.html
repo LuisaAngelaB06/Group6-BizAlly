@@ -917,43 +917,53 @@
             return isValid;
         }
 
-        function saveProfile() {
+        async function saveProfile() {
             try {
-                if (!window.userDataManager) {
-                    console.error('User Data Manager not available');
-                    return;
-                }
+                const userDataStr = localStorage.getItem("userData");
+                if (!userDataStr) return;
+                const currentUserData = JSON.parse(userDataStr);
 
-                const profileImage = document.getElementById('profileImage');
-                const profileData = {
-                    firstName: document.getElementById('firstName').value,
-                    lastName: document.getElementById('lastName').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    department: document.getElementById('department').value
-                };
+                const firstName = document.getElementById('firstName').value.trim();
+                const lastName = document.getElementById('lastName').value.trim();
+                const newEmail = document.getElementById('email').value.trim();
+                const fullName = `${firstName} ${lastName}`;
 
-                if (profileImage && profileImage.style.display === 'block') {
-                    profileData.photo = profileImage.src;
-                }
-
-                window.userDataManager.updateUserProfile(profileData);
-                window.userDataManager.updateUserData({
-                    name: `${profileData.firstName} ${profileData.lastName}`,
-                    email: profileData.email
+                // 1. Send the update to the Python Backend!
+                const response = await fetch("http://127.0.0.1:5000/api/user/update-profile", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        user_id: currentUserData.User_ID || currentUserData.user_id,
+                        name: fullName,
+                        email: newEmail
+                    })
                 });
 
-                const successMessage = document.getElementById('successMessage');
-                if (successMessage) {
-                    successMessage.classList.add('show');
-                    setTimeout(() => {
-                        successMessage.classList.remove('show');
-                    }, 3000);
-                }
+                const result = await response.json();
 
-                console.log('Profile saved:', profileData);
+                if (response.ok && result.status === "success") {
+                    // 2. Update Local Storage so the header changes immediately
+                    currentUserData.Name = fullName;
+                    currentUserData.Email = newEmail;
+                    localStorage.setItem("userData", JSON.stringify(currentUserData));
+
+                    // 3. Trigger the header update visually
+                    document.getElementById("userName").textContent = fullName;
+                    document.getElementById("userEmail").textContent = newEmail;
+                    document.getElementById("userAvatar").textContent = fullName.charAt(0).toUpperCase();
+
+                    // 4. Show success toast
+                    const successMessage = document.getElementById('successMessage');
+                    if (successMessage) {
+                        successMessage.classList.add('show');
+                        setTimeout(() => successMessage.classList.remove('show'), 3000);
+                    }
+                } else {
+                    alert("Failed to update profile: " + result.message);
+                }
             } catch (error) {
                 console.error('Error saving profile:', error);
+                alert("Server connection error.");
             }
         }
 

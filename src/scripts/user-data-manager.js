@@ -1,4 +1,42 @@
-// user-data-manager.js
+const userDataStr = localStorage.getItem("userData");
+const currentPath = window.location.pathname.toLowerCase();
+
+(function () {
+
+    // If not logged in
+    if (!userDataStr) {
+        if (
+            !currentPath.endsWith("index.html") &&
+            currentPath !== "/"
+        ) {
+            window.location.href = "/";
+        }
+        return;
+    }
+
+    const user = JSON.parse(userDataStr);
+
+    const role = (
+        user.User_Type ||
+        user.role ||
+        "client"
+    ).toLowerCase();
+
+    // CLIENT trying to access ADMIN pages
+    if (currentPath.includes("/admin/") && role === "client") {
+        window.location.href = "/user/index-user.html";
+    }
+
+    // ADMIN trying to access USER pages
+    if (currentPath.includes("/user/") && role === "admin") {
+        window.location.href = "/admin/index-admin.html";
+    }
+
+})();
+
+// ... Now your "class UserDataManager" and all your original ~300 lines follow below ...
+
+// --- 3. THE USER DATA MANAGER CLASS (Your Original ~200 Lines of Logic) ---
 class UserDataManager {
     constructor() {
         this.userDataKey = 'userData';
@@ -13,7 +51,7 @@ class UserDataManager {
         return {
             ...userData,
             ...userProfile,
-            fullName: `${userProfile.firstName || userData.firstName || ''} ${userProfile.lastName || userData.lastName || ''}`.trim() || userData.name || 'User'
+            fullName: `${userProfile.firstName || userData.firstName || ''} ${userProfile.lastName || userData.lastName || ''}`.trim() || userData.name || userData.Name || 'User'
         };
     }
 
@@ -22,19 +60,15 @@ class UserDataManager {
         const userData = JSON.parse(localStorage.getItem(this.userDataKey) || '{}');
         const updatedData = { ...userData, ...updates };
         localStorage.setItem(this.userDataKey, JSON.stringify(updatedData));
-        
-        // Dispatch event for other pages to update
         this.dispatchUserDataChanged();
         return updatedData;
     }
 
-    // Update user profile
+    // Update user profile (Used by profile-settings.html)
     updateUserProfile(updates) {
         const userProfile = JSON.parse(localStorage.getItem(this.userProfileKey) || '{}');
         const updatedProfile = { ...userProfile, ...updates };
         localStorage.setItem(this.userProfileKey, JSON.stringify(updatedProfile));
-        
-        // Dispatch event for other pages to update
         this.dispatchUserDataChanged();
         return updatedProfile;
     }
@@ -48,40 +82,27 @@ class UserDataManager {
     // Get user initials
     getUserInitials() {
         const userData = this.getUserData();
-        const firstName = userData.firstName || userData.name?.split(' ')[0] || 'U';
-        const lastName = userData.lastName || userData.name?.split(' ')[1] || '';
+        const firstName = userData.firstName || userData.name?.split(' ')[0] || userData.Name?.split(' ')[0] || 'U';
+        const lastName = userData.lastName || userData.name?.split(' ')[1] || userData.Name?.split(' ')[1] || '';
         return (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase();
     }
 
-    // Dispatch event when user data changes
     dispatchUserDataChanged() {
-        const event = new CustomEvent('userDataChanged', {
-            detail: this.getUserData()
-        });
+        const event = new CustomEvent('userDataChanged', { detail: this.getUserData() });
         document.dispatchEvent(event);
     }
 
-    // Initialize user data display on any page
     initializeUserDisplay() {
         this.updateHeaderAvatar();
         this.updateUserInfo();
         
-        // Listen for changes from other tabs/pages
-        window.addEventListener('storage', (event) => {
-            if (event.key === this.userDataKey || event.key === this.userProfileKey) {
-                this.updateHeaderAvatar();
-                this.updateUserInfo();
-            }
-        });
-        
-        // Listen for custom events
+        // Listen for internal changes
         document.addEventListener('userDataChanged', () => {
             this.updateHeaderAvatar();
             this.updateUserInfo();
         });
     }
 
-    // Update header avatar across all pages
     updateHeaderAvatar() {
         const headerAvatar = document.getElementById('userAvatar');
         if (!headerAvatar) return;
@@ -90,100 +111,96 @@ class UserDataManager {
         const initials = this.getUserInitials();
         
         if (profilePicture) {
-            // Check if it's already an img element
-            if (headerAvatar.querySelector('img')) {
-                headerAvatar.querySelector('img').src = profilePicture;
-            } else {
-                headerAvatar.innerHTML = '';
-                const img = document.createElement('img');
-                img.src = profilePicture;
-                img.alt = 'Profile Picture';
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.borderRadius = '50%';
-                img.style.objectFit = 'cover';
-                headerAvatar.appendChild(img);
-            }
+            headerAvatar.innerHTML = `<img src="${profilePicture}" alt="Profile" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
         } else {
             headerAvatar.innerHTML = '';
             headerAvatar.textContent = initials;
         }
     }
 
-    // Update user info in header
     updateUserInfo() {
-        const userData = this.getUserData();
-        
-        // Update user name
+        const user = this.getUserData();
         const userNameElement = document.getElementById('userName');
-        if (userNameElement) {
-            userNameElement.textContent = userData.fullName;
-        }
-
-        // Update user email
         const userEmailElement = document.getElementById('userEmail');
-        if (userEmailElement && userData.email) {
-            userEmailElement.textContent = userData.email;
-        }
+        
+        if (userNameElement) userNameElement.textContent = user.fullName;
+        if (userEmailElement) userEmailElement.textContent = user.Email || user.email || "No Email";
     }
 }
 
 // Create global instance
 window.userDataManager = new UserDataManager();
 
-// ==========================================
-// GLOBAL PROFILE SYNC: Runs on every page load
-// ==========================================
+// --- 4. UI & TAB SYNC (Runs on every page) ---
 document.addEventListener("DOMContentLoaded", function () {
+    // FIXED: Uses Global variable so Admin page doesn't crash here
+    if (!userDataStr) return; return; 
     
-    // 1. Check if they are logged in
-    const userDataStr = localStorage.getItem("userData");
-    if (!userDataStr) return; 
-    
+    window.userDataManager.initializeUserDisplay();
+
     const userData = JSON.parse(userDataStr);
-    
-    // 🔍 DEBUG: This will print your data to the console so we can see it!
-    console.log("DEBUG - User Data from Local Storage:", userData);
 
-    // 2. Find the header profile elements
-    const nameDisplay = document.getElementById("userName");
-    const emailDisplay = document.getElementById("userEmail");
-    const avatarDisplay = document.getElementById("userAvatar");
+    // Dropdown Logic
+    const accountBtn = document.getElementById("accountBtn");
+    const accountMenu = document.getElementById("accountMenu");
 
-    // 3. Cast a wider net! Check every possible variation of "Name" or "Username"
-    const fullName = userData.Name || userData.name || userData.Username || userData.username || userData.first_name || "User";
-    const email = userData.Email || userData.email || "No Email";
+    if (accountBtn && accountMenu) {
+        accountBtn.style.cursor = 'pointer';
+        accountBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            accountMenu.classList.toggle("show");
+        });
+        document.addEventListener("click", (e) => {
+            if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+                accountMenu.classList.remove("show");
+            }
+        });
+    }
 
-    // 4. Inject the real data into the HTML header
-    if (nameDisplay) nameDisplay.textContent = fullName;
-    if (emailDisplay) emailDisplay.textContent = email;
-    if (avatarDisplay && fullName !== "User") {
-        avatarDisplay.textContent = fullName.charAt(0).toUpperCase();
+    // Role-Based Menu Routing
+    const role = (userData.User_Type || userData.role || '').toLowerCase();
+    const isStaff = (role !== 'client');
+    document.querySelectorAll('#accountMenu a').forEach(link => {
+        const href = link.getAttribute('href');
+        if (href?.includes('profile-settings.html')) {
+            link.href = isStaff ? '/admin/profile-settings.html' : '/user/profile-settings.html';
+        }
+    });
+
+    // Global Logout Button
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.clear();
+            window.location.href = '/';
+        });
+    }
+
+    // Trigger Notifications check
+    checkNewAnnouncements(userData);
+});
+
+// --- 5. THE TAB SYNC ENGINE (Makes Admin follow logout) ---
+window.addEventListener('storage', (event) => {
+    if (event.key === 'userData') {
+        if (!event.newValue) {
+            // Logout detected in another tab!
+            window.location.href = '/';
+        } else {
+            // Account change detected!
+            window.location.reload();
+        }
     }
 });
 
-async function checkNewAnnouncements() {
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-    const userId = userData.User_ID || userData.user_id;
+async function checkNewAnnouncements(userData) {
+    const userId = userData.User_ID || userData.id;
     const redDot = document.getElementById('navRedDot');
-
     if (!userId || !redDot) return;
-
     try {
         const response = await fetch(`http://127.0.0.1:5000/api/user/announcements/unread/${userId}`);
         const unread = await response.json();
-
-        // If the array is empty (length is 0), the dot MUST be hidden
-        if (Array.isArray(unread) && unread.length > 0) {
-            redDot.style.display = 'inline-block';
-        } else {
-            redDot.style.display = 'none'; // This hides the dot!
-        }
-    } catch (e) {
-        console.log("Dot check failed, hiding for safety.");
-        redDot.style.display = 'none';
-    }
+        redDot.style.display = (Array.isArray(unread) && unread.length > 0) ? 'inline-block' : 'none';
+    } catch (e) { console.warn("Announcement check failed"); }
 }
-
-// Run this on every page load
-document.addEventListener('DOMContentLoaded', checkNewAnnouncements);
