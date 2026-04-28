@@ -1,4 +1,4 @@
-const API_BASE = "http://127.0.0.1:5000/api";
+const API_BASE = "https://group6-bizally.onrender.com/api";
 
 // LOGIN REQUEST
 async function loginUser(email, password) {
