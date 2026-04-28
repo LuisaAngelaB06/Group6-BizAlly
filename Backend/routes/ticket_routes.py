@@ -3,28 +3,28 @@ from database import get_connection
 
 ticket_bp = Blueprint("tickets", __name__)
 
-# GET all tickets
 @ticket_bp.route("/tickets", methods=["GET"])
 def get_tickets():
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-
-    query = """
-    SELECT 
-        t.*,
-        s.Name AS Technician_Name
-    FROM ticket t
-    LEFT JOIN technician tech ON t.Technician_ID = tech.Technician_ID
-    LEFT JOIN system_user s ON tech.User_ID = s.User_ID
-    """
-
-    cursor.execute(query)
-    tickets = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-
-    return jsonify(tickets)
+    try:
+        query = """
+        SELECT t.*, tech_user.Name AS Technician_Name, req_user.Name AS Requestor_Name
+        FROM ticket t
+        LEFT JOIN technician tech ON t.Technician_ID = tech.Technician_ID
+        LEFT JOIN system_user tech_user ON tech.User_ID = tech_user.User_ID
+        LEFT JOIN system_user req_user ON t.User_ID = req_user.User_ID
+        ORDER BY t.Date_Created DESC
+        """
+        cursor.execute(query)
+        tickets = cursor.fetchall()
+        return jsonify(tickets), 200
+    except Exception as e:
+        print(f"Database Error: {e}")
+        return jsonify({"error": "Failed to fetch tickets"}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 
 # POST create new ticket  ← ADD THIS SECTION
@@ -196,7 +196,7 @@ def get_analytics():
         return jsonify({"error": "Failed to fetch analytics"}), 500
     
 
-@ticket_bp.route("/api/feedback/submit", methods=["POST"])
+@ticket_bp.route("/feedback/submit", methods=["POST"])
 def submit_feedback():
     data = request.json
     source = data.get("source")

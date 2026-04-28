@@ -249,3 +249,25 @@ def admin_update_user():
     finally:
         cursor.close()
         conn.close()
+
+# USER TOOL: Allow users to update their own profile info
+@auth_bp.route("/user/update-profile", methods=["POST"])
+def update_user_profile():
+    data = request.json
+    user_id = data.get("user_id")
+    name = data.get("name")
+    email = data.get("email")
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        query = "UPDATE system_user SET Name = %s, Email = %s WHERE User_ID = %s"
+        cursor.execute(query, (name, email, user_id))
+        conn.commit()
+        return jsonify({"status": "success", "message": "Profile updated successfully"}), 200
+    except Exception as e:
+        print(f"Profile Update Error: {e}")
+        return jsonify({"status": "error", "message": "Failed to update profile"}), 500
+    finally:
+        cursor.close()
+        conn.close()
