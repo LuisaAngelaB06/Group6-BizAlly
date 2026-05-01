@@ -1,22 +1,14 @@
-import mysql.connector
+import psycopg2
 import os
 from dotenv import load_dotenv
 
-# Load the environment variables from your .env file
 load_dotenv()
 
 def get_connection():
     try:
-        conn = mysql.connector.connect(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            database=os.getenv("DB_NAME"),
-            port=int(os.getenv("DB_PORT")),
-            # This line uses the ca.pem file you just downloaded
-            ssl_ca=os.getenv("DB_SSL_CA")
-        )
+        # Pulls the single URI we put in your .env
+        conn = psycopg2.connect(os.getenv("DATABASE_URL"))
         return conn
-    except mysql.connector.Error as err:
-        print(f"Connection failed: {err}")
+    except Exception as e:
+        print(f"❌ Supabase Connection Failed: {e}")
         return None

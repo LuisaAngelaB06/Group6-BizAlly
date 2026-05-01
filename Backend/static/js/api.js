@@ -1,4 +1,14 @@
-const API_BASE = "https://group6-bizally.onrender.com/api";
+let API_BASE;
+
+// Check if you are running the site locally on your laptop
+if (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost") {
+    console.log("Running in LOCAL mode");
+    API_BASE = "http://127.0.0.1:5000/api";
+} else {
+    // Otherwise, assume it is live on Render
+    console.log("Running in PRODUCTION mode");
+    API_BASE = "https://group6-bizally.onrender.com/api";
+}
 
 // LOGIN REQUEST
 async function loginUser(email, password) {

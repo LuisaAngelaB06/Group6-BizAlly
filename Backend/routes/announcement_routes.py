@@ -77,12 +77,12 @@ def get_unread_announcements(user_id):
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
     try:
-        # THE FIX: Check for r.User_ID IS NULL instead of Read_ID
+        # THE FIX: Check for r.user_id IS NULL instead of Read_ID
         query = """
             SELECT a.Announcement_ID FROM announcements a
             LEFT JOIN announcement_reads r
-                ON a.Announcement_ID = r.Announcement_ID AND r.User_ID = %s
-            WHERE r.User_ID IS NULL
+                ON a.Announcement_ID = r.Announcement_ID AND r.user_id = %s
+            WHERE r.user_id IS NULL
             AND (a.Expiry_Date IS NULL OR a.Expiry_Date >= CURDATE())
         """
         cursor.execute(query, (user_id,))
@@ -113,13 +113,13 @@ def get_all_announcements_user(user_id):
                 a.Priority,
                 CAST(a.Expiry_Date AS CHAR) AS Expiry_Date,
                 CASE
-                    WHEN r.User_ID IS NOT NULL THEN 1
+                    WHEN r.user_id IS NOT NULL THEN 1
                     ELSE 0
                 END AS is_read
             FROM announcements a
             LEFT JOIN announcement_reads r
                 ON a.Announcement_ID = r.Announcement_ID
-                AND r.User_ID = %s
+                AND r.user_id = %s
             WHERE (a.Expiry_Date IS NULL OR a.Expiry_Date >= CURDATE())
             ORDER BY a.Created_At DESC
         """
@@ -151,7 +151,7 @@ def mark_as_read():
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        query = "INSERT IGNORE INTO announcement_reads (User_ID, Announcement_ID) VALUES (%s, %s)"
+        query = "INSERT IGNORE INTO announcement_reads (user_id, Announcement_ID) VALUES (%s, %s)"
         cursor.execute(query, (user_id, announcement_id))
         conn.commit()
         return jsonify({"status": "success"}), 200

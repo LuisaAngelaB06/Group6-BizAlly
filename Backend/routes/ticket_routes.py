@@ -1,23 +1,33 @@
 from flask import Blueprint, jsonify, request
 from database import get_connection
+from psycopg2.extras import RealDictCursor #
 
 ticket_bp = Blueprint("tickets", __name__)
 
 @ticket_bp.route("/tickets", methods=["GET"])
 def get_tickets():
     conn = get_connection()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor(cursor_factory=RealDictCursor) #
     try:
+        # Added double quotes to "system_user" for all JOINs[cite: 4]
         query = """
         SELECT t.*, tech_user.Name AS Technician_Name, req_user.Name AS Requestor_Name
         FROM ticket t
         LEFT JOIN technician tech ON t.Technician_ID = tech.Technician_ID
-        LEFT JOIN system_user tech_user ON tech.User_ID = tech_user.User_ID
-        LEFT JOIN system_user req_user ON t.User_ID = req_user.User_ID
+        LEFT JOIN "system_user" tech_user ON tech.user_id = tech_user.user_id
+        LEFT JOIN "system_user" req_user ON t.user_id = req_user.user_id
         ORDER BY t.Date_Created DESC
         """
         cursor.execute(query)
         tickets = cursor.fetchall()
+        
+        # Mapping lowercase Postgres keys back to the JS-expected CamelCase[cite: 4]
+        for t in tickets:
+            t["Ticket_ID"] = t.pop("ticket_id")
+            t["Concern_Title"] = t.pop("concern_title")
+            t["Priority"] = t.pop("priority")
+            # Repeat this for any other keys your frontend uses in CamelCase
+            
         return jsonify(tickets), 200
     except Exception as e:
         print(f"Database Error: {e}")
@@ -26,44 +36,36 @@ def get_tickets():
         cursor.close()
         conn.close()
 
-
-# POST create new ticket  ← ADD THIS SECTION
 @ticket_bp.route("/tickets", methods=["POST"])
 def create_ticket():
     data = request.json
-
-    service_type_id = data.get("Service_Type_ID")
-    user_id = data.get("User_ID")
-    status_id = data.get("Status_ID")
-    concern_title = data.get("Concern_Title")
-    description = data.get("Description")
-    priority = data.get("Priority")
-
     conn = get_connection()
     cursor = conn.cursor()
+    try:
+        # Replaced NOW() with CURRENT_TIMESTAMP for Postgres compatibility[cite: 4]
+        query = """
+            INSERT INTO ticket
+            (Service_Type_ID, user_id, Technician_ID, Status_ID,
+             Concern_Title, Description, Date_Created, Last_Updated, Priority)
+            VALUES (%s, %s, NULL, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, %s)
+        """
+        cursor.execute(query, (
+            data.get("Service_Type_ID"),
+            data.get("user_id"),
+            data.get("Status_ID"),
+            data.get("Concern_Title"),
+            data.get("Description"),
+            data.get("Priority")
+        ))
+        conn.commit()
+        return jsonify({"message": "Ticket created successfully"}), 201
+    except Exception as e:
+        print(f"Create Ticket Error: {e}")
+        return jsonify({"error": "Failed to create ticket"}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
-    query = """
-        INSERT INTO ticket
-        (Service_Type_ID, User_ID, Technician_ID, Status_ID,
-         Concern_Title, Description, Date_Created, Last_Updated, Priority)
-        VALUES (%s, %s, NULL, %s, %s, %s, NOW(), NOW(), %s)
-    """
-
-    cursor.execute(query, (
-        service_type_id,
-        user_id,
-        status_id,
-        concern_title,
-        description,
-        priority
-    ))
-
-    conn.commit()
-
-    cursor.close()
-    conn.close()
-
-    return jsonify({"message": "Ticket created successfully"})
 
 # DELETE ticket
 @ticket_bp.route("/tickets/<int:ticket_id>", methods=["DELETE"])
@@ -91,8 +93,8 @@ def get_user_tickets(user_id):
         s.Name AS Technician_Name
     FROM ticket t
     LEFT JOIN technician tech ON t.Technician_ID = tech.Technician_ID
-    LEFT JOIN system_user s ON tech.User_ID = s.User_ID
-    WHERE t.User_ID = %s
+    LEFT JOIN "system_user" s ON tech.user_id = s.user_id
+    WHERE t.user_id = %s
     """
 
     cursor.execute(query, (user_id,))
@@ -112,7 +114,7 @@ def get_technicians():
     query = """
     SELECT t.Technician_ID, s.Name
     FROM technician t
-    JOIN system_user s ON t.User_ID = s.User_ID
+    JOIN "system_user" s ON t.user_id = s.user_id
     """
 
     cursor.execute(query)
