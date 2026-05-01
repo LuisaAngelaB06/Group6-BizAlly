@@ -719,7 +719,7 @@
             if(!userDataStr) return; // Wait for redirect if not logged in
 
             const userData = JSON.parse(userDataStr);
-            const userId = userData.User_ID;
+            const userId = userData.user_id;
 
             try {
                 const response = await fetch(`http://127.0.0.1:5000/api/tickets/user/${userId}`);

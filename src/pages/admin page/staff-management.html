@@ -391,7 +391,7 @@
                         })
                         // Replace the .map section inside fetchRealStaff with this:
                         .map(user => ({
-                            id: String(user.User_ID || user.user_id || "0"), 
+                            id: String(user.user_id || user.user_id || "0"), 
                             name: user.Name || user.name || "Missing Name", 
                             email: user.Email || user.email || "Missing Email", 
                             role: 'Admin',

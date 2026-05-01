@@ -432,7 +432,7 @@
 
         async function initAnnouncements() {
             const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-            const userId = userData.User_ID || userData.user_id;
+            const userId = userData.user_id || userData.user_id;
 
             if (!userId) {
                 console.error("User ID not found.");
@@ -756,7 +756,7 @@
         // Mark announcement as read
         async function markAsRead(id) {
             const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-            const userId = userData.User_ID || userData.user_id;
+            const userId = userData.user_id || userData.user_id;
 
             try {
                 const response = await fetch("http://127.0.0.1:5000/api/user/announcements/read", {
