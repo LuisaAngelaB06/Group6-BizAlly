@@ -224,7 +224,6 @@ class PreferencesManager {
         console.log('DOM ready, applying preferences...');
         
         // Apply saved preferences
-        this.applyTheme();
         this.applyLanguage();
         
         // Setup preferences page if needed
@@ -278,9 +277,6 @@ class PreferencesManager {
         
         // Load saved preferences
         this.loadPreferencesIntoForm();
-        
-        // Setup theme options
-        this.setupThemeOptions();
         
         // Setup language selector
         this.setupLanguageSelector();
@@ -337,22 +333,13 @@ class PreferencesManager {
 
     loadPreferencesIntoForm() {
         const savedLanguage = this.getCurrentLanguage();
-        const savedTheme = this.getCurrentTheme();
-        
-        console.log('Loading saved preferences:', { language: savedLanguage, theme: savedTheme });
+        console.log('Loading saved preferences:', { language: savedLanguage });
         
         // Set language radio button
         const languageRadio = document.querySelector(`input[name="language"][value="${savedLanguage}"]`);
         if (languageRadio) {
             languageRadio.checked = true;
             languageRadio.closest('.language-card')?.classList.add('selected');
-        }
-        
-        // Set theme radio button
-        const themeRadio = document.querySelector(`input[name="theme"][value="${savedTheme}"]`);
-        if (themeRadio) {
-            themeRadio.checked = true;
-            themeRadio.closest('.theme-card')?.classList.add('selected');
         }
         
         // Load font preferences
@@ -415,32 +402,6 @@ class PreferencesManager {
                     
                     // Show toast notification
                     this.showToast('Language updated', 'success');
-                }
-            });
-        });
-    }
-
-    setupThemeOptions() {
-        const themeCards = document.querySelectorAll('.theme-card');
-        
-        themeCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const theme = card.dataset.theme;
-                
-                // Update radio button
-                const radio = card.querySelector('input[type="radio"]');
-                if (radio) {
-                    radio.checked = true;
-                    
-                    // Update card selection
-                    themeCards.forEach(c => c.classList.remove('selected'));
-                    card.classList.add('selected');
-                    
-                    // Apply theme immediately
-                    this.setTheme(theme);
-                    
-                    // Show toast notification
-                    this.showToast('Theme updated', 'success');
                 }
             });
         });
@@ -556,91 +517,6 @@ class PreferencesManager {
         
         document.body.style.fontFamily = fonts[fontFamily] || fonts.inter;
         console.log('Font family applied:', fontFamily);
-    }
-
-    updateThemeOptions(selectedTheme) {
-        const themeCards = document.querySelectorAll('.theme-card');
-        themeCards.forEach(card => {
-            const theme = card.dataset.theme;
-            if (theme === selectedTheme) {
-                card.classList.add('selected');
-            } else {
-                card.classList.remove('selected');
-            }
-        });
-    }
-
-    // Theme Management
-    getCurrentTheme() {
-        return localStorage.getItem('preferredTheme') || 'auto';
-    }
-
-    setTheme(theme) {
-        if (!['light', 'dark', 'auto'].includes(theme)) {
-            console.error('Invalid theme:', theme);
-            return;
-        }
-        
-        localStorage.setItem('preferredTheme', theme);
-        this.applyTheme();
-        
-        // Broadcast theme change to all pages
-        this.broadcastPreferenceChange('theme', theme);
-    }
-
-    applyTheme() {
-        const theme = this.getCurrentTheme();
-        let themeToApply = theme;
-        
-        // If theme is 'auto', detect system preference
-        if (theme === 'auto') {
-            themeToApply = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        
-        // Remove existing theme classes
-        document.documentElement.classList.remove('light-theme', 'dark-theme');
-        document.body.classList.remove('light-theme', 'dark-theme');
-        
-        // Add the selected theme class
-        document.documentElement.classList.add(themeToApply + '-theme');
-        document.body.classList.add(themeToApply + '-theme');
-        
-        // Apply CSS variables
-        this.applyThemeVariables(themeToApply);
-        
-        console.log('Theme applied:', themeToApply);
-    }
-
-    applyThemeVariables(theme) {
-        const root = document.documentElement;
-        
-        if (theme === 'dark') {
-            // Dark theme variables
-            root.style.setProperty('--surface', '#1e293b');
-            root.style.setProperty('--text-primary', '#f1f5f9');
-            root.style.setProperty('--text-secondary', '#94a3b8');
-            root.style.setProperty('--border', '#334155');
-            root.style.setProperty('--hover-bg', 'rgba(59, 130, 246, 0.1)');
-            root.style.setProperty('--glass', 'rgba(30, 41, 59, 0.85)');
-            root.style.setProperty('--sidebar-border', '#334155');
-            root.style.setProperty('--bg', 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)');
-            
-            // Force background color
-            document.body.style.background = 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)';
-        } else {
-            // Light theme variables
-            root.style.setProperty('--surface', '#ffffff');
-            root.style.setProperty('--text-primary', '#0f172a');
-            root.style.setProperty('--text-secondary', '#64748b');
-            root.style.setProperty('--border', 'rgba(15, 23, 42, 0.1)');
-            root.style.setProperty('--hover-bg', 'rgba(59, 130, 246, 0.06)');
-            root.style.setProperty('--glass', 'rgba(255, 255, 255, 0.85)');
-            root.style.setProperty('--sidebar-border', '#eef2ff');
-            root.style.setProperty('--bg', 'linear-gradient(180deg, #f6f9ff 0%, #ffffff 100%)');
-            
-            // Force background color
-            document.body.style.background = 'linear-gradient(180deg, #f6f9ff 0%, #ffffff 100%)';
-        }
     }
 
     // Language Management
@@ -890,11 +766,6 @@ class PreferencesManager {
                 console.log('Language changed in another tab:', event.newValue);
                 this.applyLanguage();
             }
-            
-            if (event.key === 'preferredTheme') {
-                console.log('Theme changed in another tab:', event.newValue);
-                this.applyTheme();
-            }
         });
     }
 
@@ -910,7 +781,6 @@ class PreferencesManager {
             
             // Collect all preference values
             const preferences = {
-                theme: document.querySelector('input[name="theme"]:checked')?.value || 'auto',
                 language: document.querySelector('input[name="language"]:checked')?.value || 'en',
                 fontSize: localStorage.getItem('fontSize') || 'medium',
                 fontFamily: localStorage.getItem('fontFamily') || 'inter',
@@ -921,13 +791,11 @@ class PreferencesManager {
             console.log('Preferences to save:', preferences);
             
             // Save to localStorage
-            localStorage.setItem('preferredTheme', preferences.theme);
             localStorage.setItem('dashboardLanguage', preferences.language);
             localStorage.setItem('fontSize', preferences.fontSize);
             localStorage.setItem('fontFamily', preferences.fontFamily);
             
             // Apply preferences
-            this.applyTheme();
             this.applyLanguage();
             this.applyFontSize(preferences.fontSize);
             this.applyFontFamily(preferences.fontFamily);
@@ -946,13 +814,6 @@ class PreferencesManager {
     resetPreferences() {
         try {
             console.log('Resetting preferences to defaults...');
-            
-            // Reset theme to auto
-            const themeAuto = document.querySelector('input[name="theme"][value="auto"]');
-            if (themeAuto) {
-                themeAuto.checked = true;
-                themeAuto.closest('.theme-card')?.classList.add('selected');
-            }
             
             // Reset language to English
             const languageEn = document.querySelector('input[name="language"][value="en"]');
@@ -1031,7 +892,6 @@ class PreferencesManager {
                 // Clear user data from localStorage
                 localStorage.removeItem('userData');
                 localStorage.removeItem('dashboardLanguage');
-                localStorage.removeItem('preferredTheme');
                 localStorage.removeItem('notificationSettings');
                 localStorage.removeItem('accessibilitySettings');
                 localStorage.removeItem('fontSize');

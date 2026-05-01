@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title data-translate="preferences_page_title">Preferences - AlliTrack</title>
+    <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
     <link rel="stylesheet" href="../../styles/admin page/preferences.css" />
@@ -507,8 +508,6 @@
                 console.log('Preferences Manager found, initializing...');
 
                 // Apply theme and language first
-                window.preferencesManager.applyTheme();
-
                 // Get saved language
                 const savedLang = window.preferencesManager.getCurrentLanguage();
                 console.log('Saved language:', savedLang);
@@ -551,12 +550,6 @@
             document.addEventListener('languageChanged', function (e) {
                 console.log('Language changed event received:', e.detail.language);
                 applyTranslations(e.detail.language);
-            });
-
-            // Listen for theme changes
-            document.addEventListener('themeChanged', function (e) {
-                console.log('Theme changed event received:', e.detail.theme);
-                loadCurrentPreferences();
             });
 
             console.log('Preferences page initialized');
@@ -623,16 +616,26 @@
 
             const userAvatar = document.getElementById('userAvatar');
             if (userAvatar) {
-                if (userData.photo) {
+                const profilePicture = window.userDataManager
+                    ? window.userDataManager.getProfilePicture()
+                    : userData.photo;
+
+                if (profilePicture) {
                     // Your groupmate's original image logic, fully preserved!
                     userAvatar.innerHTML = '';
                     const img = document.createElement('img');
-                    img.src = userData.photo;
+                    img.src = profilePicture;
                     img.alt = 'Profile Picture';
                     img.style.width = '100%';
                     img.style.height = '100%';
                     img.style.borderRadius = '50%';
                     img.style.objectFit = 'cover';
+                    img.onerror = () => {
+                        userAvatar.innerHTML = '';
+                        userAvatar.textContent = window.userDataManager
+                            ? window.userDataManager.getUserInitials()
+                            : 'AD';
+                    };
                     userAvatar.appendChild(img);
                 } else {
                     // Safe initials fallback using the real name
@@ -683,7 +686,7 @@
 
                         // Apply theme immediately
                         if (window.preferencesManager) {
-                            window.preferencesManager.setTheme(theme);
+                            window.ThemeManager?.setTheme(theme);
                             showToast('Theme updated', 'success');
                         }
                     }
@@ -850,7 +853,7 @@
         function loadCurrentPreferences() {
             if (!window.preferencesManager) return;
 
-            const theme = window.preferencesManager.getCurrentTheme();
+            const theme = window.ThemeManager?.getTheme?.();
             const language = window.preferencesManager.getCurrentLanguage();
 
             console.log('Loading preferences:', { theme, language });

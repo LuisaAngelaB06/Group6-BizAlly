@@ -1,33 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    // ==========================================
-    // 1. UPDATE THE PROFILE HEADER
-    // ==========================================
-    const userDataStr = localStorage.getItem("userData");
-    if (!userDataStr) {
-        alert("You must be logged in to access this page.");
-        window.location.href = "../../../index.html"; // Kick out if not logged in
-        return;
-    }
-
-    const userData = JSON.parse(userDataStr);
-    
-    // Inject the real name and email into the HTML
-    const nameDisplay = document.getElementById("userName");
-    const emailDisplay = document.getElementById("userEmail");
-    const avatarDisplay = document.getElementById("userAvatar");
-
-    if (nameDisplay) nameDisplay.textContent = userData.Name;
-    if (emailDisplay) emailDisplay.textContent = userData.Email;
-    if (avatarDisplay && userData.Name) {
-        // Set avatar to the first letter of their name
-        avatarDisplay.textContent = userData.Name.charAt(0).toUpperCase();
-    }
-
-
-    // ==========================================
-    // 2. HANDLE TICKET SUBMISSION
-    // ==========================================
+    // Check if userDataManager is available
     const form = document.getElementById("ticketForm");
 
     if (!form) {
@@ -49,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const ticketData = {
             Service_Type_ID: 1, // 1 = Technical Support
-            User_ID: userData.User_ID,
+            user_id: userData.user_id,
             Status_ID: 1, // 1 = Open
             Concern_Title: subjectInput.value,
             Description: descriptionInput.value,

@@ -83,19 +83,6 @@
     border-color: var(--border-accent);
 }
 
-/* REMOVED THE UNREAD CIRCLE INDICATOR */
-/* .announcement-card.unread::before {
-    content: '';
-    position: absolute;
-    left: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-} */
-
 .announcement-header {
     display: flex;
     justify-content: space-between;
@@ -365,39 +352,6 @@
 .stat-label {
     font-size: 0.9rem;
     color: var(--text-secondary);
-}
-
-/* Dark mode overrides */
-:root {
-    /* Light mode variables (default) */
-    --text-primary: #0f172a;
-    --text-secondary: #374151;
-    --border: #e2e8f0;
-    --border-accent: #3b82f6;
-    --surface: #ffffff;
-    --hover-bg: #f8fafc;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        /* Dark mode variables */
-        --text-primary: #f8fafc;
-        --text-secondary: #cbd5e1;
-        --border: #334155;
-        --border-accent: #3b82f6;
-        --surface: #0f172a;
-        --hover-bg: #1e293b;
-    }
-    
-    /* Optional: Adjust category background opacity for better dark mode visibility */
-    .category-notice,
-    .category-maintenance,
-    .category-feature,
-    .category-urgent,
-    .priority-high,
-    .priority-medium {
-        opacity: 0.9;
-    }
 }
 
 /* Responsive adjustments */

@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title data-translate="account_security_page_title">Account Security - AlliTrack</title>
+    <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
     <link rel="stylesheet" href="../../styles/user page/account-security.css" />
@@ -259,7 +260,7 @@
                 <!-- Footer -->
                 <footer class="site-footer">
                     <div>&copy; 2025 Business Alliance Inc.</div>
-                    <div>Dashboard Template</div>
+                    <div>AlliTrack User Dashboard</div>
                 </footer>
             </main>
         </div>
@@ -421,8 +422,6 @@
                 window.preferencesManager.initialize();
 
                 // Apply theme immediately when page loads
-                window.preferencesManager.applyTheme();
-
                 // Get current language from preferences manager
                 const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
                 applyTranslations(currentLang);
@@ -432,8 +431,6 @@
             }
 
             // Setup theme listener
-            setupThemeListener();
-
             // SETUP ACCOUNT DROPDOWN - MUST BE CALLED HERE
             setupAccountDropdown();
 
@@ -453,30 +450,7 @@
         });
 
         // Setup theme listener
-        function setupThemeListener() {
-            console.log('Setting up theme listener...');
-
-            // Listen for theme changes via storage events (from other tabs)
-            window.addEventListener('storage', (event) => {
-                if (event.key === 'preferredTheme') {
-                    console.log('Theme changed via storage:', event.newValue);
-                    if (window.preferencesManager) {
-                        // Small delay to ensure theme is saved
-                        setTimeout(() => {
-                            window.preferencesManager.applyTheme();
-                            console.log('Theme applied from storage event');
-                        }, 100);
-                    }
-                }
-            });
-
-            document.addEventListener('themeChanged', function (e) {
-                console.log('Theme changed via event:', e.detail.theme);
-                if (window.preferencesManager) {
-                    window.preferencesManager.applyTheme();
-                }
-            });
-        }
+        
 
         // Apply translations to the page
         function applyTranslations(language) {

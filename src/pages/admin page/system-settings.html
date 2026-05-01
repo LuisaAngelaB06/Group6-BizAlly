@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title data-translate="system_settings_page_title">System Settings - AlliTrack Admin</title>
+    <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
     <link rel="stylesheet" href="../../styles/admin page/system-settings.css" />
@@ -420,7 +421,6 @@
             keepSearchBarEmpty();
             initializeUserDisplay();
             initializePreferences();
-            setupThemeListener();
             loadSystemSettings();
             initForm();
             setupLogout();
@@ -464,23 +464,10 @@
                 return;
             }
             window.preferencesManager.initialize();
-            window.preferencesManager.applyTheme();
             applyTranslations(window.preferencesManager.getCurrentLanguage() || 'en');
         }
 
-        function setupThemeListener() {
-            window.addEventListener('storage', (event) => {
-                if (event.key === 'preferredTheme' && window.preferencesManager) {
-                    window.preferencesManager.applyTheme();
-                }
-            });
-            document.addEventListener('themeChanged', () => {
-                if (window.preferencesManager) window.preferencesManager.applyTheme();
-            });
-            document.addEventListener('languageChanged', (event) => {
-                applyTranslations(event.detail.language);
-            });
-        }
+        
 
         function applyTranslations(language) {
             const dict = translations[language] || translations.en;
@@ -525,7 +512,6 @@
                 localStorage.removeItem('userData');
                 localStorage.removeItem('userProfile');
                 localStorage.removeItem('adminPreferences');
-                localStorage.removeItem('preferredTheme');
                 localStorage.removeItem('preferredLanguage');
                 window.location.href = '/';
             });

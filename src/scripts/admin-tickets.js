@@ -16,7 +16,7 @@ async function loadTickets() {
             row.innerHTML = `
                 <td>#${ticket.Ticket_ID}</td>
                 <td>${ticket.Concern_Title}</td>
-                <td>User ${ticket.User_ID}</td>
+                <td>User ${ticket.user_id}</td>
                 <td>${convertStatus(ticket.Status_ID)}</td>
                 <td>${ticket.Priority}</td>
                 <td>${formatDate(ticket.Date_Created)}</td>

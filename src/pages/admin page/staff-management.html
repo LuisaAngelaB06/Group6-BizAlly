@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title data-translate="staff_management_title">Staff Management - AlliTrack Admin</title>
+    <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
     <link rel="stylesheet" href="../../styles/admin page/staff-management.css" />
@@ -876,7 +877,6 @@
                 if (window.userDataManager) window.userDataManager.initializeUserDisplay();
                 if (window.preferencesManager) {
                     window.preferencesManager.initialize();
-                    window.preferencesManager.applyTheme();
                     const lang = window.preferencesManager.getCurrentLanguage() || 'en';
                     applyTranslations(lang);
                 } else applyTranslations('en');

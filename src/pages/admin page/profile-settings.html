@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title data-translate="profile_settings_page_title">Profile Settings - AlliTrack Admin</title>
+    <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
     <link rel="stylesheet" href="../../styles/admin page/profile-settings.css" />
@@ -592,8 +593,6 @@
                 window.preferencesManager.initialize();
 
                 // Apply theme immediately
-                window.preferencesManager.applyTheme();
-
                 // Get current language from preferences manager
                 const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
                 applyTranslations(currentLang);
@@ -603,8 +602,6 @@
             }
 
             // Setup theme listener
-            setupThemeListener();
-
             // Cache DOM elements
             const profileImage = document.getElementById('profileImage');
             const profileInitials = document.getElementById('profileInitials');
@@ -628,27 +625,7 @@
         });
 
         // Setup theme listener
-        function setupThemeListener() {
-            console.log('🌙 Setting up theme listener...');
-
-            window.addEventListener('storage', (event) => {
-                if (event.key === 'preferredTheme') {
-                    console.log('Theme changed via storage:', event.newValue);
-                    if (window.preferencesManager) {
-                        setTimeout(() => {
-                            window.preferencesManager.applyTheme();
-                        }, 100);
-                    }
-                }
-            });
-
-            document.addEventListener('themeChanged', function (e) {
-                console.log('Theme changed via event:', e.detail.theme);
-                if (window.preferencesManager) {
-                    window.preferencesManager.applyTheme();
-                }
-            });
-        }
+        
 
         // Apply translations to the page
         function applyTranslations(language) {
@@ -714,11 +691,21 @@
             document.getElementById('role').value = userData.role || 'Administrator';
 
             // Update profile photo if exists
-            if (userData.photo && profileImage && profileInitials) {
-                profileImage.src = userData.photo;
+            const profilePicture = window.userDataManager.getProfilePicture();
+            if (profilePicture && profileImage && profileInitials) {
+                profileImage.onerror = function () {
+                    profileImage.style.display = 'none';
+                    profileInitials.style.display = 'block';
+                    updateProfileInitials();
+                };
+                profileImage.src = profilePicture;
                 profileImage.style.display = 'block';
                 profileInitials.style.display = 'none';
             } else if (profileInitials) {
+                if (profileImage) {
+                    profileImage.removeAttribute('src');
+                    profileImage.style.display = 'none';
+                }
                 updateProfileInitials();
             }
         }
@@ -761,7 +748,6 @@
                     localStorage.removeItem('userData');
                     localStorage.removeItem('userProfile');
                     localStorage.removeItem('adminPreferences');
-                    localStorage.removeItem('preferredTheme');
                     localStorage.removeItem('preferredLanguage');
 
                     console.log('🧹 Cleared localStorage, redirecting to login...');
@@ -845,6 +831,9 @@
                         firstName: document.getElementById('firstName').value,
                         lastName: document.getElementById('lastName').value
                     });
+                    window.userDataManager.updateUserData({
+                        photo: e.target.result
+                    });
                 }
 
                 showToast('Profile photo uploaded successfully', 'success');
@@ -867,8 +856,19 @@
 
             if (window.userDataManager) {
                 const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
                 delete userProfile.photo;
+                delete userProfile.profilePicture;
+                delete userProfile.profile_image;
+                delete userProfile.profileImage;
+                delete userProfile.avatar;
+                delete userData.photo;
+                delete userData.profilePicture;
+                delete userData.profile_image;
+                delete userData.profileImage;
+                delete userData.avatar;
                 localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                localStorage.setItem('userData', JSON.stringify(userData));
                 window.userDataManager.dispatchUserDataChanged();
             }
 
@@ -1013,7 +1013,10 @@
                 window.userDataManager.updateUserProfile(profileData);
                 window.userDataManager.updateUserData({
                     name: `${profileData.firstName} ${profileData.lastName}`,
+                    Name: `${profileData.firstName} ${profileData.lastName}`,
                     email: profileData.email,
+                    Email: profileData.email,
+                    photo: profileData.photo,
                     role: profileData.role
                 });
 

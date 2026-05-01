@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Admin Dashboard - AlliTrack</title>
+    <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
     <link rel="stylesheet" href="../../styles/admin page/index-admin.css" />
@@ -344,7 +345,6 @@
                 console.log('⚙️ Initializing Preferences Manager...');
 
                 // Apply theme and language immediately
-                window.preferencesManager.applyTheme();
                 applyLanguage();
 
                 // Listen for language changes from preferences page
@@ -525,13 +525,17 @@
             }
 
             if (userAvatar) {
-                const initials = (userData.fullName || 'AD')
-                    .split(' ')
-                    .map(n => n[0])
-                    .join('')
-                    .toUpperCase()
-                    .substring(0, 2);
-                userAvatar.textContent = initials;
+                if (window.userDataManager) {
+                    window.userDataManager.updateHeaderAvatar();
+                } else {
+                    const initials = (userData.fullName || 'AD')
+                        .split(' ')
+                        .map(n => n[0])
+                        .join('')
+                        .toUpperCase()
+                        .substring(0, 2);
+                    userAvatar.textContent = initials;
+                }
             }
         }
 
@@ -562,7 +566,7 @@
                     const keysToRemove = [
                         'userData', 'userProfile', 'loggedInUser',
                         'currentUser', 'user', 'loginData', 'authData',
-                        'dashboardLanguage', 'preferredTheme'
+                        'dashboardLanguage'
                     ];
 
                     keysToRemove.forEach(key => localStorage.removeItem(key));
@@ -637,10 +641,9 @@
                 // CHANGED THESE IDs TO MATCH YOUR HTML 👇
                 if (realUser.Name) {
                     document.getElementById("userNameDisplay").innerText = realUser.Name;
-                    
-                    // If you have an Avatar circle, this updates the letter!
-                    const avatar = document.getElementById("userAvatar");
-                    if (avatar) avatar.innerText = realUser.Name.charAt(0).toUpperCase();
+                    if (window.userDataManager) {
+                        window.userDataManager.updateHeaderAvatar();
+                    }
                 }
                 if (realUser.Email) {
                     document.getElementById("userEmailDisplay").innerText = realUser.Email;

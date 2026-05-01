@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Preferences - AlliTrack</title>
+    <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
     <link rel="stylesheet" href="../../styles/user page/preferences.css" />
@@ -421,7 +422,7 @@
                 <!-- Footer -->
                 <footer class="site-footer">
                     <div>&copy; 2025 Business Alliance Inc.</div>
-                    <div data-section="footerText">Dashboard Template</div>
+                    <div data-section="footerText">AlliTrack User Dashboard</div>
                 </footer>
             </main>
         </div>
@@ -444,7 +445,6 @@
             if (window.preferencesManager) {
                 console.log('Initializing Preferences Manager...');
                 window.preferencesManager.initialize();
-                window.preferencesManager.applyTheme();
                 window.preferencesManager.applyLanguage();
             }
 
@@ -493,7 +493,6 @@
                     localStorage.removeItem('userData');
                     localStorage.removeItem('userProfile');
                     localStorage.removeItem('dashboardLanguage');
-                    localStorage.removeItem('preferredTheme');
                     localStorage.removeItem('notificationSettings');
                     window.location.href = '/';
                 });
@@ -544,7 +543,7 @@
 
                         // Apply theme immediately if preference manager exists
                         if (window.preferencesManager) {
-                            window.preferencesManager.setTheme(theme);
+                            window.ThemeManager?.setTheme(theme);
                             showSuccessMessage('Theme updated');
                         }
                     }
@@ -607,7 +606,7 @@
             if (!window.preferencesManager) return;
 
             // Load theme
-            const theme = window.preferencesManager.getCurrentTheme();
+            const theme = window.ThemeManager?.getTheme?.();
             const themeRadio = document.querySelector(`input[name="theme"][value="${theme}"]`);
             if (themeRadio) {
                 themeRadio.checked = true;
@@ -687,27 +686,57 @@
         }
 
         function setupAccountDropdown() {
-            const accountBtn = document.getElementById('accountBtn');
-            const accountMenu = document.getElementById('accountMenu');
+            console.log('Setting up account dropdown...');
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
 
-            if (accountBtn && accountMenu) {
-                accountBtn.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    accountMenu.classList.toggle('show');
-                    this.setAttribute('aria-expanded', accountMenu.classList.contains('show'));
-                });
-
-                document.addEventListener('click', function (e) {
-                    if (!accountBtn.contains(e.target) && !accountMenu.contains(e.target)) {
-                        accountMenu.classList.remove('show');
-                        accountBtn.setAttribute('aria-expanded', 'false');
-                    }
-                });
-
-                accountMenu.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                });
+            if (!accountBtn || !accountMenu) {
+                console.error('Account dropdown elements not found!');
+                return;
             }
+
+            // Remove handlers added earlier by preferencesManager so one click only toggles once.
+            const newBtn = accountBtn.cloneNode(true);
+            accountBtn.parentNode.replaceChild(newBtn, accountBtn);
+
+            const freshBtn = document.getElementById("accountBtn");
+
+            freshBtn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+
+                accountMenu.classList.toggle("show");
+                freshBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            document.addEventListener("click", function (e) {
+                if (accountMenu.classList.contains("show") &&
+                    !freshBtn.contains(e.target) &&
+                    !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            accountMenu.querySelectorAll("a").forEach(item => {
+                item.addEventListener("click", function () {
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                });
+            });
+
+            accountMenu.addEventListener("click", function (e) {
+                e.stopPropagation();
+            });
+
+            freshBtn.style.cursor = 'pointer';
         }
     </script>
 </body>

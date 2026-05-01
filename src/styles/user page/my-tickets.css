@@ -280,41 +280,6 @@
     color: var(--text-secondary);
 }
 
-/* Dark mode overrides */
-:root {
-    /* Light mode variables (default) */
-    --text-primary: #0f172a;
-    --text-secondary: #374151;
-    --border: #e2e8f0;
-    --border-accent: #3b82f6;
-    --surface: #ffffff;
-    --hover-bg: #f8fafc;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        /* Dark mode variables */
-        --text-primary: #f8fafc;
-        --text-secondary: #cbd5e1;
-        --border: #334155;
-        --border-accent: #3b82f6;
-        --surface: #0f172a;
-        --hover-bg: #1e293b;
-    }
-    
-    /* Increase opacity for better dark mode visibility */
-    .status-open,
-    .status-pending,
-    .status-resolved,
-    .status-closed,
-    .priority-low,
-    .priority-medium,
-    .priority-high,
-    .priority-critical {
-        opacity: 0.9;
-    }
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .tickets-header {

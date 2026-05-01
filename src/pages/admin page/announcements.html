@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title data-translate="announcements_page_title">Announcements - AlliTrack Admin</title>
+    <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
     <link rel="stylesheet" href="../../styles/admin page/announcements.css" />
@@ -394,7 +395,6 @@
 
             if (window.preferencesManager) {
                 window.preferencesManager.initialize();
-                window.preferencesManager.applyTheme();
                 applyTranslations(window.preferencesManager.getCurrentLanguage() || "en");
                 return;
             }
@@ -847,7 +847,6 @@
                     "userData",
                     "userProfile",
                     "adminPreferences",
-                    "preferredTheme",
                     "preferredLanguage"
                 ].forEach(key => localStorage.removeItem(key));
 

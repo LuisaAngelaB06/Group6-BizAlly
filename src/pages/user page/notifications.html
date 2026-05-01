@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title data-translate="notifications_page_title">Notifications - AlliTrack</title>
+    <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
     <link rel="stylesheet" href="../../styles/user page/notification.css" />
@@ -185,7 +186,7 @@
                 <!-- Footer -->
                 <footer class="site-footer">
                     <div>&copy; 2025 Business Alliance Inc.</div>
-                    <div data-translate="dashboard_template">Dashboard Template</div>
+                    <div data-translate="dashboard_template">AlliTrack User Dashboard</div>
                 </footer>
             </main>
         </div>
@@ -217,7 +218,7 @@
 
                 // Navigation (shared with other pages)
                 'user_dashboard': 'User Dashboard',
-                'dashboard': 'Dashboard',
+                'dashboard': 'Dashboard ng User',
                 'support': 'Support',
                 'my_tickets': 'My Tickets',
                 'notifications': 'Notifications',
@@ -232,7 +233,7 @@
                 'profile': 'Profile',
                 'settings': 'Settings',
                 'logout': 'Logout',
-                'dashboard_template': 'Dashboard Template'
+                'dashboard_template': 'AlliTrack User Dashboard'
             },
             'fil': {
                 // PAGE-SPECIFIC translations only:
@@ -257,7 +258,7 @@
 
                 // Navigation (shared with other pages)
                 'user_dashboard': 'Dashboard ng User',
-                'dashboard': 'Dashboard',
+                'dashboard': 'Dashboard ng User',
                 'support': 'Suporta',
                 'my_tickets': 'Mga Ticket',
                 'notifications': 'Mga Paalala',
@@ -272,7 +273,7 @@
                 'profile': 'Profile',
                 'settings': 'Mga Setting',
                 'logout': 'Logout',
-                'dashboard_template': 'Template ng Dashboard'
+                'dashboard_template': 'Dashboard ng User ng AlliTrack'
             }
         };
 
@@ -299,8 +300,6 @@
                 window.preferencesManager.initialize();
 
                 // Apply theme immediately
-                window.preferencesManager.applyTheme();
-
                 // Get current language from preferences manager
                 const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
                 applyTranslations(currentLang);
@@ -310,8 +309,6 @@
             }
 
             // Setup theme listener
-            setupThemeListener();
-
             // Initialize notifications functionality
             initNotifications();
 
@@ -325,29 +322,7 @@
         });
 
         // Setup theme listener
-        function setupThemeListener() {
-            console.log('Setting up theme listener for notifications...');
-
-            // Listen for theme changes via storage events
-            window.addEventListener('storage', (event) => {
-                if (event.key === 'preferredTheme') {
-                    console.log('Theme changed via storage:', event.newValue);
-                    if (window.preferencesManager) {
-                        setTimeout(() => {
-                            window.preferencesManager.applyTheme();
-                        }, 100);
-                    }
-                }
-            });
-
-            // Listen for theme changes via broadcast
-            document.addEventListener('themeChanged', function (e) {
-                console.log('Theme changed via event:', e.detail.theme);
-                if (window.preferencesManager) {
-                    window.preferencesManager.applyTheme();
-                }
-            });
-        }
+        
 
         // Apply translations to the page
         function applyTranslations(language) {

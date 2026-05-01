@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title data-translate="submit_ticket_page_title">Submit Ticket - AlliTrack</title>
+    <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
     <link rel="stylesheet" href="../../styles/user page/submit-ticket.css" />
@@ -93,9 +94,9 @@
                             data-translate-placeholder="search_tickets" aria-label="Search tickets, users, IDs" />
                     </div>
                     <div class="header-actions">
-                        <div style="text-align:right">
-                            <div id="userName" style="font-weight:700">User</div>
-                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">user@example.com</div>
+                        <div class="user-info">
+                            <div class="user-name" id="userNameDisplay"></div>
+                            <div class="user-email" id="userEmailDisplay"></div>
                         </div>
                         <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
                             <div id="userAvatar" class="avatar">U</div>
@@ -189,7 +190,7 @@
                 <!-- Footer -->
                 <footer class="site-footer">
                     <div>&copy; 2025 Business Alliance Inc.</div>
-                    <div data-translate="dashboard_template">Dashboard Template</div>
+                    <div data-translate="dashboard_template">AlliTrack User Dashboard</div>
                 </footer>
             </main>
         </div>
@@ -294,7 +295,7 @@
                 'my_tickets': 'Ticket',
                 'notifications': 'Alert',
                 'submit_ticket': 'New',
-                'management': 'Manage',
+                'management': 'Management',
                 'preferences': 'Settings',
                 'profile_settings': 'Profile',
                 'announcements': 'Anunsyo',
@@ -304,7 +305,7 @@
                 'profile': 'Profile',
                 'settings': 'Settings',
                 'logout': 'Logout',
-                'dashboard_template': 'Dashboard Template'
+                'dashboard_template': 'AlliTrack User Dashboard'
             },
             'fil': {
                 'submit_ticket_page_title': 'Magsumite ng Ticket - AlliTrack',
@@ -340,7 +341,7 @@
                 'profile': 'Profile',
                 'settings': 'Mga Setting',
                 'logout': 'Logout',
-                'dashboard_template': 'Dashboard'
+                'dashboard_template': 'Dashboard ng User ng AlliTrack'
             }
         };
 
@@ -348,65 +349,119 @@
         document.addEventListener('DOMContentLoaded', function () {
             console.log('🚀 Submit Ticket: Starting initialization...');
 
-            // Initialize user data manager FIRST
             if (window.userDataManager) {
-                console.log('👤 Initializing User Data Manager...');
                 window.userDataManager.initializeUserDisplay();
-            } else {
-                console.error('❌ User Data Manager not found!');
             }
 
-            // Initialize preferences manager
             if (window.preferencesManager) {
-                console.log('⚙️ Initializing Preferences Manager...');
                 window.preferencesManager.initialize();
-
-                // Apply theme immediately
-                window.preferencesManager.applyTheme();
-
-                // Get current language from preferences manager
                 const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
                 applyTranslations(currentLang);
             } else {
-                console.error('❌ Preferences Manager not found!');
-                applyTranslations('en'); // Default to English
+                applyTranslations('en');
             }
 
-            // Setup theme listener
-            setupThemeListener();
-
-            // setupLogout();
-
-            // SETUP ACCOUNT DROPDOWN - CALL THIS LAST
-            // Wait a tiny bit to ensure all CSS is loaded
-            setTimeout(() => {
-                console.log('🔄 Setting up account dropdown (delayed)...');
-                setupAccountDropdown();
-            }, 100);
+            setupLogout();
+            setupAccountDropdown();
 
             console.log('✅ Submit Ticket page loaded');
         });
 
         // Setup theme listener
-        function setupThemeListener() {
-            console.log('🌙 Setting up theme listener...');
+        function loadAndDisplayUserData() {
+            const keys = [
+                'userData',
+                'userProfile',
+                'loggedInUser',
+                'currentUser',
+                'user',
+                'loginData',
+                'authData'
+            ];
 
-            window.addEventListener('storage', (event) => {
-                if (event.key === 'preferredTheme') {
-                    console.log('Theme changed via storage:', event.newValue);
-                    if (window.preferencesManager) {
-                        setTimeout(() => {
-                            window.preferencesManager.applyTheme();
-                        }, 100);
+            let userData = null;
+
+            for (const key of keys) {
+                const data = localStorage.getItem(key);
+                if (!data) continue;
+
+                try {
+                    const parsed = JSON.parse(data);
+
+                    if (parsed && (
+                        parsed.Name || parsed.Email ||
+                        parsed.name || parsed.email ||
+                        parsed.fullName
+                    )) {
+                        userData = parsed;
+                        break;
                     }
-                }
-            });
+                } catch { }
+            }
 
-            document.addEventListener('themeChanged', function (e) {
-                console.log('Theme changed via event:', e.detail.theme);
-                if (window.preferencesManager) {
-                    window.preferencesManager.applyTheme();
+            updateUserDisplay(userData || { Name: 'User' });
+        }
+
+        function updateUserDisplay(userData) {
+            const nameEl = document.getElementById('userNameDisplay');
+            const emailEl = document.getElementById('userEmailDisplay');
+            const avatar = document.getElementById('userAvatar');
+
+            const name =
+                userData?.Name ||
+                userData?.fullName ||
+                userData?.name ||
+                'User';
+
+            const email =
+                userData?.Email ||
+                userData?.email ||
+                '';
+
+            if (nameEl) nameEl.textContent = name;
+            if (emailEl) {
+                emailEl.textContent = email;
+                emailEl.hidden = !email;
+            }
+
+            if (avatar) {
+                const photo = userData?.photo || userData?.profilePicture || userData?.avatar;
+
+                if (photo) {
+                    avatar.style.backgroundImage = `url('${photo}')`;
+                    avatar.style.backgroundSize = 'cover';
+                    avatar.style.backgroundPosition = 'center';
+                    avatar.textContent = '';
+                } else {
+                    avatar.textContent = name
+                        .split(' ')
+                        .map(n => n[0])
+                        .join('')
+                        .substring(0, 2)
+                        .toUpperCase();
                 }
+            }
+        }
+
+        // Logout functionality
+        function setupLogout() {
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (!logoutBtn) return;
+
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                localStorage.removeItem('userData');
+                localStorage.removeItem('userProfile');
+                localStorage.removeItem('userTickets');
+                localStorage.removeItem('preferredLanguage');
+                localStorage.removeItem('dashboardLanguage');
+                localStorage.removeItem('notificationSettings');
+
+                sessionStorage.clear();
+
+                window.location.href = '/';
             });
         }
 
@@ -452,7 +507,6 @@
 
                 // Clear preferences
                 localStorage.removeItem('dashboardLanguage');
-                localStorage.removeItem('preferredTheme');
                 localStorage.removeItem('notificationSettings');
 
                 // Redirect to login page
@@ -513,10 +567,6 @@
             window.location.href = '../pages/my-tickets.html';
         }
 
-        // Listen for user data changes
-        document.addEventListener('userDataChanged', function (e) {
-            console.log('User data changed event received:', e.detail);
-        });
     </script>
     <script src="../../scripts/user-submit-ticket.js"></script>
 </body>

@@ -1,70 +1,57 @@
-:root {
+:root,
+html.light-theme {
     --accent: #3B82F6;
     --accent-2: #1e66d6;
-    --muted: #6b7280;
+    --muted: #64748b;
     --radius: 12px;
-    --shadow-sm: 0 6px 20px rgba(16, 24, 40, 0.06);
-    --shadow-lg: 0 18px 40px rgba(14, 30, 60, 0.08);
-    --glass: rgba(255, 255, 255, 0.85);
-    --maxw: 1240px;
-    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
-    --ease: cubic-bezier(.2, .9, .2, 1);
-
-    /* Light Theme Defaults - SOLID BACKGROUNDS */
-    --bg: #ffffff;
+    --bg: #f6f9ff;
     --surface: #ffffff;
     --text-primary: #0f172a;
     --text-secondary: #64748b;
     --border: rgba(15, 23, 42, 0.1);
+    --border-accent: rgba(59, 130, 246, 0.35);
     --hover-bg: rgba(59, 130, 246, 0.06);
-    --sidebar-border: #eef2ff;
+    --glass: rgba(255, 255, 255, 0.85);
+    --sidebar-border: #e5e7eb;
+    --shadow-sm: 0 6px 20px rgba(16, 24, 40, 0.06);
+    --shadow-md: 0 10px 25px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 18px 40px rgba(14, 30, 60, 0.08);
+    --maxw: 1240px;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+    --ease: cubic-bezier(.2, .9, .2, 1);
 }
 
-/* Dark Theme Variables - SOLID BACKGROUNDS */
-.dark-theme {
-    --bg: #1e293b;
+html.dark-theme {
+    --bg: #0f172a;
     --surface: #1e293b;
     --text-primary: #f1f5f9;
     --text-secondary: #94a3b8;
     --border: #334155;
+    --border-accent: rgba(59, 130, 246, 0.5);
     --hover-bg: rgba(59, 130, 246, 0.1);
     --glass: rgba(30, 41, 59, 0.85);
     --sidebar-border: #334155;
     --shadow-sm: 0 6px 20px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 10px 25px rgba(0, 0, 0, 0.25);
     --shadow-lg: 0 18px 40px rgba(0, 0, 0, 0.3);
 }
 
-/* Light Theme Variables - SOLID BACKGROUNDS */
-.light-theme {
-    --bg: #ffffff;
-    --surface: #ffffff;
-    --text-primary: #0f172a;
-    --text-secondary: #64748b;
-    --border: rgba(15, 23, 42, 0.1);
-    --hover-bg: rgba(59, 130, 246, 0.06);
-    --glass: rgba(255, 255, 255, 0.85);
-    --sidebar-border: #eef2ff;
-    --shadow-sm: 0 6px 20px rgba(16, 24, 40, 0.06);
-    --shadow-lg: 0 18px 40px rgba(14, 30, 60, 0.08);
-}
-
+/* Reset & Base */
 * {
     box-sizing: border-box;
 }
 
-html,
-body {
+html, body {
     height: 100%;
     margin: 0;
     font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     background: var(--bg);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* Shell Layout */
+/* Layout */
 .app {
     width: 100%;
     min-height: 100vh;
@@ -89,6 +76,7 @@ body {
     background: var(--surface);
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
     padding: 20px;
     flex-shrink: 0;
     position: sticky;
@@ -97,11 +85,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
+    transition: all 0.3s ease;
 }
 
-/* AlliTrack Logo in Sidebar */
 .brand {
     display: flex;
     gap: 12px;
@@ -121,11 +107,8 @@ body {
     color: white;
     font-weight: 700;
     box-shadow: var(--shadow-sm);
-    position: relative;
-    overflow: hidden;
 }
 
-/* AlliTrack logo styling - you can customize this based on your actual logo */
 .logo-allitrack {
     font-family: var(--mono);
     font-weight: 800;
@@ -133,9 +116,8 @@ body {
     letter-spacing: -0.5px;
     background: linear-gradient(135deg, #ffffff, #e0f2fe);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    -webkit-text-fill-color: transparent;
 }
 
 .logo-img {
@@ -143,7 +125,6 @@ body {
     height: 32px;
     object-fit: contain;
     filter: brightness(0) invert(1);
-    /* Makes logo white on colored background */
 }
 
 .brand .title {
@@ -173,13 +154,13 @@ body {
     font-family: var(--mono);
 }
 
+/* Navigation */
 .nav {
     margin-top: 6px;
     display: flex;
     flex-direction: column;
     gap: 6px;
     flex: 1;
-    overflow: hidden;
 }
 
 .nav-section {
@@ -238,14 +219,12 @@ body {
     padding: 16px 20px;
     border-radius: var(--radius);
     box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    position: flex;
-    top: 28px;
-    z-index: 20;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .search {
@@ -273,15 +252,14 @@ body {
     opacity: 0.7;
 }
 
-/* ===== HEADER ACTIONS & DROPDOWN - COMPLETE FIX ===== */
+/* User Dropdown */
 .header-actions {
     display: flex;
     align-items: center;
     gap: 12px;
-    position: relative; /* CRITICAL: Provides positioning context for the dropdown */
+    position: relative;
 }
 
-/* User info display */
 .user-info {
     text-align: right;
 }
@@ -293,10 +271,9 @@ body {
 
 .user-info .user-email {
     font-size: 0.82rem;
-    color: var(--muted);
+    color: var(--text-secondary);
 }
 
-/* Account button */
 .account {
     display: flex;
     align-items: center;
@@ -307,8 +284,6 @@ body {
     border: 1px solid var(--border);
     cursor: pointer;
     transition: all 0.2s ease;
-    position: relative;
-    user-select: none;
 }
 
 .account:hover {
@@ -324,7 +299,6 @@ body {
     transform: rotate(180deg);
 }
 
-/* Avatar */
 .avatar {
     width: 40px;
     height: 40px;
@@ -368,30 +342,10 @@ body {
     width: 0;
     height: 0;
     border-left: 6px solid transparent;
-    border-right: 6px transparent;
+    border-right: 6px solid transparent;
     border-bottom: 8px solid var(--surface);
 }
 
-.account-menu a {
-    display: block;
-    padding: 10px 14px;
-    text-decoration: none;
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    transition: background 0.18s;
-    border-bottom: 1px solid var(--border);
-}
-
-.account-menu a:last-child {
-    border-bottom: none;
-}
-
-.account-menu a:hover {
-    background: var(--hover-bg);
-    color: var(--accent);
-}
-
-/* Menu items */
 .account-menu a {
     display: flex;
     align-items: center;
@@ -420,7 +374,6 @@ body {
     padding-left: 20px;
 }
 
-/* Add icons to menu items */
 .account-menu a i {
     width: 18px;
     text-align: center;
@@ -429,13 +382,6 @@ body {
 
 .account-menu a:hover i {
     color: var(--accent);
-}
-
-/* Dark theme adjustments */
-.dark-theme .account-menu .arrow {
-    background: var(--surface);
-    border-left-color: var(--border);
-    border-top-color: var(--border);
 }
 
 /* Main Content */
@@ -459,15 +405,15 @@ body {
     border-radius: 12px;
     background: var(--surface);
     box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 0.92rem;
     color: var(--text-secondary);
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-/* Add AlliTrack branding to footer */
 .footer-brand {
     display: flex;
     align-items: center;
@@ -476,7 +422,7 @@ body {
     font-weight: 600;
 }
 
-/* Page title styles */
+/* Typography */
 .page-title h1 {
     margin: 0;
     font-size: 1.5rem;
@@ -485,7 +431,7 @@ body {
 }
 
 .page-title .subtitle {
-    margin: 4px 0 0 0;
+    margin: 4px 0 0;
     font-size: 0.9rem;
     color: var(--text-secondary);
 }
@@ -536,7 +482,6 @@ body {
         text-align: center;
     }
 
-    /* Show small logo in header on mobile */
     .header .logo-small {
         display: flex;
     }
@@ -549,13 +494,12 @@ body {
         font-size: 0.8rem;
     }
 
-    /* Mobile dropdown fix */
     .account-menu {
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
-        top: auto !important;
+        top: auto;
         width: 100%;
         border-radius: 16px 16px 0 0;
         transform: translateY(100%);

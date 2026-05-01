@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-translate="privacy_page_title">Privacy Statement - AlliTrack</title>
+    <script src="../../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../../../styles/user page/help/user-privacy.css">
     <script src="../../../scripts/user-preference-manager.js" defer></script>
@@ -296,7 +297,6 @@
             }
 
             // Setup theme listener to respond to theme changes
-            setupThemeListener();
         });
 
         // Setup system theme listener for auto mode
@@ -313,11 +313,6 @@
                         const newTheme = e.matches ? 'dark' : 'light';
                         console.log('System theme changed to:', newTheme);
                         applyTheme('auto');
-
-                        // Dispatch event for other components
-                        document.dispatchEvent(new CustomEvent('themeChanged', {
-                            detail: { theme: newTheme }
-                        }));
                     }
                 };
 
@@ -333,24 +328,7 @@
         }
 
         // Setup theme listener
-        function setupThemeListener() {
-            console.log('Setting up theme listener for Privacy...');
-
-            // Listen for theme changes via storage events
-            window.addEventListener('storage', (event) => {
-                if (event.key === 'preferredTheme') {
-                    console.log('Theme changed via storage (from preferences):', event.newValue);
-                    const newTheme = event.newValue || 'light';
-                    applyTheme(newTheme);
-                }
-            });
-
-            // Listen for theme changes via broadcast
-            document.addEventListener('themeChanged', function (e) {
-                console.log('Theme changed via event:', e.detail.theme);
-                applyTheme(e.detail.theme);
-            });
-        }
+        
 
         // Apply translations to the page
         function applyTranslations(language) {

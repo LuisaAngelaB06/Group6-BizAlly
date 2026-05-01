@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title data-translate="profile_settings_page_title">Profile Settings - AlliTrack</title>
+    <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
     <link rel="stylesheet" href="../../styles/user page/profile-settings.css" />
@@ -330,7 +331,7 @@
                 <!-- Footer -->
                 <footer class="site-footer">
                     <div>&copy; 2025 Business Alliance Inc.</div>
-                    <div data-translate="dashboard_template">Dashboard Template</div>
+                    <div data-translate="dashboard_template">AlliTrack User Dashboard</div>
                 </footer>
             </main>
         </div>
@@ -453,7 +454,7 @@
                 'my_tickets': 'Ticket',
                 'notifications': 'Alert',
                 'submit_ticket': 'New',
-                'management': 'Manage',
+                'management': 'Management',
                 'preferences': 'Settings',
                 'profile_settings': 'Profile',
                 'announcements': 'Anunsyo',
@@ -463,7 +464,7 @@
                 'profile': 'Profile',
                 'settings': 'Settings',
                 'logout': 'Logout',
-                'dashboard_template': 'Dashboard Template'
+                'dashboard_template': 'AlliTrack User Dashboard'
             },
             'fil': {
                 'profile_settings_page_title': 'Mga Setting ng Profile - AlliTrack',
@@ -520,7 +521,7 @@
                 'profile': 'Profile',
                 'settings': 'Mga Setting',
                 'logout': 'Logout',
-                'dashboard_template': 'Dashboard'
+                'dashboard_template': 'Dashboard ng User ng AlliTrack'
             }
         };
 
@@ -542,8 +543,6 @@
                 window.preferencesManager.initialize();
 
                 // Apply theme immediately
-                window.preferencesManager.applyTheme();
-
                 // Get current language from preferences manager
                 const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
                 applyTranslations(currentLang);
@@ -553,8 +552,6 @@
             }
 
             // Setup theme listener
-            setupThemeListener();
-
             // Cache DOM elements
             const profileImage = document.getElementById('profileImage');
             const profileInitials = document.getElementById('profileInitials');
@@ -578,27 +575,7 @@
         });
 
         // Setup theme listener
-        function setupThemeListener() {
-            console.log('🌙 Setting up theme listener...');
-
-            window.addEventListener('storage', (event) => {
-                if (event.key === 'preferredTheme') {
-                    console.log('Theme changed via storage:', event.newValue);
-                    if (window.preferencesManager) {
-                        setTimeout(() => {
-                            window.preferencesManager.applyTheme();
-                        }, 100);
-                    }
-                }
-            });
-
-            document.addEventListener('themeChanged', function (e) {
-                console.log('Theme changed via event:', e.detail.theme);
-                if (window.preferencesManager) {
-                    window.preferencesManager.applyTheme();
-                }
-            });
-        }
+        
 
         // Apply translations to the page
         function applyTranslations(language) {
@@ -696,7 +673,6 @@
                     localStorage.removeItem('userData');
                     localStorage.removeItem('userProfile');
                     localStorage.removeItem('userTickets');
-                    localStorage.removeItem('preferredTheme');
                     localStorage.removeItem('preferredLanguage');
 
                     console.log('🧹 Cleared localStorage, redirecting to login...');

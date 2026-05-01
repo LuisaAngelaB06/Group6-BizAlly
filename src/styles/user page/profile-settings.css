@@ -375,16 +375,6 @@
     font-weight: 500;
 }
 
-/* Form Actions */
-.form-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    margin-top: 32px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
-}
-
 .btn {
     padding: 12px 24px;
     border-radius: 8px;
@@ -419,38 +409,6 @@
 .btn-secondary:hover {
     background: var(--hover-bg);
     color: var(--text-primary);
-}
-
-/* Dark mode overrides */
-:root {
-    /* Light mode variables (default) */
-    --text-primary: #0f172a;
-    --text-secondary: #374151;
-    --border: #e2e8f0;
-    --border-accent: #3b82f6;
-    --surface: #ffffff;
-    --hover-bg: #f8fafc;
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        /* Dark mode variables */
-        --text-primary: #f8fafc;
-        --text-secondary: #cbd5e1;
-        --border: #334155;
-        --border-accent: #3b82f6;
-        --surface: #0f172a;
-        --hover-bg: #1e293b;
-    }
-
-    .form-input {
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    }
-
-    .profile-photo {
-        border-color: var(--surface);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    }
 }
 
 /* Optional: Add more contrast for disabled state */

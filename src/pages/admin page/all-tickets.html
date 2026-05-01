@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title data-translate="all_tickets_page_title">All Tickets - AlliTrack Admin</title>
+    <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
     <link rel="stylesheet" href="../../styles/admin page/all-tickets.css" />
@@ -523,8 +524,6 @@
             // Initialize preferences manager
             if (window.preferencesManager) {
                 window.preferencesManager.initialize();
-                window.preferencesManager.applyTheme();
-
                 // Get current language from preferences manager
                 const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
                 applyTranslations(currentLang);
@@ -659,7 +658,6 @@
                     localStorage.removeItem('userData');
                     localStorage.removeItem('userProfile');
                     localStorage.removeItem('adminPreferences');
-                    localStorage.removeItem('preferredTheme');
                     localStorage.removeItem('preferredLanguage');
                     console.log('🧹 Cleared localStorage, redirecting to login...');
                     window.location.href = '/';

@@ -64,7 +64,7 @@ class PreferencesManager {
                 savePreferences: "Save Preferences",
                 
                 // Footer
-                footerText: "Dashboard Template"
+                footerText: "AlliTrack User Dashboard"
             },
             fil: {
                 // Page titles and headers
@@ -128,7 +128,7 @@ class PreferencesManager {
                 savePreferences: "I-save ang Kagustuhan",
                 
                 // Footer
-                footerText: "Dashboard"
+                footerText: "Dashboard ng User ng AlliTrack"
             }
         };
         
@@ -156,9 +156,7 @@ class PreferencesManager {
         }
         
         console.log('DOM ready, applying preferences...');
-        
         // Apply saved preferences
-        this.applyTheme();
         this.applyLanguage();
         
         // Setup preferences page if needed
@@ -209,10 +207,6 @@ class PreferencesManager {
         
         // Load saved preferences
         this.loadPreferencesIntoForm();
-        
-        // Setup theme options
-        this.setupThemeOptions();
-        
         // Setup language selector
         this.setupLanguageSelector();
         
@@ -246,10 +240,6 @@ class PreferencesManager {
         if (ticketUpdates) ticketUpdates.checked = savedNotifications.ticketUpdates !== false;
         if (announcementNotifications) announcementNotifications.checked = savedNotifications.announcements !== false;
         if (weeklyDigest) weeklyDigest.checked = savedNotifications.weeklyDigest || false;
-        
-        // Load theme preference
-        const savedTheme = this.getCurrentTheme();
-        this.updateThemeOptions(savedTheme);
     }
 
     setupLanguageSelector() {
@@ -265,127 +255,6 @@ class PreferencesManager {
                     this.savePreferences();
                 }
             });
-        }
-    }
-
-    setupThemeOptions() {
-        const themeOptions = document.querySelectorAll('.theme-option');
-        themeOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                // Remove active class from all options
-                themeOptions.forEach(opt => opt.classList.remove('active'));
-                
-                // Add active class to clicked option
-                option.classList.add('active');
-                
-                // Get selected theme
-                const theme = option.getAttribute('data-theme');
-                
-                // Set theme
-                this.setTheme(theme);
-                
-                // Auto-save preferences
-                if (document.querySelector('.preferences-content')) {
-                    this.savePreferences();
-                }
-            });
-        });
-    }
-
-    updateThemeOptions(selectedTheme) {
-        const themeOptions = document.querySelectorAll('.theme-option');
-        themeOptions.forEach(option => {
-            const theme = option.getAttribute('data-theme');
-            if (theme === selectedTheme) {
-                option.classList.add('active');
-            } else {
-                option.classList.remove('active');
-            }
-        });
-    }
-
-    // Theme Management
-    getCurrentTheme() {
-        return localStorage.getItem('preferredTheme') || 'auto';
-    }
-
-    setTheme(theme) {
-        if (!['light', 'dark', 'auto'].includes(theme)) {
-            console.error('Invalid theme:', theme);
-            return;
-        }
-        
-        localStorage.setItem('preferredTheme', theme);
-        this.applyTheme();
-        
-        // Broadcast theme change to all pages
-        this.broadcastPreferenceChange('theme', theme);
-    }
-
-    applyTheme() {
-        const theme = this.getCurrentTheme();
-        let themeToApply = theme;
-        
-        // If theme is 'auto', detect system preference
-        if (theme === 'auto') {
-            themeToApply = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        
-        // Remove existing theme classes
-        document.documentElement.classList.remove('light-theme', 'dark-theme');
-        document.body.classList.remove('light-theme', 'dark-theme');
-        
-        // Add the selected theme class
-        document.documentElement.classList.add(themeToApply + '-theme');
-        document.body.classList.add(themeToApply + '-theme');
-        
-        // Apply CSS variables
-        this.applyThemeVariables(themeToApply);
-        
-        console.log('Theme applied:', themeToApply);
-    }
-
-    applyThemeVariables(theme) {
-        const root = document.documentElement;
-        
-        if (theme === 'dark') {
-            // Dark theme variables
-            root.style.setProperty('--surface', '#1e293b');
-            root.style.setProperty('--text-primary', '#f1f5f9');
-            root.style.setProperty('--text-secondary', '#94a3b8');
-            root.style.setProperty('--border', '#334155');
-            root.style.setProperty('--hover-bg', 'rgba(59, 130, 246, 0.1)');
-            root.style.setProperty('--glass', 'rgba(30, 41, 59, 0.85)');
-            root.style.setProperty('--sidebar-border', '#334155');
-            root.style.setProperty('--bg', 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)');
-            
-            // Preferences.css specific variables
-            root.style.setProperty('--toggle-bg', '#475569');
-            root.style.setProperty('--toggle-handle', '#f8fafc');
-            root.style.setProperty('--theme-options-bg', '#334155');
-            root.style.setProperty('--accent-border', 'rgba(59, 130, 246, 0.3)');
-            
-            // Force background color
-            document.body.style.background = 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)';
-        } else {
-            // Light theme variables
-            root.style.setProperty('--surface', '#ffffff');
-            root.style.setProperty('--text-primary', '#0f172a');
-            root.style.setProperty('--text-secondary', '#64748b');
-            root.style.setProperty('--border', 'rgba(15, 23, 42, 0.1)');
-            root.style.setProperty('--hover-bg', 'rgba(59, 130, 246, 0.06)');
-            root.style.setProperty('--glass', 'rgba(255, 255, 255, 0.85)');
-            root.style.setProperty('--sidebar-border', '#eef2ff');
-            root.style.setProperty('--bg', 'linear-gradient(180deg, #f6f9ff 0%, #ffffff 100%)');
-            
-            // Preferences.css specific variables
-            root.style.setProperty('--toggle-bg', '#e2e8f0');
-            root.style.setProperty('--toggle-handle', '#ffffff');
-            root.style.setProperty('--theme-options-bg', '#f8fafc');
-            root.style.setProperty('--accent-border', 'rgba(59, 130, 246, 0.1)');
-            
-            // Force background color
-            document.body.style.background = 'linear-gradient(180deg, #f6f9ff 0%, #ffffff 100%)';
         }
     }
 
@@ -655,11 +524,6 @@ class PreferencesManager {
                 console.log('Language changed in another tab:', event.newValue);
                 this.applyLanguage();
             }
-            
-            if (event.key === 'preferredTheme') {
-                console.log('Theme changed in another tab:', event.newValue);
-                this.applyTheme();
-            }
         });
     }
 
@@ -683,7 +547,6 @@ class PreferencesManager {
                     weeklyDigest: document.getElementById('weeklyDigest')?.checked || false
                 },
                 language: document.getElementById('language')?.value || 'en',
-                theme: document.querySelector('.theme-option.active')?.getAttribute('data-theme') || 'auto'
             };
             
             console.log('Preferences to save:', preferences);
@@ -691,8 +554,6 @@ class PreferencesManager {
             // Save to localStorage
             localStorage.setItem('dashboardLanguage', preferences.language);
             localStorage.setItem('notificationSettings', JSON.stringify(preferences.notifications));
-            localStorage.setItem('preferredTheme', preferences.theme);
-            
             // Show success message
             const successMessage = document.getElementById('successMessage');
             if (successMessage) {
@@ -730,15 +591,6 @@ class PreferencesManager {
             if (weeklyDigest) weeklyDigest.checked = false;
             if (languageSelect) languageSelect.value = 'en';
             
-            // Reset theme to auto
-            const themeOptions = document.querySelectorAll('.theme-option');
-            themeOptions.forEach(option => {
-                option.classList.remove('active');
-                if (option.getAttribute('data-theme') === 'auto') {
-                    option.classList.add('active');
-                }
-            });
-            
             // Save and apply defaults
             this.savePreferences();
             
@@ -758,7 +610,6 @@ class PreferencesManager {
                 // Clear user data from localStorage
                 localStorage.removeItem('userData');
                 localStorage.removeItem('dashboardLanguage');
-                localStorage.removeItem('preferredTheme');
                 localStorage.removeItem('notificationSettings');
                 
                 // Redirect to login page

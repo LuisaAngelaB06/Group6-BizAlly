@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title data-translate="announcements_page_title">Announcements - AlliTrack</title>
+    <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
     <link rel="stylesheet" href="../../styles/user page/announcements.css" />
@@ -162,7 +163,7 @@
                 <!-- Footer -->
                 <footer class="site-footer">
                     <div>&copy; 2025 Business Alliance Inc.</div>
-                    <div data-translate="footer_text">Dashboard Template</div>
+                    <div data-translate="footer_text">AlliTrack User Dashboard</div>
                 </footer>
             </main>
         </div>
@@ -236,7 +237,7 @@
                 'total_announcements': 'Total Announcements',
                 'unread_announcements': 'Unread Announcements',
                 'new_features': 'New Features',
-                'footer_text': 'Dashboard Template',
+                'footer_text': 'AlliTrack User Dashboard',
 
                 // Dynamic content translations
                 'just_now': 'Just now',
@@ -279,7 +280,7 @@
                 'total_announcements': 'Kabuuang Mga Anunsyo',
                 'unread_announcements': 'Hindi pa Nababasang Mga Anunsyo',
                 'new_features': 'Mga Bagong Feature',
-                'footer_text': 'Dashboard',
+                'footer_text': 'Dashboard ng User ng AlliTrack',
 
                 // Dynamic content translations
                 'just_now': 'Ngayon lang',
@@ -334,8 +335,6 @@
                 window.preferencesManager.initialize();
 
                 // Apply theme immediately
-                window.preferencesManager.applyTheme();
-
                 // Get current language from preferences manager
                 const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
                 applyTranslations(currentLang);
@@ -345,8 +344,6 @@
             }
 
             // Setup theme listener
-            setupThemeListener();
-
             // SETUP ACCOUNT DROPDOWN - MUST BE CALLED HERE
             setupAccountDropdown();
 
@@ -360,29 +357,7 @@
         });
 
         // Setup theme listener
-        function setupThemeListener() {
-            console.log('Setting up theme listener for announcements...');
-
-            // Listen for theme changes via storage events
-            window.addEventListener('storage', (event) => {
-                if (event.key === 'preferredTheme') {
-                    console.log('Theme changed via storage:', event.newValue);
-                    if (window.preferencesManager) {
-                        setTimeout(() => {
-                            window.preferencesManager.applyTheme();
-                        }, 100);
-                    }
-                }
-            });
-
-            // Listen for theme changes via broadcast
-            document.addEventListener('themeChanged', function (e) {
-                console.log('Theme changed via event:', e.detail.theme);
-                if (window.preferencesManager) {
-                    window.preferencesManager.applyTheme();
-                }
-            });
-        }
+        
 
         // Apply translations to the page
         function applyTranslations(language) {
