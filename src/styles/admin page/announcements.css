@@ -363,7 +363,22 @@
     background: var(--accent-2);
 }
 
-/* ===== ANNOUNCEMENT ITEM CARD - FIXED: No blue highlights ===== */
+/* Announcement Item */
+.announcement-item.selected {
+    border-color: var(--accent);
+    background: rgba(59, 130, 246, 0.08);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.announcement-item:active {
+    transform: scale(0.995);
+}
+
+.announcement-card-main {
+    cursor: pointer;
+}
+
+/* Active editing state - subtle orange background */
 .announcement-item {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -374,7 +389,6 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    border-left: 4px solid transparent;
 }
 
 .announcement-item:hover {
@@ -387,7 +401,6 @@
 .announcement-item.active-edit {
     background: rgba(243, 156, 18, 0.05);
     border-color: rgba(243, 156, 18, 0.3);
-    border-left-color: #f39c12;
 }
 
 .announcement-card-main {
@@ -875,7 +888,7 @@
 
 /* Custom calendar icon beside Expires On input */
 .calendar-icon,
-.input-with-icon > i.calendar-icon {
+.input-with-icon>i.calendar-icon {
     position: absolute;
     right: 12px;
     top: 50%;
@@ -889,7 +902,7 @@
 }
 
 .calendar-icon:hover,
-.input-with-icon > i.calendar-icon:hover {
+.input-with-icon>i.calendar-icon:hover {
     opacity: 1;
 }
 

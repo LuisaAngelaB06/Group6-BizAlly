@@ -96,7 +96,7 @@ class PreferencesManager {
                 customize_experience: "Customize your experience with AlliTrack",
                 
                 // Footer
-                footerText: "Admin Dashboard",
+                footerText: "Admin Dashboard Template",
                 admin_dashboard_template: "AlliTrack Admin Dashboard"
             },
             fil: {
@@ -108,7 +108,7 @@ class PreferencesManager {
                 // Navigation - EXACT keys that match data-section attributes
                 dashboard: "Dashboard",
                 allTickets: "Lahat ng Ticket",
-                users: "Pamamahala ng Staff",
+                users: "Kawanihan",
                 announcements: "Mga Anunsyo",
                 preferences: "Kagustuhan",
                 profileSettings: "Settings ng Profile",
@@ -193,8 +193,8 @@ class PreferencesManager {
                 customize_experience: "Ipasadya ang iyong karanasan sa AlliTrack",
                 
                 // Footer
-                footerText: "Admin Dashboard",
-                admin_dashboard_template: "AlliTrack Admin Dashboard"
+                footerText: "Dashboard ng Admin ng AlliTrack",
+                admin_dashboard_template: "Dashboard ng Admin ng AlliTrack"
             }
         };
         

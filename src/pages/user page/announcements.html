@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title data-translate="announcements_page_title">Announcements - AlliTrack</title>
     <script src="../../scripts/theme.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
     <link rel="stylesheet" href="../../styles/user page/announcements.css" />
@@ -160,6 +161,29 @@
                     </div>
                 </div>
 
+                <!-- Announcement Detail Modal -->
+                <div class="modal" id="announcementDetailModal">
+                    <div class="modal-content announcement-modal">
+                        <div class="modal-header">
+                            <h3 id="detailTitle"></h3>
+                            <button class="modal-close" onclick="closeAnnouncementModal()">&times;</button>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="announcement-meta">
+                                <i class="far fa-clock"></i>
+                                <span id="detailDate"></span>
+                            </div>
+
+                            <div class="announcement-message" id="detailMessage"></div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button class="action-btn" onclick="closeAnnouncementModal()">Close</button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Footer -->
                 <footer class="site-footer">
                     <div>&copy; 2025 Business Alliance Inc.</div>
@@ -170,6 +194,17 @@
     </div>
 
     <script>
+        const API_BASE_URL =
+            window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                ? "http://127.0.0.1:5000/api"
+                : "https://group6-bizally.onrender.com/api";
+
+        const socket = io(
+            window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                ? "http://127.0.0.1:5000"
+                : "https://group6-bizally.onrender.com"
+        );
+
         // Account Dropdown Functionality - FIXED
         function setupAccountDropdown() {
             console.log('Setting up account dropdown...');
@@ -351,13 +386,23 @@
             setupLogout();
 
             // Initialize announcements functionality
-            initAnnouncements();
+            initAnnouncements(); // first load
 
-            console.log('Announcements page loaded');
+            socket.on("announcement_updated", () => {
+                console.log("✏️ Announcement updated");
+                initAnnouncements();
+                showToast("Announcement updated");
+            });
+
+            socket.on("announcement_deleted", () => {
+                console.log("🗑️ Announcement deleted");
+                initAnnouncements();
+                showToast("Announcement deleted");
+            });
         });
 
         // Setup theme listener
-        
+
 
         // Apply translations to the page
         function applyTranslations(language) {
@@ -404,10 +449,15 @@
         }
 
         let announcements = [];
+        let announcementListenersReady = false;
 
         async function initAnnouncements() {
             const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-            const userId = userData.user_id || userData.user_id;
+            const userId =
+                userData.user_id ||
+                userData.id ||
+                userData.User_ID ||
+                userData.Customer_ID;
 
             if (!userId) {
                 console.error("User ID not found.");
@@ -415,63 +465,94 @@
             }
 
             try {
-                // 1. Fetch ALL announcements (including read ones)
-                const response = await fetch(`http://127.0.0.1:5000/api/user/announcements/all/${userId}`);
+                const response = await fetch(`${API_BASE_URL}/user/announcements/all/${userId}`);
+
+                if (!response.ok) {
+                    throw new Error(`Server returned ${response.status}`);
+                }
+
                 const data = await response.json();
 
                 if (Array.isArray(data)) {
-                    // 2. Map data while PRESERVING your categories (Notice, Maintenance, Feature)
-                    announcements = data.map(ann => ({
-                        id: ann.Announcement_ID,
-                        title: ann.Title,
-                        message: ann.Message,
-                        // Maps Priority/Role to the types your CSS expects
-                        type: ann.Priority === 'high' ? 'notice' : (ann.Target_Role || 'notice'),
-                        category: ann.Target_Role || 'notice',
-                        priority: (ann.Priority || 'normal').toLowerCase(),
-                        unread: ann.is_read === 0, // 0 means unread in SQL
-                        date: ann.Created_At || ann.created_at,
-                        author: ann.Created_By || 'System Admin'
-                    }));
+                    announcements = data.map(ann => {
+                        const id = ann.announcement_id || ann.Announcement_ID;
+                        const title = ann.title || ann.Title || "";
+                        const message = ann.message || ann.Message || "";
+                        const priority = (ann.priority || ann.Priority || "normal").toLowerCase();
 
-                    // 3. Update the UI counts and display
+                        return {
+                            id,
+                            title,
+                            message,
+                            type: priority === "high" ? "urgent" : "notice",
+                            priority,
+                            unread: Number(ann.is_read || 0) === 0,
+                            date: ann.created_at || ann.Created_At,
+                            author: ann.created_by || ann.Created_By || "System Admin"
+                        };
+                    });
+
                     updateStats();
-                    filterAnnouncements('all');
+                    filterAnnouncements("all");
                 }
             } catch (error) {
                 console.error("Failed to receive announcements:", error);
             }
 
-            // 4. KEEPING YOUR ORIGINAL LISTENERS (Do not delete these!)
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            if (filterButtons) {
-                filterButtons.forEach(btn => {
-                    btn.addEventListener('click', function () {
-                        filterButtons.forEach(b => b.classList.remove('active'));
-                        this.classList.add('active');
-                        filterAnnouncements(this.getAttribute('data-filter'));
-                    });
-                });
-            }
+            // 4. KEEPING YOUR ORIGINAL LISTENERS (FIXED)
+            if (!announcementListenersReady) {
+                const filterButtons = document.querySelectorAll('.filter-btn');
 
-            const searchInput = document.getElementById('q');
-            if (searchInput) {
-                searchInput.addEventListener('input', () => filterAnnouncements(getActiveFilter()));
+                if (filterButtons) {
+                    filterButtons.forEach(btn => {
+                        btn.addEventListener('click', function () {
+                            filterButtons.forEach(b => b.classList.remove('active'));
+                            this.classList.add('active');
+                            filterAnnouncements(this.getAttribute('data-filter'));
+                        });
+                    });
+                }
+
+                const searchInput = document.getElementById('q');
+                if (searchInput) {
+                    searchInput.addEventListener('input', () =>
+                        filterAnnouncements(getActiveFilter())
+                    );
+                }
+
+                announcementListenersReady = true;
             }
         }
 
-        // 1. Updated Date Formatter: Shows the time in YOUR local timezone
+        // Updated Date Formatter: Shows the time in YOUR local timezone
         function parseLocalDateTime(dateString) {
             if (!dateString) return null;
 
-            // Fix: Force proper ISO format
-            const fixed = dateString.replace(' ', 'T');
+            const value = String(dateString).trim();
 
-            const date = new Date(fixed.replace(' ', 'T'));
+            // Match: 2026-05-02 18:39:23
+            const match = value.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
 
-            return isNaN(date) ? null : date;
+            if (match) {
+                const [, year, month, day, hour, minute, second = "0"] = match;
+
+                // 👇 FORCE LOCAL TIME (no timezone conversion)
+                return new Date(
+                    Number(year),
+                    Number(month) - 1,
+                    Number(day),
+                    Number(hour),
+                    Number(minute),
+                    Number(second)
+                );
+            }
+
+            // fallback
+            const date = new Date(value);
+            return Number.isNaN(date.getTime()) ? null : date;
         }
 
+        /* 1.Format date to a more readable format in user's local timezone (e.g. "May 2, 2026, 6:39 PM") */
         function formatDate(dateString) {
             const date = parseLocalDateTime(dateString);
             if (!date) return "—";
@@ -486,6 +567,27 @@
             });
         }
 
+        /* 2. Format announcement content with support for line breaks and bullet points */
+        function formatAnnouncementContent(text) {
+            if (!text) return "";
+
+            return escapeHTML(text)
+                .replace(/\n\n/g, "<br><br>")   // paragraph spacing
+                .replace(/\n/g, "<br>")         // line breaks
+                .replace(/^- /gm, "• ");        // bullet points
+        }
+
+        function escapeHTML(value) {
+            return String(value || "").replace(/[&<>"']/g, char => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            }[char]));
+        }
+
+        /* 3. Format date as relative time (e.g. "Just now", "5 min ago", "Yesterday") */
         function formatRelativeTime(dateString) {
             const date = parseLocalDateTime(dateString);
             if (!date) return "—";
@@ -493,8 +595,12 @@
             const now = new Date();
             const diffInMs = now - date;
 
+            // Prevent negative time (clock mismatch / fast refresh)
+            if (diffInMs < 0) return "Just now";
+
             const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
             const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+            const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
             const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
             const dict = translations[currentLang] || translations['en'];
@@ -502,6 +608,8 @@
             if (diffInMinutes < 1) return dict['just_now'] || 'Just now';
             if (diffInMinutes < 60) return `${diffInMinutes} ${dict['min_ago']}`;
             if (diffInHours < 24) return `${diffInHours} ${dict['hr_ago']}`;
+            if (diffInDays === 1) return dict['yesterday'] || 'Yesterday';
+            if (diffInDays < 7) return `${diffInDays} ${dict['days_ago']}`;
 
             return formatDate(dateString);
         }
@@ -651,8 +759,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="announcement-content">
-                        <div class="announcement-message">${announcement.message}</div>
+                    <div class="announcement-message">
+                        ${formatAnnouncementContent(announcement.message)}
                     </div>
                     <div class="announcement-actions">
                         ${announcement.unread ? `
@@ -678,8 +786,6 @@
                         markAsRead(announcementId);
                     } else if (action === 'view') {
                         viewAnnouncement(announcementId);
-                    } else if (action === 'share') {
-                        shareAnnouncement(announcementId);
                     }
                 });
             });
@@ -731,10 +837,14 @@
         // Mark announcement as read
         async function markAsRead(id) {
             const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-            const userId = userData.user_id || userData.user_id;
+            const userId =
+                userData.user_id ||
+                userData.id ||
+                userData.User_ID ||
+                userData.Customer_ID;
 
             try {
-                const response = await fetch("http://127.0.0.1:5000/api/user/announcements/read", {
+                const response = await fetch(`${API_BASE_URL}/user/announcements/read`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ user_id: userId, announcement_id: id })
@@ -760,16 +870,22 @@
 
         // View announcement details
         function viewAnnouncement(id) {
-            const announcement = announcements.find(a => a.id === id);
-            if (announcement) {
-                // In a real app, this would show a detailed view or modal
-                alert(`Viewing announcement: ${announcement.title}\n\n${announcement.message}`);
+            const announcement = announcements.find(a => String(a.id) === String(id));
+            if (!announcement) return;
 
-                // Mark as read when viewed
-                if (announcement.unread) {
-                    markAsRead(id);
-                }
+            document.getElementById("detailTitle").textContent = announcement.title;
+            document.getElementById("detailDate").textContent = formatDate(announcement.date);
+            document.getElementById("detailMessage").textContent = announcement.message;
+
+            document.getElementById("announcementDetailModal").classList.add("show");
+
+            if (announcement.unread) {
+                markAsRead(id);
             }
+        }
+
+        function closeAnnouncementModal() {
+            document.getElementById("announcementDetailModal")?.classList.remove("show");
         }
 
         // Get active filter
@@ -791,6 +907,26 @@
             console.log('User data changed event received:', e.detail);
             // The userDataManager will handle updating the avatar automatically
         });
+
+        // Simple toast notification
+        function showToast(message) {
+            const toast = document.createElement("div");
+            toast.textContent = message;
+
+            toast.style.position = "fixed";
+            toast.style.bottom = "20px";
+            toast.style.right = "20px";
+            toast.style.background = "#111";
+            toast.style.color = "#fff";
+            toast.style.padding = "10px 16px";
+            toast.style.borderRadius = "8px";
+            toast.style.zIndex = "9999";
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 3000);
+        }
+
     </script>
 </body>
 

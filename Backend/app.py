@@ -2,9 +2,15 @@ from flask import Flask, render_template, send_from_directory
 from flask_cors import CORS
 import os
 from routes import register_routes
+from routes.announcement_routes import announcement_bp
+from socketio_instance import socketio
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 CORS(app)
+
+socketio.init_app(app)
+
+app.register_blueprint(announcement_bp, url_prefix="/api")
 
 register_routes(app)
 
@@ -199,9 +205,7 @@ def technician_pages(filename):
         filename
     )
 
-
-
 print("Routes loaded!")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app, debug=True)
