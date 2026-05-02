@@ -510,7 +510,7 @@
             logoutBtn.addEventListener('click', (event) => {
                 event.preventDefault();
                 localStorage.removeItem('userData');
-                localStorage.removeItem('userProfile');
+                    localStorage.removeItem('adminProfile');
                 localStorage.removeItem('adminPreferences');
                 localStorage.removeItem('preferredLanguage');
                 window.location.href = '/';

@@ -845,7 +845,7 @@
 
                 [
                     "userData",
-                    "userProfile",
+                    "adminProfile",
                     "adminPreferences",
                     "preferredLanguage"
                 ].forEach(key => localStorage.removeItem(key));
@@ -856,8 +856,8 @@
 
         function getCurrentAdminIdentifier() {
             const userData = safeParseJSON(localStorage.getItem("userData"));
-            const userProfile = safeParseJSON(localStorage.getItem("userProfile"));
-            const user = { ...userProfile, ...userData };
+            const adminProfile = safeParseJSON(localStorage.getItem("adminProfile"));
+            const user = { ...userData, ...adminProfile };
 
             return (
                 user.user_id ||

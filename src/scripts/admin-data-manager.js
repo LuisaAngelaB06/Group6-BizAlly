@@ -35,21 +35,52 @@ const currentPath = window.location.pathname.toLowerCase();
     }
 })();
 
-// --- 3. ORIGINAL USER DATA MANAGER CLASS (Unchanged) ---
+// --- 3. ADMIN USER DATA MANAGER CLASS ---
 class UserDataManager {
     constructor() {
         this.userDataKey = 'userData';
-        this.userProfileKey = 'userProfile';
+        this.adminProfileKey = 'adminProfile';
+        this.displayInitialized = false;
     }
 
     getUserData() {
         const userData = JSON.parse(localStorage.getItem(this.userDataKey) || '{}');
-        const userProfile = JSON.parse(localStorage.getItem(this.userProfileKey) || '{}');
-        
+        const adminProfile = JSON.parse(localStorage.getItem(this.adminProfileKey) || '{}');
+        const adminProfileName = `${adminProfile.firstName || ''} ${adminProfile.lastName || ''}`.trim();
+        const userDataName = `${userData.firstName || userData.FirstName || ''} ${userData.lastName || userData.LastName || ''}`.trim();
+        const displayName = adminProfile.name ||
+            userData.Name ||
+            userData.name ||
+            userData.displayName ||
+            userData.fullName ||
+            adminProfileName ||
+            userDataName ||
+            'Admin';
+        const displayEmail = adminProfile.email ||
+            userData.Email ||
+            userData.email ||
+            userData.userEmail ||
+            userData.emailAddress ||
+            'admin@allitrack.com';
+        const profilePicture = adminProfile.photo ||
+            adminProfile.profilePicture ||
+            adminProfile.avatar ||
+            userData.photo ||
+            userData.profilePicture ||
+            userData.avatar ||
+            null;
+
         return {
             ...userData,
-            ...userProfile,
-            fullName: `${userProfile.firstName || userData.firstName || ''} ${userProfile.lastName || userData.lastName || ''}`.trim() || userData.name || 'User'
+            ...adminProfile,
+            fullName: displayName,
+            displayName,
+            name: displayName,
+            email: displayEmail,
+            Email: displayEmail,
+            photo: profilePicture,
+            profilePicture,
+            avatar: profilePicture
         };
     }
 
@@ -62,36 +93,43 @@ class UserDataManager {
     }
 
     updateUserProfile(updates) {
-        const userProfile = JSON.parse(localStorage.getItem(this.userProfileKey) || '{}');
-        const updatedProfile = { ...userProfile, ...updates };
-        localStorage.setItem(this.userProfileKey, JSON.stringify(updatedProfile));
+        const adminProfile = JSON.parse(localStorage.getItem(this.adminProfileKey) || '{}');
+        const updatedProfile = { ...adminProfile, ...updates };
+        localStorage.setItem(this.adminProfileKey, JSON.stringify(updatedProfile));
         this.dispatchUserDataChanged();
         return updatedProfile;
     }
 
     getProfilePicture() {
-        const userProfile = JSON.parse(localStorage.getItem(this.userProfileKey) || '{}');
-        return userProfile.photo || null;
+        const userData = this.getUserData();
+        return userData.photo || userData.profilePicture || userData.avatar || null;
     }
 
     getUserInitials() {
         const userData = this.getUserData();
-        const firstName = userData.firstName || userData.name?.split(' ')[0] || 'U';
-        const lastName = userData.lastName || userData.name?.split(' ')[1] || '';
-        return (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase();
+        const nameParts = (userData.displayName || userData.fullName || 'Admin').trim().split(/\s+/);
+        const firstName = userData.firstName || userData.FirstName || nameParts[0] || 'A';
+        const lastName = userData.lastName || userData.LastName || nameParts[1] || '';
+        const initials = (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase();
+        return initials || 'A';
     }
 
     dispatchUserDataChanged() {
-        const event = new CustomEvent('userDataChanged', { detail: this.getUserData() });
+        const event = new CustomEvent('userDataChanged', {
+            detail: this.getUserData()
+        });
         document.dispatchEvent(event);
     }
 
     initializeUserDisplay() {
         this.updateHeaderAvatar();
         this.updateUserInfo();
-        
+
+        if (this.displayInitialized) return;
+        this.displayInitialized = true;
+
         window.addEventListener('storage', (event) => {
-            if (event.key === this.userDataKey || event.key === this.userProfileKey) {
+            if (event.key === this.userDataKey || event.key === this.adminProfileKey) {
                 this.updateHeaderAvatar();
                 this.updateUserInfo();
             }
@@ -106,46 +144,45 @@ class UserDataManager {
     updateHeaderAvatar() {
         const headerAvatar = document.getElementById('userAvatar');
         if (!headerAvatar) return;
+
         const profilePicture = this.getProfilePicture();
         const initials = this.getUserInitials();
-        
+
+        headerAvatar.innerHTML = '';
+        headerAvatar.textContent = '';
+        headerAvatar.style.backgroundImage = '';
+        headerAvatar.style.backgroundSize = '';
+        headerAvatar.style.backgroundPosition = '';
+
         if (profilePicture) {
-            if (headerAvatar.querySelector('img')) {
-                headerAvatar.querySelector('img').src = profilePicture;
-            } else {
-                headerAvatar.innerHTML = `<img src="${profilePicture}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-            }
+            const img = document.createElement('img');
+            img.src = profilePicture;
+            img.alt = 'Profile Picture';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.borderRadius = '50%';
+            img.style.objectFit = 'cover';
+            headerAvatar.appendChild(img);
         } else {
-            headerAvatar.innerHTML = '';
             headerAvatar.textContent = initials;
         }
     }
 
     updateUserInfo() {
         const userData = this.getUserData();
-        const userNameElement = document.getElementById('userName');
-        if (userNameElement) userNameElement.textContent = userData.fullName;
-        const userEmailElement = document.getElementById('userEmail');
-        if (userEmailElement && userData.email) userEmailElement.textContent = userData.email;
+
+        document.querySelectorAll('#userName, #userNameDisplay').forEach((element) => {
+            element.textContent = userData.displayName || 'Admin';
+        });
+
+        document.querySelectorAll('#userEmail, #userEmailDisplay').forEach((element) => {
+            element.textContent = userData.email || '';
+            element.hidden = !userData.email;
+        });
     }
 }
 
 window.userDataManager = new UserDataManager();
-
-// --- 4. YOUR ORIGINAL OVERRIDE LOGIC (Unchanged) ---
-window.userDataManager.initializeUserDisplay = function() {
-    const userDataStr = localStorage.getItem("userData");
-    if (userDataStr) {
-        const realUser = JSON.parse(userDataStr);
-        const nameBox = document.getElementById("userNameDisplay") || document.getElementById("userName");
-        const emailBox = document.getElementById("userEmailDisplay") || document.getElementById("userEmail");
-        const avatarBox = document.getElementById("userAvatar");
-
-        if (nameBox && realUser.Name) nameBox.innerText = realUser.Name;
-        if (emailBox && realUser.Email) emailBox.innerText = realUser.Email;
-        if (avatarBox && realUser.Name) avatarBox.innerText = realUser.Name.charAt(0).toUpperCase();
-    }
-};
 
 // --- 5. MULTI-TAB SYNC (The Fix for Admin Logout) ---
 window.addEventListener('storage', (event) => {
@@ -169,7 +206,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            localStorage.clear();
+            localStorage.removeItem('userData');
+            localStorage.removeItem('adminProfile');
+            localStorage.removeItem('adminPreferences');
+            localStorage.removeItem('preferredLanguage');
             window.location.href = '/';
         });
     }

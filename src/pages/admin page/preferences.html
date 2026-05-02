@@ -567,7 +567,7 @@
 
             // Listen for storage events (for cross-tab updates)
             window.addEventListener('storage', function (e) {
-                if (e.key === 'userData' || e.key === 'userProfile') {
+                if (e.key === 'userData' || e.key === 'adminProfile') {
                     console.log('Storage event detected for user data');
                     loadAndDisplayUserData();
                 }
@@ -582,18 +582,18 @@
             const rawDataStr = localStorage.getItem('userData') || '{}';
             const realUser = JSON.parse(rawDataStr);
             
-            // 2. Grab any extra profile stuff (like the saved photo)
-            const userProfileStr = localStorage.getItem('userProfile') || '{}';
-            const userProfile = JSON.parse(userProfileStr);
+            // 2. Grab any admin-only profile stuff (like the saved photo)
+            const adminProfileStr = localStorage.getItem('adminProfile') || '{}';
+            const adminProfile = JSON.parse(adminProfileStr);
 
             // 3. Combine them safely
             const combinedData = {
                 ...realUser,
-                ...userProfile,
+                ...adminProfile,
                 // Prioritize Python's 'Name' and 'Email'
-                fullName: realUser.Name || userProfile.name || 'Admin',
-                email: realUser.Email || userProfile.email || 'admin@allitrack.com',
-                photo: userProfile.photo || null
+                fullName: adminProfile.name || realUser.Name || 'Admin',
+                email: adminProfile.email || realUser.Email || 'admin@allitrack.com',
+                photo: adminProfile.photo || null
             };
 
             // 4. Send it to your groupmate's UI updater
