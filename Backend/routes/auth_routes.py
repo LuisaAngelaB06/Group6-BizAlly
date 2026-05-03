@@ -340,6 +340,9 @@ def init_oauth(app):
 def google_login():
     redirect_uri = os.environ.get("GOOGLE_REDIRECT_URI")
 
+    if not redirect_uri:
+        redirect_uri = "https://group6-bizally.onrender.com/api/auth/google/callback"
+
     print("REDIRECT URI USED:", redirect_uri)
 
     return oauth.google.authorize_redirect(redirect_uri)
@@ -423,7 +426,18 @@ def google_callback():
                         localStorage.setItem("userData", JSON.stringify(user));
                         localStorage.setItem("authToken", "google_login");
 
-                window.location.replace("/user/dashboard");
+                const role = (
+                    user.User_Type ||
+                    user.user_type ||
+                    user.role ||
+                    "client"
+                ).toLowerCase();
+
+                window.location.replace(
+                    role === "admin" || role === "technician"
+                    ? "/admin/dashboard"
+                    : "/user/dashboard"
+            );
             }} catch (error) {{
                console.error(error);
             }}
