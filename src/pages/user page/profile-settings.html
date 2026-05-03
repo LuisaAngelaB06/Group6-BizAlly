@@ -131,10 +131,8 @@
                             </div>
                         </div>
 
-                        <!-- Profile Settings Form -->
-                        <form class="profile-container" id="profileForm">
-                            <!-- Profile Photo Section -->
-                            <div class="profile-section">
+                        <!-- Profile Photo Section -->
+                        <div class="profile-section">
                                 <div class="section-header">
                                     <div class="section-icon">
                                         <i class="fas fa-camera"></i>
@@ -176,163 +174,175 @@
                                     onchange="handlePhotoUpload(event)">
                             </div>
 
-                            <!-- Personal Information -->
+                            <!-- PERSONAL INFORMATION SECTION -->
                             <div class="profile-section">
                                 <div class="section-header">
-                                    <div class="section-icon">
-                                        <i class="fas fa-user"></i>
-                                    </div>
+                                    <div class="section-icon"><i class="fas fa-id-card"></i></div>
                                     <div>
-                                        <h2 class="section-title" data-translate="personal_info">Personal Information
-                                        </h2>
-                                        <p class="section-description" data-translate="update_basic_info">Update your
-                                            basic profile information</p>
+                                        <h2 class="section-title">Identity Type</h2>
+                                        <p class="section-description">Choose whether you are registering as a Company or an Individual</p>
+                                    </div>
+                                </div>
+                                <div class="profile-form">
+                                    <div class="persona-selector">
+                                        <label class="radio-card">
+                                            <input type="radio" name="profile_persona" value="Individual" checked onchange="handlePersonaChange()">
+                                            <div class="card-content">
+                                                <i class="fas fa-user"></i>
+                                                <span>Individual</span>
+                                            </div>
+                                        </label>
+                                        <label class="radio-card">
+                                            <input type="radio" name="profile_persona" value="Company" onchange="handlePersonaChange()">
+                                            <div class="card-content">
+                                                <i class="fas fa-building"></i>
+                                                <span>Company</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. MAIN INFORMATION FORM -->
+                            <form id="infoForm" class="profile-section">
+                                <div class="section-header">
+                                    <div class="section-icon"><i class="fas fa-address-book"></i></div>
+                                    <div>
+                                        <h2 class="section-title" id="infoTitle">Personal Information</h2>
+                                        <p class="section-description">Update your contact and location details</p>
                                     </div>
                                 </div>
 
                                 <div class="profile-form">
                                     <div class="form-grid">
-                                        <div class="form-group">
-                                            <label class="form-label" for="firstName">
-                                                <span data-translate="first_name">First Name</span> <span
-                                                    class="required">*</span>
-                                            </label>
-                                            <input type="text" id="firstName" class="form-input"
-                                                placeholder="Enter your first name" required />
-                                            <div class="form-error" id="firstNameError"
-                                                data-translate="enter_first_name">Please enter your first name</div>
+                                        <!-- Company Specific Fields (Hidden for Individuals) -->
+                                        <div class="form-group company-field">
+                                            <label class="form-label" for="companyName">Company Name <span class="required">*</span></label>
+                                            <input type="text" id="companyName" class="form-input" placeholder="Enter business name">
+                                        </div>
+                                        <div class="form-group company-field">
+                                            <label class="form-label" for="contactPerson">Contact Person <span class="required">*</span></label>
+                                            <input type="text" id="contactPerson" class="form-input" placeholder="Primary contact name">
                                         </div>
 
+                                        <!-- Always Required Fields -->
                                         <div class="form-group">
-                                            <label class="form-label" for="lastName">
-                                                <span data-translate="last_name">Last Name</span> <span
-                                                    class="required">*</span>
-                                            </label>
-                                            <input type="text" id="lastName" class="form-input"
-                                                placeholder="Enter your last name" required />
-                                            <div class="form-error" id="lastNameError" data-translate="enter_last_name">
-                                                Please enter your last name</div>
+                                            <label class="form-label" for="contactPhone">Phone or Landline <span class="required">*</span></label>
+                                            <!-- Restricting to numbers/symbols via pattern -->
+                                            <input type="tel" id="contactPhone" class="form-input" placeholder="e.g., 02-8123-4567" pattern="[0-9\-\+\(\)\s]*" required>
                                         </div>
-
                                         <div class="form-group full-width">
-                                            <label class="form-label" for="email">
-                                                <span data-translate="email_address">Email Address</span> <span
-                                                    class="required">*</span>
-                                            </label>
-                                            <input type="email" id="email" class="form-input"
-                                                placeholder="Enter your email address" required />
-                                            <div class="form-error" id="emailError" data-translate="enter_valid_email">
-                                                Please enter a valid email address</div>
+                                            <label class="form-label" for="address">Full Address <span class="required">*</span></label>
+                                            <input type="text" id="address" class="form-input" placeholder="Enter your full address" required>
                                         </div>
 
-                                        <div class="form-group">
-                                            <label class="form-label" for="phone">
-                                                <i class="fas fa-phone"></i> <span data-translate="phone_number">Phone
-                                                    Number</span>
-                                            </label>
-                                            <input type="tel" id="phone" class="form-input"
-                                                placeholder="Enter your phone number" />
-                                            <div class="form-hint" data-translate="optional">Optional</div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label class="form-label" for="department">
-                                                <i class="fas fa-building"></i> <span
-                                                    data-translate="department">Department</span>
-                                            </label>
-                                            <input type="text" id="department" class="form-input"
-                                                placeholder="Enter your department" />
-                                            <div class="form-hint" data-translate="optional">Optional</div>
+                                        <!-- Optional Company Email -->
+                                        <div class="form-group full-width company-field">
+                                            <label class="form-label" for="companyEmail">Email Address of the Company</label>
+                                            <input type="email" id="companyEmail" class="form-input" placeholder="office@company.com">
                                         </div>
                                     </div>
-                                </div>
-                            </div>
 
-                            <!-- Change Password -->
-                            <div class="profile-section">
+                                    <!-- ACCOUNT INFORMATION (READ-ONLY) -->
+                                    <div class="section-header">
+                                        <div class="section-icon"><i class="fas fa-user-shield"></i></div>
+                                        <div>
+                                            <h2 class="section-title">Account Information</h2>
+                                            <p class="section-description">Update your basic profile information</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">First Name</label>
+                                            <input type="text" id="firstName" class="form-input readonly-input" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Last Name</label>
+                                            <input type="text" id="lastName" class="form-input readonly-input" readonly>
+                                        </div>
+                                        <div class="form-group full-width">
+                                            <label class="form-label">Email Address</label>
+                                            <input type="email" id="email" class="form-input readonly-input" readonly>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Information</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                           <!-- 4. SEPARATE CHANGE PASSWORD SECTION -->
+                            <form id="passwordForm" class="profile-section">
                                 <div class="section-header">
                                     <div class="section-icon">
                                         <i class="fas fa-lock"></i>
                                     </div>
                                     <div>
                                         <h2 class="section-title" data-translate="change_password">Change Password</h2>
-                                        <p class="section-description" data-translate="update_password_security">Update
-                                            your password to keep your account secure</p>
+                                        <p class="section-description" data-translate="update_password_security">Update your password to keep your account secure</p>
                                     </div>
                                 </div>
 
                                 <div class="profile-form">
                                     <div class="form-grid">
-                                        <div class="form-group">
+                                        <!-- Current Password -->
+                                        <div class="form-group" style="grid-column: span 2;">
                                             <label class="form-label" for="currentPassword">
-                                                <span data-translate="current_password">Current Password</span> <span
-                                                    class="required">*</span>
+                                                <span data-translate="current_password">Current Password</span> <span class="required">*</span>
                                             </label>
-                                            <input type="password" id="currentPassword" class="form-input"
-                                                placeholder="Enter current password" />
-                                            <div class="form-error" id="currentPasswordError"
-                                                data-translate="enter_current_password">Please enter your current
-                                                password</div>
+                                            <input type="password" id="currentPassword" class="form-input" style="max-width: 70%;" placeholder="Enter current password" />
+                                            <div class="form-error" id="currentPasswordError" data-translate="enter_current_password">Please enter your current password</div>
                                         </div>
 
+                                        <!-- New Password with Strength Meter -->
                                         <div class="form-group">
                                             <label class="form-label" for="newPassword">
-                                                <span data-translate="new_password">New Password</span> <span
-                                                    class="required">*</span>
+                                                <span data-translate="new_password">New Password</span> <span class="required">*</span>
                                             </label>
-                                            <input type="password" id="newPassword" class="form-input"
-                                                placeholder="Enter new password" />
+                                            <input type="password" id="newPassword" class="form-input" placeholder="Enter new password" />
+                                            
                                             <div class="password-strength" id="passwordStrength">
                                                 <div class="strength-bar">
                                                     <div class="strength-fill"></div>
                                                 </div>
-                                                <div class="strength-text" data-translate="password_strength">Password
-                                                    strength</div>
+                                                <div class="strength-text" data-translate="password_strength">Password strength</div>
                                             </div>
-                                            <div class="form-error" id="newPasswordError"
-                                                data-translate="enter_new_password">Please enter a new password</div>
+                                            
+                                            <div class="form-error" id="newPasswordError" data-translate="enter_new_password">Please enter a new password</div>
                                         </div>
 
+                                        <!-- Confirm Password -->
                                         <div class="form-group">
                                             <label class="form-label" for="confirmPassword">
-                                                <span data-translate="confirm_password">Confirm Password</span> <span
-                                                    class="required">*</span>
+                                                <span data-translate="confirm_password">Confirm Password</span> <span class="required">*</span>
                                             </label>
-                                            <input type="password" id="confirmPassword" class="form-input"
-                                                placeholder="Confirm new password" />
-                                            <div class="form-error" id="confirmPasswordError"
-                                                data-translate="passwords_not_match">Passwords do not match</div>
+                                            <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm new password" />
+                                            <div class="form-error" id="confirmPasswordError" data-translate="passwords_not_match">Passwords do not match</div>
                                         </div>
                                     </div>
 
-                                    <div class="form-hint">
-                                        <i class="fas fa-info-circle"></i> <span
-                                            data-translate="password_requirements">Password must be at least 8
-                                            characters long and include uppercase, lowercase, numbers, and special
-                                            characters.</span>
+                                    <div class="form-hint" style="margin-top: 10px;">
+                                        <i class="fas fa-info-circle"></i> 
+                                        <span data-translate="password_requirements">Password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters.</span>
+                                    </div>
+
+                                    <div class="form-actions" style="margin-top: 15px;">
+                                        <button type="submit" class="btn btn-secondary" id="updatePasswordBtn">
+                                            <i class="fas fa-key"></i> <span data-translate="update_password">Update Password</span>
+                                        </button>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Form Actions -->
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" onclick="resetForm()">
-                                    <i class="fas fa-times"></i> <span data-translate="cancel">Cancel</span>
-                                </button>
-                                
-                                <button type="submit" class="btn btn-primary" id="updatePasswordBtn">
-                                    <i class="fas fa-save"></i> <span data-translate="save_changes">Save Changes</span>
-                                </button>
-                            </div>
-                        </form>
+                            </form>
+                            <!-- Footer -->
+                            <footer class="site-footer">
+                                <div>&copy; 2025 Business Alliance Inc.</div>
+                                <div data-translate="dashboard_template">AlliTrack User Dashboard</div>
+                            </footer>
+                        </div>
                     </div>
-                </div>
-
-                <!-- Footer -->
-                <footer class="site-footer">
-                    <div>&copy; 2025 Business Alliance Inc.</div>
-                    <div data-translate="dashboard_template">AlliTrack User Dashboard</div>
-                </footer>
+                </div>  
             </main>
         </div>
     </div>
@@ -780,36 +790,46 @@
         }
 
         // Password strength checker
-        function checkPasswordStrength(password) {
-            const passwordStrength = document.getElementById('passwordStrength');
-            if (!passwordStrength) return;
+        function initPasswordStrength() {
+            const newPassInput = document.getElementById('newPassword');
+            const strengthContainer = document.getElementById('passwordStrength');
+            const strengthFill = document.querySelector('.strength-fill');
+            const strengthText = document.querySelector('.strength-text');
 
-            let strength = 0;
-            if (password.length >= 8) strength++;
-            if (password.match(/[a-z]/)) strength++;
-            if (password.match(/[A-Z]/)) strength++;
-            if (password.match(/[0-9]/)) strength++;
-            if (password.match(/[^a-zA-Z0-9]/)) strength++;
+            if (!newPassInput || !strengthContainer || !strengthFill) return;
 
-            passwordStrength.className = 'password-strength';
-            const strengthText = passwordStrength.querySelector('.strength-text');
+            newPassInput.addEventListener('input', function() {
+                const val = this.value;
+                let score = 0;
 
-            const currentLang = window.preferencesManager ?
-                window.preferencesManager.getCurrentLanguage() : 'en';
-            const dict = translations[currentLang] || translations['en'];
+                // 1. ALWAYS RESET FIRST
+                strengthContainer.className = 'password-strength';
+                strengthFill.style.width = '0%';
+                strengthText.textContent = "Password strength";
 
-            if (password.length === 0) {
-                strengthText.textContent = dict['password_strength'] || 'Password strength';
-            } else if (strength <= 2) {
-                passwordStrength.classList.add('strength-weak');
-                strengthText.textContent = dict['weak_password'] || 'Weak password';
-            } else if (strength <= 4) {
-                passwordStrength.classList.add('strength-medium');
-                strengthText.textContent = dict['medium_strength'] || 'Medium strength';
-            } else {
-                passwordStrength.classList.add('strength-strong');
-                strengthText.textContent = dict['strong_password'] || 'Strong password';
-            }
+                if (val.length === 0) return; // Exit if empty
+
+                // 2. SCORING LOGIC
+                if (val.length >= 8) score++;
+                if (/[A-Z]/.test(val)) score++;
+                if (/[0-9]/.test(val)) score++;
+                if (/[^A-Za-z0-9]/.test(val)) score++;
+
+                // 3. APPLY STATES
+                if (score <= 2) {
+                    strengthContainer.classList.add('strength-weak');
+                    strengthFill.style.width = '33%';
+                    strengthText.textContent = "Weak";
+                } else if (score === 3) {
+                    strengthContainer.classList.add('strength-medium');
+                    strengthFill.style.width = '66%';
+                    strengthText.textContent = "Medium";
+                } else {
+                    strengthContainer.classList.add('strength-strong');
+                    strengthFill.style.width = '100%';
+                    strengthText.textContent = "Strong";
+                }
+            });
         }
 
         // Form validation
@@ -1072,6 +1092,72 @@
                         updatePasswordBtn.disabled = false;
                     }
                 });
+            }
+        });
+
+        // 1. Handle the Persona Toggle
+        function handlePersonaChange() {
+            const isCompany = document.querySelector('input[name="profile_persona"]:checked').value === "Company";
+            const companyFields = document.querySelectorAll('.company-field');
+            const infoTitle = document.getElementById('infoTitle');
+
+            infoTitle.textContent = isCompany ? "Company Information" : "Personal Information";
+
+            companyFields.forEach(field => {
+                field.style.display = isCompany ? "block" : "none";
+                const input = field.querySelector('input');
+                // If company is selected, make specific fields required
+                if (input && (input.id === 'companyName' || input.id === 'contactPerson')) {
+                    input.required = isCompany;
+                }
+            });
+        }
+
+        // 2. Fetch data from Supabase on Load
+        async function fetchCurrentProfile() {
+            const userData = JSON.parse(localStorage.getItem("userData"));
+            if (!userData) return;
+
+            // Auto-fill read-only Account Info from session
+            document.getElementById('firstName').value = userData.Name.split(' ')[0] || "";
+            document.getElementById('lastName').value = userData.Name.split(' ').slice(1).join(' ') || "";
+            document.getElementById('email').value = userData.Email || "";
+
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/api/user/profile/${userData.user_id}`);
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    // Set Persona
+                    const personaValue = data.profile_persona || 'Individual';
+                    document.querySelector(`input[name="profile_persona"][value="${personaValue}"]`).checked = true;
+                    handlePersonaChange();
+
+                    // Fill Customer Fields
+                    document.getElementById('contactPhone').value = data.phone_number || "";
+                    document.getElementById('address').value = data.address || "";
+                    document.getElementById('companyName').value = data.company_name || "";
+                    document.getElementById('contactPerson').value = data.contact_person || "";
+                    document.getElementById('companyEmail').value = data.company_email || "";
+                }
+            } catch (e) { console.error("Real-time load failed:", e); }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Initial UI check
+            handlePersonaChange(); 
+            
+            // 2. Load data from the database (Real-time sync)
+            const userData = JSON.parse(localStorage.getItem("userData"));
+            if (userData) {
+                // Fill read-only account info
+                document.getElementById('firstName').value = userData.Name.split(' ')[0] || "";
+                document.getElementById('lastName').value = userData.Name.split(' ').slice(1).join(' ') || "";
+                document.getElementById('email').value = userData.Email || "";
+                
+                // Fetch the rest (Phone, Address, Persona) from Python
+                fetchCurrentProfile(userData.user_id);
+                initPasswordStrength();
             }
         });
     </script>

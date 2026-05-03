@@ -40,9 +40,8 @@
     padding: 24px;
 }
 
-.profile-section {
-    margin-bottom: 32px;
-}
+.profile-section { 
+    margin-bottom: 1.25rem !important; }
 
 .profile-section:last-child {
     margin-bottom: 0;
@@ -52,7 +51,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 0.75rem !important;
     padding-bottom: 12px;
     border-bottom: 1px solid var(--border);
 }
@@ -85,13 +84,16 @@
 .profile-form {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 0.75rem !important;
 }
 
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 1.5rem 1.5rem !important;
+    margin-bottom: 1rem !important;
+    margin-top: 1rem !important;
+    align-items: start;
 }
 
 .form-group {
@@ -100,8 +102,16 @@
     gap: 8px;
 }
 
+.form-group.company-field {
+    gap: 8px;
+}
+
 .form-group.full-width {
-    grid-column: 1 / -1;
+    grid-column: span 2 !important;
+}
+
+.form-group.full-width .form-input {
+    max-width: 100% !important;
 }
 
 .form-label {
@@ -127,6 +137,9 @@
     transition: all 0.2s var(--ease);
     font-family: inherit;
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
 }
 
 .form-input:focus {
@@ -247,7 +260,8 @@
 
 /* Password Strength Indicator */
 .password-strength {
-    margin-top: 8px;
+    margin-top: 8px 0 0 0 !important;
+    min-height: 20px;
 }
 
 .strength-bar {
@@ -290,8 +304,8 @@
     display: flex;
     gap: 12px;
     justify-content: flex-end;
-    margin-top: 32px;
-    padding-top: 20px;
+    margin-top: 0.75rem !important;
+    padding-top: 0.75rem !important;
     border-top: 1px solid var(--border);
 }
 
@@ -428,7 +442,7 @@
     }
 
     .form-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 8fr;
     }
 
     .profile-photo-section {
@@ -462,4 +476,47 @@
     .profile-container {
         padding: 16px;
     }
+}
+
+.persona-selector { display: flex; gap: 1rem; margin-top: 1rem; }
+.radio-card { flex: 1; cursor: pointer; }
+.radio-card input { display: none; } /* Hides the dot */
+.card-content { 
+    background: rgba(255,255,255,0.05); border: 2px solid transparent; 
+    border-radius: 12px; padding: 1rem; text-align: center; transition: 0.3s;
+}
+.radio-card input:checked + .card-content { 
+    border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); 
+}
+
+/* FIX: Adjust the specific spacing for Company/Personal fields */
+.company-field {
+    margin-bottom: 0.25rem !important; /* Tightens the gap after the input */
+}
+
+.company-field .form-label {
+    margin-bottom: 8px !important; /* Fixes the 'too close' label in image_a24449.png */
+    display: block;
+}
+
+.company-field .form-input {
+    width: 100% !important;
+    max-width: 100% !important; /* Ensure it fills its half of the grid */
+}
+
+/* FIX: Space after Email address */
+#infoForm .form-actions {
+    margin-top: 0.5rem !important; /* Lessen space after Email address */
+    padding-top: 0.75rem !important;
+}
+
+#infoForm .section-header {
+    margin-top: 8px !important;    /* Space before the new header */
+    margin-bottom: 0 !important;      /* REMOVE the gap after the header line */
+    padding-bottom: 5px !important;   /* Thinner line spacing */
+}
+
+/* FIX: Space around Identity Type */
+.profile-section:has(.persona-selector) {
+    margin-bottom: 0.5rem !important;
 }

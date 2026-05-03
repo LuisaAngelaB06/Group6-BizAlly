@@ -7,7 +7,7 @@ import re # For password validation
 auth_bp = Blueprint("auth", __name__)
 
 # ==========================================
-# 1. LOGIN
+# 1. LOGIN (FIXED FOR NEW COLUMNS)
 # ==========================================
 @auth_bp.route("/login", methods=["POST"])
 def login():
@@ -16,22 +16,28 @@ def login():
     password = data.get("password")
 
     conn = get_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor) # Postgres dict mode[cite: 3]
+    if not conn:
+        return jsonify({"status": "error", "message": "Supabase Connection Failed"}), 500
+        
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
-        # Use double quotes for reserved word and LOWER for case-insensitivity[cite: 2, 4]
+        # Renamed Name to first_name, last_name in query
         query = 'SELECT * FROM "system_user" WHERE LOWER(Email) = LOWER(%s)'
         cursor.execute(query, (email,))
         user = cursor.fetchone()
 
-        # Postgres returns keys in lowercase
         if user and check_password_hash(user["password_hash"], password):
+            # Combine names for the frontend to prevent UI "undefined" errors
+            full_name = f"{user['first_name']} {user['last_name'] or ''}".strip()
+            
             safe_user = {
                 "user_id": user["user_id"],
                 "Username": user["username"],
-                "Name": user["name"],
+                "Name": full_name, # Frontend still expects "Name"
                 "Email": user["email"],
                 "User_Type": user["user_type"],
+                "is_profile_complete": user.get("is_profile_complete", False),
                 "Technician_ID": None 
             }
 
@@ -53,7 +59,7 @@ def login():
         conn.close()
 
 # ==========================================
-# 2. SIGNUP
+# 2. SIGNUP (UPDATED FOR SPLIT NAMES)
 # ==========================================
 @auth_bp.route("/signup", methods=["POST"])
 def signup():
@@ -63,7 +69,6 @@ def signup():
     email = data.get("email")
     password = data.get("password") 
 
-    name = f"{first_name} {last_name}".strip()
     username = email.split('@')[0]
     hashed_password = generate_password_hash(password)
 
@@ -75,11 +80,12 @@ def signup():
         if cursor.fetchone():
             return jsonify({"status": "error", "message": "Email already exists"}), 400
 
+        # Updated to insert into first_name and last_name
         query = """
-            INSERT INTO "system_user" (Username, Name, Email, Password_Hash, User_Type, Created_At)
-            VALUES (%s, %s, %s, %s, 'client', CURRENT_TIMESTAMP)
+            INSERT INTO "system_user" (Username, first_name, last_name, Email, Password_Hash, User_Type, Created_At)
+            VALUES (%s, %s, %s, %s, %s, 'client', CURRENT_TIMESTAMP)
         """
-        cursor.execute(query, (username, name, email, hashed_password))
+        cursor.execute(query, (username, first_name, last_name, email, hashed_password))
         conn.commit()
         return jsonify({"status": "success", "message": "Account created successfully"}), 201
     except Exception as e:
@@ -127,7 +133,6 @@ def change_password():
     old_password = data.get("old_password")
     new_password = data.get("new_password")
 
-    # RESTORED: Strict password validation[cite: 2]
     if (len(new_password) < 8 or 
         not re.search(r"[A-Z]", new_password) or 
         not re.search(r"[a-z]", new_password) or 
@@ -157,23 +162,21 @@ def change_password():
         conn.close()
 
 # ==========================================
-# 5. ADMIN: Get All Users
+# 5. ADMIN: Get All Users (UPDATED MAPPING)
 # ==========================================
 @auth_bp.route("/admin/users", methods=["GET"])
 def get_all_staff():
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     try:
-        # Postgres requires double quotes for system_user[cite: 4]
-        cursor.execute('SELECT user_id, Name, Email, User_Type, Account_Status FROM "system_user"')
+        cursor.execute('SELECT user_id, first_name, last_name, Email, User_Type, Account_Status FROM "system_user"')
         users = cursor.fetchall()
         
-        # Mapping lowercase Postgres keys back to expected JS case[cite: 4]
         formatted_users = []
         for u in users:
             formatted_users.append({
                 "user_id": u["user_id"],
-                "Name": u["name"],
+                "Name": f"{u['first_name']} {u['last_name'] or ''}".strip(),
                 "Email": u["email"],
                 "User_Type": u["user_type"],
                 "Account_Status": u["account_status"]
@@ -193,16 +196,13 @@ def get_all_staff():
 def admin_delete_users():
     data = request.json
     user_ids = data.get("user_ids", [])
-    
     if not user_ids:
         return jsonify({"status": "error", "message": "No users selected"}), 400
-        
     conn = get_connection()
     cursor = conn.cursor()
     try:
         for user_id in user_ids:
-            clean_id = str(user_id).replace("STF-", "")
-            cursor.execute('DELETE FROM "system_user" WHERE user_id = %s', (clean_id,))
+            cursor.execute('DELETE FROM "system_user" WHERE user_id = %s', (user_id,))
         conn.commit()
         return jsonify({"status": "success", "message": "Users permanently deleted"}), 200
     except Exception as e:
@@ -219,15 +219,16 @@ def admin_delete_users():
 def admin_update_user():
     data = request.json
     user_id = data.get("user_id")
-    name = data.get("name")
+    first_name = data.get("first_name")
+    last_name = data.get("last_name")
     email = data.get("email")
     status = data.get("status")
 
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        query = 'UPDATE "system_user" SET Name = %s, Email = %s, Account_Status = %s WHERE user_id = %s'
-        cursor.execute(query, (name, email, status, user_id))
+        query = 'UPDATE "system_user" SET first_name = %s, last_name = %s, Email = %s, Account_Status = %s WHERE user_id = %s'
+        cursor.execute(query, (first_name, last_name, email, status, user_id))
         conn.commit()
         return jsonify({"status": "success", "message": "User updated"}), 200
     except Exception as e:
@@ -238,20 +239,21 @@ def admin_update_user():
         conn.close()
 
 # ==========================================
-# 8. USER: Update Own Profile
+# 8. USER: Update Own Account Info
 # ==========================================
 @auth_bp.route("/user/update-profile", methods=["POST"])
 def update_user_profile():
     data = request.json
     user_id = data.get("user_id")
-    name = data.get("name")
+    first_name = data.get("first_name")
+    last_name = data.get("last_name")
     email = data.get("email")
 
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        query = 'UPDATE "system_user" SET Name = %s, Email = %s WHERE user_id = %s'
-        cursor.execute(query, (name, email, user_id))
+        query = 'UPDATE "system_user" SET first_name = %s, last_name = %s, Email = %s WHERE user_id = %s'
+        cursor.execute(query, (first_name, last_name, email, user_id))
         conn.commit()
         return jsonify({"status": "success", "message": "Profile updated successfully"}), 200
     except Exception as e:
