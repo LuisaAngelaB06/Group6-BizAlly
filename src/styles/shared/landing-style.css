@@ -101,6 +101,10 @@ body.focus-highlight *:focus-visible {
 /* ---------- BASE ---------- */
 html {
     scroll-behavior: smooth;
+}
+
+html {
+    scroll-behavior: smooth;
     font-size: 100%;
     scroll-padding-top: 100px;
     /* FIX: Ensures anchor links clear the 100px sticky header */
