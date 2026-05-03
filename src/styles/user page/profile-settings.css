@@ -482,11 +482,27 @@
 .radio-card { flex: 1; cursor: pointer; }
 .radio-card input { display: none; } /* Hides the dot */
 .card-content { 
-    background: rgba(255,255,255,0.05); border: 2px solid transparent; 
-    border-radius: 12px; padding: 1rem; text-align: center; transition: 0.3s;
+    background: rgba(255,255,255,0.05); 
+    border: 1px solid var(--border); /* Change from transparent to visible */
+    border-radius: 12px; 
+    padding: 1rem; 
+    text-align: center; 
+    transition: all 0.3s var(--ease);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px; /* Space between icon and text */
 }
+
+.radio-card:hover .card-content {
+    border-color: var(--border-accent);
+    background: rgba(255,255,255,0.08);
+}
+
 .radio-card input:checked + .card-content { 
-    border-color: #3b82f6; background: rgba(59, 130, 246, 0.1); 
+    border-color: var(--accent) !important; 
+    background: rgba(59, 130, 246, 0.1) !important;
+    box-shadow: 0 0 0 1px var(--accent);
 }
 
 /* FIX: Adjust the specific spacing for Company/Personal fields */

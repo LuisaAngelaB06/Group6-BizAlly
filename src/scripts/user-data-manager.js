@@ -1,4 +1,48 @@
 // user-data-manager.js
+// ===== ROLE-BASED PAGE PROTECTION =====
+
+const userDataStr = localStorage.getItem("userData");
+const currentPath = window.location.pathname.toLowerCase();
+
+(function () {
+
+    // If not logged in
+    if (!userDataStr) {
+
+        // allow login page only
+        if (
+            !currentPath.endsWith("index.html") &&
+            currentPath !== "/"
+        ) {
+            window.location.href = "/";
+        }
+
+        return;
+    }
+
+    const user = JSON.parse(userDataStr);
+
+    const role = (
+        user.User_Type ||
+        user.role ||
+        "client"
+    ).toLowerCase();
+
+    console.log("Current Role:", role);
+    console.log("Current Path:", currentPath);
+
+    // CLIENT cannot access ADMIN pages
+    if (currentPath.includes("/admin/") && role === "client") {
+        window.location.href = "/user/index-user.html";
+    }
+
+    // ADMIN cannot access USER pages
+    if (currentPath.includes("/user/") && role === "admin") {
+        window.location.href = "/admin/index-admin.html";
+    }
+
+})();
+
 class UserDataManager {
     constructor() {
         this.userDataKey = 'userData';

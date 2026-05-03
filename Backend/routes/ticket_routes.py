@@ -23,34 +23,6 @@ def _json_error(message, status=500):
 
 def _get_cursor():
     conn = get_connection()
-<<<<<<< HEAD
-    cursor = conn.cursor(cursor_factory=RealDictCursor) 
-    try:
-        # UPDATED: Concatenating first_name and last_name for both Tech and Requestor
-        query = """
-        SELECT 
-            t.*, 
-            (tech_u.first_name || ' ' || COALESCE(tech_u.last_name, '')) AS technician_name,
-            (req_u.first_name || ' ' || COALESCE(req_u.last_name, '')) AS requestor_name
-        FROM ticket t
-        LEFT JOIN technician tech ON t.Technician_ID = tech.Technician_ID
-        LEFT JOIN "system_user" tech_u ON tech.user_id = tech_u.user_id
-        LEFT JOIN "system_user" req_u ON t.user_id = req_u.user_id
-        ORDER BY t.Date_Created DESC
-        """
-        cursor.execute(query)
-        tickets = cursor.fetchall()
-        
-        # Mapping lowercase Postgres keys back to the JS-expected CamelCase
-        for t in tickets:
-            t["Ticket_ID"] = t.pop("ticket_id")
-            t["Concern_Title"] = t.pop("concern_title")
-            t["Priority"] = t.pop("priority")
-            t["Technician_Name"] = t.pop("technician_name")
-            t["Requestor_Name"] = t.pop("requestor_name")
-            
-        return jsonify(tickets), 200
-=======
     if not conn:
         return None, None
     return conn, conn.cursor(cursor_factory=RealDictCursor)
@@ -153,7 +125,6 @@ def get_tickets():
     try:
         cursor.execute(_ticket_select_clause())
         return jsonify([_format_ticket(row) for row in cursor.fetchall()]), 200
->>>>>>> a61fe046c002379df64e87a6ffdb1cc44389425f
     except Exception as e:
         print(f"Get Tickets Error: {e}")
         return _json_error("Failed to fetch tickets")
@@ -258,114 +229,14 @@ def delete_ticket(ticket_id):
 
 @ticket_bp.route("/tickets/user/<int:user_id>", methods=["GET"])
 def get_user_tickets(user_id):
-<<<<<<< HEAD
-    conn = get_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor) # Fixed cursor type
-
-    try:
-        # UPDATED: Concatenating tech name
-        query = """
-        SELECT 
-            t.*,
-            (s.first_name || ' ' || COALESCE(s.last_name, '')) AS technician_name
-        FROM ticket t
-        LEFT JOIN technician tech ON t.Technician_ID = tech.Technician_ID
-        LEFT JOIN "system_user" s ON tech.user_id = s.user_id
-        WHERE t.user_id = %s
-        """
-        cursor.execute(query, (user_id,))
-        tickets = cursor.fetchall()
-
-        # Format for JS
-        for t in tickets:
-            t["Ticket_ID"] = t.pop("ticket_id")
-            t["Technician_Name"] = t.pop("technician_name")
-
-        return jsonify(tickets), 200
-    except Exception as e:
-        print(f"User Tickets Error: {e}")
-        return jsonify([]), 500
-    finally:
-        cursor.close()
-        conn.close()
-
-@ticket_bp.route("/technicians", methods=["GET"])
-def get_technicians():
-    conn = get_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor) # Fixed cursor type
-
-    try:
-        # UPDATED: Concatenating tech name
-        query = """
-        SELECT 
-            t.Technician_ID, 
-            (s.first_name || ' ' || COALESCE(s.last_name, '')) AS name
-        FROM technician t
-        JOIN "system_user" s ON t.user_id = s.user_id
-        """
-        cursor.execute(query)
-        technicians = cursor.fetchall()
-        
-        # Format for JS
-        for tech in technicians:
-            tech["Name"] = tech.pop("name")
-            tech["Technician_ID"] = tech.pop("technician_id")
-
-        return jsonify(technicians), 200
-    except Exception as e:
-        print(f"Tech Fetch Error: {e}")
-        return jsonify([]), 500
-    finally:
-        cursor.close()
-        conn.close()
-
-@ticket_bp.route('/tickets/<int:ticket_id>', methods=["PUT"])
-def update_ticket(ticket_id):
-=======
     conn, cursor = _get_cursor()
     if not conn:
         return _json_error("Database connection failed")
 
->>>>>>> a61fe046c002379df64e87a6ffdb1cc44389425f
     try:
         cursor.execute(_ticket_select_clause("WHERE t.user_id = %s"), (user_id,))
         return jsonify([_format_ticket(row) for row in cursor.fetchall()]), 200
     except Exception as e:
-<<<<<<< HEAD
-        print(f"Error updating ticket: {e}")
-        return jsonify({"error": "Failed to update ticket"}), 500
-
-@ticket_bp.route("/tickets/analytics", methods=["GET"])
-def get_analytics():
-    conn = get_connection()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
-
-    try:
-        cursor.execute('SELECT COUNT(*) as total FROM ticket')
-        total_tickets = cursor.fetchone()["total"]
-
-        cursor.execute('SELECT COUNT(*) as resolved FROM ticket WHERE Status_ID = 3')
-        resolved_tickets = cursor.fetchone()["resolved"]
-
-        # UPDATED: Service type table often uses 'name' which is fine, 
-        # but the JOIN must handle lowercase keys
-        cursor.execute("""
-            SELECT s.Name as category, COUNT(t.Ticket_ID) as count 
-            FROM service_type s 
-            LEFT JOIN ticket t ON s.Service_Type_ID = t.Service_Type_ID 
-            GROUP BY s.Service_Type_ID, s.Name
-        """)
-        categories = cursor.fetchall()
-
-        cursor.execute('SELECT priority, COUNT(*) as count FROM ticket GROUP BY priority')
-        priorities = cursor.fetchall()
-
-        return jsonify({
-            "total": total_tickets,
-            "resolved": resolved_tickets,
-            "categories": {c["category"]: c["count"] for c in categories},
-            "priorities": {p["priority"]: p["count"] for p in priorities}
-=======
         print(f"User Tickets Error: {e}")
         return _json_error("Failed to fetch user tickets")
     finally:
@@ -499,23 +370,14 @@ def get_analytics():
                 STATUS_LABELS.get(row["status_id"], "Unknown"): row["count"]
                 for row in statuses
             },
->>>>>>> a61fe046c002379df64e87a6ffdb1cc44389425f
         }), 200
     except Exception as e:
         print(f"Analytics Error: {e}")
-<<<<<<< HEAD
-        return jsonify({"error": "Failed to fetch analytics"}), 500
-    finally:
-        cursor.close()
-        conn.close()
-    
-=======
         return _json_error("Failed to fetch analytics")
     finally:
         cursor.close()
         conn.close()
 
->>>>>>> a61fe046c002379df64e87a6ffdb1cc44389425f
 
 @ticket_bp.route("/feedback/submit", methods=["POST"])
 def submit_feedback():
