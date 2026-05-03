@@ -476,7 +476,7 @@
                 'profile': 'Profile',
                 'settings': 'Mga Setting',
                 'logout': 'Logout',
-                'admin_dashboard_template': 'AlliTrack Admin Dashboard'
+                'admin_dashboard_template': 'Dashboard ng Admin ng AlliTrack'
             }
         };
 
@@ -656,7 +656,7 @@
                     e.preventDefault();
                     e.stopPropagation();
                     localStorage.removeItem('userData');
-                    localStorage.removeItem('userProfile');
+                    localStorage.removeItem('adminProfile');
                     localStorage.removeItem('adminPreferences');
                     localStorage.removeItem('preferredLanguage');
                     console.log('🧹 Cleared localStorage, redirecting to login...');

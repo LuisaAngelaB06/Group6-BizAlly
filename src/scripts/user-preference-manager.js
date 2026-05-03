@@ -81,7 +81,7 @@ class PreferencesManager {
                 profileSettings: "Settings ng Profile",  // Matches data-section="profile-settings"
                 announcements: "Anunsyo",
                 accountSecurity: "Seguridad",  // Matches data-section="account-security"
-                systemInformation: "Impormasyon ng Sistema",  // Matches data-section="system-information"
+                systemInformation: "Impormasyon",  // Matches data-section="system-information"
                 support: "Suporta",
                 management: "Pamahalaan",
                 system: "Sistema",

@@ -332,17 +332,6 @@
 
                                             <div class="frequency-option">
                                                 <label class="frequency-label">
-                                                    <input type="radio" name="frequency" value="hourly">
-                                                    <div class="frequency-content">
-                                                        <h4 data-translate="hourly_digest">Hourly Digest</h4>
-                                                        <p data-translate="hourly_digest_desc">Group notifications and
-                                                            receive them every hour</p>
-                                                    </div>
-                                                </label>
-                                            </div>
-
-                                            <div class="frequency-option">
-                                                <label class="frequency-label">
                                                     <input type="radio" name="frequency" value="important">
                                                     <div class="frequency-content">
                                                         <h4 data-translate="important_only">Important Only</h4>
@@ -426,7 +415,6 @@
                 'notification_frequency': 'Notification Frequency',
                 'realtime': 'Real-time',
                 'realtime_desc': 'Receive notifications immediately as they happen',
-                'hourly_digest': 'Hourly Digest',
                 'hourly_digest_desc': 'Group notifications and receive them every hour',
                 'important_only': 'Important Only',
                 'important_only_desc': 'Only receive notifications for high priority items',
@@ -483,7 +471,6 @@
                 'notification_frequency': 'Dalas ng Notipikasyon',
                 'realtime': 'Real-time',
                 'realtime_desc': 'Tumanggap ng mga notipikasyon kaagad habang nangyayari ang mga ito',
-                'hourly_digest': 'Oras-oras na Buod',
                 'hourly_digest_desc': 'Ipangkat ang mga notipikasyon at tanggapin ang mga ito bawat oras',
                 'important_only': 'Mahahalaga Lang',
                 'important_only_desc': 'Tumanggap lamang ng mga notipikasyon para sa mga high priority na item',
@@ -567,7 +554,7 @@
 
             // Listen for storage events (for cross-tab updates)
             window.addEventListener('storage', function (e) {
-                if (e.key === 'userData' || e.key === 'userProfile') {
+                if (e.key === 'userData' || e.key === 'adminProfile') {
                     console.log('Storage event detected for user data');
                     loadAndDisplayUserData();
                 }
@@ -582,18 +569,18 @@
             const rawDataStr = localStorage.getItem('userData') || '{}';
             const realUser = JSON.parse(rawDataStr);
             
-            // 2. Grab any extra profile stuff (like the saved photo)
-            const userProfileStr = localStorage.getItem('userProfile') || '{}';
-            const userProfile = JSON.parse(userProfileStr);
+            // 2. Grab any admin-only profile stuff (like the saved photo)
+            const adminProfileStr = localStorage.getItem('adminProfile') || '{}';
+            const adminProfile = JSON.parse(adminProfileStr);
 
             // 3. Combine them safely
             const combinedData = {
                 ...realUser,
-                ...userProfile,
+                ...adminProfile,
                 // Prioritize Python's 'Name' and 'Email'
-                fullName: realUser.Name || userProfile.name || 'Admin',
-                email: realUser.Email || userProfile.email || 'admin@allitrack.com',
-                photo: userProfile.photo || null
+                fullName: adminProfile.name || realUser.Name || 'Admin',
+                email: adminProfile.email || realUser.Email || 'admin@allitrack.com',
+                photo: adminProfile.photo || null
             };
 
             // 4. Send it to your groupmate's UI updater

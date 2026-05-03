@@ -555,7 +555,7 @@
                 'profile': 'Profile',
                 'settings': 'Mga Setting',
                 'logout': 'Logout',
-                'admin_dashboard_template': 'AlliTrack Admin Dashboard'
+                'admin_dashboard_template': 'Dashboard ng Admin ng AlliTrack'
             }
         };
 
@@ -574,15 +574,6 @@
                 console.log('👤 Initializing User Data Manager...');
                 window.userDataManager.initializeUserDisplay();
 
-                // Set admin-specific default data
-                const userData = window.userDataManager.getUserData();
-                if (!userData.name) {
-                    window.userDataManager.updateUserData({
-                        name: 'Admin User',
-                        email: 'admin@allitrack.com',
-                        role: 'Administrator'
-                    });
-                }
             } else {
                 console.error('❌ User Data Manager not found!');
             }
@@ -746,7 +737,7 @@
 
                     // Clear user data from localStorage
                     localStorage.removeItem('userData');
-                    localStorage.removeItem('userProfile');
+                    localStorage.removeItem('adminProfile');
                     localStorage.removeItem('adminPreferences');
                     localStorage.removeItem('preferredLanguage');
 
@@ -831,9 +822,7 @@
                         firstName: document.getElementById('firstName').value,
                         lastName: document.getElementById('lastName').value
                     });
-                    window.userDataManager.updateUserData({
-                        photo: e.target.result
-                    });
+                    window.userDataManager.dispatchUserDataChanged();
                 }
 
                 showToast('Profile photo uploaded successfully', 'success');
@@ -855,20 +844,13 @@
             }
 
             if (window.userDataManager) {
-                const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-                delete userProfile.photo;
-                delete userProfile.profilePicture;
-                delete userProfile.profile_image;
-                delete userProfile.profileImage;
-                delete userProfile.avatar;
-                delete userData.photo;
-                delete userData.profilePicture;
-                delete userData.profile_image;
-                delete userData.profileImage;
-                delete userData.avatar;
-                localStorage.setItem('userProfile', JSON.stringify(userProfile));
-                localStorage.setItem('userData', JSON.stringify(userData));
+                const adminProfile = JSON.parse(localStorage.getItem('adminProfile') || '{}');
+                delete adminProfile.photo;
+                delete adminProfile.profilePicture;
+                delete adminProfile.profile_image;
+                delete adminProfile.profileImage;
+                delete adminProfile.avatar;
+                localStorage.setItem('adminProfile', JSON.stringify(adminProfile));
                 window.userDataManager.dispatchUserDataChanged();
             }
 
@@ -1000,6 +982,7 @@
                 const profileData = {
                     firstName: document.getElementById('firstName').value,
                     lastName: document.getElementById('lastName').value,
+                    name: `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`.trim(),
                     email: document.getElementById('email').value,
                     phone: document.getElementById('phone').value,
                     department: document.getElementById('department').value,
@@ -1011,14 +994,7 @@
                 }
 
                 window.userDataManager.updateUserProfile(profileData);
-                window.userDataManager.updateUserData({
-                    name: `${profileData.firstName} ${profileData.lastName}`,
-                    Name: `${profileData.firstName} ${profileData.lastName}`,
-                    email: profileData.email,
-                    Email: profileData.email,
-                    photo: profileData.photo,
-                    role: profileData.role
-                });
+                window.userDataManager.dispatchUserDataChanged();
 
                 // Show toast notification instead of inline success message
                 showToast('Profile updated successfully', 'success');

@@ -412,7 +412,7 @@
                 discard_changes: 'I-discard ang Changes',
                 save_settings: 'I-save ang Settings',
                 cancel: 'Cancel',
-                admin_dashboard_template: 'AlliTrack Admin Dashboard'
+                admin_dashboard_template: 'Dashboard ng Admin ng AlliTrack'
             }
         };
 
@@ -510,7 +510,7 @@
             logoutBtn.addEventListener('click', (event) => {
                 event.preventDefault();
                 localStorage.removeItem('userData');
-                localStorage.removeItem('userProfile');
+                    localStorage.removeItem('adminProfile');
                 localStorage.removeItem('adminPreferences');
                 localStorage.removeItem('preferredLanguage');
                 window.location.href = '/';

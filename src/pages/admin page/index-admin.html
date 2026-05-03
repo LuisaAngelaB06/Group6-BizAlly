@@ -490,14 +490,13 @@
         // Load user data from localStorage
         function loadAndDisplayUserData() {
             try {
-                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-                const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-
-                const combinedData = {
-                    ...userData,
-                    ...userProfile,
-                    fullName: `${userProfile.firstName || userData.firstName || ''} ${userProfile.lastName || userData.lastName || ''}`.trim() || userData.name || 'Administrator'
-                };
+                const combinedData = window.userDataManager
+                    ? window.userDataManager.getUserData()
+                    : {
+                        ...JSON.parse(localStorage.getItem('userData') || '{}'),
+                        ...JSON.parse(localStorage.getItem('adminProfile') || '{}'),
+                        fullName: 'Administrator'
+                    };
 
                 updateUserDisplay(combinedData);
             } catch (error) {
@@ -564,7 +563,7 @@
 
                     // Clear all user data
                     const keysToRemove = [
-                        'userData', 'userProfile', 'loggedInUser',
+                        'userData', 'adminProfile', 'loggedInUser',
                         'currentUser', 'user', 'loginData', 'authData',
                         'dashboardLanguage'
                     ];

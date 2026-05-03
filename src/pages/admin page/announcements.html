@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title data-translate="announcements_page_title">Announcements - AlliTrack Admin</title>
     <script src="../../scripts/theme.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
     <link rel="stylesheet" href="../../styles/admin page/announcements.css" />
@@ -149,7 +150,8 @@
                                     </div>
                                     <div class="form-group">
                                         <label>
-                                            <i class="fas fa-calendar"></i> <span data-translate="expires_on">Expires on</span>
+                                            <i class="fas fa-calendar"></i> <span data-translate="expires_on">Expires
+                                                on</span>
                                         </label>
                                         <input type="date" id="expiryDate" class="filter-select">
                                     </div>
@@ -191,7 +193,7 @@
                                 <button class="btn btn-secondary" onclick="filterAnnouncements()">
                                     <i class="fas fa-search"></i>
                                 </button>
-                                    <select id="priorityFilter" class="filter-select" aria-label="Filter by priority">
+                                <select id="priorityFilter" class="filter-select" aria-label="Filter by priority">
                                     <option value="all">All priorities</option>
                                     <option value="high">High</option>
                                     <option value="normal">Normal</option>
@@ -239,8 +241,17 @@
 
     <div id="toast" class="toast"></div>
     <script>
-        const API_BASE_URL = "http://127.0.0.1:5000/api/admin";
-        const DEFAULT_TARGET_ROLE = "all";
+        const API_BASE_URL =
+            window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                ? "http://127.0.0.1:5000/api/admin"
+                : "https://group6-bizally.onrender.com/api/admin";
+
+        const SOCKET_BASE_URL =
+            window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                ? "http://127.0.0.1:5000"
+                : "https://group6-bizally.onrender.com";
+
+        const socket = io(SOCKET_BASE_URL);
 
         const translations = {
             en: {
@@ -347,12 +358,13 @@
                 profile: "Profile",
                 settings: "Mga Setting",
                 logout: "Logout",
-                admin_dashboard_template: "AlliTrack Admin Dashboard"
+                admin_dashboard_template: "Dashboard ng Admin ng AlliTrack"
             }
         };
 
         let announcements = [];
         let selectedAnnouncements = new Set();
+        let isFetchingAnnouncements = false;
 
         document.addEventListener("DOMContentLoaded", initAnnouncementsPage);
 
@@ -363,7 +375,35 @@
             setupLogout();
             setTimeout(setupAccountDropdown, 50);
             setupEventListeners();
-            await fetchAnnouncements();
+            safeFetchAnnouncements();
+            setupRealtimeAnnouncements();
+        }
+
+        function safeFetchAnnouncements() {
+            if (isFetchingAnnouncements) return;
+
+            isFetchingAnnouncements = true;
+
+            fetchAnnouncements().finally(() => {
+                isFetchingAnnouncements = false;
+            });
+        }
+
+        function setupRealtimeAnnouncements() {
+            socket.on("new_announcement", () => {
+                console.log("🔔 New announcement");
+                safeFetchAnnouncements();
+            });
+
+            socket.on("announcement_updated", () => {
+                console.log("✏️ Announcement updated");
+                safeFetchAnnouncements();
+            });
+
+            socket.on("announcement_deleted", () => {
+                console.log("🗑️ Announcement deleted");
+                safeFetchAnnouncements();
+            });
         }
 
         function setupExpiryDateRestriction() {
@@ -426,18 +466,18 @@
                 console.error("Database fetch failed:", error);
                 showToast("Could not load announcements from server", "error");
             }
+
         }
 
         function mapAnnouncementFromServer(ann) {
             return {
-                id: ann.Announcement_ID,
-                title: ann.Title || "",
-                content: ann.Message || "",
-                priority: (ann.Priority || "normal").toLowerCase(),
-                createdAt: ann.Created_At,
-                expiryDate: ann.Expiry_Date,
-                targetRole: ann.Target_Role || DEFAULT_TARGET_ROLE,
-                author: ann.Created_By
+                id: ann.announcement_id,
+                title: ann.title || "",
+                content: ann.message || "",
+                priority: (ann.priority || "normal").toLowerCase(),
+                createdAt: ann.created_at,
+                expiryDate: ann.expiry_date,
+                author: ann.created_by
             };
         }
 
@@ -457,7 +497,6 @@
             }
 
             container.innerHTML = filtered.map(getAnnouncementHTML).join("");
-            setupAnnouncementCheckboxes();
         }
 
         function getFilteredAnnouncements(filterText = "") {
@@ -490,47 +529,53 @@
             const created = item.createdAt ? formatDateOnly(item.createdAt) : "-";
 
             return `
-            <div class="announcement-item ${activeClass}" data-announcement-id="${escapeAttribute(item.id)}">
-                <div class="announcement-card-main">
-                    <input
-                        type="checkbox"
-                        class="announcement-checkbox ticket-checkbox"
-                        data-id="${escapeAttribute(item.id)}"
-                        ${isSelected ? "checked" : ""}
-                        aria-label="Select announcement"
-                    >
+            <div class="announcement-item ${activeClass} ${isSelected ? "selected" : ""}" 
+     data-announcement-id="${escapeAttribute(item.id)}">
 
-                    <div class="announcement-card-body">
-                        <div class="announcement-card-top">
-                            <span class="badge ${priorityClass}">${priorityLabel}</span>
-                        </div>
+    <div class="announcement-card-main"
+         onclick="toggleAnnouncementSelection('${escapeAttribute(item.id)}')">
 
-                        <div class="item-title">${escapeHTML(item.title)}</div>
-
-                        <div class="item-meta">
-                            <span><i class="fas fa-clock"></i> ${getTranslation("expires")}: ${expiry}</span>
-                            <span><i class="fas fa-calendar-day"></i> ${getTranslation("created")}: ${created}</span>
-                            ${item.author ? `<span><i class="fas fa-user"></i> ${escapeHTML(String(item.author))}</span>` : ""}
-                        </div>
-
-                        <div class="item-excerpt">
-                            ${escapeHTML(getExcerpt(item.content))}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="item-actions">
-                    <button class="btn-action btn-edit" onclick="editAnnouncement('${escapeAttribute(item.id)}')" title="Edit">
-                        <i class="fas fa-pencil-alt"></i>
-                    </button>
-                    <button class="btn-action btn-delete" onclick="deleteAnnouncement('${escapeAttribute(item.id)}')" title="Delete">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                </div>
+        <div class="announcement-card-body">
+            <div class="announcement-card-top">
+                <span class="badge ${priorityClass}">${priorityLabel}</span>
             </div>
+
+            <div class="item-title">${escapeHTML(item.title)}</div>
+
+            <div class="item-meta">
+                <span><i class="fas fa-clock"></i> ${getTranslation("expires")}: ${expiry}</span>
+                <span><i class="fas fa-calendar-day"></i> ${getTranslation("created")}: ${created}</span>
+            </div>
+
+            <div class="item-excerpt">
+                ${formatAnnouncementContent(item.content)}
+            </div>
+        </div>
+    </div>
+
+    <div class="item-actions">
+        <button class="btn-action btn-edit" onclick="event.stopPropagation(); editAnnouncement('${escapeAttribute(item.id)}')" title="Edit">
+            <i class="fas fa-pencil-alt"></i>
+        </button>
+        <button class="btn-action btn-delete" onclick="event.stopPropagation(); deleteAnnouncement('${escapeAttribute(item.id)}')" title="Delete">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+    </div>
+</div>
         `;
         }
 
+        /* Format announcement content by escaping HTML and converting newlines and bullet points */
+        function formatAnnouncementContent(text) {
+            if (!text) return "";
+
+            return escapeHTML(text)
+                .replace(/\n\n/g, "<br><br>")   // paragraph spacing
+                .replace(/\n/g, "<br>")         // line breaks
+                .replace(/- /gm, "• ");          // bullet style
+        }
+
+        /* Generate HTML for empty state with dynamic message based on whether a search term is present */
         function getEmptyStateHTML(filterText) {
             return `
             <div class="empty-state" style="display: flex;">
@@ -543,19 +588,7 @@
         `;
         }
 
-        function setupAnnouncementCheckboxes() {
-            document.querySelectorAll(".announcement-checkbox").forEach(checkbox => {
-                checkbox.addEventListener("change", function () {
-                    const id = String(this.dataset.id);
-
-                    if (this.checked) selectedAnnouncements.add(id);
-                    else selectedAnnouncements.delete(id);
-
-                    updateBulkActionBar();
-                });
-            });
-        }
-
+        /* Reset form to default state for creating new announcement */
         window.resetForm = function () {
             const form = document.getElementById("announcementForm");
             const announcementId = document.getElementById("announcementId");
@@ -569,6 +602,7 @@
             renderAnnouncements(getSearchValue());
         };
 
+        /* Populate form with announcement data for editing */
         window.editAnnouncement = function (id) {
             const announcement = announcements.find(item => String(item.id) === String(id));
             if (!announcement) return;
@@ -586,6 +620,7 @@
             window.scrollTo({ top: 0, behavior: "smooth" });
         };
 
+        /* Show confirmation modal before deleting an announcement */
         window.deleteAnnouncement = async function (id) {
             if (!confirm(getTranslation("delete_announcement_confirm"))) return;
 
@@ -599,7 +634,7 @@
 
                 selectedAnnouncements.delete(String(id));
                 showToast("Announcement removed from database", "success");
-                await fetchAnnouncements();
+                await safeFetchAnnouncements();
             } catch (error) {
                 console.error("Delete failed:", error);
                 showToast("Server connection failed", "error");
@@ -610,6 +645,7 @@
             renderAnnouncements(getSearchValue());
         };
 
+        /* Show delete confirmation modal with dynamic message and list of selected announcements */
         window.showDeleteConfirmation = function (ids) {
             const modal = document.getElementById("deleteConfirmationModal");
             const deleteMessage = document.getElementById("deleteMessage");
@@ -639,6 +675,20 @@
             modal.classList.add("show");
         };
 
+        /* Toggle selection when clicking on announcement card (but not on buttons) */
+        window.toggleAnnouncementSelection = function (id) {
+            id = String(id);
+
+            if (selectedAnnouncements.has(id)) {
+                selectedAnnouncements.delete(id);
+            } else {
+                selectedAnnouncements.add(id);
+            }
+
+            renderAnnouncements(getSearchValue());
+            updateBulkActionBar();
+        };
+
         async function confirmDeleteAnnouncements() {
             const ids = Array.from(selectedAnnouncements);
             if (ids.length === 0) return;
@@ -655,7 +705,7 @@
                 closeDeleteModal();
                 updateBulkActionBar();
                 showToast(getTranslation("delete_success"), "success");
-                await fetchAnnouncements();
+                safeFetchAnnouncements();
             } catch (error) {
                 console.error("Bulk delete failed:", error);
                 showToast("Server connection failed", "error");
@@ -687,22 +737,52 @@
 
             if (!bulkBar) return;
 
+            // ❌ Hide EVERYTHING when no selection
             if (selectedAnnouncements.size === 0) {
                 bulkBar.style.display = "none";
                 bulkBar.innerHTML = "";
                 return;
             }
 
+            const visibleIds = getFilteredAnnouncements(getSearchValue()).map(item => String(item.id));
+            const allVisibleSelected =
+                visibleIds.length > 0 &&
+                visibleIds.every(id => selectedAnnouncements.has(id));
+
+            // ✅ Show only when there is selection
             bulkBar.style.display = "flex";
             bulkBar.innerHTML = `
-            <span style="margin-right: 12px; font-weight: 600;">
-                ${selectedAnnouncements.size} selected
-            </span>
-            <button class="btn btn-danger" onclick="showDeleteConfirmation(Array.from(selectedAnnouncements))">
-                <i class="fas fa-trash-alt"></i> ${getTranslation("delete")} (${selectedAnnouncements.size})
-            </button>
-        `;
+        <span style="margin-right: 12px; font-weight: 600;">
+            ${allVisibleSelected ? "All selected" : `${selectedAnnouncements.size} selected`}
+        </span>
+
+        <button class="btn btn-secondary" onclick="toggleSelectAllAnnouncements()">
+            <i class="fas fa-check-square"></i>
+            ${allVisibleSelected ? "Unselect All" : "Select All"}
+        </button>
+
+        <button class="btn btn-danger" onclick="showDeleteConfirmation(Array.from(selectedAnnouncements))">
+            <i class="fas fa-trash-alt"></i> ${getTranslation("delete")} (${selectedAnnouncements.size})
+        </button>
+    `;
         }
+
+        window.toggleSelectAllAnnouncements = function () {
+            const visibleIds = getFilteredAnnouncements(getSearchValue()).map(item => String(item.id));
+
+            const allVisibleSelected =
+                visibleIds.length > 0 &&
+                visibleIds.every(id => selectedAnnouncements.has(id));
+
+            if (allVisibleSelected) {
+                visibleIds.forEach(id => selectedAnnouncements.delete(id));
+            } else {
+                visibleIds.forEach(id => selectedAnnouncements.add(id));
+            }
+
+            renderAnnouncements(getSearchValue());
+            updateBulkActionBar();
+        };
 
         document.getElementById("announcementForm")?.addEventListener("submit", async function (event) {
             event.preventDefault();
@@ -715,7 +795,6 @@
                 title: document.getElementById("title")?.value.trim() || "",
                 message: document.getElementById("content")?.value.trim() || "",
                 priority: document.getElementById("priority")?.value || "normal",
-                target: DEFAULT_TARGET_ROLE,
                 expiry_date: document.getElementById("expiryDate")?.value || null,
                 admin_id: getCurrentAdminIdentifier()
             };
@@ -744,7 +823,7 @@
 
                 showToast(editingId ? "Announcement updated!" : "Announcement published!", "success");
                 resetForm();
-                await fetchAnnouncements();
+                safeFetchAnnouncements();
             } catch (error) {
                 console.error("Announcement save failed:", error);
                 showToast("Server connection failed", "error");
@@ -845,7 +924,7 @@
 
                 [
                     "userData",
-                    "userProfile",
+                    "adminProfile",
                     "adminPreferences",
                     "preferredLanguage"
                 ].forEach(key => localStorage.removeItem(key));
@@ -856,8 +935,8 @@
 
         function getCurrentAdminIdentifier() {
             const userData = safeParseJSON(localStorage.getItem("userData"));
-            const userProfile = safeParseJSON(localStorage.getItem("userProfile"));
-            const user = { ...userProfile, ...userData };
+            const adminProfile = safeParseJSON(localStorage.getItem("adminProfile"));
+            const user = { ...userData, ...adminProfile };
 
             return (
                 user.user_id ||
