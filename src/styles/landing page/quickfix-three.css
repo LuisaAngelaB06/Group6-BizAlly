@@ -423,6 +423,16 @@ li {
     font-size: 1.05rem;
 }
 
+.rating-btn.active {
+    background: var(--blue-500);
+    color: white;
+    border-color: var(--blue-500);
+}
+
+.rating-btn.active i {
+    color: white;
+}
+
 .rating-group {
     display: flex;
     justify-content: center;

@@ -436,6 +436,15 @@ li {
     margin-bottom: 28px;
 }
 
+.rating-btn.active {
+    background: var(--blue-500);
+    color: white;
+    border-color: var(--blue-500);
+}
+.rating-btn.active i {
+    color: white;
+}
+
 .rating-btn {
     background: var(--gray-50);
     border: 1px solid var(--border-color);

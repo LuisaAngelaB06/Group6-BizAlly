@@ -8,7 +8,9 @@
     <!-- same font + icons, to feel familiar but clean PDF style -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../../styles/shared/landing-style.css">
     <link rel="stylesheet" href="../../styles/shared/quickfix-one.css">
@@ -356,35 +358,51 @@
 
                 if (submitRating) {
                     submitRating.addEventListener('click', async function () {
-                        // 1. Find which button the user selected
-                        const selectedBtn = document.querySelector('.rating-btn[style*="background: var(--blue-500)"]');
-                        const ratingValue = selectedBtn ? selectedBtn.getAttribute('data-rating') : 'neutral'; // Defaults to neutral
+                        const selectedBtn = document.querySelector('.rating-btn.active');
+
+                        if (!selectedBtn) {
+                            alert("Please select a rating before continuing.");
+                            return;
+                        }
+
+                        const ratingValue = selectedBtn.getAttribute('data-rating');
+
+                        const base =
+                            window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                                ? "http://127.0.0.1:5000"
+                                : "https://group6-bizally.onrender.com";
 
                         try {
-                            // 2. Send the rating to your Flask backend
-                            await fetch("http://127.0.0.1:5000/api/feedback/submit", {
+                            await fetch(`${base}/api/feedback/submit`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({
-                                    source: document.title, // Sends "Quick Fix - GSM Alarm", etc.
-                                    rating: ratingValue     // Sends "good", "neutral", or "bad"
+                                    source: document.title,
+                                    rating: ratingValue
                                 })
                             });
                         } catch (error) {
                             console.error("Feedback failed to send:", error);
                         }
 
-                        // 3. Close the modal and redirect
                         closeModal();
-                        
-                        // Note: Adjusted this path slightly. Make sure this points to your actual login/auth file!
-                        window.location.href = '/'; 
+                        window.location.href = `${base}/login`;
                     });
                 }
 
                 // rating button interaction (visual selection)
                 document.querySelectorAll('.rating-btn').forEach(btn => {
                     btn.addEventListener('click', function () {
+
+                        // Remove active class from all
+                        document.querySelectorAll('.rating-btn').forEach(b => {
+                            b.classList.remove('active');
+                        });
+
+                        // Add active class to selected
+                        this.classList.add('active');
+
+                        // OPTIONAL: keep your visual styles
                         document.querySelectorAll('.rating-btn').forEach(b => {
                             b.style.background = '';
                             b.style.color = '';
@@ -392,6 +410,7 @@
                             const icon = b.querySelector('i');
                             if (icon) icon.style.color = '';
                         });
+
                         this.style.background = 'var(--blue-500)';
                         this.style.color = 'white';
                         this.style.borderColor = 'var(--blue-500)';
