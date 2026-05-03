@@ -7,10 +7,12 @@
     <title>AlliTrack · Contact (submit a message) · a11y synced</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../../styles/shared/landing-style.css">
-    <link rel="stylesheet" href="../../styles/landing page/contact-us.css">    
+    <link rel="stylesheet" href="../../styles/landing page/contact-us.css">
     <script src="../../scripts/landing-accessibility.js"></script>
 </head>
 
@@ -22,20 +24,25 @@
     <header class="site-header">
         <div class="container header-inner">
             <div class="brand">
-                <a href="/" aria-label="AlliTrack Home">
-                    <span>AlliTrack</span>
+                <a href="/" aria-label="AlliTrack Home" class="brand-link">
+                    <img src="/src/assets/images/AlliTrack-Logo.png" alt="AlliTrack" width="140" height="40">
                 </a>
             </div>
+
             <nav class="primary-nav" role="navigation" data-visible="false" aria-label="Primary navigation">
                 <ul class="nav-list">
                     <li><a href="/" class="nav-link">Home</a></li>
                     <li><a href="/#about-section" class="nav-link">About</a></li>
                     <li><a href="/#services-section" class="nav-link">Services</a></li>
                     <li><a href="/#contact-section" class="nav-link active">Contact</a></li>
-                    <li><a href="/login" class="btn-login"><i class="fas fa-user" style="margin-right: 6px;"></i>Login</a>
+                    <li>
+                        <a href="/login" class="btn-login">
+                            <i class="fas fa-user" style="margin-right: 6px;"></i>Login
+                        </a>
                     </li>
                 </ul>
             </nav>
+
             <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation" aria-expanded="false">
                 <i class="fa-solid fa-bars"></i>
             </button>
@@ -131,10 +138,6 @@
                                 style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: var(--gray-50); border-radius: 50%; color: var(--blue-500); transition: var(--transition);">
                                 <i class="fab fa-facebook-f" style="font-size: 1.3rem;"></i>
                             </a>
-                            <a href="#"
-                                style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: var(--gray-50); border-radius: 50%; color: var(--blue-500); transition: var(--transition);">
-                                <i class="fab fa-linkedin-in" style="font-size: 1.3rem;"></i>
-                            </a>
                             <a href="mailto:sales.businessalliance@gmail.com"
                                 style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: var(--gray-50); border-radius: 50%; color: var(--blue-500); transition: var(--transition);">
                                 <i class="fas fa-envelope" style="font-size: 1.3rem;"></i>
@@ -211,14 +214,16 @@
             <div class="footer-brand">
                 <strong>AlliTrack</strong>
                 <div class="footer-note">© 2025 AlliTrack · Business Alliance Inc. · All Rights Reserved</div>
-                <div class="footer-links"><a href="/privacy">Privacy</a><a
-                        href="/cookies">Cookies</a><a href="/terms">Terms</a></div>
+                <div class="footer-links"><a href="/privacy">Privacy</a><a href="/cookies">Cookies</a><a
+                        href="/terms">Terms</a></div>
             </div>
             <div class="footer-actions">
                 <span class="follow">Connect</span>
                 <div class="socials">
-                    <a href="https://www.facebook.com/profile.php?id=61558917757365" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="mailto:sales.businessalliance@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61558917757365" aria-label="Facebook"><i
+                            class="fab fa-facebook-f"></i></a>
+                    <a href="mailto:sales.businessalliance@gmail.com" aria-label="Email"><i
+                            class="fas fa-envelope"></i></a>
                 </div>
             </div>
         </div>
