@@ -12,7 +12,7 @@ if (window.location.hostname === "127.0.0.1" || window.location.hostname === "lo
 
 // LOGIN REQUEST
 async function loginUser(email, password) {
-    const response = await fetch(`${API_BASE}/login`, {
+    const response = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -25,13 +25,13 @@ async function loginUser(email, password) {
 
 // GET TICKETS
 async function getTickets() {
-    const response = await fetch(`${API_BASE}/tickets`);
+    const response = await fetch(`${API_BASE}/auth/tickets`);
     return await response.json();
 }
 
 // SIGNUP REQUEST
 async function registerUser(firstName, lastName, email, password) {
-    const response = await fetch(`${API_BASE}/signup`, {
+    const response = await fetch(`${API_BASE}/auth/signup`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
