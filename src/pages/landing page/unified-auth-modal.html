@@ -7,7 +7,9 @@
     <title>AlliTrack · Unified Access</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../../styles/landing page/unified-auth-modal.css">
     <script src="../../scripts/landing-accessibility.js"></script>
@@ -114,7 +116,8 @@
                         <div class="password-requirements">
                             <div class="requirement invalid" id="reqLength"><i class="far fa-circle"></i> 8+ characters
                             </div>
-                            <div class="requirement invalid" id="reqUppercase"><i class="far fa-circle"></i> Uppercase &amp;
+                            <div class="requirement invalid" id="reqUppercase"><i class="far fa-circle"></i> Uppercase
+                                &amp;
                                 lowercase</div>
                             <div class="requirement invalid" id="reqNumber"><i class="far fa-circle"></i> Number &amp;
                                 special char</div>
@@ -134,7 +137,8 @@
                         <div class="terms-container">
                             <div class="terms">
                                 <input type="checkbox" id="modalTerms">
-                                <label for="modalTerms">I agree to the <a href="/terms">Terms</a> and <a href="/privacy">Privacy
+                                <label for="modalTerms">I agree to the <a href="/terms">Terms</a> and <a
+                                        href="/privacy">Privacy
                                         Policy</a></label>
                             </div>
                             <p id="modalTermsError" class="error-text"></p>
@@ -258,7 +262,7 @@
                                 name: email.split('@')[0],
                                 email: email,
                                 // FIXED: Changed 'user' to 'client' to match your DB
-                                role: isAdminUser(email) ? 'admin' : 'client', 
+                                role: isAdminUser(email) ? 'admin' : 'client',
                                 lastLogin: new Date().toISOString()
                             }
                         });
@@ -271,9 +275,13 @@
                 localStorage.setItem('userData', JSON.stringify(userData));
                 localStorage.setItem('authToken', 'simulated_token_' + Date.now());
 
-                // 2. FIXED: Use 'userData' directly (removed 'result' error)
-                // We check both role and User_Type for compatibility
-                const role = (userData.role || userData.User_Type || "client").toLowerCase();
+                // 2. FIXED: Use 'userData' directly
+                const role = (
+                    userData.role ||
+                    userData.User_Type ||
+                    userData.user_type ||
+                    "client"
+                ).toLowerCase();
 
                 // 3. FIXED: Use CLEAN routes to avoid 404s
                 const redirectPath = (role === 'admin' || role === 'technician')
@@ -449,7 +457,12 @@
                 modalLoginBtn.disabled = true;
 
                 try {
-                    const response = await fetch("http://127.0.0.1:5000/api/login", {
+                    const authBase =
+                        window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                            ? "http://127.0.0.1:5000"
+                            : "https://group6-bizally.onrender.com";
+
+                    const response = await fetch(`${authBase}/api/auth/login`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ email: emailValue, password: passwordValue })
@@ -458,21 +471,25 @@
                     const result = await response.json();
 
                     if (response.ok && result.status === "success") {
-                        localStorage.setItem('userData', JSON.stringify(result.user));
-                        
-                        // FIXED: Use clean routes here too
-                        const userType = (result.user.User_Type || "").toLowerCase();
-                        const redirectPath = (userType === 'admin' || userType === 'technician')
-                            ? '/admin/dashboard'
-                            : '/user/dashboard';
-                            
-                        window.location.href = redirectPath;
+                        localStorage.setItem("userData", JSON.stringify(result.user));
+
+                        const userType = (
+                            result.user.User_Type ||
+                            result.user.user_type ||
+                            result.user.role ||
+                            "client"
+                        ).toLowerCase();
+
+                        window.location.href =
+                            userType === "admin" || userType === "technician"
+                                ? "/admin/dashboard"
+                                : "/user/dashboard";
                     } else {
-                        handleLoginFailure(result.message || 'Invalid credentials');
+                        handleLoginFailure(result.message || "Invalid credentials");
                     }
                 } catch (error) {
                     console.error("Login Error:", error);
-                    handleLoginFailure('Server connection failed.');
+                    handleLoginFailure("Server connection failed.");
                 }
             }
 
@@ -565,11 +582,15 @@
                     e.preventDefault();
                     activateSignup();
                 });
-                
+
                 if (switchToLoginLink) switchToLoginLink.addEventListener('click', (e) => {
                     e.preventDefault();
                     activateLogin();
                 });
+
+                if (loginForm) {
+                    loginForm.addEventListener('submit', handleEmailLogin);
+                }
 
                 // Password toggle
                 setupToggle('toggleModalPassword', 'modalPassword');
@@ -612,10 +633,23 @@
                 }
 
                 // Social login handlers
-                document.getElementById('modalGoogleLogin')?.addEventListener('click', () => handleSocialLogin('Google', true));
-                document.getElementById('modalFacebookLogin')?.addEventListener('click', () => handleSocialLogin('Facebook', true));
-                document.getElementById('modalGoogleSignup')?.addEventListener('click', () => handleSocialLogin('Google', false));
-                document.getElementById('modalFacebookSignup')?.addEventListener('click', () => handleSocialLogin('Facebook', false));
+                function continueWithGoogle() {
+                    localStorage.removeItem("userData");
+                    localStorage.removeItem("authToken");
+                    localStorage.removeItem("Technician_ID");
+
+                    showLoading('Connecting to Google...');
+
+                    const authBase =
+                        window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                            ? "http://127.0.0.1:5000"
+                            : "https://group6-bizally.onrender.com";
+
+                    window.location.href = `${authBase}/api/auth/google/login`;
+                }
+
+                document.getElementById('modalGoogleLogin')?.addEventListener('click', continueWithGoogle);
+                document.getElementById('modalGoogleSignup')?.addEventListener('click', continueWithGoogle);
 
                 // Initial validation
                 validateLoginForm();
@@ -628,8 +662,8 @@
             init();
         })();
     </script>
-    <script src="/static/js/api.js"></script>
-    <script src="/static/js/login.js"></script>
+    <script src="/static/js/api.js?v=2"></script>
+    <script src="/static/js/login.js?v=2"></script>
 </body>
 
 </html>

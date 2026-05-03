@@ -1,12 +1,26 @@
 from flask import Flask, render_template, send_from_directory
 from flask_cors import CORS
+from dotenv import load_dotenv
 import os
 from routes import register_routes
 from routes.announcement_routes import announcement_bp
 from socketio_instance import socketio
+from routes.auth_routes import init_oauth
+
+BASE_BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+ENV_PATH = os.path.join(BASE_BACKEND_DIR, ".env")
+
+print("ENV PATH:", ENV_PATH)
+print("ENV EXISTS:", os.path.exists(ENV_PATH))
+
+load_dotenv(ENV_PATH)
+print("ALL ENV:", os.environ)
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
+app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-change-this")
 CORS(app)
+
+init_oauth(app)
 
 socketio.init_app(app)
 
@@ -30,14 +44,6 @@ def login():
         os.path.join(BASE_DIR, "src/pages/landing page"),
         "unified-auth-modal.html"
     )
-
-@app.route("/admin/dashboard")
-def admin_dash():
-    return send_from_directory(os.path.join(BASE_DIR, "src/pages/admin page"), "index-admin.html")
-
-@app.route("/user/dashboard")
-def user_dash():
-    return send_from_directory(os.path.join(BASE_DIR, "src/pages/user page"), "index-user.html")
 
 @app.route("/quickfix-one")
 def quickfix_one():
@@ -102,8 +108,6 @@ def about_us():
         "about-us.html"
     )
 
-
-
 # =========================
 # ADMIN PAGES
 # =========================
@@ -121,6 +125,7 @@ def admin_dashboard():
 @app.route("/user/dashboard")
 def user_dashboard():
     return send_from_directory(os.path.join(BASE_DIR, "src/pages/user page"), "index-user.html")
+
 # =========================
 # USER PAGES
 # =========================
