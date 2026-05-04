@@ -1,8 +1,4 @@
 /* ---------- contact-us.css – fully synced with global design system & a11y menu ---------- */
-:root {
-    --contact-card-bg: var(--bg-primary);
-    --contact-accent: var(--blue-500);
-}
 
 /* two-column layout – responsive, uses same spacing as landing */
 .contact-sync-grid {
@@ -71,12 +67,6 @@
     box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.15);
 }
 
-textarea.form-input {
-    border-radius: 24px;
-    resize: vertical;
-    padding: 16px 20px;
-}
-
 /* submit button – live, interactive, theme-aware */
 .btn-submit-message {
     width: 100%;
@@ -105,49 +95,6 @@ textarea.form-input {
     transform: translateY(-1px);
 }
 
-/* badge for "no ticket" – uses theme variables */
-.no-ticket-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(239, 68, 68, 0.08);
-    color: #b91c1c;
-    padding: 6px 18px;
-    border-radius: 60px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-body.dark-theme .no-ticket-badge {
-    background: rgba(250, 112, 112, 0.15);
-    color: #fca5a5;
-}
-
-body.high-contrast .no-ticket-badge {
-    background: black;
-    color: white;
-    border: 2px solid yellow;
-}
-
-/* back link */
-.back-home-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--blue-500);
-    font-weight: 600;
-    padding: 10px 20px;
-    border-radius: 60px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    transition: var(--transition);
-}
-
-.back-home-link:hover {
-    background: var(--blue-50);
-    transform: translateX(-5px);
-}
-
 /* responsive */
 @media (max-width: 900px) {
     .contact-sync-grid {
@@ -157,7 +104,6 @@ body.high-contrast .no-ticket-badge {
 }
 
 @media (max-width: 480px) {
-
     .contact-info-card,
     .message-card {
         padding: 28px 20px;
@@ -168,9 +114,4 @@ body.high-contrast .no-ticket-badge {
 body.focus-highlight .form-input:focus-visible {
     outline: 4px solid #ff0000 !important;
     box-shadow: 0 0 0 6px rgba(255, 0, 0, 0.2) !important;
-}
-
-/* accessibility panel always on top */
-.accessibility-panel {
-    z-index: 99999 !important;
 }
