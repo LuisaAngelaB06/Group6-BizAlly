@@ -294,6 +294,12 @@
     </div>
 
     <script>
+
+        if (typeof API_BASE_URL === 'undefined') {
+            window.API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+                ? 'http://127.0.0.1:5000' 
+                : 'https://group6-bizally.onrender.com';
+        }
         // Translation dictionary for tickets page
         const translations = {
             'en': {
@@ -1125,7 +1131,7 @@
             };
 
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/tickets/${ticketId}`, {
+                const response = await fetch(`${API_BASE_URL}/api/tickets/${ticketId}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json"
@@ -1275,7 +1281,7 @@
                     // Convert TKT-7 → 7
                     const numericId = ticketId.replace("TKT-", "");
 
-                    await fetch(`http://127.0.0.1:5000/api/tickets/${numericId}`, {
+                    await fetch(`${API_BASE_URL}/api/tickets/${numericId}`, {
                         method: "DELETE"
                     });
 
@@ -1541,7 +1547,7 @@
 
             try{
 
-                const response = await fetch("http://127.0.0.1:5000/api/tickets");
+                const response = await fetch(`${API_BASE_URL}/api/tickets`);
                 const data = await response.json();
 
                 // Inside fetchTicketsFromAPI()
@@ -1580,7 +1586,7 @@
 
             try{
 
-                const response = await fetch("http://127.0.0.1:5000/api/technicians");
+                const response = await fetch(`${API_BASE_URL}/api/technicians`);
                 const techs = await response.json();
 
                 const select = document.getElementById("editAssignedTo");

@@ -285,6 +285,11 @@
     <div id="toast" class="toast"></div>
 
     <script>
+        if (typeof API_BASE_URL === 'undefined') {
+            window.API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+                ? 'http://127.0.0.1:5000' 
+                : 'https://group6-bizally.onrender.com';
+        }
         // Translation dictionary for analytics page
         const translations = {
             'en': {
@@ -700,9 +705,8 @@
             }
         }
 
-        // Setup event listeners
         function setupEventListeners() {
-            // Date presets
+            // 1. Date presets (This part was already safe)
             document.querySelectorAll('.preset-btn').forEach(btn => {
                 btn.addEventListener('click', function () {
                     document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
@@ -712,70 +716,75 @@
                     let startDate, endDate = moment();
 
                     switch (preset) {
-                        case '7d':
-                            startDate = moment().subtract(7, 'days');
-                            break;
-                        case '30d':
-                            startDate = moment().subtract(30, 'days');
-                            break;
-                        case '90d':
-                            startDate = moment().subtract(90, 'days');
-                            break;
-                        case '1y':
-                            startDate = moment().subtract(1, 'year');
-                            break;
-                        case 'custom':
-                            // Keep current selection for custom
-                            return;
+                        case '7d': startDate = moment().subtract(7, 'days'); break;
+                        case '30d': startDate = moment().subtract(30, 'days'); break;
+                        case '90d': startDate = moment().subtract(90, 'days'); break;
+                        case '1y': startDate = moment().subtract(1, 'year'); break;
+                        case 'custom': return;
                     }
 
-                    $('#dateRangePicker').data('daterangepicker').setStartDate(startDate);
-                    $('#dateRangePicker').data('daterangepicker').setEndDate(endDate);
+                    const picker = $('#dateRangePicker').data('daterangepicker');
+                    if (picker) {
+                        picker.setStartDate(startDate);
+                        picker.setEndDate(endDate);
+                    }
 
-                    // Update charts based on new date range
                     updateChartsForDateRange(startDate, endDate);
                 });
             });
 
-            // Apply date range button
-            document.getElementById('applyDateRange').addEventListener('click', function () {
-                const picker = $('#dateRangePicker').data('daterangepicker');
-                updateChartsForDateRange(picker.startDate, picker.endDate);
-                showToast('Date range applied successfully', 'success');
-            });
+            // 2. Apply date range button (ADDED GUARD)
+            const applyDateBtn = document.getElementById('applyDateRange');
+            if (applyDateBtn) {
+                applyDateBtn.addEventListener('click', function () {
+                    const picker = $('#dateRangePicker').data('daterangepicker');
+                    if (picker) {
+                        updateChartsForDateRange(picker.startDate, picker.endDate);
+                        showToast('Date range applied successfully', 'success');
+                    }
+                });
+            }
 
-            // Chart filter changes
-            document.getElementById('ticketTrendFilter').addEventListener('change', function () {
-                updateTicketTrendsChart(this.value);
-            });
+            // 3. Chart filter changes (ADDED GUARD)
+            const trendFilter = document.getElementById('ticketTrendFilter');
+            if (trendFilter) {
+                trendFilter.addEventListener('change', function () {
+                    updateTicketTrendsChart(this.value);
+                });
+            }
 
-            // Refresh metrics button
-            document.getElementById('refreshMetrics').addEventListener('click', function () {
-                showToast('Refreshing analytics data...', 'info');
-                setTimeout(() => {
-                    loadDataTables();
-                    showToast('Data refreshed successfully', 'success');
-                }, 1000);
-            });
+            // 4. Refresh metrics button (ADDED GUARD)
+            const refreshBtn = document.getElementById('refreshMetrics');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', function () {
+                    showToast('Refreshing analytics data...', 'info');
+                    setTimeout(() => {
+                        if (typeof loadDataTables === 'function') loadDataTables();
+                        showToast('Data refreshed successfully', 'success');
+                    }, 1000);
+                });
+            }
 
-            // Export metrics button
-            document.getElementById('exportMetrics').addEventListener('click', function () {
-                showToast('Exporting analytics data...', 'info');
-                setTimeout(() => {
-                    const currentLang = window.preferencesManager ?
-                        window.preferencesManager.getCurrentLanguage() : 'en';
-                    const dict = translations[currentLang] || translations['en'];
-                    showToast(dict['export_success'] || 'Export completed successfully', 'success');
-                }, 1500);
-            });
+            // 5. Export metrics button (ADDED GUARD)
+            const exportBtn = document.getElementById('exportMetrics');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', function () {
+                    showToast('Exporting analytics data...', 'info');
+                    setTimeout(() => {
+                        const currentLang = window.preferencesManager ?
+                            window.preferencesManager.getCurrentLanguage() : 'en';
+                        const dict = translations[currentLang] || translations['en'];
+                        showToast(dict['export_success'] || 'Export completed successfully', 'success');
+                    }, 1500);
+                });
+            }
 
-            // Report generation buttons
+            // 6. Report generation buttons (Safe)
             document.querySelectorAll('.report-card button').forEach(button => {
                 button.addEventListener('click', function () {
                     const currentLang = window.preferencesManager ?
                         window.preferencesManager.getCurrentLanguage() : 'en';
                     const dict = translations[currentLang] || translations['en'];
-
                     showToast(dict['report_generating'] || 'Generating report...', 'info');
                     setTimeout(() => {
                         showToast(dict['report_generated'] || 'Report generated successfully', 'success');
@@ -783,10 +792,10 @@
                 });
             });
 
-            // Search functionality
+            // 7. Search functionality (Already had a guard)
             const searchInput = document.getElementById('q');
-            let searchTimeout;
             if (searchInput) {
+                let searchTimeout;
                 searchInput.addEventListener('input', function () {
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => {
@@ -884,7 +893,7 @@
         async function injectRealAnalytics() {
             try {
                 // Fetch ALL tickets from the backend
-                const res = await fetch("http://127.0.0.1:5000/api/tickets");
+                const res = await fetch(`${API_BASE_URL}/api/tickets`);
                 allSystemTickets = await res.json();
 
                 if (!allSystemTickets || allSystemTickets.length === 0) return;
@@ -1067,7 +1076,7 @@
                     
                     try {
                         // Fetch fresh data for export
-                        const res = await fetch(`http://127.0.0.1:5000/api/tickets`);
+                        const res = await fetch(`${API_BASE_URL}/api/tickets`);
                         const tickets = await res.json();
                         
                         let csv = "Ticket ID,Subject,Requester,Assigned To,Priority,Status,Created Date\\n";

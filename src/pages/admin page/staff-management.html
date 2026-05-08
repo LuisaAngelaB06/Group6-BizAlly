@@ -271,6 +271,11 @@
     <div id="toast" class="toast"></div>
 
     <script>
+        if (typeof API_BASE_URL === 'undefined') {
+            window.API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+                ? 'http://127.0.0.1:5000' 
+                : 'https://group6-bizally.onrender.com';
+        }
         (function () {
             "use strict";
 
@@ -380,7 +385,7 @@
 
             async function fetchRealStaff() {
                 try {
-                    const response = await fetch("http://127.0.0.1:5000/api/admin/users");
+                    const response = await fetch(`${API_BASE_URL}/api/admin/users`);
                     const realUsers = await response.json();
                     
                     if (!Array.isArray(realUsers)) return;
@@ -628,7 +633,7 @@
                 const status = statusField.value;
 
                 try {
-                    const response = await fetch("http://127.0.0.1:5000/api/admin/update-user", {
+                    const response = await fetch(`${API_BASE_URL}/api/admin/update-user`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -687,7 +692,7 @@
                 
                 try {
                     // Send the list of IDs to Python to hard delete from MySQL
-                    const response = await fetch("http://127.0.0.1:5000/api/admin/delete-users", {
+                    const response = await fetch(`${API_BASE_URL}/api/admin/delete-users`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ user_ids: ids })
@@ -896,7 +901,7 @@
             if(!confirm("Are you sure you want to reset this user's password?")) return;
 
             try {
-                const response = await fetch("http://127.0.0.1:5000/api/admin/reset-password", {
+                const response = await fetch(`${API_BASE_URL}/api/admin/reset-password`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ target_user_id: userId })

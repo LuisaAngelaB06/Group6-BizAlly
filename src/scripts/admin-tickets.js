@@ -1,6 +1,12 @@
+if (typeof API_BASE_URL === 'undefined') {
+    window.API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+        ? 'http://127.0.0.1:5000' 
+        : 'https://group6-bizally.onrender.com';
+}
+
 async function loadTickets() {
     try {
-        const response = await fetch("http://127.0.0.1:5000/api/tickets");
+        const response = await fetch(`${API_BASE_URL}/api/tickets`);
         const tickets = await response.json();
 
         console.log("Tickets from backend:", tickets);
