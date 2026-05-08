@@ -300,140 +300,8 @@
     <script>
         (function () {
             'use strict';
-            const STORAGE_PREFIX = 'alliTrack_';
-            let fontSizeLevel = 1;
-            let highContrast = false;
-            let focusHighlight = false;
-            let theme = 'light';
-
-            try {
-                fontSizeLevel = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'fontSize') || '1');
-                highContrast = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'highContrast') || 'false');
-                focusHighlight = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'focusHighlight') || 'false');
-                theme = localStorage.getItem(STORAGE_PREFIX + 'theme') || 'light';
-            } catch (e) { }
-
-            const FONT_VALUES = ['80%', '100%', '120%', '140%'];
-            const FONT_NAMES = ['Small', 'Medium', 'Large', 'X-Large'];
-            const body = document.body;
-
-            function applyFontSize() {
-                document.documentElement.style.fontSize = FONT_VALUES[fontSizeLevel];
-                const lbl = document.getElementById('currentFontSize');
-                if (lbl) lbl.textContent = FONT_NAMES[fontSizeLevel];
-                localStorage.setItem(STORAGE_PREFIX + 'fontSize', JSON.stringify(fontSizeLevel));
-            }
-
-            function applyTheme() {
-                body.classList.remove('dark-theme', 'light-theme');
-                if (theme === 'dark') body.classList.add('dark-theme');
-                else body.classList.add('light-theme');
-                localStorage.setItem(STORAGE_PREFIX + 'theme', theme);
-                document.querySelectorAll('.theme-btn').forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.theme === theme);
-                });
-            }
-
-            function applyContrast() {
-                body.classList.toggle('high-contrast', highContrast);
-                localStorage.setItem(STORAGE_PREFIX + 'highContrast', JSON.stringify(highContrast));
-                const btn = document.getElementById('toggleContrast');
-                if (btn) {
-                    btn.classList.toggle('active', highContrast);
-                    btn.setAttribute('aria-pressed', highContrast);
-                    btn.innerHTML = highContrast ? '<i class="fas fa-circle-half-stroke"></i> Disable' : '<i class="fas fa-circle-half-stroke"></i> Enable';
-                }
-            }
-
-            function applyFocus() {
-                body.classList.toggle('focus-highlight', focusHighlight);
-                localStorage.setItem(STORAGE_PREFIX + 'focusHighlight', JSON.stringify(focusHighlight));
-                const btn = document.getElementById('toggleFocus');
-                if (btn) {
-                    btn.classList.toggle('active', focusHighlight);
-                    btn.setAttribute('aria-pressed', focusHighlight);
-                    btn.innerHTML = focusHighlight ? '<i class="fas fa-border-all"></i> Disable' : '<i class="fas fa-border-all"></i> Enable';
-                }
-            }
-
-            function setFontSize(level) { if (level >= 0 && level < FONT_VALUES.length) { fontSizeLevel = level; applyFontSize(); } }
-            function setTheme(t) { theme = t; applyTheme(); }
-            function setHighContrast(v) { highContrast = v; applyContrast(); }
-            function setFocus(v) { focusHighlight = v; applyFocus(); }
-            function resetAll() { setFontSize(1); setTheme('light'); setHighContrast(false); setFocus(false); }
-
-            applyFontSize(); applyTheme(); applyContrast(); applyFocus();
 
             document.addEventListener('DOMContentLoaded', function () {
-                const toggleBtn = document.getElementById('accessibilityToggle');
-                const panel = document.getElementById('accessibilityPanel');
-                const closeBtn = document.getElementById('closeAccessibility');
-
-                if (toggleBtn && panel) {
-                    toggleBtn.replaceWith(toggleBtn.cloneNode(true));
-                    const newToggle = document.getElementById('accessibilityToggle');
-
-                    newToggle.addEventListener('click', function (e) {
-                        e.stopPropagation();
-                        panel.classList.toggle('open');
-                        newToggle.setAttribute('aria-expanded', panel.classList.contains('open'));
-                    });
-
-                    if (closeBtn) {
-                        closeBtn.replaceWith(closeBtn.cloneNode(true));
-                        const newClose = document.getElementById('closeAccessibility');
-                        newClose.addEventListener('click', function () {
-                            panel.classList.remove('open');
-                            newToggle.setAttribute('aria-expanded', 'false');
-                        });
-                    }
-
-                    document.addEventListener('click', function (e) {
-                        if (panel.classList.contains('open') && !panel.contains(e.target) && !newToggle.contains(e.target)) {
-                            panel.classList.remove('open');
-                            newToggle.setAttribute('aria-expanded', 'false');
-                        }
-                    });
-                }
-
-                document.querySelectorAll('.theme-btn').forEach(btn => {
-                    btn.replaceWith(btn.cloneNode(true));
-                });
-                document.querySelectorAll('.theme-btn').forEach(btn => {
-                    btn.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        setTheme(this.dataset.theme);
-                    });
-                });
-
-                const decreaseBtn = document.getElementById('decreaseFont');
-                if (decreaseBtn) {
-                    decreaseBtn.replaceWith(decreaseBtn.cloneNode(true));
-                    document.getElementById('decreaseFont').addEventListener('click', function () { setFontSize(fontSizeLevel - 1); });
-                }
-                const increaseBtn = document.getElementById('increaseFont');
-                if (increaseBtn) {
-                    increaseBtn.replaceWith(increaseBtn.cloneNode(true));
-                    document.getElementById('increaseFont').addEventListener('click', function () { setFontSize(fontSizeLevel + 1); });
-                }
-
-                const contrastBtn = document.getElementById('toggleContrast');
-                if (contrastBtn) {
-                    contrastBtn.replaceWith(contrastBtn.cloneNode(true));
-                    document.getElementById('toggleContrast').addEventListener('click', function () { setHighContrast(!highContrast); });
-                }
-
-                const focusBtn = document.getElementById('toggleFocus');
-                if (focusBtn) {
-                    focusBtn.replaceWith(focusBtn.cloneNode(true));
-                    document.getElementById('toggleFocus').addEventListener('click', function () { setFocus(!focusHighlight); });
-                }
-
-                const resetBtn = document.getElementById('resetAccessibility');
-                if (resetBtn) {
-                    resetBtn.replaceWith(resetBtn.cloneNode(true));
-                    document.getElementById('resetAccessibility').addEventListener('click', resetAll);
-                }
 
                 const modal = document.getElementById('feedbackModal');
                 const triggerBtn = document.getElementById('submitTicketBtn');
@@ -441,85 +309,94 @@
                 const closeModalX = document.getElementById('closeModalX');
                 const submitRating = document.getElementById('submitRating');
 
-                function openModal() { if (modal) modal.classList.add('active'); }
-                function closeModal() { if (modal) modal.classList.remove('active'); }
+                function openModal() {
+                    if (modal) modal.classList.add('active');
+                }
 
+                function closeModal() {
+                    if (modal) modal.classList.remove('active');
+                }
+
+                // Open modal
                 if (triggerBtn) {
-                    triggerBtn.replaceWith(triggerBtn.cloneNode(true));
-                    document.getElementById('submitTicketBtn').addEventListener('click', openModal);
+                    triggerBtn.addEventListener('click', openModal);
                 }
+
+                // Close modal
                 if (closeModalBtn) {
-                    closeModalBtn.replaceWith(closeModalBtn.cloneNode(true));
-                    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+                    closeModalBtn.addEventListener('click', closeModal);
                 }
+
                 if (closeModalX) {
-                    closeModalX.replaceWith(closeModalX.cloneNode(true));
-                    document.getElementById('closeModalX').addEventListener('click', closeModal);
+                    closeModalX.addEventListener('click', closeModal);
                 }
 
-                if (submitRating) {
-                    submitRating.addEventListener('click', async function () {
-                        // 1. Find which button the user selected
-                        const selectedBtn = document.querySelector('.rating-btn[style*="background: var(--blue-500)"]');
-                        const ratingValue = selectedBtn ? selectedBtn.getAttribute('data-rating') : 'neutral'; // Defaults to neutral
-
-                        try {
-                            // 2. Send the rating to your Flask backend
-                            await fetch("http://127.0.0.1:5000/api/feedback/submit", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    source: document.title, // Sends "Quick Fix - GSM Alarm", etc.
-                                    rating: ratingValue     // Sends "good", "neutral", or "bad"
-                                })
-                            });
-                        } catch (error) {
-                            console.error("Feedback failed to send:", error);
-                        }
-
-                        // 3. Close the modal and redirect
-                        closeModal();
-                        
-                        // Note: Adjusted this path slightly. Make sure this points to your actual login/auth file!
-                        window.location.href = '/'; 
-                    });
-                }
-
-                document.querySelectorAll('.rating-btn').forEach(btn => {
-                    btn.replaceWith(btn.cloneNode(true));
-                });
-                document.querySelectorAll('.rating-btn').forEach(btn => {
-                    btn.addEventListener('click', function () {
-                        document.querySelectorAll('.rating-btn').forEach(b => {
-                            b.style.background = ''; b.style.color = ''; b.style.borderColor = '';
-                            const icon = b.querySelector('i'); if (icon) icon.style.color = '';
-                        });
-                        this.style.background = 'var(--blue-500)';
-                        this.style.color = 'white';
-                        this.style.borderColor = 'var(--blue-500)';
-                        const icon = this.querySelector('i');
-                        if (icon) icon.style.color = 'white';
-                    });
-                });
-
+                // Close when clicking outside
                 if (modal) {
-                    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+                    modal.addEventListener('click', function (e) {
+                        if (e.target === modal) closeModal();
+                    });
                 }
 
+                // ESC key closes modal
                 document.addEventListener('keydown', function (e) {
                     if (e.key === 'Escape') {
-                        const panel = document.getElementById('accessibilityPanel');
-                        const toggleBtn = document.getElementById('accessibilityToggle');
-                        if (panel?.classList.contains('open')) {
-                            panel.classList.remove('open');
-                            if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
-                        }
-                        if (modal?.classList.contains('active')) {
+                        if (modal && modal.classList.contains('active')) {
                             modal.classList.remove('active');
                         }
                     }
                 });
-            }); 
+
+                // ✅ CLEAN RATING LOGIC
+                document.querySelectorAll('.rating-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        document.querySelectorAll('.rating-btn').forEach(b => {
+                            b.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                    });
+                });
+
+                // ✅ SUBMIT WITH REQUIRED VALIDATION
+                if (submitRating) {
+                    submitRating.addEventListener('click', async function () {
+
+                        const selectedBtn = document.querySelector('.rating-btn.active');
+
+                        // ❌ Block if no rating
+                        if (!selectedBtn) {
+                            alert("Please select a rating before continuing.");
+                            return;
+                        }
+
+                        const ratingValue = selectedBtn.getAttribute('data-rating');
+
+                        const base =
+                            window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                                ? "http://127.0.0.1:5000"
+                                : "https://group6-bizally.onrender.com";
+
+                        try {
+                            await fetch(`${base}/api/feedback/submit`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    source: document.title,
+                                    rating: ratingValue
+                                })
+                            });
+                        } catch (error) {
+                            console.error("Feedback failed:", error);
+                        }
+
+                        closeModal();
+
+                        // Redirect to login
+                        window.location.href = `${base}/login`;
+                    });
+                }
+
+            });
         })();
     </script>
 </body>

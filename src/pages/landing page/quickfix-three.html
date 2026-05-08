@@ -8,7 +8,9 @@
     <!-- same font + icons, to feel familiar but clean PDF style -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../../styles/shared/landing-style.css">
     <link rel="stylesheet" href="../../styles/landing page/quickfix-three.css">
@@ -46,12 +48,17 @@
                 <div class="fix-icon"><i class="fas fa-tower-cell"></i></div>
                 <h3>No service / searching</h3>
                 <p style="margin-bottom: 10px;">Check RSSI and operator lock:</p>
-                <div style="background: var(--gray-100); padding: 8px 12px; border-radius: 12px; font-family: monospace; font-size:0.8rem; overflow-x: auto;">
-                    AT+CSQ  (0–31 · 99 = no signal)
+                <div
+                    style="background: var(--gray-100); padding: 8px 12px; border-radius: 12px; font-family: monospace; font-size:0.8rem; overflow-x: auto;">
+                    AT+CSQ (0–31 · 99 = no signal)
                 </div>
                 <ul style="margin-top: 16px; list-style: none; padding-left: 0;">
-                    <li style="display: flex; gap: 8px; margin-bottom: 6px;"><span style="color: var(--blue-500);">✓</span> <span>Force 2G only: <span style="font-family: monospace;">AT+CNMP=13</span></span></li>
-                    <li style="display: flex; gap: 8px; margin-bottom: 6px;"><span style="color: var(--blue-500);">✓</span> <span>Check APN: <span style="font-family: monospace;">AT+CGDCONT=1,"IP","iot.telenor"</span></span></li>
+                    <li style="display: flex; gap: 8px; margin-bottom: 6px;"><span
+                            style="color: var(--blue-500);">✓</span> <span>Force 2G only: <span
+                                style="font-family: monospace;">AT+CNMP=13</span></span></li>
+                    <li style="display: flex; gap: 8px; margin-bottom: 6px;"><span
+                            style="color: var(--blue-500);">✓</span> <span>Check APN: <span
+                                style="font-family: monospace;">AT+CGDCONT=1,"IP","iot.telenor"</span></span></li>
                 </ul>
             </div>
             <div class="fix-card">
@@ -60,8 +67,10 @@
                 <p>PUK locked or carrier blacklist.</p>
                 <div style="margin-top: 16px;">
                     <span class="badge"><i class="fas fa-unlock-alt"></i> Quick fix</span>
-                    <p style="margin-top: 10px;">Disable PIN via phone, then insert. <br><span style="font-family: monospace;">AT+CPIN?</span> → READY.</p>
-                    <p style="margin-top: 6px; font-size:0.85rem;">Check IMEI white‑list: <span style="font-family: monospace;">AT+GSN</span></p>
+                    <p style="margin-top: 10px;">Disable PIN via phone, then insert. <br><span
+                            style="font-family: monospace;">AT+CPIN?</span> → READY.</p>
+                    <p style="margin-top: 6px; font-size:0.85rem;">Check IMEI white‑list: <span
+                            style="font-family: monospace;">AT+GSN</span></p>
                 </div>
             </div>
         </div>
@@ -74,12 +83,14 @@
                 <tr>
                     <td style="font-weight:600; width: 30px;">1.</td>
                     <td style="font-weight:600;">Outgoing SMS stuck</td>
-                    <td>Check service centre: <span style="font-family: monospace;">AT+CSCA?</span> / overwrite +46701111111</td>
+                    <td>Check service centre: <span style="font-family: monospace;">AT+CSCA?</span> / overwrite
+                        +46701111111</td>
                 </tr>
                 <tr>
                     <td style="font-weight:600;">2.</td>
                     <td style="font-weight:600;">Voice call failure</td>
-                    <td>Enable speaker: <span style="font-family: monospace;">AT+CLVL=5</span> ; check microphone gain</td>
+                    <td>Enable speaker: <span style="font-family: monospace;">AT+CLVL=5</span> ; check microphone gain
+                    </td>
                 </tr>
                 <tr>
                     <td style="font-weight:600;">3.</td>
@@ -102,22 +113,32 @@
             <i class="fas fa-shield-halved"></i> Tamper / battery / AC fail
         </div>
         <ul class="step-list">
-            <li><span class="step-num">1</span> <strong>Tamper loop open</strong> – measure resistance across terminals. Bypass with 1kΩ resistor for testing.</li>
-            <li><span class="step-num">2</span> <strong>Battery low / missing</strong> – lead‑acid voltage >13.2V (float). Replace if <12V under load.</li>
-            <li><span class="step-num">3</span> <strong>AC fail false alarm</strong> – check transformer secondary (16–18V AC). Loose connector.</li>
-            <li><span class="step-num">4</span> <strong>Power supply ripple</strong> – use oscilloscope; >500mVpp may reset GSM module.</li>
+            <li><span class="step-num">1</span> <strong>Tamper loop open</strong> – measure resistance across terminals.
+                Bypass with 1kΩ resistor for testing.</li>
+            <li><span class="step-num">2</span> <strong>Battery low / missing</strong> – lead‑acid voltage >13.2V
+                (float). Replace if <12V under load.</li>
+            <li><span class="step-num">3</span> <strong>AC fail false alarm</strong> – check transformer secondary
+                (16–18V AC). Loose connector.</li>
+            <li><span class="step-num">4</span> <strong>Power supply ripple</strong> – use oscilloscope; >500mVpp may
+                reset GSM module.</li>
         </ul>
 
         <div class="two-col-grid">
             <div style="background: var(--blue-50); padding: 20px; border-radius: 20px;">
-                <i class="fas fa-map-pin" style="color: var(--blue-500); font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
+                <i class="fas fa-map-pin"
+                    style="color: var(--blue-500); font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
                 <h3 style="font-size: 1.2rem; margin-bottom: 8px;">GPS / LBS not reporting</h3>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">Fix antenna, clear sky view. Cold start: <span style="font-family: monospace;">AT+CGNSPWR=1</span>. Fix time up to 3 min.</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Fix antenna, clear sky view. Cold start:
+                    <span style="font-family: monospace;">AT+CGNSPWR=1</span>. Fix time up to 3 min.
+                </p>
             </div>
-            <div style="background: var(--gray-50); padding: 20px; border-radius: 20px; border:1px solid var(--border-color);">
-                <i class="fas fa-cloud-upload-alt" style="color: var(--blue-500); font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
+            <div
+                style="background: var(--gray-50); padding: 20px; border-radius: 20px; border:1px solid var(--border-color);">
+                <i class="fas fa-cloud-upload-alt"
+                    style="color: var(--blue-500); font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
                 <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Firmware / OTA stuck</h3>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">Interrupted update → bootloop. Reflash via UART or SD card. Force DFU: hold tamper + reset.</p>
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Interrupted update → bootloop. Reflash via
+                    UART or SD card. Force DFU: hold tamper + reset.</p>
             </div>
         </div>
 
@@ -127,11 +148,14 @@
         <div class="two-col-grid">
             <div class="tip-box">
                 <h4><i class="fas fa-exchange-alt" style="color:var(--blue-500);"></i> SMS not received</h4>
-                <p style="color: var(--text-secondary);">Memory full: <span style="font-family: monospace;">AT+CMGD=1,4</span> delete all. Disable new SMS indication temporarily.</p>
+                <p style="color: var(--text-secondary);">Memory full: <span
+                        style="font-family: monospace;">AT+CMGD=1,4</span> delete all. Disable new SMS indication
+                    temporarily.</p>
             </div>
             <div class="tip-box">
                 <h4><i class="fas fa-tachometer-alt" style="color:var(--blue-500);"></i> Slow alarm delivery</h4>
-                <p style="color: var(--text-secondary);">Use UDP instead of TCP, port 5000. Lower keep‑alive from 10 min to 2 min.</p>
+                <p style="color: var(--text-secondary);">Use UDP instead of TCP, port 5000. Lower keep‑alive from 10 min
+                    to 2 min.</p>
             </div>
         </div>
 
@@ -218,102 +242,7 @@
         (function () {
             'use strict';
 
-            const STORAGE_PREFIX = 'alliTrack_';
-            let fontSizeLevel = 1;
-            let highContrast = false;
-            let focusHighlight = false;
-            let theme = 'light';
-
-            try {
-                fontSizeLevel = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'fontSize') || '1');
-                highContrast = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'highContrast') || 'false');
-                focusHighlight = JSON.parse(localStorage.getItem(STORAGE_PREFIX + 'focusHighlight') || 'false');
-                theme = localStorage.getItem(STORAGE_PREFIX + 'theme') || 'light';
-            } catch (e) { }
-
-            const FONT_VALUES = ['80%', '100%', '120%', '140%'];
-            const FONT_NAMES = ['Small', 'Medium', 'Large', 'X-Large'];
-            const body = document.body;
-
-            function applyFontSize() {
-                document.documentElement.style.fontSize = FONT_VALUES[fontSizeLevel];
-                const lbl = document.getElementById('currentFontSize');
-                if (lbl) lbl.textContent = FONT_NAMES[fontSizeLevel];
-                localStorage.setItem(STORAGE_PREFIX + 'fontSize', JSON.stringify(fontSizeLevel));
-            }
-
-            function applyTheme() {
-                body.classList.remove('dark-theme', 'light-theme');
-                if (theme === 'dark') body.classList.add('dark-theme');
-                else body.classList.add('light-theme');
-                localStorage.setItem(STORAGE_PREFIX + 'theme', theme);
-                document.querySelectorAll('.theme-btn').forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.theme === theme);
-                });
-            }
-
-            function applyContrast() {
-                body.classList.toggle('high-contrast', highContrast);
-                localStorage.setItem(STORAGE_PREFIX + 'highContrast', JSON.stringify(highContrast));
-                const btn = document.getElementById('toggleContrast');
-                if (btn) {
-                    btn.classList.toggle('active', highContrast);
-                    btn.setAttribute('aria-pressed', highContrast);
-                }
-            }
-
-            function applyFocus() {
-                body.classList.toggle('focus-highlight', focusHighlight);
-                localStorage.setItem(STORAGE_PREFIX + 'focusHighlight', JSON.stringify(focusHighlight));
-                const btn = document.getElementById('toggleFocus');
-                if (btn) {
-                    btn.classList.toggle('active', focusHighlight);
-                    btn.setAttribute('aria-pressed', focusHighlight);
-                }
-            }
-
-            function setFontSize(level) { if (level >= 0 && level < FONT_VALUES.length) { fontSizeLevel = level; applyFontSize(); } }
-            function setTheme(t) { theme = t; applyTheme(); }
-            function setHighContrast(v) { highContrast = v; applyContrast(); }
-            function setFocus(v) { focusHighlight = v; applyFocus(); }
-            function resetAll() { setFontSize(1); setTheme('light'); setHighContrast(false); setFocus(false); }
-
-            applyFontSize(); applyTheme(); applyContrast(); applyFocus();
-
             document.addEventListener('DOMContentLoaded', function () {
-                const toggleBtn = document.getElementById('accessibilityToggle');
-                const panel = document.getElementById('accessibilityPanel');
-                const closeBtn = document.getElementById('closeAccessibility');
-                if (toggleBtn && panel) {
-                    toggleBtn.addEventListener('click', function (e) {
-                        e.stopPropagation();
-                        panel.classList.toggle('open');
-                        toggleBtn.setAttribute('aria-expanded', panel.classList.contains('open'));
-                    });
-                    if (closeBtn) {
-                        closeBtn.addEventListener('click', function () {
-                            panel.classList.remove('open');
-                            toggleBtn.setAttribute('aria-expanded', 'false');
-                        });
-                    }
-                    document.addEventListener('click', function (e) {
-                        if (panel.classList.contains('open') && !panel.contains(e.target) && !toggleBtn.contains(e.target)) {
-                            panel.classList.remove('open');
-                            toggleBtn.setAttribute('aria-expanded', 'false');
-                        }
-                    });
-                }
-
-                // theme buttons
-                document.querySelectorAll('.theme-btn').forEach(btn => {
-                    btn.addEventListener('click', function (e) { e.preventDefault(); setTheme(this.dataset.theme); });
-                });
-
-                document.getElementById('decreaseFont')?.addEventListener('click', function () { setFontSize(fontSizeLevel - 1); });
-                document.getElementById('increaseFont')?.addEventListener('click', function () { setFontSize(fontSizeLevel + 1); });
-                document.getElementById('toggleContrast')?.addEventListener('click', function () { setHighContrast(!highContrast); });
-                document.getElementById('toggleFocus')?.addEventListener('click', function () { setFocus(!focusHighlight); });
-                document.getElementById('resetAccessibility')?.addEventListener('click', resetAll);
 
                 const modal = document.getElementById('feedbackModal');
                 const triggerBtn = document.getElementById('submitTicketBtn');
@@ -324,88 +253,89 @@
                 function openModal() {
                     if (modal) modal.classList.add('active');
                 }
+
                 function closeModal() {
                     if (modal) modal.classList.remove('active');
                 }
 
+                // Open modal
                 if (triggerBtn) {
                     triggerBtn.addEventListener('click', openModal);
                 }
 
-                if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-                if (closeModalX) closeModalX.addEventListener('click', closeModal);
-
-                if (submitRating) {
-                    submitRating.addEventListener('click', async function () {
-                        // 1. Find which button the user selected
-                        const selectedBtn = document.querySelector('.rating-btn[style*="background: var(--blue-500)"]');
-                        const ratingValue = selectedBtn ? selectedBtn.getAttribute('data-rating') : 'neutral'; // Defaults to neutral
-
-                        try {
-                            // 2. Send the rating to your Flask backend
-                            await fetch("http://127.0.0.1:5000/api/feedback/submit", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    source: document.title, // Sends "Quick Fix - GSM Alarm", etc.
-                                    rating: ratingValue     // Sends "good", "neutral", or "bad"
-                                })
-                            });
-                        } catch (error) {
-                            console.error("Feedback failed to send:", error);
-                        }
-
-                        // 3. Close the modal and redirect
-                        closeModal();
-                        
-                        // Note: Adjusted this path slightly. Make sure this points to your actual login/auth file!
-                        window.location.href = '/'; 
-                    });
+                // Close modal
+                if (closeModalBtn) {
+                    closeModalBtn.addEventListener('click', closeModal);
                 }
 
-                // rating button interaction (visual selection)
-                document.querySelectorAll('.rating-btn').forEach(btn => {
-                    btn.addEventListener('click', function () {
-                        // remove selected style from all
-                        document.querySelectorAll('.rating-btn').forEach(b => {
-                            b.style.background = '';
-                            b.style.color = '';
-                            b.style.borderColor = '';
-                            const icon = b.querySelector('i');
-                            if (icon) icon.style.color = '';
-                        });
-                        // apply selected style
-                        this.style.background = 'var(--blue-500)';
-                        this.style.color = 'white';
-                        this.style.borderColor = 'var(--blue-500)';
-                        const icon = this.querySelector('i');
-                        if (icon) icon.style.color = 'white';
-                    });
-                });
+                if (closeModalX) {
+                    closeModalX.addEventListener('click', closeModal);
+                }
 
-                // close modal when clicking overlay
+                // Close when clicking outside
                 if (modal) {
                     modal.addEventListener('click', function (e) {
                         if (e.target === modal) closeModal();
                     });
                 }
 
-            }); // DOMContentLoaded
+                // ESC key closes modal
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') {
+                        if (modal && modal.classList.contains('active')) {
+                            modal.classList.remove('active');
+                        }
+                    }
+                });
 
-            // escape key for accessibility panel + modal
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') {
-                    const panel = document.getElementById('accessibilityPanel');
-                    const toggleBtn = document.getElementById('accessibilityToggle');
-                    if (panel?.classList.contains('open')) {
-                        panel.classList.remove('open');
-                        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
-                    }
-                    const modal = document.getElementById('feedbackModal');
-                    if (modal?.classList.contains('active')) {
-                        modal.classList.remove('active');
-                    }
+                // ✅ SUBMIT WITH REQUIRED VALIDATION
+                if (submitRating) {
+                    submitRating.addEventListener('click', async function () {
+
+                        const selectedBtn = document.querySelector('.rating-btn.active');
+
+                        // ❌ Block if no rating
+                        if (!selectedBtn) {
+                            alert("Please select a rating before continuing.");
+                            return;
+                        }
+
+                        const ratingValue = selectedBtn.getAttribute('data-rating');
+
+                        const base =
+                            window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                                ? "http://127.0.0.1:5000"
+                                : "https://group6-bizally.onrender.com";
+
+                        try {
+                            await fetch(`${base}/api/feedback/submit`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    source: document.title,
+                                    rating: ratingValue
+                                })
+                            });
+                        } catch (error) {
+                            console.error("Feedback failed:", error);
+                        }
+
+                        closeModal();
+
+                        // Redirect to login
+                        window.location.href = `${base}/login`;
+                    });
                 }
+
+                document.querySelectorAll('.rating-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        document.querySelectorAll('.rating-btn').forEach(b => {
+                            b.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                    });
+                });
+
             });
         })();
     </script>

@@ -1,3 +1,17 @@
+/* FIXED MODAL SIZE */
+.announcement-modal {
+    width: min(680px, 100%);
+    max-height: 80vh; /* 👈 LIMIT HEIGHT */
+    display: flex;
+    flex-direction: column; /* 👈 IMPORTANT */
+}
+
+/* MAKE BODY SCROLLABLE */
+.modal-body {
+    flex: 1; /* 👈 TAKE AVAILABLE SPACE */
+    overflow-y: auto; /* 👈 ENABLE SCROLL */
+}
+
 /* Announcements Specific Styles */
 .announcements-content {
     display: flex;
