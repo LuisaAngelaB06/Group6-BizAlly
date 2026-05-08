@@ -1,5 +1,9 @@
-// user-data-manager.js
-// ===== ROLE-BASED PAGE PROTECTION =====
+const API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+    ? 'http://127.0.0.1:5000' 
+    : 'https://group6-bizally.onrender.com';
+
+// This ensures other functions can use it
+window.API_BASE_URL = API_BASE_URL;
 
 const userDataStr = localStorage.getItem("userData");
 const currentPath = window.location.pathname.toLowerCase();
@@ -231,7 +235,7 @@ if (typeof window.globalHeartbeatFired === 'undefined') {
         if (!userId) return;
 
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/auth/user/profile/complete/${userId}`);
+            const response = await fetch(`${API_BASE_URL}/api/auth/user/profile/complete/${userId}`);
             const result = await response.json();
 
             if (response.ok && result.status === "success") {
@@ -300,7 +304,7 @@ if (typeof window.globalHeartbeatFired === 'undefined') {
         if (!userId || !announcementDot) return;
 
         try {
-            const response = await fetch(`http://127.0.0.1:5000/api/user/announcements/unread/${userId}`);
+            const response = await fetch(`${API_BASE_URL}/api/user/announcements/unread/${userId}`);
             const unread = await response.json();
 
             if (Array.isArray(unread) && unread.length > 0) {

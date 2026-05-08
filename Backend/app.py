@@ -10,7 +10,15 @@ from routes.auth_routes import auth_bp
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-change-this")
-CORS(app)
+
+# 🌟 REPLACE THE OLD CORS(app) WITH THIS SPECIFIC CONFIGURATION
+CORS(app, resources={r"/api/*": {
+    "origins": [
+        "http://127.0.0.1:5500", 
+        "http://localhost:5500", 
+        "https://group6-bizally.onrender.com"
+    ]
+}})
 
 BASE_BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
 ENV_PATH = os.path.join(BASE_BACKEND_DIR, ".env")
