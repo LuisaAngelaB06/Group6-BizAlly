@@ -199,6 +199,11 @@
     </div>
 
     <script>
+        if (typeof API_BASE_URL === 'undefined') {
+            window.API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+                ? 'http://127.0.0.1:5000' 
+                : 'https://group6-bizally.onrender.com';
+        }
         // Account Dropdown Functionality - FIXED
         function setupAccountDropdown() {
             console.log('🔧 Setting up account dropdown...');
