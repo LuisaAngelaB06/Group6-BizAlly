@@ -165,6 +165,12 @@
     </div>
 
     <script>
+
+        // --- DYNAMIC API CONFIGURATION ---
+        const API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+            ? 'http://127.0.0.1:5000' 
+            : 'https://group6-bizally.onrender.com';
+
         // Translation dictionary for my tickets page
         const translations = {
             'en': {
@@ -697,7 +703,7 @@
             const userId = userData.user_id;
 
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/tickets/user/${userId}`);
+                const response = await fetch(`${API_BASE_URL}/api/tickets/user/${userId}`);
                 tickets = await response.json();
 
                 renderTickets(tickets);

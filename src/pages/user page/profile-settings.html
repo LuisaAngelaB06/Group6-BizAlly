@@ -348,6 +348,15 @@
     </div>
 
     <script>
+
+        // --- DYNAMIC CONFIGURATION ---
+        const API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+            ? 'http://127.0.0.1:5000' 
+            : 'https://group6-bizally.onrender.com';
+
+        // Global variable for this page
+        let userData = JSON.parse(localStorage.getItem("userData") || "{}");
+
         // Account Dropdown Functionality - FIXED VERSION
         function setupAccountDropdown() {
             console.log('🔧 Setting up account dropdown...');
@@ -1020,7 +1029,7 @@
 
                 console.log("SENDING POST WITH PAYLOAD:", payload);
 
-                const response = await fetch("http://127.0.0.1:5000/api/auth/user/update-profile", {
+                const response = await fetch(`${API_BASE_URL}/api/auth/user/update-profile`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
@@ -1144,7 +1153,7 @@
 
                     // 3. Send the request to your Python server!
                     try {
-                        const response = await fetch("http://127.0.0.1:5000/api/auth/user/change-password", {
+                        const response = await fetch(`${API_BASE_URL}/api/auth/user/change-password`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
@@ -1198,7 +1207,7 @@
         // 2. Fetch data from Supabase on Load
         async function fetchCurrentProfile(userId) {
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/auth/user/profile/${userId}`);
+                const response = await fetch(`${API_BASE_URL}/api/auth/user/profile/${userId}`);
                 const data = await response.json();
 
                 if (data.status === "success") {
@@ -1289,7 +1298,7 @@
 
         async function autoSavePhoto(userId, photoBase64) {
             try {
-                const response = await fetch("http://127.0.0.1:5000/api/auth/user/update-photo", {
+                const response = await fetch(`${API_BASE_URL}/api/auth/user/update-photo`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ user_id: userId, photo_data: photoBase64 })
