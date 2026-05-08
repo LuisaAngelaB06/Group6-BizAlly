@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
@@ -6,26 +6,21 @@ from routes import register_routes
 from routes.announcement_routes import announcement_bp
 from socketio_instance import socketio
 from routes.auth_routes import init_oauth
-
-BASE_BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
-ENV_PATH = os.path.join(BASE_BACKEND_DIR, ".env")
-
-print("ENV PATH:", ENV_PATH)
-print("ENV EXISTS:", os.path.exists(ENV_PATH))
-
-load_dotenv(ENV_PATH)
-print("ALL ENV:", os.environ)
+from routes.auth_routes import auth_bp
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-change-this")
 CORS(app)
 
-init_oauth(app)
+BASE_BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+ENV_PATH = os.path.join(BASE_BACKEND_DIR, ".env")
 
-socketio.init_app(app)
+load_dotenv(ENV_PATH)
 
 app.register_blueprint(announcement_bp, url_prefix="/api")
 
+init_oauth(app)
+socketio.init_app(app)
 register_routes(app)
 
 # Base project directory (parent of Backend)

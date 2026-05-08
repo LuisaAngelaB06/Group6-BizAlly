@@ -45,6 +45,7 @@ def login():
                 "Email": user["email"],
                 "User_Type": user["user_type"],
                 "is_profile_complete": user.get("is_profile_complete", False),
+                "profile_pic_url": user.get("profile_pic_url"),
                 "Technician_ID": None
             }
 
@@ -93,7 +94,7 @@ def signup():
 
         query = """
             INSERT INTO "system_user"
-            (Username, first_name, last_name, Email, Password_Hash, User_Type, Created_At)
+            (Username, first_name, last_name, Email, password_Hash, User_Type, Created_At)
             VALUES (%s, %s, %s, %s, %s, 'client', CURRENT_TIMESTAMP)
         """
         cursor.execute(query, (username, first_name, last_name, email, hashed_password))
@@ -129,7 +130,7 @@ def admin_reset_password():
 
     try:
         cursor.execute(
-            'UPDATE "system_user" SET Password_Hash = %s WHERE user_id = %s',
+            'UPDATE "system_user" SET password_Hash = %s WHERE user_id = %s',
             (hashed, target_user_id)
         )
         conn.commit()
@@ -158,36 +159,44 @@ def change_password():
     old_password = data.get("old_password")
     new_password = data.get("new_password")
 
-    # Strong validation
+    # 1. Presence Validation
+    if not all([user_id, old_password, new_password]):
+        return jsonify({"status": "error", "message": "All fields are required"}), 400
+
+    # 2. Strong Validation (Regex matching your frontend criteria)
     if (len(new_password) < 8 or
         not re.search(r"[A-Z]", new_password) or
         not re.search(r"[a-z]", new_password) or
         not re.search(r"\d", new_password) or
         not re.search(r"[!@#$%^&*(),.?\":{}|<>]", new_password)):
-        return jsonify({"status": "error", "message": "Weak password"}), 400
+        return jsonify({"status": "error", "message": "Password does not meet strength requirements"}), 400
 
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
-        cursor.execute('SELECT Password_Hash FROM "system_user" WHERE user_id = %s', (user_id,))
+        # 1. Fetch using lowercase column name
+        cursor.execute('SELECT password_hash FROM "system_user" WHERE user_id = %s', (user_id,))
         user = cursor.fetchone()
 
-        if not user or not check_password_hash(user["password_hash"], old_password):
-            return jsonify({"status": "error", "message": "Incorrect password"}), 401
+        # 2. Check the dictionary safely
+        stored_hash = user.get("password_hash") if user else None
 
+        if not user or not stored_hash or not check_password_hash(stored_hash, old_password):
+            return jsonify({"status": "error", "message": "Incorrect current password"}), 401
+
+        # 3. Update using lowercase column name (No double quotes needed for the column)
         hashed = generate_password_hash(new_password)
         cursor.execute(
-            'UPDATE "system_user" SET Password_Hash = %s WHERE user_id = %s',
+            'UPDATE "system_user" SET password_hash = %s WHERE user_id = %s',
             (hashed, user_id)
         )
         conn.commit()
-
-        return jsonify({"status": "success", "message": "Password updated"}), 200
+        return jsonify({"status": "success", "message": "Password updated successfully"}), 200
 
     except Exception as e:
-        print(f"Change error: {e}")
-        return jsonify({"status": "error", "message": "Database error"}), 500
+        print(f"Change Password Error: {e}")
+        return jsonify({"status": "error", "message": "A database error occurred"}), 500
 
     finally:
         cursor.close()
@@ -293,28 +302,289 @@ def admin_update_user():
         conn.close()
 
 # ==========================================
-# 8. USER UPDATE PROFILE
+# 9. GOOGLE OAUTH
 # ==========================================
+def init_oauth(app):
+    oauth.init_app(app)
+
+    oauth.register(
+        name="google",
+        client_id=os.getenv("GOOGLE_CLIENT_ID"),
+        client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
+        server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
+        client_kwargs={
+            "scope": "openid email profile"
+        }
+    )
+
+@auth_bp.route("/google/login")
+def google_login():
+    redirect_uri = os.environ.get("GOOGLE_REDIRECT_URI")
+
+    if not redirect_uri:
+        redirect_uri = "https://group6-bizally.onrender.com/api/auth/google/callback"
+
+    print("REDIRECT URI USED:", redirect_uri)
+
+    return oauth.google.authorize_redirect(redirect_uri)
+
+@auth_bp.route("/google/callback")
+def google_callback():
+    try:
+        oauth.google.authorize_access_token()
+        user_info = oauth.google.userinfo()
+
+        email = user_info.get("email")
+        name = user_info.get("name") or email.split("@")[0]
+
+        if not email:
+            return jsonify({
+                "status": "error",
+                "message": "Google email not found"
+            }), 400
+
+        name_parts = name.split(" ", 1)
+        first_name = name_parts[0]
+        last_name = name_parts[1] if len(name_parts) > 1 else ""
+        username = email.split("@")[0]
+
+        conn = get_connection()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+        try:
+            cursor.execute(
+                'SELECT * FROM "system_user" WHERE LOWER(Email) = LOWER(%s)',
+                (email,)
+            )
+            user = cursor.fetchone()
+
+            if not user:
+                fake_password = generate_password_hash("GOOGLE_AUTH_USER_NO_PASSWORD")
+
+                cursor.execute(
+                    """
+                    INSERT INTO "system_user"
+                    (Username, first_name, last_name, Email, Password_Hash, User_Type, Created_At)
+                    VALUES (%s, %s, %s, %s, %s, 'client', CURRENT_TIMESTAMP)
+                    RETURNING *
+                    """,
+                    (username, first_name, last_name, email, fake_password)
+                )
+                user = cursor.fetchone()
+                conn.commit()
+
+            full_name = f"{user['first_name']} {user['last_name'] or ''}".strip()
+
+            safe_user = {
+                "user_id": user["user_id"],
+                "Username": user["username"],
+                "Name": full_name,
+                "Email": user["email"],
+                "User_Type": user["user_type"],
+                "is_profile_complete": user.get("is_profile_complete", False),
+                "profile_pic_url": user.get("profile_pic_url"),
+                "Technician_ID": None,
+                "provider": "google"
+            }
+
+            session["user"] = safe_user
+
+            safe_user_json = json.dumps(safe_user)
+            safe_user_b64 = base64.b64encode(
+                safe_user_json.encode("utf-8")
+            ).decode("utf-8")
+
+            return f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+            </head>
+            <body style="display:none;">
+                <script>
+                    try {{
+                        const user = JSON.parse(atob("{safe_user_b64}"));
+
+                        localStorage.setItem("userData", JSON.stringify(user));
+                        localStorage.setItem("authToken", "google_login");
+
+                const role = (
+                    user.User_Type ||
+                    user.user_type ||
+                    user.role ||
+                    "client"
+                ).toLowerCase();
+
+                window.location.replace(
+                    role === "admin" || role === "technician"
+                    ? "/admin/dashboard"
+                    : "/user/dashboard"
+            );
+            }} catch (error) {{
+               console.error(error);
+            }}
+        </script>
+    </body>
+    </html>
+    """
+
+        finally:
+            cursor.close()
+            conn.close()
+
+    except MismatchingStateError:
+        return redirect("/login")
+
+
 @auth_bp.route("/user/update-profile", methods=["POST"])
-def update_user_profile():
+def update_profile():
     data = request.json
+    user_id = data.get("user_id")
+    
+    # 1. Validation (Letters and dots only)
+    name_regex = r"^[a-zA-Z.\s]*$"
+    f_name = data.get("first_name", "").strip()
+    l_name = data.get("last_name", "").strip()
+    if not re.match(name_regex, f_name) or not re.match(name_regex, l_name):
+        return jsonify({"status": "error", "message": "Invalid characters in name"}), 400
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        # 2. Check for existing link
+        cursor.execute('SELECT customer_id FROM "system_user" WHERE user_id = %s', (user_id,))
+        res = cursor.fetchone()
+        customer_id = res[0] if res else None
+
+        # 3. Handle Missing Customer Record (Satisfying NOT NULL constraints)
+        if customer_id is None:
+            cursor.execute("""
+                INSERT INTO customer (company_name, contact_person, phone_number, address, company_email) 
+                VALUES (%s, %s, %s, %s, %s) RETURNING customer_id
+            """, (
+                data.get("company_name") or "New Company",
+                data.get("contact_person") or f_name,
+                data.get("phone") or "0900-000-0000",
+                data.get("address") or "Pending",
+                data.get("company_email") or data.get("email")
+            ))
+            customer_id = cursor.fetchone()[0]
+            # LINK the user to this new ID
+            cursor.execute('UPDATE "system_user" SET customer_id = %s WHERE user_id = %s', (customer_id, user_id))
+
+        # 4. Update system_user (Persona, Photo, and Status)
+        cursor.execute("""
+            UPDATE "system_user" 
+            SET first_name = %s, last_name = %s, email = %s, 
+                profile_persona = %s, profile_pic_url = %s, is_profile_complete = %s
+            WHERE user_id = %s
+        """, (f_name, l_name, data.get("email"), data.get("persona"), data.get("photo"), True, user_id))
+
+        # 5. Update Customer table
+        cursor.execute("""
+            UPDATE customer SET 
+                phone_number = %s, address = %s, company_name = %s, 
+                contact_person = %s, company_email = %s
+            WHERE customer_id = %s
+        """, (data.get("phone"), data.get("address"), data.get("company_name"), 
+              data.get("contact_person"), data.get("company_email"), customer_id))
+
+        conn.commit()
+        return jsonify({"status": "success"}), 200
+    # Update your update_profile route in auth_routes_7.py
+    except Exception as e:
+        conn.rollback()
+        error_str = str(e)
+        
+        # Check if the error is specifically about the duplicate email
+        if "system_user_email_key" in error_str:
+            return jsonify({
+                "status": "error", 
+                "message": "This email is already registered. Try logging in with this account instead!"
+            }), 400
+        
+        # For any other error, keep it as it was
+        print(f"DATABASE ERROR: {error_str}")
+        return jsonify({"status": "error", "message": "An unexpected error occurred."}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@auth_bp.route("/user/profile/<int:user_id>", methods=["GET"])
+def get_profile(user_id):
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        # LEFT JOIN ensures we get user data even if customer data is still being built
+        cursor.execute("""
+            SELECT 
+                u.first_name, u.last_name, u.email, 
+                u.profile_persona, u.profile_pic_url, u.is_profile_complete,
+                c.phone_number, c.address, c.company_name, 
+                c.contact_person, c.company_email
+            FROM "system_user" u
+            LEFT JOIN customer c ON u.customer_id = c.customer_id
+            WHERE u.user_id = %s
+        """, (user_id,))
+        row = cursor.fetchone()
+        return jsonify({"status": "success", "data": row}) if row else (jsonify({"status": "error"}), 404)
+    finally:
+        cursor.close()
+        conn.close()
+
+# auth_routes_7.py - Add this new route
+
+@auth_bp.route("/user/update-photo", methods=["POST"])
+def update_user_photo():
+    data = request.json
+    user_id = data.get("user_id")
+    # 'photo_data' will be the compressed string or null (for removal)
+    photo_text = data.get("photo_data") 
 
     conn = get_connection()
     cursor = conn.cursor()
 
     try:
+        # Use the exact column from image_b65fa0.png: profile_pic_url
         cursor.execute(
-            'UPDATE "system_user" SET first_name=%s, last_name=%s, Email=%s WHERE user_id=%s',
-            (data.get("first_name"), data.get("last_name"), data.get("email"), data.get("user_id"))
+            'UPDATE "system_user" SET profile_pic_url = %s WHERE user_id = %s',
+            (photo_text, user_id)
         )
         conn.commit()
+        return jsonify({"status": "success", "message": "Photo updated instantly"}), 200
+    except Exception as e:
+        conn.rollback()
+        print(f"Instant Photo Update Failure: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
-        return jsonify({"status": "success"}), 200
+@auth_bp.route('/user/profile/complete/<int:user_id>', methods=['GET'])
+def get_profile_completion_status(user_id):
+    conn = get_connection()
+    if not conn:
+        return jsonify({"status": "error", "message": "Database connection failed"}), 500
+    
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        # Pull live boolean status along with your base64 string column
+        cursor.execute('SELECT is_profile_complete, profile_pic_url FROM "system_user" WHERE user_id = %s', (user_id,))
+        user = cursor.fetchone()
+        
+        is_complete = user.get("is_profile_complete", False) if user else False
+        photo_url = user.get("profile_pic_url") if user else None
+
+        return jsonify({
+            "status": "success",
+            "is_profile_complete": is_complete,
+            "profile_pic_url": photo_url
+        }), 200
 
     except Exception as e:
-        print(e)
-        return jsonify({"status": "error"}), 500
-
+        print(f"Error checking status for user {user_id}: {str(e)}")
+        return jsonify({"status": "error", "message": str(e)}), 500
     finally:
         cursor.close()
         conn.close()
