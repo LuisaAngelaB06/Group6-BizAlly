@@ -513,12 +513,12 @@ body {
 .red-dot {
     width: 8px;
     height: 8px;
-    background-color: #ef4444;
-    /* Alert Red */
+    background-color: #ef4444; /* Alert Red */
     border-radius: 50%;
     display: inline-block;
     margin-left: 5px;
     vertical-align: middle;
+    flex-shrink: 0; /* 🌟 FIX: Prevents Flexbox from crushing the dot to 0px width */
 }
 
 .user-name,

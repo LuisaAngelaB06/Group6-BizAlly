@@ -59,7 +59,4 @@ document.addEventListener("DOMContentLoaded", function () {
             if (submitBtn) submitBtn.innerHTML = originalBtnText;
         }
     });
-<<<<<<< ours
-});
-=======
 });

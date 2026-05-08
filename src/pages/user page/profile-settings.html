@@ -62,8 +62,9 @@
                     <a href="/user/preferences.html" data-section="preferences">
                         <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Settings</span>
                     </a>
-                    <a href="/user/profile-settings.html" class="active" data-section="profile-settings">
-                        <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile</span>
+                    <a href="/user/profile-settings.html" id="profileLink" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                        <span id="profileRedDot" class="red-dot" style="display:none;"></span>
                     </a>
                     <a href="/user/announcements.html" id="announcementLink">
                         <i class="fas fa-bullhorn"></i> Announcements
@@ -119,15 +120,6 @@
                             <div class="profile-header">
                                 <h1><i class="fas fa-user-cog"></i> <span
                                         data-translate="profile_settings_title">Profile Settings</span></h1>
-                            </div>
-                        </div>
-
-                        <!-- Success Message -->
-                        <div class="success-message" id="successMessage">
-                            <div class="success-icon">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="success-text" data-translate="profile_updated">Profile updated successfully!
                             </div>
                         </div>
 
@@ -255,15 +247,15 @@
                                     <div class="form-grid">
                                         <div class="form-group">
                                             <label class="form-label">First Name</label>
-                                            <input type="text" id="firstName" class="form-input readonly-input" readonly>
+                                            <input type="text" id="firstName" class="form-input">
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">Last Name</label>
-                                            <input type="text" id="lastName" class="form-input readonly-input" readonly>
+                                            <input type="text" id="lastName" class="form-input">
                                         </div>
                                         <div class="form-group full-width">
                                             <label class="form-label">Email Address</label>
-                                            <input type="email" id="email" class="form-input readonly-input" readonly>
+                                            <input type="email" id="email" class="form-input">
                                         </div>
                                     </div>
 
@@ -292,8 +284,10 @@
                                             <label class="form-label" for="currentPassword">
                                                 <span data-translate="current_password">Current Password</span> <span class="required">*</span>
                                             </label>
-                                            <input type="password" id="currentPassword" class="form-input" style="max-width: 70%;" placeholder="Enter current password" />
-                                            <div class="form-error" id="currentPasswordError" data-translate="enter_current_password">Please enter your current password</div>
+                                            <div class="password-wrapper">
+                                                <input type="password" id="currentPassword" class="form-input" placeholder="Enter current password" />
+                                                <i class="fas fa-eye toggle-password" onclick="togglePassword('currentPassword', this)"></i>
+                                            </div>
                                         </div>
 
                                         <!-- New Password with Strength Meter -->
@@ -301,8 +295,11 @@
                                             <label class="form-label" for="newPassword">
                                                 <span data-translate="new_password">New Password</span> <span class="required">*</span>
                                             </label>
-                                            <input type="password" id="newPassword" class="form-input" placeholder="Enter new password" />
-                                            
+                                            <div class="password-wrapper">
+                                                <input type="password" id="newPassword" class="form-input" placeholder="Enter new password" />
+                                                <i class="fas fa-eye toggle-password" onclick="togglePassword('newPassword', this)"></i>
+                                            </div>
+
                                             <div class="password-strength" id="passwordStrength">
                                                 <div class="strength-bar">
                                                     <div class="strength-fill"></div>
@@ -318,7 +315,10 @@
                                             <label class="form-label" for="confirmPassword">
                                                 <span data-translate="confirm_password">Confirm Password</span> <span class="required">*</span>
                                             </label>
-                                            <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm new password" />
+                                            <div class="password-wrapper">
+                                                <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm new password" />
+                                                <i class="fas fa-eye toggle-password" onclick="togglePassword('confirmPassword', this)"></i>
+                                            </div>
                                             <div class="form-error" id="confirmPasswordError" data-translate="passwords_not_match">Passwords do not match</div>
                                         </div>
                                     </div>
@@ -535,6 +535,8 @@
             }
         };
 
+        let initialFormData = "";
+
         // Initialize the page when DOM is loaded
         document.addEventListener('DOMContentLoaded', function () {
             console.log('🚀 Profile Settings: Starting initialization...');
@@ -584,7 +586,18 @@
             console.log('✅ Profile Settings page loaded');
         });
 
-        // Setup theme listener
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
         
 
         // Apply translations to the page
@@ -618,31 +631,60 @@
         });
 
         // Load saved profile data
-        function loadProfileData() {
-            if (!window.userDataManager) {
-                console.error('User Data Manager not available');
-                return;
-            }
+        async function loadProfileData(userId) {
+            if (!userId) return;
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/api/auth/user/profile/${userId}`);
+                const result = await response.json();
 
-            const userData = window.userDataManager.getUserData();
-            const profileImage = document.getElementById('profileImage');
-            const profileInitials = document.getElementById('profileInitials');
+                if (result.status === "success" && result.data) {
+                    const d = result.data;
+                    
+                    // 1. Map data to the text boxes
+                    document.getElementById('firstName').value = d.first_name || "";
+                    document.getElementById('lastName').value = d.last_name || "";
+                    document.getElementById('email').value = d.email || "";
+                    document.getElementById('contactPhone').value = d.phone_number || "";
+                    document.getElementById('address').value = d.address || "";
+                    document.getElementById('companyName').value = d.company_name || "";
+                    document.getElementById('contactPerson').value = d.contact_person || "";
+                    document.getElementById('companyEmail').value = d.company_email || "";
 
-            // Set form values
-            document.getElementById('firstName').value = userData.firstName || userData.name?.split(' ')[0] || 'User';
-            document.getElementById('lastName').value = userData.lastName || userData.name?.split(' ').slice(1).join(' ') || '';
-            document.getElementById('email').value = userData.email || 'user@example.com';
-            document.getElementById('phone').value = userData.phone || '';
-            document.getElementById('department').value = userData.department || '';
+                    initialFormData = JSON.stringify({
+                        first_name: document.getElementById('firstName').value.trim(),
+                        last_name: document.getElementById('lastName').value.trim(),
+                        email: document.getElementById('email').value.trim(),
+                        phone: document.getElementById('contactPhone').value.trim(),
+                        address: document.getElementById('address').value.trim(),
+                        persona: document.querySelector('input[name="profile_persona"]:checked')?.value || 'Individual'
+                    });
 
-            // Update profile photo if exists
-            if (userData.photo && profileImage && profileInitials) {
-                profileImage.src = userData.photo;
-                profileImage.style.display = 'block';
-                profileInitials.style.display = 'none';
-            } else if (profileInitials) {
-                updateProfileInitials();
-            }
+                    // 2. Map the Persona (Match the DB string 'Company' or 'Individual')
+                    const radio = document.querySelector(`input[name="profile_persona"][value="${d.profile_persona}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        handlePersonaChange();
+                    }
+
+                    // 3. PERSIST THE PHOTO: Use 'profile_pic_url' from your schema
+                    const imgEl = document.getElementById('profileImage');
+                    const initialsEl = document.getElementById('profileInitials');
+                    if (d.profile_pic_url && d.profile_pic_url !== 'default-avatar.png' && d.profile_pic_url !== 'null') {
+                        imgEl.src = d.profile_pic_url;
+                        imgEl.style.display = 'block';
+                        initialsEl.style.display = 'none';
+                        
+                        // Force the header to sync on load too
+                        const headerAv = document.getElementById('userAvatar');
+                        if (headerAv) headerAv.innerHTML = `<img src="${d.profile_pic_url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+                    } else {
+                        // Ensure initials are shown if no real photo exists
+                        imgEl.style.display = 'none';
+                        initialsEl.style.display = 'block';
+                        updateProfileInitials();
+                    }
+                }
+            } catch (e) { console.error("Load error:", e); }
         }
 
         // Update profile initials
@@ -700,92 +742,112 @@
             }
         }
 
-        // Initialize form functionality
         function initForm() {
-            const profileForm = document.getElementById('profileForm');
-            if (profileForm) {
-                profileForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    if (validateForm()) {
-                        saveProfile();
-                    }
-                });
-            }
-
-            // Password strength checker
-            const newPasswordInput = document.getElementById('newPassword');
-            if (newPasswordInput) {
-                newPasswordInput.addEventListener('input', (e) => {
-                    checkPasswordStrength(e.target.value);
-                });
-            }
-
-            // Update initials when name fields change
-            const firstNameInput = document.getElementById('firstName');
-            const lastNameInput = document.getElementById('lastName');
-
-            if (firstNameInput) {
-                firstNameInput.addEventListener('input', updateProfileInitials);
-            }
-
-            if (lastNameInput) {
-                lastNameInput.addEventListener('input', updateProfileInitials);
-            }
-        }
-
-        // Handle photo upload
-        function handlePhotoUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-            if (!validTypes.includes(file.type)) {
-                alert('Please select a valid image file (JPG, PNG, or GIF)');
+            const infoForm = document.getElementById('infoForm'); 
+            
+            // 1. Verify the form exists
+            if (!infoForm) {
+                console.error("CRITICAL: Form with ID 'infoForm' was NOT found in the HTML!");
                 return;
             }
 
-            if (file.size > 5 * 1024 * 1024) {
-                alert('File size must be less than 5MB');
+            console.log("SUCCESS: Form found! Listener attached.");
+
+            // 2. Attach the listener
+            infoForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); // Stop the page from refreshing
+                console.log("ACTION: Save button clicked / Form submitted!");
+
+                // 3. Check validation
+                if (typeof validateForm === 'function' && !validateForm()) {
+                    console.warn("BLOCKED: validateForm returned false. Fix your inputs.");
+                    return;
+                }
+
+                console.log("PROCEEDING: Calling saveProfile()...");
+                await saveProfile(); 
+            });
+
+            // --- The rest of your listeners (Password/Initials) ---
+            const newPasswordInput = document.getElementById('newPassword');
+            if (newPasswordInput) {
+                newPasswordInput.addEventListener('input', (e) => checkPasswordStrength(e.target.value));
+            }
+
+            const firstNameInput = document.getElementById('firstName');
+            const lastNameInput = document.getElementById('lastName');
+            if (firstNameInput) firstNameInput.addEventListener('input', updateProfileInitials);
+            if (lastNameInput) lastNameInput.addEventListener('input', updateProfileInitials);
+        }
+
+        function initAvatarInteraction() {
+            const avatarCircle = document.getElementById('profilePhoto');
+            const fileInput = document.getElementById('photoUpload');
+            
+            if (avatarCircle && fileInput) {
+                // Trigger the file input when the circle is pressed
+                avatarCircle.addEventListener('click', () => {
+                    console.log('Avatar circle pressed, opening upload...');
+                    fileInput.click();
+                });
+            }
+        }
+
+        async function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 1. STRICT SIZE CHECK (5MB)
+            const MAX_SIZE = 5 * 1024 * 1024;
+            if (file.size > MAX_SIZE) {
+                showToast(`Error: This file is too big (${(file.size / 1024 / 1024).toFixed(2)}MB). The maximum allowed size is 5MB.`, "error");
+                event.target.value = ""; // Clear the selection so it's not "accepted"
+                return; // STOP execution immediately
+            }
+
+            // 2. Format Check
+            if (!file.type.match('image.*')) {
+                showToast('Please select a valid image file (JPG, PNG, or GIF).', "error");
+                event.target.value = "";
                 return;
             }
 
             const reader = new FileReader();
-            reader.onload = function (e) {
-                const profileImage = document.getElementById('profileImage');
-                const profileInitials = document.getElementById('profileInitials');
+            reader.onload = async function (e) {
+                // Compress the image before showing and saving
+                const compressedBase64 = await compressImage(e.target.result);
+                
+                // Update the big circle visually
+                document.getElementById('profileImage').src = compressedBase64;
+                document.getElementById('profileImage').style.display = 'block';
+                document.getElementById('profileInitials').style.display = 'none';
 
-                if (profileImage && profileInitials) {
-                    profileImage.src = e.target.result;
-                    profileImage.style.display = 'block';
-                    profileInitials.style.display = 'none';
-                }
-
-                if (window.userDataManager) {
-                    window.userDataManager.updateUserProfile({
-                        photo: e.target.result,
-                        firstName: document.getElementById('firstName').value,
-                        lastName: document.getElementById('lastName').value
-                    });
+                // Auto-save instantly
+                const userDataStr = localStorage.getItem("userData");
+                if (userDataStr) {
+                    const userData = JSON.parse(userDataStr);
+                    await autoSavePhoto(userData.user_id, compressedBase64);
                 }
             };
             reader.readAsDataURL(file);
         }
 
-        // Remove profile photo
-        function removePhoto() {
+        async function removePhoto() {
             const profileImage = document.getElementById('profileImage');
             const profileInitials = document.getElementById('profileInitials');
 
             if (profileImage && profileInitials) {
                 profileImage.style.display = 'none';
+                profileImage.src = ''; 
                 profileInitials.style.display = 'block';
+                updateProfileInitials(); 
             }
 
-            if (window.userDataManager) {
-                const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
-                delete userProfile.photo;
-                localStorage.setItem('userProfile', JSON.stringify(userProfile));
-                window.userDataManager.dispatchUserDataChanged();
+            const userDataStr = localStorage.getItem("userData");
+            if (userDataStr) {
+                const userData = JSON.parse(userDataStr);
+                // CHANGE: Send the default string instead of null[cite: 3]
+                await autoSavePhoto(userData.user_id, 'default-avatar.png'); 
             }
         }
 
@@ -915,51 +977,72 @@
 
         async function saveProfile() {
             try {
-                const userDataStr = localStorage.getItem("userData");
-                if (!userDataStr) return;
-                const currentUserData = JSON.parse(userDataStr);
+                const userData = JSON.parse(localStorage.getItem("userData"));
+                if (!userData) { console.error("No user data in localStorage"); return; }
 
-                const firstName = document.getElementById('firstName').value.trim();
-                const lastName = document.getElementById('lastName').value.trim();
-                const newEmail = document.getElementById('email').value.trim();
-                const fullName = `${firstName} ${lastName}`;
+                const getVal = (id) => {
+                    const el = document.getElementById(id);
+                    return el ? el.value.trim() : "";
+                };
 
-                // 1. Send the update to the Python Backend!
-                const response = await fetch("http://127.0.0.1:5000/api/user/update-profile", {
+                const personaEl = document.querySelector('input[name="profile_persona"]:checked');
+
+                // 1. Generate current state snapshot string
+                const currentFormData = JSON.stringify({
+                    first_name: getVal('firstName'),
+                    last_name: getVal('lastName'),
+                    email: getVal('email'),
+                    phone: getVal('contactPhone'),
+                    address: getVal('address'),
+                    persona: personaEl ? personaEl.value : 'Individual'
+                });
+
+                // 2. HAHAHA Here is your custom error toast!
+                if (currentFormData === initialFormData) {
+                    showToast("No changes detected! Your profile is already up to date.", "error");
+                    return; // Stops the rest of the execution
+                }
+
+                const photoEl = document.getElementById('profileImage');
+                const payload = {
+                    user_id: userData.user_id,
+                    first_name: getVal('firstName'),
+                    last_name: getVal('lastName'),
+                    email: getVal('email'),
+                    persona: personaEl ? personaEl.value : 'client',
+                    photo: (photoEl && photoEl.style.display !== 'none') ? photoEl.src : null,
+                    phone: getVal('contactPhone'),
+                    address: getVal('address'),
+                    company_name: getVal('companyName'),
+                    contact_person: getVal('contactPerson'),
+                    company_email: getVal('companyEmail')
+                };
+
+                console.log("SENDING POST WITH PAYLOAD:", payload);
+
+                const response = await fetch("http://127.0.0.1:5000/api/auth/user/update-profile", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        user_id: currentUserData.user_id || currentUserData.user_id,
-                        name: fullName,
-                        email: newEmail
-                    })
+                    body: JSON.stringify(payload)
                 });
 
                 const result = await response.json();
-
+                
                 if (response.ok && result.status === "success") {
-                    // 2. Update Local Storage so the header changes immediately
-                    currentUserData.Name = fullName;
-                    currentUserData.Email = newEmail;
-                    localStorage.setItem("userData", JSON.stringify(currentUserData));
+                    showToast("Profile updated successfully!", "success");
+                    
+                    // Overwrite snapshot to represent newly saved baseline values
+                    initialFormData = currentFormData; 
 
-                    // 3. Trigger the header update visually
-                    document.getElementById("userName").textContent = fullName;
-                    document.getElementById("userEmail").textContent = newEmail;
-                    document.getElementById("userAvatar").textContent = fullName.charAt(0).toUpperCase();
-
-                    // 4. Show success toast
-                    const successMessage = document.getElementById('successMessage');
-                    if (successMessage) {
-                        successMessage.classList.add('show');
-                        setTimeout(() => successMessage.classList.remove('show'), 3000);
-                    }
+                    userData.Name = `${payload.first_name} ${payload.last_name}`;
+                    localStorage.setItem("userData", JSON.stringify(userData));
+                    if (window.userDataManager) window.userDataManager.dispatchUserDataChanged();
                 } else {
-                    alert("Failed to update profile: " + result.message);
+                    showToast(result.message || "Save failed", "error");
                 }
             } catch (error) {
-                console.error('Error saving profile:', error);
-                alert("Server connection error.");
+                console.error("The JavaScript crashed before it could POST:", error);
+                showToast("Server connection error", "error");
             }
         }
 
@@ -1036,20 +1119,20 @@
 
                     // 1. Basic Validation
                     if (!oldPassword || !newPassword || !confirmPassword) {
-                        alert("Please fill in all password fields.");
+                        showToast("Please fill in all password fields.", "error");
                         return;
                     }
 
                     if (newPassword !== confirmPassword) {
                         // You can also change this to use your #confirmPasswordError div!
-                        alert("Your new passwords do not match!"); 
+                        showToast("Your new passwords do not match!", "error");
                         return;
                     }
 
                     // 2. Grab the logged-in User's ID from local storage
                     const userDataStr = localStorage.getItem("userData");
                     if (!userDataStr) {
-                        alert("You must be logged in to do this.");
+                        showToast("You must be logged in to do this.", "error");
                         return;
                     }
                     const userData = JSON.parse(userDataStr);
@@ -1061,7 +1144,7 @@
 
                     // 3. Send the request to your Python server!
                     try {
-                        const response = await fetch("http://127.0.0.1:5000/api/user/change-password", {
+                        const response = await fetch("http://127.0.0.1:5000/api/auth/user/change-password", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
@@ -1074,18 +1157,17 @@
                         const result = await response.json();
 
                         if (response.ok && result.status === "success") {
-                            alert("✅ Success! " + result.message);
-                            
+                            showToast("✅ Success! " + result.message, "success");
                             // Clear the text boxes so it looks clean
                             document.getElementById("currentPassword").value = "";
                             document.getElementById("newPassword").value = "";
                             document.getElementById("confirmPassword").value = "";
                         } else {
-                            alert("❌ Failed: " + result.message); 
+                            showToast("Failed: " + result.message, "error");
                         }
                     } catch (error) {
                         console.error("Change Password Error:", error);
-                        alert("Unable to connect to the server. Please try again later.");
+                        showToast("Unable to connect to the server. Please try again later.", "error");
                     } finally {
                         // Reset the button back to normal
                         updatePasswordBtn.innerHTML = originalText;
@@ -1114,52 +1196,174 @@
         }
 
         // 2. Fetch data from Supabase on Load
-        async function fetchCurrentProfile() {
-            const userData = JSON.parse(localStorage.getItem("userData"));
-            if (!userData) return;
-
-            // Auto-fill read-only Account Info from session
-            document.getElementById('firstName').value = userData.Name.split(' ')[0] || "";
-            document.getElementById('lastName').value = userData.Name.split(' ').slice(1).join(' ') || "";
-            document.getElementById('email').value = userData.Email || "";
-
+        async function fetchCurrentProfile(userId) {
             try {
-                const response = await fetch(`http://127.0.0.1:5000/api/user/profile/${userData.user_id}`);
+                const response = await fetch(`http://127.0.0.1:5000/api/auth/user/profile/${userId}`);
                 const data = await response.json();
 
                 if (data.status === "success") {
-                    // Set Persona
-                    const personaValue = data.profile_persona || 'Individual';
-                    document.querySelector(`input[name="profile_persona"][value="${personaValue}"]`).checked = true;
+                    // Update Identity Persona
+                    const personaRadio = document.querySelector(`input[name="profile_persona"][value="${data.persona}"]`);
+                    if (personaRadio) personaRadio.checked = true;
                     handlePersonaChange();
 
-                    // Fill Customer Fields
-                    document.getElementById('contactPhone').value = data.phone_number || "";
+                    // Map backend data to IDs
+                    document.getElementById('contactPhone').value = data.phone || "";
                     document.getElementById('address').value = data.address || "";
                     document.getElementById('companyName').value = data.company_name || "";
                     document.getElementById('contactPerson').value = data.contact_person || "";
                     document.getElementById('companyEmail').value = data.company_email || "";
+
+                    // Handle Photo Persistence
+                    const profileImage = document.getElementById('profileImage');
+                    const profileInitials = document.getElementById('profileInitials');
+                    if (data.photo && data.photo !== 'default-avatar.png' && data.photo !== 'null') {
+                        profileImage.src = data.photo;
+                        profileImage.style.display = 'block';
+                        profileInitials.style.display = 'none';
+                    }
                 }
-            } catch (e) { console.error("Real-time load failed:", e); }
+            } catch (e) { console.error("Persistence fetch failed:", e); }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+
+            const sidebarProfileLink = document.querySelector('.nav a[data-section="profile-settings"]');
+            if (sidebarProfileLink) {
+                sidebarProfileLink.classList.add('active');
+            }
+
             // 1. Initial UI check
             handlePersonaChange(); 
+            initAvatarInteraction(); // Set up the click on the circle
+            initPasswordStrength();
             
             // 2. Load data from the database (Real-time sync)
-            const userData = JSON.parse(localStorage.getItem("userData"));
-            if (userData) {
+            const userDataStr = localStorage.getItem("userData");
+            if (userDataStr) {
+                const userData = JSON.parse(userDataStr);
                 // Fill read-only account info
                 document.getElementById('firstName').value = userData.Name.split(' ')[0] || "";
                 document.getElementById('lastName').value = userData.Name.split(' ').slice(1).join(' ') || "";
                 document.getElementById('email').value = userData.Email || "";
-                
-                // Fetch the rest (Phone, Address, Persona) from Python
-                fetchCurrentProfile(userData.user_id);
-                initPasswordStrength();
+            
+                loadProfileData(userData.user_id);
+            }
+
+            else {
+                console.warn("No user data found. Redirecting to login...");
+                window.location.href = "/login";
             }
         });
+
+        // Helper function to compress Base64 images
+        function compressImage(base64Str, maxWidth = 200, maxHeight = 200) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.src = base64Str;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Maintain aspect ratio
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width *= maxHeight / height;
+                            height = maxHeight;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.8)); // 80% quality JPEG
+                };
+            });
+        }
+
+        async function autoSavePhoto(userId, photoBase64) {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/api/auth/user/update-photo", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: userId, photo_data: photoBase64 })
+                });
+
+                if (response.ok) {
+                    // 1. Update the 'userData' key for this page
+                    let userData = JSON.parse(localStorage.getItem("userData") || '{}');
+                    userData.profile_pic_url = (photoBase64 === 'default-avatar.png') ? null : photoBase64; 
+                    localStorage.setItem("userData", JSON.stringify(userData));
+
+                    // 2. THE CRITICAL SYNC: Update the 'userProfile' key used by UserDataManager
+                    // This ensures the mini-profile header updates correctly
+                    if (window.userDataManager) {
+                        window.userDataManager.updateUserProfile({ 
+                            photo: (photoBase64 === 'default-avatar.png') ? null : photoBase64 
+                        });
+                    }
+                }
+            } catch (e) { 
+                console.error("Sync crash:", e); 
+            }
+        }
+
+        function updateHeaderAndProfileVisually(photoUrl) {
+            const isDefault = !photoUrl || photoUrl === 'default-avatar.png' || photoUrl === 'null';
+            
+            // Update Big Settings Circle
+            const bigImg = document.getElementById('profileImage');
+            const bigInit = document.getElementById('profileInitials');
+            if (bigImg && bigInit) {
+                bigImg.style.display = isDefault ? 'none' : 'block';
+                bigImg.src = isDefault ? '' : photoUrl;
+                bigInit.style.display = isDefault ? 'block' : 'none';
+                if (isDefault) updateProfileInitials(); 
+            }
+
+            // Update Upper Right Header (The fix for image_1e8efd.png)
+            const headerAv = document.getElementById('userAvatar');
+            if (headerAv) {
+                if (isDefault) {
+                    // Put initials back instead of a broken <img> tag
+                    const userData = JSON.parse(localStorage.getItem("userData"));
+                    headerAv.textContent = userData?.Name ? userData.Name.charAt(0).toUpperCase() : 'U';
+                } else {
+                    // Inject the real Base64 image
+                    headerAv.innerHTML = `<img src="${photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+                }
+            }
+        }
+
+        function updateAllAvatars(photoUrl) {
+            const isDefault = !photoUrl || photoUrl === 'default-avatar.png';
+            
+            // Update Big Settings Circle
+            const bigImg = document.getElementById('profileImage');
+            const bigInit = document.getElementById('profileInitials');
+            if (bigImg && bigInit) {
+                bigImg.src = isDefault ? "" : photoUrl;
+                bigImg.style.display = isDefault ? 'none' : 'block';
+                bigInit.style.display = isDefault ? 'block' : 'none';
+            }
+
+            // Update Upper Right Header Avatar
+            const headerAv = document.getElementById('userAvatar');
+            if (headerAv) {
+                if (isDefault) {
+                    const userData = JSON.parse(localStorage.getItem("userData"));
+                    headerAv.textContent = userData?.Name?.charAt(0).toUpperCase() || 'U';
+                } else {
+                    headerAv.innerHTML = `<img src="${photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+                }
+            }
+        }
     </script>
 </body>
 

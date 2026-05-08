@@ -62,8 +62,9 @@
                     <a href="/user/preferences.html" data-section="preferences">
                         <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
                     </a>
-                    <a href="/user/profile-settings.html" data-section="profile-settings">
-                        <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
+                    <a href="/user/profile-settings.html" >
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                        <span id="profileRedDot" class="red-dot" style="display:none;"></span>
                     </a>
                     <a href="/user/announcements.html" id="announcementLink" class="active"
                         data-section="announcements">
@@ -907,25 +908,6 @@
             console.log('User data changed event received:', e.detail);
             // The userDataManager will handle updating the avatar automatically
         });
-
-        // Simple toast notification
-        function showToast(message) {
-            const toast = document.createElement("div");
-            toast.textContent = message;
-
-            toast.style.position = "fixed";
-            toast.style.bottom = "20px";
-            toast.style.right = "20px";
-            toast.style.background = "#111";
-            toast.style.color = "#fff";
-            toast.style.padding = "10px 16px";
-            toast.style.borderRadius = "8px";
-            toast.style.zIndex = "9999";
-
-            document.body.appendChild(toast);
-
-            setTimeout(() => toast.remove(), 3000);
-        }
 
     </script>
 </body>

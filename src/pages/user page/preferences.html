@@ -62,8 +62,9 @@
                     <a href="/user/preferences.html" class="active" data-section="preferences">
                         <i class="fas fa-sliders-h"></i> <span data-section="preferences">Preferences</span>
                     </a>
-                    <a href="/user/profile-settings.html" data-section="profile-settings">
-                        <i class="fas fa-user-cog"></i> <span data-section="profileSettings">Profile Settings</span>
+                    <a href="/user/profile-settings.html" >
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                        <span id="profileRedDot" class="red-dot" style="display:none;"></span>
                     </a>
                     <a href="/user/announcements.html" id="announcementLink">
                         <i class="fas fa-bullhorn"></i> Announcements
@@ -120,15 +121,6 @@
                             <div class="preferences-header">
                                 <h1><i class="fas fa-sliders-h"></i> <span data-section="pageHeader">Preferences</span>
                                 </h1>
-                            </div>
-                        </div>
-
-                        <!-- Success Message -->
-                        <div class="success-message" id="successMessage">
-                            <div class="success-icon">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="success-text" data-section="successMessage">Preferences saved successfully!
                             </div>
                         </div>
 
@@ -328,37 +320,6 @@
                                             </div>
                                         </div>
 
-                                        <!-- Push Notifications Category -->
-                                        <div class="notification-category">
-                                            <h3 class="notification-category-title">
-                                                <i class="fas fa-bell"></i>
-                                                <span data-section="pushNotifications">Push Notifications</span>
-                                            </h3>
-                                            <div class="notification-items">
-                                                <div class="notification-item">
-                                                    <div class="notification-item-content">
-                                                        <h4 data-section="browserNotifications">Browser Notifications</h4>
-                                                        <p data-section="browserDescription">Show browser notifications for urgent updates</p>
-                                                    </div>
-                                                    <label class="switch">
-                                                        <input type="checkbox" id="pushNotifications" checked>
-                                                        <span class="slider"></span>
-                                                    </label>
-                                                </div>
-                                                
-                                                <div class="notification-item">
-                                                    <div class="notification-item-content">
-                                                        <h4 data-section="soundAlerts">Sound Alerts</h4>
-                                                        <p data-section="soundDescription">Play sound when new notifications arrive</p>
-                                                    </div>
-                                                    <label class="switch">
-                                                        <input type="checkbox" id="soundAlerts">
-                                                        <span class="slider"></span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-
                                         <!-- Notification Frequency -->
                                         <div class="notification-category">
                                             <h3 class="notification-category-title">
@@ -470,7 +431,7 @@
                     e.preventDefault();
                     if (window.preferencesManager) {
                         window.preferencesManager.resetPreferences();
-                        showSuccessMessage('Preferences reset to defaults');
+                        showToast('Preferences reset to defaults', "success");
                         loadSavedPreferences(); // Reload the UI with defaults
                     }
                 });
@@ -508,20 +469,30 @@
         function setupTabs() {
             const tabBtns = document.querySelectorAll('.tab-btn');
             const tabContents = document.querySelectorAll('.preferences-tab-content');
+            const formActions = document.querySelector('.form-actions'); // The button container
 
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', function () {
                     const tabId = this.dataset.tab;
 
-                    // Update active tab button
+                    // Update active state for buttons and content
                     tabBtns.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
 
-                    // Show selected tab content
                     tabContents.forEach(content => content.classList.remove('active'));
                     document.getElementById(`${tabId}-tab`).classList.add('active');
+
+                    // NEW LOGIC: Hide buttons for 'appearance' and 'language'
+                    if (tabId === 'appearance' || tabId === 'language') {
+                        formActions.style.display = 'none';
+                    } else {
+                        formActions.style.display = 'flex'; // Show for Notifications[cite: 7]
+                    }
                 });
             });
+
+            // Run once on load to set initial state (Appearance is active by default)[cite: 7]
+            formActions.style.display = 'none';
         }
 
         // ============ THEME FUNCTIONS ============
@@ -544,7 +515,7 @@
                         // Apply theme immediately if preference manager exists
                         if (window.preferencesManager) {
                             window.ThemeManager?.setTheme(theme);
-                            showSuccessMessage('Theme updated');
+                            showToast('Theme updated', "success");
                         }
                     }
                 });
@@ -572,7 +543,7 @@
                         if (window.preferencesManager) {
                             console.log('Setting language:', language);
                             window.preferencesManager.setLanguage(language);
-                            showSuccessMessage('Language updated');
+                            showToast('Language updated', "success");
                         }
                     }
                 });
@@ -666,23 +637,7 @@
             localStorage.setItem('notificationSettings', JSON.stringify(notificationSettings));
             
             // Show success message
-            showSuccessMessage('Preferences saved successfully!');
-        }
-
-        // ============ HELPER FUNCTIONS ============
-        function showSuccessMessage(message) {
-            const successMsg = document.getElementById('successMessage');
-            const successText = successMsg.querySelector('.success-text');
-            
-            if (successText) {
-                successText.textContent = message;
-            }
-            
-            successMsg.classList.add('show');
-            
-            setTimeout(() => {
-                successMsg.classList.remove('show');
-            }, 3000);
+            showToast('Preferences saved successfully!', "success");
         }
 
         function setupAccountDropdown() {
