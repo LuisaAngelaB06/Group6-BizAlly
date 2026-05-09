@@ -1557,11 +1557,26 @@
 
                 // UPDATE the mapping inside fetchTicketsFromAPI() in all-tickets.html
                 sampleTickets = data.map(ticket => {
+                    // Build display name from Requestor_Name (prioritize DB full name over email fallback).
+                    // Handles double first names like "Jhon Lloyd Dela Vega" → "Jhon Lloyd"
+                    // by keeping all name parts that are NOT the last name (i.e. all but the final word).
+                    // Falls back to "User" only when no name is available.
+                    const fullName = (ticket.Requestor_Name || "").trim();
+                    let displayName = "User";
+                    if (fullName) {
+                        const parts = fullName.split(" ").filter(Boolean);
+                        // If 3+ parts (e.g. "Jhon Lloyd Dela Vega"), keep all but the last word as the display name.
+                        // If 2 parts (e.g. "John Doe"), keep only the first word.
+                        // If 1 part, use it as-is.
+                        displayName = parts.length >= 3 ? parts.slice(0, parts.length - 1).join(" ") : parts[0];
+                    }
+
                     return {
                         id: "TKT-" + (ticket.Ticket_ID || "0"),
                         subject: ticket.Concern_Title || "No Subject",
                         requester: ticket.Email || "User",
-                        firstName: ticket.Requestor_Name || "User",
+                        firstName: fullName || "User",         // Full name used in modal details
+                        requesterFirstName: displayName,       // Shortened display name used in table row
 
                         // Safeguard the phone number
                         contactPhone: ticket.Phone || "N/A",
