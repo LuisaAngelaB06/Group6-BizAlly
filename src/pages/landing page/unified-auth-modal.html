@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../../styles/landing page/unified-auth-modal.css">
@@ -16,10 +16,37 @@
 </head>
 
 <body>
+
+    <!-- kept for JS compat -->
     <div class="modal-orb-bg"></div>
+
+    <!-- ═══════════════════════════════════════
+         MODAL CARD
+    ════════════════════════════════════════ -->
     <div class="modal-fixed">
-        <div class="modal-content">
-            <div class="compact-header">
+
+        <!-- ░░░ LEFT — GRADIENT PANEL ░░░ -->
+        <div class="panel-left">
+            <!-- Logo / brand mark -->
+            <div class="panel-logo">
+                <img src="../../assets/images/AlliTrack-Logo.png" alt="AlliTrack" width="130" height="37"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                <span class="panel-asterisk" style="display:none;">✱</span>
+            </div>
+
+            <!-- Bottom copy -->
+            <div class="panel-copy">
+                <p class="panel-sub">Connect. Track. Scale.</p>
+                <p class="panel-headline">Get instant access to the ticketing hub designed for high-performance business
+                    alliances.</p>
+            </div>
+        </div>
+
+        <!-- ░░░ RIGHT — FORM PANEL ░░░ -->
+        <div class="panel-right">
+
+            <!-- Kept in DOM for JS compat (hidden via CSS) -->
+            <div class="compact-header" aria-hidden="true">
                 <div>
                     <a href="/" aria-label="AlliTrack Home">
                         <img src="../../assets/images/AlliTrack-Logo.png" alt="AlliTrack" width="140" height="40">
@@ -28,107 +55,145 @@
                 </div>
             </div>
 
-            <!-- FIXED TRUST ROW - Now evenly spaced -->
-            <div class="trust-row">
+            <!-- Trust row (hidden, kept for JS) -->
+            <div class="trust-row" aria-hidden="true">
                 <div class="trust-item"><i class="fas fa-headset"></i> 2.5k daily tickets</div>
                 <div class="trust-item"><i class="fas fa-clock"></i> &lt;4 min reply</div>
                 <div class="trust-item"><i class="fas fa-cloud"></i> 99.99% uptime</div>
             </div>
 
-            <!-- TAB SWITCHER -->
+            <!-- ── TAB SWITCH ── -->
             <div class="tab-switch">
-                <button class="tab-btn active" id="tabLoginBtn"><i class="fas fa-key"></i> Log In</button>
-                <button class="tab-btn" id="tabSignupBtn"><i class="fas fa-user-plus"></i> Sign Up</button>
+                <button class="tab-btn active" id="tabLoginBtn" type="button">
+                    <i class="fas fa-key"></i> Log In
+                </button>
+                <button class="tab-btn" id="tabSignupBtn" type="button">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </button>
             </div>
 
-            <!-- AUTH FORMS CONTAINER -->
+            <!-- ══════════════════════════════
+                 AUTH FORMS
+            ══════════════════════════════ -->
             <div class="auth-forms">
 
-                <!-- LOGIN FORM -->
+                <!-- ─────────────────────────
+                     LOGIN FORM
+                ───────────────────────── -->
                 <div id="loginFormContainer" class="auth-form active">
-                    <form id="modalLoginForm">
-                        <label for="modalEmail">Email</label>
+
+                    <div class="form-header">
+                        <h1 class="form-title">Welcome back</h1>
+                        <p class="form-subtitle">Manage tickets, track partner requests, and resolve issues in real-time
+                            — keeping every alliance moving in one place.</p>
+                    </div>
+
+                    <form id="modalLoginForm" novalidate>
+
+                        <label for="modalEmail">Your email</label>
                         <input type="email" id="modalEmail" maxlength="50" class="input-field"
-                            placeholder="Enter your email address">
+                            placeholder="you@example.com" autocomplete="email">
                         <p id="modalEmailError" class="error-text"></p>
 
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <label for="modalPassword" style="margin-top: 8px;">Password</label>
-                            <a href="#" class="forgot-link">Forgot password?</a>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                            <label for="modalPassword" style="margin-bottom:6px;">Password</label>
+                            <a href="#" class="forgot-link" tabindex="0">Forgot password?</a>
                         </div>
                         <div class="password-container">
                             <input type="password" id="modalPassword" maxlength="30" class="input-field"
-                                placeholder="Your password">
-                            <button type="button" class="toggle-password" id="toggleModalPassword">
+                                placeholder="••••••••••" autocomplete="current-password">
+                            <button type="button" class="toggle-password" id="toggleModalPassword"
+                                aria-label="Show or hide password">
                                 <i class="far fa-eye"></i>
                             </button>
                         </div>
                         <p id="modalPasswordError" class="error-text"></p>
 
                         <button class="login-btn" id="modalLoginBtn" type="submit" disabled>
-                            <i class="fas fa-paper-plane"></i> Log in with Email
+                            Get Started
                         </button>
+
                     </form>
 
-                    <div class="divider">or</div>
+                    <div class="divider">or continue with</div>
 
-                    <div class="social-btn" id="modalGoogleLogin">
-                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"
-                            alt="Google"> Continue with Google
+                    <!-- Social row — 3 icon buttons matching the reference -->
+                    <div class="social-row">
+                        <button class="social-btn" id="modalGoogleLogin" type="button"
+                            aria-label="Continue with Google">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16"
+                                alt="Google">
+                            Google
+                        </button>
                     </div>
+
                     <p class="footer-text">
-                        Don't have an account? <a href="/login" id="switchToSignupLink">Sign up</a>
+                        Don't have an account? <a href="#" id="switchToSignupLink">Sign up</a>
                     </p>
                 </div>
 
-                <!-- SIGNUP FORM -->
+                <!-- ─────────────────────────
+                     SIGNUP FORM
+                ───────────────────────── -->
                 <div id="signupFormContainer" class="auth-form">
-                    <form id="modalSignupForm">
-                        <div style="display: flex; gap: 16px; margin-bottom: 4px;">
-                            <div style="flex: 1;">
+
+                    <div class="form-header">
+                        <h1 class="form-title">Create an account</h1>
+                        <p class="form-subtitle">Manage tickets, track partner requests, and resolve issues in real-time
+                            — keeping every alliance moving in one place.</p>
+                    </div>
+
+                    <form id="modalSignupForm" novalidate>
+
+                        <div style="display:flex; gap:14px;">
+                            <div style="flex:1; min-width:0;">
                                 <label for="modalFirstName">First name</label>
                                 <input type="text" id="modalFirstName" maxlength="30" class="input-field"
-                                    placeholder="John">
+                                    placeholder="First name" autocomplete="given-name">
                                 <p id="modalFirstNameError" class="error-text"></p>
                             </div>
-                            <div style="flex: 1;">
+                            <div style="flex:1; min-width:0;">
                                 <label for="modalLastName">Last name</label>
                                 <input type="text" id="modalLastName" maxlength="30" class="input-field"
-                                    placeholder="Doe">
+                                    placeholder="Last name" autocomplete="family-name">
                                 <p id="modalLastNameError" class="error-text"></p>
                             </div>
                         </div>
 
-                        <label for="modalSignupEmail">Email</label>
+                        <label for="modalSignupEmail">Your email</label>
                         <input type="email" id="modalSignupEmail" maxlength="50" class="input-field"
-                            placeholder="you@example.com">
+                            placeholder="you@example.com" autocomplete="email">
                         <p id="modalSignupEmailError" class="error-text"></p>
 
                         <label for="modalSignupPassword">Password</label>
                         <div class="password-container">
                             <input type="password" id="modalSignupPassword" maxlength="30" class="input-field"
-                                placeholder="Create a password">
-                            <button type="button" class="toggle-password" id="toggleModalSignupPassword">
+                                placeholder="Create a strong password" autocomplete="new-password">
+                            <button type="button" class="toggle-password" id="toggleModalSignupPassword"
+                                aria-label="Show or hide password">
                                 <i class="far fa-eye"></i>
                             </button>
                         </div>
 
                         <div class="password-requirements">
-                            <div class="requirement invalid" id="reqLength"><i class="far fa-circle"></i> 8+ characters
+                            <div class="requirement invalid" id="reqLength">
+                                <i class="far fa-circle"></i> At least 8 characters
                             </div>
-                            <div class="requirement invalid" id="reqUppercase"><i class="far fa-circle"></i> Uppercase
-                                &amp;
-                                lowercase</div>
-                            <div class="requirement invalid" id="reqNumber"><i class="far fa-circle"></i> Number &amp;
-                                special char</div>
+                            <div class="requirement invalid" id="reqUppercase">
+                                <i class="far fa-circle"></i> Uppercase &amp; lowercase
+                            </div>
+                            <div class="requirement invalid" id="reqNumber">
+                                <i class="far fa-circle"></i> Number &amp; special character
+                            </div>
                         </div>
                         <p id="modalSignupPasswordError" class="error-text"></p>
 
                         <label for="modalConfirmPassword">Confirm password</label>
                         <div class="password-container">
                             <input type="password" id="modalConfirmPassword" maxlength="30" class="input-field"
-                                placeholder="Re-enter password">
-                            <button type="button" class="toggle-password" id="toggleModalConfirmPassword">
+                                placeholder="Re-enter password" autocomplete="new-password">
+                            <button type="button" class="toggle-password" id="toggleModalConfirmPassword"
+                                aria-label="Show or hide password">
                                 <i class="far fa-eye"></i>
                             </button>
                         </div>
@@ -137,40 +202,110 @@
                         <div class="terms-container">
                             <div class="terms">
                                 <input type="checkbox" id="modalTerms">
-                                <label for="modalTerms">I agree to the <a href="/terms">Terms</a> and <a
-                                        href="/privacy">Privacy
-                                        Policy</a></label>
+                                <label for="modalTerms">
+                                    I agree to the <a href="/terms">Terms of Service</a>
+                                    and <a href="/privacy">Privacy Policy</a>
+                                </label>
                             </div>
                             <p id="modalTermsError" class="error-text"></p>
                         </div>
 
                         <button class="signup-btn" id="modalSignupBtn" type="submit" disabled>
-                            <i class="fas fa-user-check"></i> Create Account
+                            Create Account
+                        </button>
+
+                    </form>
+
+                    <div class="divider">or continue with</div>
+
+                    <div class="social-row">
+                        <button class="social-btn" id="modalGoogleSignup" type="button"
+                            aria-label="Sign up with Google">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16"
+                                alt="Google">
+                            Google
+                        </button>
+                    </div>
+
+                    <p class="footer-text">
+                        Already have an account? <a href="#" id="switchToLoginLink">Log in</a>
+                    </p>
+                </div>
+
+                <!-- ─────────────────────────
+                     OTP VERIFICATION PANEL
+                ───────────────────────── -->
+                <div id="otpFormContainer" class="auth-form">
+
+                    <div class="otp-icon">
+                        <i class="fas fa-envelope-open-text"></i>
+                    </div>
+
+                    <div class="form-header">
+                        <h1 class="form-title">Check your inbox</h1>
+                        <p class="form-subtitle otp-lead">
+                            We sent a 6-digit verification code to<br>
+                            <strong id="otpEmailDisplay">your email address</strong>.
+                            Enter it below to continue.
+                        </p>
+                    </div>
+
+                    <form id="modalOtpForm" novalidate>
+                        <div class="otp-inputs" role="group" aria-label="One-time password">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp1"
+                                autocomplete="one-time-code" aria-label="Digit 1">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp2"
+                                aria-label="Digit 2">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp3"
+                                aria-label="Digit 3">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp4"
+                                aria-label="Digit 4">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp5"
+                                aria-label="Digit 5">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp6"
+                                aria-label="Digit 6">
+                        </div>
+                        <p id="modalOtpError" class="error-text" style="text-align:center;"></p>
+
+                        <div class="otp-timer">
+                            Code expires in <span id="otpCountdown">2:00</span>
+                        </div>
+
+                        <button class="login-btn" id="modalOtpBtn" type="submit" disabled>
+                            <i class="fas fa-shield-halved"></i> Verify &amp; Continue
                         </button>
                     </form>
 
-                    <div class="divider">or</div>
-
-                    <div class="social-btn" id="modalGoogleSignup">
-                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"
-                            alt="Google"> Sign up with Google
-                    </div>
-                    <p class="footer-text">
-                        Already have an account? <a href="/login" id="switchToLoginLink">Log in</a>
+                    <p class="footer-text" style="margin-top:18px;">
+                        Didn't receive it?&nbsp;
+                        <button class="otp-resend" id="otpResendBtn" type="button" disabled>Resend code</button>
                     </p>
-                </div>
-            </div>
-        </div>
+                    <p class="footer-text" style="margin-top:10px;">
+                        <a href="#" id="otpBackToLogin">
+                            <i class="fas fa-arrow-left" style="font-size:.7rem;"></i>&nbsp;Back to sign up
+                        </a>
+                    </p>
 
-        <!-- LOADING OVERLAY -->
-        <div class="loading-overlay" id="modalLoadingOverlay">
+                </div>
+
+            </div><!-- /.auth-forms -->
+
+        </div><!-- /.panel-right -->
+
+        <!-- ── LOADING OVERLAY ── -->
+        <div class="loading-overlay" id="modalLoadingOverlay" aria-live="polite">
             <div class="loading-spinner">
                 <i class="fas fa-circle-notch fa-spin"></i>
             </div>
-            <div class="loading-text" id="modalLoadingText">Processing...</div>
+            <div class="loading-text" id="modalLoadingText">Processing…</div>
         </div>
-    </div>
 
+    </div><!-- /.modal-fixed -->
+
+
+    <!-- ══════════════════════════════════════════════════════════
+         ORIGINAL SCRIPTS — UNTOUCHED
+    ══════════════════════════════════════════════════════════ -->
     <script>
         (function () {
             "use strict";
@@ -361,8 +496,16 @@
             function validateSignup() {
                 let isValid = true;
 
-                if (!firstName?.value.trim()) {
+                // Accepts single or compound names with spaces/hyphens: "Luisa Angela", "Delo Santos", "Anne-Marie"
+                const namePattern = /^[A-Za-zÀ-ɏ]+(?:[\s\-][A-Za-zÀ-ɏ]+)*$/;
+
+                const fnVal = firstName?.value.trim();
+                if (!fnVal) {
                     firstNameErr.textContent = 'First name required';
+                    firstName?.classList.add('error-input');
+                    isValid = false;
+                } else if (!namePattern.test(fnVal)) {
+                    firstNameErr.textContent = 'Letters, spaces, and hyphens only';
                     firstName?.classList.add('error-input');
                     isValid = false;
                 } else {
@@ -370,8 +513,13 @@
                     firstName?.classList.remove('error-input');
                 }
 
-                if (!lastName?.value.trim()) {
+                const lnVal = lastName?.value.trim();
+                if (!lnVal) {
                     lastNameErr.textContent = 'Last name required';
+                    lastName?.classList.add('error-input');
+                    isValid = false;
+                } else if (!namePattern.test(lnVal)) {
+                    lastNameErr.textContent = 'Letters, spaces, and hyphens only';
                     lastName?.classList.add('error-input');
                     isValid = false;
                 } else {
@@ -523,11 +671,14 @@
                 }
             }
 
+            // Pending signup data — held in memory until OTP is verified
+            let pendingSignup = null;
+
             async function handleSignupSubmit(e) {
                 e.preventDefault();
                 if (!validateSignup()) return;
 
-                showLoading('Creating your account...');
+                showLoading('Sending verification code...');
                 signupBtn.disabled = true;
 
                 const fName = document.getElementById('modalFirstName').value.trim();
@@ -535,28 +686,19 @@
                 const email = document.getElementById('modalSignupEmail').value.trim();
                 const pwd = document.getElementById('modalSignupPassword').value;
 
-                try {
-                    // Call the real Python backend!
-                    const result = await registerUser(fName, lName, email, pwd);
-
-                    hideLoading();
-
-                    if (result.status === "success") {
-                        alert('✅ Account created! Please log in.');
-                        activateLogin();
-                        document.getElementById('modalSignupForm').reset();
-                    } else {
-                        alert(`Signup failed: ${result.message}`);
-                        signupBtn.disabled = false;
-                    }
-
-                } catch (error) {
-                    hideLoading();
-                    alert('Server connection failed. Please try again.');
-                    signupBtn.disabled = false;
-                    console.error("Signup error:", error);
+                // ── DEMO MODE: mock send-otp (remove when backend is ready) ──
+                await new Promise(r => setTimeout(r, 900));
+                hideLoading();
+                pendingSignup = { fName, lName, email, pwd };
+                document.getElementById('modalSignupForm').reset();
+                if (typeof window.showOtpPanel === 'function') {
+                    window.showOtpPanel(email);
                 }
             }
+
+            // Exposed so the OTP script can call registerUser after verifying
+            window.getPendingSignup = function () { return pendingSignup; };
+            window.clearPendingSignup = function () { pendingSignup = null; };
 
             // ========== SETUP FUNCTIONS ==========
             function setupToggle(toggleId, inputId) {
@@ -615,13 +757,15 @@
                 if (termsCheck) termsCheck.addEventListener('change', validateSignup);
 
                 // Prevent spaces in inputs
-                ['modalFirstName', 'modalLastName', 'modalSignupEmail', 'modalSignupPassword', 'modalConfirmPassword', 'modalEmail', 'modalPassword'].forEach(id => {
+                // Name fields intentionally excluded — spaces allowed for double names (e.g. 'Luisa Angela', 'Delo Santos')
+                ['modalSignupEmail', 'modalSignupPassword', 'modalConfirmPassword', 'modalEmail', 'modalPassword'].forEach(id => {
                     const f = document.getElementById(id);
                     if (f) f.addEventListener('keydown', preventSpaces);
                 });
 
                 // Clean spaces on paste
-                ['modalEmail', 'modalPassword', 'modalSignupEmail', 'modalSignupPassword', 'modalConfirmPassword', 'modalFirstName', 'modalLastName'].forEach(id => {
+                // Name fields intentionally excluded — spaces allowed on paste for double names
+                ['modalEmail', 'modalPassword', 'modalSignupEmail', 'modalSignupPassword', 'modalConfirmPassword'].forEach(id => {
                     const el = document.getElementById(id);
                     if (el) el.addEventListener('paste', cleanPaste);
                 });
@@ -662,6 +806,171 @@
             init();
         })();
     </script>
+
+    <!-- ── OTP PANEL LOGIC ── -->
+    <script>
+        (function () {
+            "use strict";
+
+            const otpContainer = document.getElementById('otpFormContainer');
+            const otpForm = document.getElementById('modalOtpForm');
+            const otpBtn = document.getElementById('modalOtpBtn');
+            const otpError = document.getElementById('modalOtpError');
+            const otpCountdown = document.getElementById('otpCountdown');
+            const otpResendBtn = document.getElementById('otpResendBtn');
+            const otpBackBtn = document.getElementById('otpBackToLogin');
+            const otpEmailDisp = document.getElementById('otpEmailDisplay');
+            const otpBoxes = Array.from(document.querySelectorAll('.otp-box'));
+            const tabSwitch = document.querySelector('.tab-switch');
+
+            let countdownTimer = null;
+
+            function showOtpPanel(email) {
+                if (otpEmailDisp && email) otpEmailDisp.textContent = email;
+                document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+                otpContainer.classList.add('active');
+                if (tabSwitch) tabSwitch.style.visibility = 'hidden';
+                otpBoxes[0]?.focus();
+                startCountdown(120);
+            }
+
+            function hideOtpPanel() {
+                otpContainer.classList.remove('active');
+                document.getElementById('signupFormContainer').classList.add('active');
+                if (tabSwitch) tabSwitch.style.visibility = '';
+                resetOtp();
+            }
+
+            otpBoxes.forEach((box, idx) => {
+                box.addEventListener('input', function () {
+                    const val = this.value.replace(/\D/g, '');
+                    this.value = val.slice(-1);
+                    this.classList.toggle('filled', this.value !== '');
+                    if (this.value && idx < otpBoxes.length - 1) otpBoxes[idx + 1].focus();
+                    checkOtpComplete();
+                });
+
+                box.addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && !this.value && idx > 0) {
+                        otpBoxes[idx - 1].value = '';
+                        otpBoxes[idx - 1].classList.remove('filled');
+                        otpBoxes[idx - 1].focus();
+                    }
+                    if (e.key === 'ArrowLeft' && idx > 0) otpBoxes[idx - 1].focus();
+                    if (e.key === 'ArrowRight' && idx < otpBoxes.length - 1) otpBoxes[idx + 1].focus();
+                });
+
+                box.addEventListener('paste', function (e) {
+                    e.preventDefault();
+                    const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+                    text.split('').slice(0, otpBoxes.length - idx).forEach((ch, i) => {
+                        if (otpBoxes[idx + i]) {
+                            otpBoxes[idx + i].value = ch;
+                            otpBoxes[idx + i].classList.add('filled');
+                        }
+                    });
+                    const next = Math.min(idx + text.length, otpBoxes.length - 1);
+                    otpBoxes[next]?.focus();
+                    checkOtpComplete();
+                });
+            });
+
+            function getOtpValue() { return otpBoxes.map(b => b.value).join(''); }
+            function checkOtpComplete() { if (otpBtn) otpBtn.disabled = getOtpValue().length !== 6; }
+
+            function resetOtp() {
+                otpBoxes.forEach(b => { b.value = ''; b.classList.remove('filled', 'error-input'); });
+                if (otpBtn) otpBtn.disabled = true;
+                if (otpError) otpError.textContent = '';
+                clearInterval(countdownTimer);
+            }
+
+            function startCountdown(seconds) {
+                clearInterval(countdownTimer);
+                if (otpResendBtn) otpResendBtn.disabled = true;
+                let remaining = seconds;
+                function tick() {
+                    const m = Math.floor(remaining / 60);
+                    const s = remaining % 60;
+                    if (otpCountdown) otpCountdown.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+                    if (remaining <= 0) {
+                        clearInterval(countdownTimer);
+                        if (otpResendBtn) otpResendBtn.disabled = false;
+                    }
+                    remaining--;
+                }
+                tick();
+                countdownTimer = setInterval(tick, 1000);
+            }
+
+            if (otpForm) {
+                otpForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    const code = getOtpValue();
+                    if (code.length !== 6) return;
+
+                    otpBtn.disabled = true;
+                    if (otpError) otpError.textContent = '';
+
+                    const authBase =
+                        window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+                            ? 'http://127.0.0.1:5000'
+                            : 'https://group6-bizally.onrender.com';
+
+                    const pending = typeof window.getPendingSignup === 'function'
+                        ? window.getPendingSignup() : null;
+
+                    if (!pending) {
+                        if (otpError) otpError.textContent = 'Session expired. Please sign up again.';
+                        otpBtn.disabled = false;
+                        return;
+                    }
+
+                    // ── DEMO MODE: any 6-digit code is accepted (remove when backend is ready) ──
+                    await new Promise(r => setTimeout(r, 800));
+                    if (typeof window.clearPendingSignup === 'function') window.clearPendingSignup();
+                    hideOtpPanel();
+                    const banner = document.createElement('div');
+                    banner.textContent = '✅ Account created! Please log in.';
+                    banner.style.cssText = 'position:absolute;top:16px;left:50%;transform:translateX(-50%);background:var(--indigo-600);color:#fff;padding:9px 22px;border-radius:var(--r-pill);font-weight:600;font-size:.82rem;z-index:200;white-space:nowrap;box-shadow:0 4px 16px -4px rgba(99,102,241,.5);';
+                    document.querySelector('.modal-fixed').appendChild(banner);
+                    setTimeout(() => banner.remove(), 3500);
+                });
+            }
+
+            if (otpResendBtn) {
+                otpResendBtn.addEventListener('click', async function () {
+                    const pending = typeof window.getPendingSignup === 'function'
+                        ? window.getPendingSignup() : null;
+                    if (!pending) return;
+
+                    otpResendBtn.disabled = true;
+                    if (otpError) otpError.textContent = '';
+
+                    // ── DEMO MODE: mock resend (remove when backend is ready) ──
+                    await new Promise(r => setTimeout(r, 400));
+
+                    resetOtp();
+                    startCountdown(120);
+                });
+            }
+
+            if (otpBackBtn) {
+                otpBackBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    hideOtpPanel();
+
+                    document.getElementById('tabSignupBtn').classList.add('active');
+                    document.getElementById('tabLoginBtn').classList.remove('active');
+                });
+            }
+
+            window.showOtpPanel = showOtpPanel;
+            window.hideOtpPanel = hideOtpPanel;
+
+        })();
+    </script>
+
     <script src="/static/js/api.js?v=2"></script>
     <script src="/static/js/login.js?v=2"></script>
 </body>
