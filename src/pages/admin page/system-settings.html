@@ -422,6 +422,19 @@
             initializeUserDisplay();
             initializePreferences();
             loadSystemSettings();
+            function autoSaveToggles() {
+    const toggleIds = ['maintenanceMode', 'twoFactorAuth', 'emailNotifications', 'autoBackup'];
+    
+    toggleIds.forEach(id => {
+        document.getElementById(id).addEventListener('change', function() {
+            const savedSettings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+            savedSettings[id] = this.checked;
+            localStorage.setItem('systemSettings', JSON.stringify(savedSettings));
+            showToast(`Setting saved.`, 'success');
+        });
+    });
+}
+            autoSaveToggles();
             initForm();
             setupLogout();
             setupAccountDropdown();

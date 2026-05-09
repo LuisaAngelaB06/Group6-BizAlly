@@ -171,6 +171,22 @@
                             <div class="metric-description" data-translate="satisfaction_rate_desc">Based on surveys
                             </div>
                         </div>
+
+                         <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-icon" style="background: linear-gradient(135deg, #F59E0B, #D97706);">
+                                    <i class="fas fa-comment-dots"></i>
+                                </div>
+                                <div class="metric-trend up">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                            </div>
+                            <div class="metric-value"></div>
+                            <div class="metric-label" data-translate="feedback_surveys">Feedback Surveys</div>
+                            <div class="metric-description" data-translate="feedback_surveys_desc">Responses collected
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- Charts Section -->
@@ -230,7 +246,6 @@
                                         <tr>
                                             <th data-translate="agent_name">Agent Name</th>
                                             <th data-translate="tickets_resolved">Tickets Resolved</th>
-                                            <th data-translate="avg_response_time">Avg. Response Time</th>
                                             <th data-translate="satisfaction_rate">Satisfaction Rate</th>
                                             <th data-translate="performance_score">Performance Score</th>
                                         </tr>
@@ -1035,13 +1050,11 @@
                     topAgents.forEach(agent => {
                         const score = Math.min(99, 85 + (agent.resolved * 2)); 
                         const satRate = Math.min(100, 88 + (agent.resolved * 1.5)).toFixed(1) + '%';
-                        const time = Math.max(1.1, 4.5 - (agent.resolved * 0.2)).toFixed(1) + 'h';
 
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td><strong>${agent.name}</strong></td>
                             <td>${agent.resolved} (out of ${agent.total})</td>
-                            <td>${time}</td>
                             <td><span class="satisfaction-badge high">${satRate}</span></td>
                             <td>
                                 <div class="score-container">
@@ -1079,10 +1092,10 @@
                         const res = await fetch(`${API_BASE_URL}/api/tickets`);
                         const tickets = await res.json();
                         
-                        let csv = "Ticket ID,Subject,Requester,Assigned To,Priority,Status,Created Date\\n";
+                        let csv = "Ticket ID,Subject,Requester,Assigned To,Priority,Status,Created Date\n";
                         tickets.forEach(t => {
                             let statusStr = t.Status_ID == 1 ? 'Open' : t.Status_ID == 2 ? 'In Progress' : t.Status_ID == 3 ? 'Resolved' : 'Closed';
-                            csv += `${t.Ticket_ID},"${t.Concern_Title}","${t.Email || 'No Email'}","${t.Technician_Name || 'Unassigned'}",${t.Priority},${statusStr},${t.Date_Created}\\n`;
+                            csv += `${t.Ticket_ID},"${t.Concern_Title}","${t.Email || 'No Email'}","${t.Technician_Name || 'Unassigned'}",${t.Priority},${statusStr},${t.Date_Created}\n`;
                         });
                         
                         const blob = new Blob([csv], { type: 'text/csv' });
