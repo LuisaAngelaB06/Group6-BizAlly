@@ -60,6 +60,8 @@ def _format_ticket(row):
         "Email": ticket.get("requestor_email") or "",
         "Requestor_Email": ticket.get("requestor_email") or "",
         "Service_Type": ticket.get("service_type") or "Support",
+        "Phone": ticket.get("requestor_phone") or "N/A",
+        "Address": ticket.get("requestor_address") or "N/A",
     }
 
     return formatted
@@ -82,6 +84,8 @@ def _ticket_select_clause(where_clause="", order_clause="ORDER BY t.date_created
             req_user.first_name AS requestor_first_name,
             req_user.last_name AS requestor_last_name,
             req_user.email AS requestor_email,
+            c.phone_number AS requestor_phone, 
+            c.address AS requestor_address,       
             tech_user.first_name AS technician_first_name,
             tech_user.last_name AS technician_last_name,
             st.name AS service_type
@@ -89,11 +93,11 @@ def _ticket_select_clause(where_clause="", order_clause="ORDER BY t.date_created
         LEFT JOIN technician tech ON t.technician_id = tech.technician_id
         LEFT JOIN "system_user" tech_user ON tech.user_id = tech_user.user_id
         LEFT JOIN "system_user" req_user ON t.user_id = req_user.user_id
+        LEFT JOIN "customer" c ON req_user.customer_id = c.customer_id 
         LEFT JOIN service_type st ON t.service_type_id = st.service_type_id
         {where_clause}
         {order_clause}
     """
-
 
 def _coerce_int(value, default=None):
     if value in (None, ""):

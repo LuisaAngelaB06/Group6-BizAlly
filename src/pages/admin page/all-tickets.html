@@ -24,8 +24,7 @@
             <h2 data-translate="mobile_restricted">Desktop only</h2>
             <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
                 desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='/'"
-                data-translate="go_back">Back to Home</button>
+            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to Home</button>
         </div>
     </div>
 
@@ -297,7 +296,7 @@
 
         if (typeof API_BASE_URL === 'undefined') {
             window.API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-                ? 'http://127.0.0.1:5000' 
+                ? 'http://127.0.0.1:5000'
                 : 'https://group6-bizally.onrender.com';
         }
         // Translation dictionary for tickets page
@@ -792,118 +791,124 @@
             return row;
         }
 
-        // ============ FIXED: Show ticket details in modal with proper sticky header ============
         function showTicketDetails(ticketId) {
             const ticket = sampleTickets.find(t => t.id === ticketId);
             if (!ticket) return;
+
+            // --- LOCAL TIME FORMATTING ---
+            // Converts GMT strings to the user's local system time
+            const localCreated = new Date(ticket.created).toLocaleString();
+            const localUpdated = new Date(ticket.lastUpdated).toLocaleString();
 
             const modal = document.getElementById('ticketDetailsModal');
             const modalTicketHeader = document.getElementById('modalTicketHeader');
             const detailsContent = document.getElementById('ticketDetailsContent');
 
-            const currentLang = window.preferencesManager ?
-                window.preferencesManager.getCurrentLanguage() : 'en';
+            const currentLang = window.preferencesManager ? window.preferencesManager.getCurrentLanguage() : 'en';
             const dict = translations[currentLang] || translations['en'];
 
-            // Populate the ticket header inside modal header (STICKY)
+            // Header: Uses localCreated and displays ticket metadata
             modalTicketHeader.innerHTML = `
-                <div class="ticket-meta">
-                    <div class="ticket-id">${ticket.id}</div>
-                    <div class="ticket-date">${ticket.created.split(' ')[0]}</div>
-                </div>
-                <h2 class="ticket-subject">${ticket.subject}</h2>
-                <div class="ticket-tags">
-                    <span class="badge badge-${ticket.priority}">
-                        <i class="fas fa-flag"></i> ${ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1)} Priority
-                    </span>
-                    <span class="badge badge-${ticket.status === 'in_progress' ? 'progress' : ticket.status}">
-                        <i class="fas fa-circle"></i> ${ticket.status === 'in_progress' ? 'In Progress' : ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1)}
-                    </span>
-                </div>
-            `;
+        <div class="ticket-meta">
+            <div class="ticket-id">${ticket.id}</div>
+            <div class="ticket-date">${localCreated}</div>
+        </div>
+        <h2 class="ticket-subject">${ticket.subject}</h2>
+        <div class="ticket-tags">
+            <span class="badge badge-${ticket.priority}">
+                <i class="fas fa-flag"></i> ${ticket.priority.toUpperCase()}
+            </span>
+            <span class="badge badge-${ticket.status === 'in_progress' ? 'progress' : ticket.status}">
+                <i class="fas fa-circle"></i> ${ticket.status.replace('_', ' ').toUpperCase()}
+            </span>
+        </div>
+    `;
 
-            // Populate the scrollable content
+            // Body: Incorporates FULL NAME (firstName + lastName) and local dates
             detailsContent.innerHTML = `
-                <div class="ticket-sections">
-                    <!-- Ticket Overview -->
-                    <div class="ticket-section">
-                        <div class="section-header">
-                            <i class="fas fa-info-circle"></i>
-                            <h3>${dict['ticket_overview'] || 'Ticket Overview'}</h3>
+        <div class="ticket-single-block">
+            <div class="ticket-section">
+                <div class="section-header">
+                    <i class="fas fa-align-left"></i>
+                    <h3>${dict['description'] || 'Description'}</h3>
+                </div>
+                <div class="description-box">${ticket.description.trim()}</div>
+            </div>
+
+            <div class="ticket-section">
+                <div class="section-header">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>Details & Assignment</h3>
+                </div>
+
+                <div class="details-single-block">
+                    <div class="details-row">
+                        <div class="detail-group">
+                            <label class="info-label">Requester</label>
+                            <div class="info-value">
+                                <strong>${ticket.firstName}</strong><br>
+                                <span class="sub-value">${ticket.requester}</span>
+                            </div>
                         </div>
-                        <div class="section-content">
-                            <p class="ticket-description">${ticket.description}</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Requester Information -->
-                    <div class="ticket-section">
-                        <div class="section-header">
-                            <i class="fas fa-user"></i>
-                            <h3>${dict['requester_info'] || 'Requester Information'}</h3>
-                        </div>
-                        <div class="section-content">
-                            <div class="requester-details">
-                                <div class="detail-item">
-                                    <span class="detail-label">${dict['requester'] || 'Requester'}:</span>
-                                    <span class="detail-value">${ticket.requesterFirstName}</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">${dict['email'] || 'Email'}:</span>
-                                    <span class="detail-value requester-email">${ticket.requester}</span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">${dict['contact_number'] || 'Contact Number'}:</span>
-                                    <span class="detail-value phone-number">
-                                        <i class="fas fa-phone"></i> ${ticket.contactNumber || '+1 (555) 000-0000'}
-                                    </span>
-                                </div>
+                        <div class="detail-group">
+                            <label class="info-label">Contact Number</label>
+                            <div class="info-value">
+                                <i class="fas fa-phone"></i> ${ticket.contactPhone}
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Ticket Metadata -->
-                    <div class="ticket-section">
-                        <div class="section-header">
-                            <i class="fas fa-cogs"></i>
-                            <h3>${dict['ticket_metadata'] || 'Ticket Metadata'}</h3>
+
+                    <div class="details-row">
+                        <div class="detail-group full-width">
+                            <label class="info-label">Address</label>
+                            <div class="info-value">
+                                <i class="fas fa-map-marker-alt"></i> ${ticket.address || 'No address provided'}
+                            </div>
                         </div>
-                        <div class="section-content">
-                            <div class="metadata-grid">
-                                <div class="metadata-item">
-                                    <span class="metadata-label">${dict['assigned_to'] || 'Assigned To'}:</span>
-                                    <span class="metadata-value">${ticket.assignedTo}</span>
-                                </div>
-                                <div class="metadata-item">
-                                    <span class="metadata-label">${dict['category'] || 'Category'}:</span>
-                                    <span class="metadata-value">${ticket.category}</span>
-                                </div>
-                                <div class="metadata-item">
-                                    <span class="metadata-label">${dict['department'] || 'Department'}:</span>
-                                    <span class="metadata-value">${ticket.department}</span>
-                                </div>
-                                <div class="metadata-item">
-                                    <span class="metadata-label">${dict['created'] || 'Created'}:</span>
-                                    <span class="metadata-value">${ticket.created}</span>
-                                </div>
-                                <div class="metadata-item">
-                                    <span class="metadata-label">${dict['last_updated'] || 'Last Updated'}:</span>
-                                    <span class="metadata-value">${ticket.lastUpdated}</span>
-                                </div>
-                                <div class="metadata-item">
-                                    <span class="metadata-label">${dict['due_date'] || 'Due Date'}:</span>
-                                    <span class="metadata-value">${ticket.dueDate}</span>
-                                </div>
+                    </div>
+
+                    <div class="details-row">
+                        <div class="detail-group">
+                            <label class="info-label">Technician</label>
+                            <div class="info-value">
+                                <i class="fas fa-user-tie"></i> ${ticket.assignedTo}
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <label class="info-label">Priority</label>
+                            <div class="info-value">
+                                <span class="badge badge-${ticket.priority}">${ticket.priority.toUpperCase()}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="details-row footer-row">
+                        <div class="detail-group">
+                            <label class="info-label">Timeline</label>
+                            <div class="info-value timeline-value">
+                                <span><strong>Created:</strong> ${localCreated}</span>
+                                <span class="separator">|</span>
+                                <span><strong>Updated:</strong> ${localUpdated}</span>
                             </div>
                         </div>
                     </div>
                 </div>
-            `;
+            </div>
+            
+            ${ticket.resolutionDetails ? `
+            <div class="ticket-section resolution-section">
+                <div class="section-header">
+                    <i class="fas fa-check-double"></i>
+                    <h3>Resolution Notes</h3>
+                </div>
+                <div class="description-box">${ticket.resolutionDetails.trim()}</div>
+            </div>` : ''}
+        </div>
+    `;
 
-            // Close button event listeners
-            document.getElementById('closeModal').addEventListener('click', closeModal);
-            document.getElementById('closeDetailsBtn').addEventListener('click', closeModal);
-
+            // Re-attach event listeners for closing the modal
+            document.getElementById('closeModal').onclick = closeModal;
+            document.getElementById('closeDetailsBtn').onclick = closeModal;
             modal.classList.add('show');
         }
 
@@ -1153,7 +1158,7 @@
 
                 const currentLang = window.preferencesManager ? window.preferencesManager.getCurrentLanguage() : 'en';
                 const dict = translations[currentLang] || translations['en'];
-                
+
                 showToast(dict['ticket_saved'] || 'Ticket saved successfully', 'success');
                 closeEditModal();
 
@@ -1533,46 +1538,56 @@
             applyTranslations(e.detail.language);
         });
 
-        function convertStatus(statusId){
+        function convertStatus(statusId) {
 
             if (statusId == 1) return "open";
             if (statusId == 2) return "in_progress";
             if (statusId == 3) return "resolved";
             if (statusId == 4) return "closed";
             return "open";
-            
-        }
-        
-        async function fetchTicketsFromAPI(){
 
-            try{
+        }
+
+        async function fetchTicketsFromAPI() {
+
+            try {
 
                 const response = await fetch(`${API_BASE_URL}/api/tickets`);
                 const data = await response.json();
 
-                // Inside fetchTicketsFromAPI()
+                // UPDATE the mapping inside fetchTicketsFromAPI() in all-tickets.html
                 sampleTickets = data.map(ticket => {
                     return {
-                        id: "TKT-" + ticket.Ticket_ID,
-                        subject: ticket.Concern_Title,
+                        id: "TKT-" + (ticket.Ticket_ID || "0"),
+                        subject: ticket.Concern_Title || "No Subject",
                         requester: ticket.Email || "User",
-                        requesterFirstName: ticket.Email ? ticket.Email.split('@')[0] : "User",
+                        firstName: ticket.Requestor_Name || "User",
+
+                        // Safeguard the phone number
+                        contactPhone: ticket.Phone || "N/A",
+
+                        // Capture address if available, otherwise use a default value
+                        address: ticket.Address || "N/A",
+
                         assignedTo: ticket.Technician_Name || "Unassigned",
                         Technician_ID: ticket.Technician_ID,
-                        priority: ticket.Priority.toLowerCase(),
-                        status: convertStatus(ticket.Status_ID),
-                        created: ticket.Date_Created,
+
+                        // ADD NULL CHECKS HERE to prevent crashes
+                        priority: (ticket.Priority || "medium").toLowerCase(),
+                        status: convertStatus(ticket.Status_ID || 1),
+
+                        created: ticket.Date_Created || new Date().toISOString(),
                         description: ticket.Description || "",
-                        category: "Support",
+                        category: ticket.Service_Type || "Support",
                         department: "IT",
                         lastUpdated: ticket.Last_Updated || ticket.Date_Created,
-                        resolutionDetails: ticket.Resolution_Details || "" // <-- ADD THIS LINE
-                    }
+                        resolutionDetails: ticket.Resolution_Details || ""
+                    };
                 });
 
                 loadTickets();
 
-            }catch(error){
+            } catch (error) {
                 console.error("Failed to load tickets:", error);
             }
 
@@ -1582,16 +1597,16 @@
             fetchTicketsFromAPI();
         });
 
-        async function loadTechnicians(ticket){
+        async function loadTechnicians(ticket) {
 
-            try{
+            try {
 
                 const response = await fetch(`${API_BASE_URL}/api/technicians`);
                 const techs = await response.json();
 
                 const select = document.getElementById("editAssignedTo");
 
-                if(!select) return;
+                if (!select) return;
 
                 select.innerHTML = "";
 
@@ -1603,7 +1618,7 @@
                     option.textContent = t.Name;
 
                     // preselect assigned technician
-                    if(ticket && ticket.Technician_ID && t.Technician_ID == ticket.Technician_ID){
+                    if (ticket && ticket.Technician_ID && t.Technician_ID == ticket.Technician_ID) {
                         option.selected = true;
                     }
 
@@ -1611,7 +1626,7 @@
 
                 });
 
-            }catch(error){
+            } catch (error) {
 
                 console.error("Failed to load technicians:", error);
 

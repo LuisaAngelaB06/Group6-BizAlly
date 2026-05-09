@@ -350,14 +350,7 @@
 }
 
 /* Checkbox styles */
-.ticket-checkbox {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    accent-color: var(--accent);
-    margin: 0;
-}
-
+.ticket-checkbox,
 #selectAllTickets {
     width: 16px;
     height: 16px;
@@ -651,7 +644,7 @@
     border-color: var(--accent);
 }
 
-/* ============ MODAL - COMPLETELY FIXED: Proper sticky header ============ */
+/* ============ MODAL STYLES ============ */
 .modal {
     display: none;
     position: fixed;
@@ -688,7 +681,6 @@
     }
 }
 
-/* FIXED: Modal content with flex layout */
 .modal-content {
     background: var(--surface);
     border-radius: 12px;
@@ -703,7 +695,6 @@
     border: 1px solid var(--border);
 }
 
-/* FIXED: The ENTIRE header area is sticky as one unit */
 .modal-header {
     display: flex;
     flex-direction: column;
@@ -716,9 +707,9 @@
     z-index: 100;
     padding: 0;
     width: 100%;
+    overflow: visible !important;
 }
 
-/* Modal header top section */
 .modal-header-top {
     display: flex;
     justify-content: space-between;
@@ -726,6 +717,8 @@
     padding: 20px 24px;
     background: var(--surface);
     border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 10;
 }
 
 .modal-header-top h3 {
@@ -738,7 +731,33 @@
     gap: 10px;
 }
 
-/* Ticket header - now properly part of the sticky header */
+.modal-close {
+    background: rgba(0, 0, 0, 0.2);
+    border: none;
+    font-size: 1.5rem;
+    color: white !important;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s var(--ease);
+    flex-shrink: 0;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.modal-close:hover {
+    background: var(--hover-bg);
+    color: var(--text-primary);
+}
+
+/* Ticket header inside modal */
 .modal-header .ticket-header {
     margin: 0;
     border-radius: 0;
@@ -746,14 +765,9 @@
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
     flex-shrink: 0;
     position: relative;
-    top: 0;
-    left: 0;
-    right: 0;
-    min-height: auto;
     padding: 24px;
 }
 
-/* Override conflicting styles */
 .modal-header .ticket-header::before {
     content: '';
     position: absolute;
@@ -778,28 +792,6 @@
     color: white;
 }
 
-.modal-close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--text-secondary);
-    cursor: pointer;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    transition: all 0.2s var(--ease);
-    flex-shrink: 0;
-}
-
-.modal-close:hover {
-    background: var(--hover-bg);
-    color: var(--text-primary);
-}
-
 /* Special styling for ticket details modal */
 .modal-header-ticket {
     padding: 0;
@@ -809,14 +801,16 @@
     border-bottom: 1px solid var(--border);
 }
 
-/* FIXED: Scrollable body area */
 .modal-body {
     padding: 24px;
     overflow-y: auto;
     flex: 1;
 }
 
-/* FIXED: Footer - not sticky anymore, just stays at bottom of content */
+.modal-body .ticket-header {
+    display: none;
+}
+
 .modal-footer {
     display: flex;
     justify-content: flex-end;
@@ -893,15 +887,17 @@
     line-height: 1.5;
 }
 
-/* Ticket Details Modal Content - SCROLLABLE ONLY */
+/* Ticket Details Modal Content */
 .ticket-details-content {
     display: flex;
     flex-direction: column;
     gap: 24px;
 }
 
-.modal-body .ticket-header {
-    display: none;
+.ticket-single-block {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .ticket-meta {
@@ -926,8 +922,11 @@
     font-size: 0.85rem;
     opacity: 0.9;
     background: rgba(255, 255, 255, 0.1);
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 6px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
 }
 
 .ticket-subject {
@@ -944,7 +943,7 @@
     flex-wrap: wrap;
 }
 
-/* Special badge styles for modal ticket header */
+/* Badge styles inside modal ticket header */
 .modal-header .ticket-header .badge {
     font-size: 0.85rem;
     padding: 8px 16px;
@@ -965,19 +964,23 @@
     font-size: 0.9rem;
 }
 
-/* Ticket Sections Layout - THIS IS THE SCROLLABLE CONTENT */
+/* --- Ticket Sections Container --- */
 .ticket-sections {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    display: flex; /* Changed from grid to flex for more predictable vertical stacking */
+    flex-direction: column;
+    gap: 20px; /* This creates the consistent space between your containers */
+    width: 100%;
 }
 
+/* --- Individual Section Cards --- */
 .ticket-section {
     background: var(--surface);
     border-radius: 12px;
     border: 1px solid var(--border);
     padding: 20px;
     transition: all 0.3s var(--ease);
+    display: block; /* Ensures internal content stacks vertically and stays left */
+    width: 100%;
 }
 
 .ticket-section:hover {
@@ -985,13 +988,10 @@
     transform: translateY(-2px);
 }
 
-.ticket-section:nth-child(1) {
-    grid-column: 1 / -1;
-}
-
 .section-header {
     display: flex;
     align-items: center;
+    justify-content: flex-start; /* Ensures icon and text are not centered */
     gap: 10px;
     margin-bottom: 16px;
     padding-bottom: 12px;
@@ -1008,6 +1008,28 @@
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-primary);
+}
+
+.description-box {
+    background: var(--hover-bg);
+    padding: 16px 20px;
+    border-radius: 8px;
+    border-left: 4px solid var(--accent);
+    line-height: 1.6;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    white-space: pre-wrap;
+    
+    /* Forces the text to the absolute left */
+    text-align: left !important;
+    display: block !important;
+    margin: 0;
+    width: 100%;
+}
+
+.resolution-section .description-box {
+    border-left-color: #10b981;
+    background: rgba(16, 185, 129, 0.05);
 }
 
 .ticket-description {
@@ -1071,6 +1093,42 @@
     color: var(--accent);
 }
 
+/* Info List Horizontal */
+.info-list-horizontal {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 24px;
+    border-radius: 10px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.info-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    word-break: break-word;
+    margin: 0;
+}
+
+/* Metadata Grid */
 .metadata-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1172,16 +1230,13 @@
 }
 
 /* Tooltip for truncated text */
-.tickets-table td[title] {
-    cursor: help;
-}
-
+.tickets-table td[title],
 .requester-name[title],
 .requester-email[title] {
     cursor: help;
 }
 
-/* Responsive Design */
+/* ============ RESPONSIVE DESIGN ============ */
 @media (max-width: 1024px) {
     .page-header {
         padding: 20px;
@@ -1493,5 +1548,51 @@
     .detail-value {
         font-size: 0.85rem;
     }
-    
+}
+
+/* Unified Details Block */
+.details-single-block {
+    background: var(--hover-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0; /* Removing padding to allow rows to fill space */
+    overflow: hidden;
+}
+
+.details-row {
+    display: flex;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.details-row:last-child {
+    border-bottom: none;
+}
+
+.detail-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sub-value {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.timeline-value {
+    display: flex;
+    gap: 15px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.separator {
+    color: var(--border);
+}
+
+/* Specific styling for the Timeline row */
+.footer-row {
+    background: rgba(0, 0, 0, 0.02);
 }
