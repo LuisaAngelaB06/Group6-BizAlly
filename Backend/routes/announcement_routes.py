@@ -193,7 +193,7 @@ def get_all_announcements_user(user_id):
 # =========================
 @announcement_bp.route("/user/announcements/read", methods=["POST"])
 def mark_as_read():
-    data = request.json
+    data = request.get_json()
 
     conn = get_connection()
     cursor = conn.cursor()

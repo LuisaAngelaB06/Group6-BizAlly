@@ -1,5 +1,6 @@
 from flask import Flask, render_template, send_from_directory, request, jsonify
 from flask_cors import CORS
+from extensions import db
 from dotenv import load_dotenv
 import os
 from routes import register_routes
@@ -7,6 +8,7 @@ from routes.announcement_routes import announcement_bp
 from socketio_instance import socketio
 from routes.auth_routes import init_oauth
 from routes.auth_routes import auth_bp
+from routes.routing import routing_bp
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-change-this")
@@ -25,8 +27,12 @@ ENV_PATH = os.path.join(BASE_BACKEND_DIR, ".env")
 
 load_dotenv(ENV_PATH)
 
-app.register_blueprint(announcement_bp, url_prefix="/api")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+db.init_app(app)
+app.register_blueprint(announcement_bp, url_prefix="/api")
+app.register_blueprint(routing_bp, url_prefix="/api")  
 init_oauth(app)
 socketio.init_app(app)
 register_routes(app)

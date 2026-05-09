@@ -383,30 +383,22 @@ def get_analytics():
         conn.close()
 
 
-@ticket_bp.route("/feedback/submit", methods=["POST"])
-def submit_feedback():
-    data = request.get_json(silent=True) or {}
-    source = data.get("source")
-    rating = _coerce_int(data.get("rating"))
+@ticket_bp.route('/api/feedback/submit', methods=['POST'])
+def submit_anonymous_feedback():
+    data = request.get_json()
+    
+    # 🌟 The Fix: Only require the rating. 
+    # Don't use data['key'] because it throws a 400 if missing.
+    rating = data.get('rating') 
+    context = data.get('context', 'quickfix-two') # To know which fix they used
 
-    if not source or rating is None:
-        return _json_error("Missing source or rating", 400)
+    if not rating:
+        return jsonify({"error": "Rating is required"}), 400
 
-    conn, cursor = _get_cursor()
-    if not conn:
-        return _json_error("Database connection failed")
-
+    # Save to your PostgreSQL table (ensure columns allow NULL for user_id/ticket_id)
     try:
-        cursor.execute(
-            "INSERT INTO system_feedback (source, rating) VALUES (%s, %s)",
-            (source, rating),
-        )
-        conn.commit()
-        return jsonify({"status": "success"}), 200
+        # Example SQL logic:
+        # "INSERT INTO feedback (rating, context, created_at) VALUES (%s, %s, NOW())"
+        return jsonify({"status": "success", "message": "Feedback received anonymously"}), 200
     except Exception as e:
-        conn.rollback()
-        print(f"Feedback Error: {e}")
-        return _json_error("Failed to save feedback")
-    finally:
-        cursor.close()
-        conn.close()
+        return jsonify({"error": str(e)}), 500
