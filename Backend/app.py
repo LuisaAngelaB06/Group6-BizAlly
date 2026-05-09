@@ -1,6 +1,6 @@
 from flask import Flask, render_template, send_from_directory, request, jsonify
 from flask_cors import CORS
-from extensions import db
+from Backend.extensions import db
 from dotenv import load_dotenv
 import os
 from routes import register_routes
