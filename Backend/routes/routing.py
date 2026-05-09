@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from Backend.extensions import db
-from models import SystemFeedback
+from Backend.models import SystemFeedback
 
 routing_bp = Blueprint('routing_bp', __name__)
 

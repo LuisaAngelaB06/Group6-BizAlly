@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, redirect, session
-from database import get_connection
+from Backend.database import get_connection
 from werkzeug.security import generate_password_hash, check_password_hash
 from psycopg2.extras import RealDictCursor
 from authlib.integrations.flask_client import OAuth
