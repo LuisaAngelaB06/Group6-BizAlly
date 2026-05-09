@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>AlliTrack · Unified Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../../styles/landing page/unified-auth-modal.css">
+    <script src="../../scripts/landing-accessibility.js"></script>
+</head>
+
+<body>
+
+    <!-- kept for JS compat -->
+    <div class="modal-orb-bg"></div>
+
+    <!-- ═══════════════════════════════════════
+         MODAL CARD
+    ════════════════════════════════════════ -->
+    <div class="modal-fixed">
+
+        <!-- ░░░ LEFT — GRADIENT PANEL ░░░ -->
+        <div class="panel-left">
+            <!-- Logo / brand mark -->
+            <div class="panel-logo">
+                <img src="../../assets/images/AlliTrack-Logo.png" alt="AlliTrack" width="130" height="37"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                <span class="panel-asterisk" style="display:none;">✱</span>
+            </div>
+
+            <!-- Bottom copy -->
+            <div class="panel-copy">
+                <p class="panel-sub">Connect. Track. Scale.</p>
+                <p class="panel-headline">Get instant access to the ticketing hub designed for high-performance business
+                    alliances.</p>
+            </div>
+        </div>
+
+        <!-- ░░░ RIGHT — FORM PANEL ░░░ -->
+        <div class="panel-right">
+
+            <!-- Kept in DOM for JS compat (hidden via CSS) -->
+            <div class="compact-header" aria-hidden="true">
+                <div>
+                    <a href="/" aria-label="AlliTrack Home">
+                        <img src="../../assets/images/AlliTrack-Logo.png" alt="AlliTrack" width="140" height="40">
+                    </a>
+                    <div class="compact-tagline">support that flows · frictionless</div>
+                </div>
+            </div>
+
+            <!-- Trust row (hidden, kept for JS) -->
+            <div class="trust-row" aria-hidden="true">
+                <div class="trust-item"><i class="fas fa-headset"></i> 2.5k daily tickets</div>
+                <div class="trust-item"><i class="fas fa-clock"></i> &lt;4 min reply</div>
+                <div class="trust-item"><i class="fas fa-cloud"></i> 99.99% uptime</div>
+            </div>
+
+            <!-- ── TAB SWITCH ── -->
+            <div class="tab-switch">
+                <button class="tab-btn active" id="tabLoginBtn" type="button">
+                    <i class="fas fa-key"></i> Log In
+                </button>
+                <button class="tab-btn" id="tabSignupBtn" type="button">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </button>
+            </div>
+
+            <!-- ══════════════════════════════
+                 AUTH FORMS
+            ══════════════════════════════ -->
+            <div class="auth-forms">
+
+                <!-- ─────────────────────────
+                     LOGIN FORM
+                ───────────────────────── -->
+                <div id="loginFormContainer" class="auth-form active">
+
+                    <div class="form-header">
+                        <h1 class="form-title">Welcome back</h1>
+                        <p class="form-subtitle">Manage tickets, track partner requests, and resolve issues in real-time
+                            — keeping every alliance moving in one place.</p>
+                    </div>
+
+                    <form id="modalLoginForm" novalidate>
+
+                        <label for="modalEmail">Your email</label>
+                        <input type="email" id="modalEmail" maxlength="50" class="input-field"
+                            placeholder="you@example.com" autocomplete="email">
+                        <p id="modalEmailError" class="error-text"></p>
+
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                            <label for="modalPassword" style="margin-bottom:6px;">Password</label>
+                            <a href="#" class="forgot-link" tabindex="0">Forgot password?</a>
+                        </div>
+                        <div class="password-container">
+                            <input type="password" id="modalPassword" maxlength="30" class="input-field"
+                                placeholder="••••••••••" autocomplete="current-password">
+                            <button type="button" class="toggle-password" id="toggleModalPassword"
+                                aria-label="Show or hide password">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                        <p id="modalPasswordError" class="error-text"></p>
+
+                        <button class="login-btn" id="modalLoginBtn" type="submit" disabled>
+                            Get Started
+                        </button>
+
+                    </form>
+
+                    <div class="divider">or continue with</div>
+
+                    <!-- Social row — 3 icon buttons matching the reference -->
+                    <div class="social-row">
+                        <button class="social-btn" id="modalGoogleLogin" type="button"
+                            aria-label="Continue with Google">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16"
+                                alt="Google">
+                            Google
+                        </button>
+                    </div>
+
+                    <p class="footer-text">
+                        Don't have an account? <a href="#" id="switchToSignupLink">Sign up</a>
+                    </p>
+                </div>
+
+                <!-- ─────────────────────────
+                     SIGNUP FORM
+                ───────────────────────── -->
+                <div id="signupFormContainer" class="auth-form">
+
+                    <div class="form-header">
+                        <h1 class="form-title">Create an account</h1>
+                        <p class="form-subtitle">Manage tickets, track partner requests, and resolve issues in real-time
+                            — keeping every alliance moving in one place.</p>
+                    </div>
+
+                    <form id="modalSignupForm" novalidate>
+
+                        <div style="display:flex; gap:14px;">
+                            <div style="flex:1; min-width:0;">
+                                <label for="modalFirstName">First name</label>
+                                <input type="text" id="modalFirstName" maxlength="30" class="input-field"
+                                    placeholder="First name" autocomplete="given-name">
+                                <p id="modalFirstNameError" class="error-text"></p>
+                            </div>
+                            <div style="flex:1; min-width:0;">
+                                <label for="modalLastName">Last name</label>
+                                <input type="text" id="modalLastName" maxlength="30" class="input-field"
+                                    placeholder="Last name" autocomplete="family-name">
+                                <p id="modalLastNameError" class="error-text"></p>
+                            </div>
+                        </div>
+
+                        <label for="modalSignupEmail">Your email</label>
+                        <input type="email" id="modalSignupEmail" maxlength="50" class="input-field"
+                            placeholder="you@example.com" autocomplete="email">
+                        <p id="modalSignupEmailError" class="error-text"></p>
+
+                        <label for="modalSignupPassword">Password</label>
+                        <div class="password-container">
+                            <input type="password" id="modalSignupPassword" maxlength="30" class="input-field"
+                                placeholder="Create a strong password" autocomplete="new-password">
+                            <button type="button" class="toggle-password" id="toggleModalSignupPassword"
+                                aria-label="Show or hide password">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+
+                        <div class="password-requirements">
+                            <div class="requirement invalid" id="reqLength">
+                                <i class="far fa-circle"></i> At least 8 characters
+                            </div>
+                            <div class="requirement invalid" id="reqUppercase">
+                                <i class="far fa-circle"></i> Uppercase &amp; lowercase
+                            </div>
+                            <div class="requirement invalid" id="reqNumber">
+                                <i class="far fa-circle"></i> Number &amp; special character
+                            </div>
+                        </div>
+                        <p id="modalSignupPasswordError" class="error-text"></p>
+
+                        <label for="modalConfirmPassword">Confirm password</label>
+                        <div class="password-container">
+                            <input type="password" id="modalConfirmPassword" maxlength="30" class="input-field"
+                                placeholder="Re-enter password" autocomplete="new-password">
+                            <button type="button" class="toggle-password" id="toggleModalConfirmPassword"
+                                aria-label="Show or hide password">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                        <p id="modalConfirmPasswordError" class="error-text"></p>
+
+                        <div class="terms-container">
+                            <div class="terms">
+                                <input type="checkbox" id="modalTerms">
+                                <label for="modalTerms">
+                                    I agree to the <a href="/terms">Terms of Service</a>
+                                    and <a href="/privacy">Privacy Policy</a>
+                                </label>
+                            </div>
+                            <p id="modalTermsError" class="error-text"></p>
+                        </div>
+
+                        <button class="signup-btn" id="modalSignupBtn" type="submit" disabled>
+                            Create Account
+                        </button>
+
+                    </form>
+
+                    <div class="divider">or continue with</div>
+
+                    <div class="social-row">
+                        <button class="social-btn" id="modalGoogleSignup" type="button"
+                            aria-label="Sign up with Google">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16"
+                                alt="Google">
+                            Google
+                        </button>
+                    </div>
+
+                    <p class="footer-text">
+                        Already have an account? <a href="#" id="switchToLoginLink">Log in</a>
+                    </p>
+                </div>
+
+                <!-- ─────────────────────────
+                     OTP VERIFICATION PANEL
+                ───────────────────────── -->
+                <div id="otpFormContainer" class="auth-form">
+
+                    <div class="otp-icon">
+                        <i class="fas fa-envelope-open-text"></i>
+                    </div>
+
+                    <div class="form-header">
+                        <h1 class="form-title">Check your inbox</h1>
+                        <p class="form-subtitle otp-lead">
+                            We sent a 6-digit verification code to<br>
+                            <strong id="otpEmailDisplay">your email address</strong>.
+                            Enter it below to continue.
+                        </p>
+                    </div>
+
+                    <form id="modalOtpForm" novalidate>
+                        <div class="otp-inputs" role="group" aria-label="One-time password">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp1"
+                                autocomplete="one-time-code" aria-label="Digit 1">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp2"
+                                aria-label="Digit 2">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp3"
+                                aria-label="Digit 3">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp4"
+                                aria-label="Digit 4">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp5"
+                                aria-label="Digit 5">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp6"
+                                aria-label="Digit 6">
+                        </div>
+                        <p id="modalOtpError" class="error-text" style="text-align:center;"></p>
+
+                        <div class="otp-timer">
+                            Code expires in <span id="otpCountdown">2:00</span>
+                        </div>
+
+                        <button class="login-btn" id="modalOtpBtn" type="submit" disabled>
+                            <i class="fas fa-shield-halved"></i> Verify &amp; Continue
+                        </button>
+                    </form>
+
+                    <p class="footer-text" style="margin-top:18px;">
+                        Didn't receive it?&nbsp;
+                        <button class="otp-resend" id="otpResendBtn" type="button" disabled>Resend code</button>
+                    </p>
+                    <p class="footer-text" style="margin-top:10px;">
+                        <a href="#" id="otpBackToLogin">
+                            <i class="fas fa-arrow-left" style="font-size:.7rem;"></i>&nbsp;Back to sign up
+                        </a>
+                    </p>
+
+                </div>
+
+            </div><!-- /.auth-forms -->
+
+        </div><!-- /.panel-right -->
+
+        <!-- ── LOADING OVERLAY ── -->
+        <div class="loading-overlay" id="modalLoadingOverlay" aria-live="polite">
+            <div class="loading-spinner">
+                <i class="fas fa-circle-notch fa-spin"></i>
+            </div>
+            <div class="loading-text" id="modalLoadingText">Processing…</div>
+        </div>
+
+    </div><!-- /.modal-fixed -->
+
+
+    <!-- ══════════════════════════════════════════════════════════
+         ORIGINAL SCRIPTS — UNTOUCHED
+    ══════════════════════════════════════════════════════════ -->
+    <script>
+        (function () {
+            "use strict";
+
+            // ========== CONFIGURATION ==========
+            const ADMIN_EMAIL_DOMAIN = '@allitrack.com';
+            const USER_DASHBOARD_PATH = '/user/dashboard';
+            const ADMIN_DASHBOARD_PATH = '/admin/dashboard';
+
+            // ========== DOM ELEMENTS ==========
+            const tabLogin = document.getElementById('tabLoginBtn');
+            const tabSignup = document.getElementById('tabSignupBtn');
+            const loginFormDiv = document.getElementById('loginFormContainer');
+            const signupFormDiv = document.getElementById('signupFormContainer');
+            const switchToSignupLink = document.getElementById('switchToSignupLink');
+            const switchToLoginLink = document.getElementById('switchToLoginLink');
+
+            // Login elements
+            const loginEmail = document.getElementById('modalEmail');
+            const loginPass = document.getElementById('modalPassword');
+            const loginEmailError = document.getElementById('modalEmailError');
+            const loginPassError = document.getElementById('modalPasswordError');
+            const modalLoginBtn = document.getElementById('modalLoginBtn');
+            const loginForm = document.getElementById('modalLoginForm');
+
+            // Signup elements
+            const firstName = document.getElementById('modalFirstName');
+            const lastName = document.getElementById('modalLastName');
+            const signupEmail = document.getElementById('modalSignupEmail');
+            const signupPwdField = document.getElementById('modalSignupPassword');
+            const confirmPwdField = document.getElementById('modalConfirmPassword');
+            const termsCheck = document.getElementById('modalTerms');
+            const signupBtn = document.getElementById('modalSignupBtn');
+
+            const firstNameErr = document.getElementById('modalFirstNameError');
+            const lastNameErr = document.getElementById('modalLastNameError');
+            const signupEmailErr = document.getElementById('modalSignupEmailError');
+            const signupPwdErr = document.getElementById('modalSignupPasswordError');
+            const confirmErr = document.getElementById('modalConfirmPasswordError');
+            const termsErr = document.getElementById('modalTermsError');
+
+            const reqLength = document.getElementById('reqLength');
+            const reqUppercase = document.getElementById('reqUppercase');
+            const reqNumber = document.getElementById('reqNumber');
+
+            // Loading overlay
+            const loadingOverlay = document.getElementById('modalLoadingOverlay');
+            const loadingText = document.getElementById('modalLoadingText');
+
+            // ========== UTILITY FUNCTIONS ==========
+            function validateEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            function isAdminUser(userEmail) {
+                return userEmail.toLowerCase().endsWith(ADMIN_EMAIL_DOMAIN.toLowerCase());
+            }
+
+            function preventSpaces(e) {
+                if (e.key === ' ') e.preventDefault();
+            }
+
+            function cleanPaste(e) {
+                const data = (e.clipboardData || window.clipboardData).getData('text');
+                if (data.includes(' ')) {
+                    e.preventDefault();
+                    document.execCommand('insertText', false, data.replace(/\s/g, ''));
+                }
+            }
+
+            // ========== LOADING OVERLAY FUNCTIONS ==========
+            function showLoading(msg) {
+                loadingText.textContent = msg || 'Processing...';
+                loadingOverlay.style.display = 'flex';
+            }
+
+            function hideLoading() {
+                loadingOverlay.style.display = 'none';
+            }
+
+            // ========== AUTHENTICATION FUNCTIONS ==========
+            async function simulateLoginAPI(email, password) {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve({
+                            success: true,
+                            user: {
+                                id: Math.random().toString(36).substr(2, 9),
+                                name: email.split('@')[0],
+                                email: email,
+                                // FIXED: Changed 'user' to 'client' to match your DB
+                                role: isAdminUser(email) ? 'admin' : 'client',
+                                lastLogin: new Date().toISOString()
+                            }
+                        });
+                    }, 1500);
+                });
+            }
+
+            function handleLoginSuccess(userData) {
+                // 1. Save the data
+                localStorage.setItem('userData', JSON.stringify(userData));
+                localStorage.setItem('authToken', 'simulated_token_' + Date.now());
+
+                // 2. FIXED: Use 'userData' directly
+                const role = (
+                    userData.role ||
+                    userData.User_Type ||
+                    userData.user_type ||
+                    "client"
+                ).toLowerCase();
+
+                // 3. FIXED: Use CLEAN routes to avoid 404s
+                const redirectPath = (role === 'admin' || role === 'technician')
+                    ? '/admin/dashboard'
+                    : '/user/dashboard';
+
+                console.log(`Login successful. Redirecting ${role} to: ${redirectPath}`);
+                window.location.href = redirectPath;
+            }
+
+            function handleLoginFailure(errorMessage) {
+                hideLoading();
+                modalLoginBtn.disabled = false;
+                alert(`Login failed: ${errorMessage}`);
+                console.error('Login error:', errorMessage);
+            }
+
+            // ========== LOGIN VALIDATION ==========
+            function validateLoginForm() {
+                let valid = true;
+                const emailVal = loginEmail.value.trim();
+                const passVal = loginPass.value.trim();
+
+                if (!emailVal) {
+                    loginEmailError.textContent = 'Email is required.';
+                    loginEmail.classList.add('error-input');
+                    valid = false;
+                } else if (!validateEmail(emailVal)) {
+                    loginEmailError.textContent = 'Valid email required.';
+                    loginEmail.classList.add('error-input');
+                    valid = false;
+                } else {
+                    loginEmailError.textContent = '';
+                    loginEmail.classList.remove('error-input');
+                }
+
+                if (!passVal) {
+                    loginPassError.textContent = 'Password required.';
+                    loginPass.classList.add('error-input');
+                    valid = false;
+                } else {
+                    loginPassError.textContent = '';
+                    loginPass.classList.remove('error-input');
+                }
+
+                modalLoginBtn.disabled = !valid;
+                return valid;
+            }
+
+            // ========== SIGNUP VALIDATION ==========
+            function updateRequirement(el, isValid) {
+                if (isValid) {
+                    el.classList.remove('invalid');
+                    el.classList.add('valid');
+                    el.querySelector('i').className = 'fas fa-check-circle';
+                } else {
+                    el.classList.remove('valid');
+                    el.classList.add('invalid');
+                    el.querySelector('i').className = 'far fa-circle';
+                }
+            }
+
+            function checkPasswordRequirements(pass) {
+                const hasLength = pass.length >= 8;
+                const hasUppercase = /[A-Z]/.test(pass);
+                const hasLowercase = /[a-z]/.test(pass);
+                const hasNumber = /[0-9]/.test(pass);
+                const hasSpecial = /[@$!%*?&]/.test(pass);
+
+                updateRequirement(reqLength, hasLength);
+                updateRequirement(reqUppercase, hasUppercase && hasLowercase);
+                updateRequirement(reqNumber, hasNumber && hasSpecial);
+
+                return hasLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
+            }
+
+            function validateSignup() {
+                let isValid = true;
+
+                // Accepts single or compound names with spaces/hyphens: "Luisa Angela", "Delo Santos", "Anne-Marie"
+                const namePattern = /^[A-Za-zÀ-ɏ]+(?:[\s\-][A-Za-zÀ-ɏ]+)*$/;
+
+                const fnVal = firstName?.value.trim();
+                if (!fnVal) {
+                    firstNameErr.textContent = 'First name required';
+                    firstName?.classList.add('error-input');
+                    isValid = false;
+                } else if (!namePattern.test(fnVal)) {
+                    firstNameErr.textContent = 'Letters, spaces, and hyphens only';
+                    firstName?.classList.add('error-input');
+                    isValid = false;
+                } else {
+                    firstNameErr.textContent = '';
+                    firstName?.classList.remove('error-input');
+                }
+
+                const lnVal = lastName?.value.trim();
+                if (!lnVal) {
+                    lastNameErr.textContent = 'Last name required';
+                    lastName?.classList.add('error-input');
+                    isValid = false;
+                } else if (!namePattern.test(lnVal)) {
+                    lastNameErr.textContent = 'Letters, spaces, and hyphens only';
+                    lastName?.classList.add('error-input');
+                    isValid = false;
+                } else {
+                    lastNameErr.textContent = '';
+                    lastName?.classList.remove('error-input');
+                }
+
+                const semail = signupEmail?.value.trim();
+                if (!semail) {
+                    signupEmailErr.textContent = 'Email required';
+                    signupEmail?.classList.add('error-input');
+                    isValid = false;
+                } else if (!validateEmail(semail)) {
+                    signupEmailErr.textContent = 'Valid email required';
+                    signupEmail?.classList.add('error-input');
+                    isValid = false;
+                } else {
+                    signupEmailErr.textContent = '';
+                    signupEmail?.classList.remove('error-input');
+                }
+
+                const pwd = signupPwdField?.value || '';
+                if (!pwd) {
+                    signupPwdErr.textContent = 'Password required';
+                    signupPwdField?.classList.add('error-input');
+                    isValid = false;
+                } else if (!checkPasswordRequirements(pwd)) {
+                    signupPwdErr.textContent = 'Requirements not met';
+                    signupPwdField?.classList.add('error-input');
+                    isValid = false;
+                } else {
+                    signupPwdErr.textContent = '';
+                    signupPwdField?.classList.remove('error-input');
+                }
+
+                if (!confirmPwdField?.value) {
+                    confirmErr.textContent = 'Please confirm password';
+                    confirmPwdField?.classList.add('error-input');
+                    isValid = false;
+                } else if (confirmPwdField.value !== pwd) {
+                    confirmErr.textContent = 'Passwords do not match';
+                    confirmPwdField?.classList.add('error-input');
+                    isValid = false;
+                } else {
+                    confirmErr.textContent = '';
+                    confirmPwdField?.classList.remove('error-input');
+                }
+
+                if (!termsCheck?.checked) {
+                    termsErr.textContent = 'You must accept the terms';
+                    isValid = false;
+                } else {
+                    termsErr.textContent = '';
+                }
+
+                if (signupBtn) signupBtn.disabled = !isValid;
+                return isValid;
+            }
+
+            // ========== EVENT HANDLERS ==========
+            function activateLogin() {
+                tabLogin.classList.add('active');
+                tabSignup.classList.remove('active');
+                loginFormDiv.classList.add('active');
+                signupFormDiv.classList.remove('active');
+            }
+
+            function activateSignup() {
+                tabSignup.classList.add('active');
+                tabLogin.classList.remove('active');
+                signupFormDiv.classList.add('active');
+                loginFormDiv.classList.remove('active');
+            }
+
+            async function handleEmailLogin(e) {
+                e.preventDefault();
+                if (!validateLoginForm()) return;
+
+                const emailValue = loginEmail.value.trim();
+                const passwordValue = loginPass.value.trim();
+
+                showLoading('Logging in...');
+                modalLoginBtn.disabled = true;
+
+                try {
+                    const authBase =
+                        window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                            ? "http://127.0.0.1:5000"
+                            : "https://group6-bizally.onrender.com";
+
+                    const response = await fetch(`${authBase}/api/auth/login`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email: emailValue, password: passwordValue })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.status === "success") {
+                        localStorage.setItem("userData", JSON.stringify(result.user));
+
+                        const userType = (
+                            result.user.User_Type ||
+                            result.user.user_type ||
+                            result.user.role ||
+                            "client"
+                        ).toLowerCase();
+
+                        window.location.href =
+                            userType === "admin" || userType === "technician"
+                                ? "/admin/dashboard"
+                                : "/user/dashboard";
+                    } else {
+                        handleLoginFailure(result.message || "Invalid credentials");
+                    }
+                } catch (error) {
+                    console.error("Login Error:", error);
+                    handleLoginFailure("Server connection failed.");
+                }
+            }
+
+            async function handleSocialLogin(provider, isLogin = true) {
+                showLoading(`Connecting to ${provider}...`);
+
+                try {
+                    const response = await new Promise(resolve => {
+                        setTimeout(() => {
+                            resolve({
+                                success: true,
+                                user: {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    name: `${provider} User`,
+                                    email: `user@${provider.toLowerCase()}.com`,
+                                    provider: provider,
+                                    role: 'client', // Social logins default to client role
+                                    lastLogin: new Date().toISOString()
+                                }
+                            });
+                        }, 1500);
+                    });
+
+                    if (response.success) {
+                        handleLoginSuccess(response.user);
+                    } else {
+                        handleLoginFailure(`${provider} login failed`);
+                    }
+                } catch (error) {
+                    handleLoginFailure(`${provider} login error`);
+                }
+            }
+
+            // Pending signup data — held in memory until OTP is verified
+            let pendingSignup = null;
+
+            async function handleSignupSubmit(e) {
+                e.preventDefault();
+                if (!validateSignup()) return;
+
+                showLoading('Sending verification code...');
+                signupBtn.disabled = true;
+
+                const fName = document.getElementById('modalFirstName').value.trim();
+                const lName = document.getElementById('modalLastName').value.trim();
+                const email = document.getElementById('modalSignupEmail').value.trim();
+                const pwd = document.getElementById('modalSignupPassword').value;
+
+                // ── DEMO MODE: mock send-otp (remove when backend is ready) ──
+                await new Promise(r => setTimeout(r, 900));
+                hideLoading();
+                pendingSignup = { fName, lName, email, pwd };
+                document.getElementById('modalSignupForm').reset();
+                if (typeof window.showOtpPanel === 'function') {
+                    window.showOtpPanel(email);
+                }
+            }
+
+            // Exposed so the OTP script can call registerUser after verifying
+            window.getPendingSignup = function () { return pendingSignup; };
+            window.clearPendingSignup = function () { pendingSignup = null; };
+
+            // ========== SETUP FUNCTIONS ==========
+            function setupToggle(toggleId, inputId) {
+                const toggle = document.getElementById(toggleId);
+                const input = document.getElementById(inputId);
+                if (toggle && input) {
+                    toggle.addEventListener('click', function () {
+                        const type = input.type === 'password' ? 'text' : 'password';
+                        input.type = type;
+                        this.querySelector('i').classList.toggle('fa-eye');
+                        this.querySelector('i').classList.toggle('fa-eye-slash');
+                    });
+                }
+            }
+
+            // ========== INITIALIZATION ==========
+            function init() {
+                // Tab switching
+                tabLogin.addEventListener('click', activateLogin);
+                tabSignup.addEventListener('click', activateSignup);
+
+                if (switchToSignupLink) switchToSignupLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    activateSignup();
+                });
+
+                if (switchToLoginLink) switchToLoginLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    activateLogin();
+                });
+
+                if (loginForm) {
+                    loginForm.addEventListener('submit', handleEmailLogin);
+                }
+
+                // Password toggle
+                setupToggle('toggleModalPassword', 'modalPassword');
+                setupToggle('toggleModalSignupPassword', 'modalSignupPassword');
+                setupToggle('toggleModalConfirmPassword', 'modalConfirmPassword');
+
+                // Login validation
+                if (loginEmail) loginEmail.addEventListener('input', validateLoginForm);
+                if (loginPass) loginPass.addEventListener('input', validateLoginForm);
+
+                // Signup validation
+                if (firstName) firstName.addEventListener('input', validateSignup);
+                if (lastName) lastName.addEventListener('input', validateSignup);
+                if (signupEmail) signupEmail.addEventListener('input', validateSignup);
+                if (signupPwdField) {
+                    signupPwdField.addEventListener('input', function () {
+                        checkPasswordRequirements(this.value);
+                        validateSignup();
+                    });
+                }
+                if (confirmPwdField) confirmPwdField.addEventListener('input', validateSignup);
+                if (termsCheck) termsCheck.addEventListener('change', validateSignup);
+
+                // Prevent spaces in inputs
+                // Name fields intentionally excluded — spaces allowed for double names (e.g. 'Luisa Angela', 'Delo Santos')
+                ['modalSignupEmail', 'modalSignupPassword', 'modalConfirmPassword', 'modalEmail', 'modalPassword'].forEach(id => {
+                    const f = document.getElementById(id);
+                    if (f) f.addEventListener('keydown', preventSpaces);
+                });
+
+                // Clean spaces on paste
+                // Name fields intentionally excluded — spaces allowed on paste for double names
+                ['modalEmail', 'modalPassword', 'modalSignupEmail', 'modalSignupPassword', 'modalConfirmPassword'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.addEventListener('paste', cleanPaste);
+                });
+
+                // Signup form submit
+                const signupForm = document.getElementById('modalSignupForm');
+                if (signupForm) {
+                    signupForm.addEventListener('submit', handleSignupSubmit);
+                }
+
+                // Social login handlers
+                function continueWithGoogle() {
+                    localStorage.removeItem("userData");
+                    localStorage.removeItem("authToken");
+                    localStorage.removeItem("Technician_ID");
+
+                    showLoading('Connecting to Google...');
+
+                    const authBase =
+                        window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                            ? "http://127.0.0.1:5000"
+                            : "https://group6-bizally.onrender.com";
+
+                    window.location.href = `${authBase}/api/auth/google/login`;
+                }
+
+                document.getElementById('modalGoogleLogin')?.addEventListener('click', continueWithGoogle);
+                document.getElementById('modalGoogleSignup')?.addEventListener('click', continueWithGoogle);
+
+                // Initial validation
+                validateLoginForm();
+                validateSignup();
+
+                console.log('Login page initialized with authentication support');
+            }
+
+            // Start the application
+            init();
+        })();
+    </script>
+
+    <!-- ── OTP PANEL LOGIC ── -->
+    <script>
+        (function () {
+            "use strict";
+
+            const otpContainer = document.getElementById('otpFormContainer');
+            const otpForm = document.getElementById('modalOtpForm');
+            const otpBtn = document.getElementById('modalOtpBtn');
+            const otpError = document.getElementById('modalOtpError');
+            const otpCountdown = document.getElementById('otpCountdown');
+            const otpResendBtn = document.getElementById('otpResendBtn');
+            const otpBackBtn = document.getElementById('otpBackToLogin');
+            const otpEmailDisp = document.getElementById('otpEmailDisplay');
+            const otpBoxes = Array.from(document.querySelectorAll('.otp-box'));
+            const tabSwitch = document.querySelector('.tab-switch');
+
+            let countdownTimer = null;
+
+            function showOtpPanel(email) {
+                if (otpEmailDisp && email) otpEmailDisp.textContent = email;
+                document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+                otpContainer.classList.add('active');
+                if (tabSwitch) tabSwitch.style.visibility = 'hidden';
+                otpBoxes[0]?.focus();
+                startCountdown(120);
+            }
+
+            function hideOtpPanel() {
+                otpContainer.classList.remove('active');
+                document.getElementById('signupFormContainer').classList.add('active');
+                if (tabSwitch) tabSwitch.style.visibility = '';
+                resetOtp();
+            }
+
+            otpBoxes.forEach((box, idx) => {
+                box.addEventListener('input', function () {
+                    const val = this.value.replace(/\D/g, '');
+                    this.value = val.slice(-1);
+                    this.classList.toggle('filled', this.value !== '');
+                    if (this.value && idx < otpBoxes.length - 1) otpBoxes[idx + 1].focus();
+                    checkOtpComplete();
+                });
+
+                box.addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && !this.value && idx > 0) {
+                        otpBoxes[idx - 1].value = '';
+                        otpBoxes[idx - 1].classList.remove('filled');
+                        otpBoxes[idx - 1].focus();
+                    }
+                    if (e.key === 'ArrowLeft' && idx > 0) otpBoxes[idx - 1].focus();
+                    if (e.key === 'ArrowRight' && idx < otpBoxes.length - 1) otpBoxes[idx + 1].focus();
+                });
+
+                box.addEventListener('paste', function (e) {
+                    e.preventDefault();
+                    const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+                    text.split('').slice(0, otpBoxes.length - idx).forEach((ch, i) => {
+                        if (otpBoxes[idx + i]) {
+                            otpBoxes[idx + i].value = ch;
+                            otpBoxes[idx + i].classList.add('filled');
+                        }
+                    });
+                    const next = Math.min(idx + text.length, otpBoxes.length - 1);
+                    otpBoxes[next]?.focus();
+                    checkOtpComplete();
+                });
+            });
+
+            function getOtpValue() { return otpBoxes.map(b => b.value).join(''); }
+            function checkOtpComplete() { if (otpBtn) otpBtn.disabled = getOtpValue().length !== 6; }
+
+            function resetOtp() {
+                otpBoxes.forEach(b => { b.value = ''; b.classList.remove('filled', 'error-input'); });
+                if (otpBtn) otpBtn.disabled = true;
+                if (otpError) otpError.textContent = '';
+                clearInterval(countdownTimer);
+            }
+
+            function startCountdown(seconds) {
+                clearInterval(countdownTimer);
+                if (otpResendBtn) otpResendBtn.disabled = true;
+                let remaining = seconds;
+                function tick() {
+                    const m = Math.floor(remaining / 60);
+                    const s = remaining % 60;
+                    if (otpCountdown) otpCountdown.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+                    if (remaining <= 0) {
+                        clearInterval(countdownTimer);
+                        if (otpResendBtn) otpResendBtn.disabled = false;
+                    }
+                    remaining--;
+                }
+                tick();
+                countdownTimer = setInterval(tick, 1000);
+            }
+
+            if (otpForm) {
+                otpForm.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+                    const code = getOtpValue();
+                    if (code.length !== 6) return;
+
+                    otpBtn.disabled = true;
+                    if (otpError) otpError.textContent = '';
+
+                    const authBase =
+                        window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+                            ? 'http://127.0.0.1:5000'
+                            : 'https://group6-bizally.onrender.com';
+
+                    const pending = typeof window.getPendingSignup === 'function'
+                        ? window.getPendingSignup() : null;
+
+                    if (!pending) {
+                        if (otpError) otpError.textContent = 'Session expired. Please sign up again.';
+                        otpBtn.disabled = false;
+                        return;
+                    }
+
+                    // ── DEMO MODE: any 6-digit code is accepted (remove when backend is ready) ──
+                    await new Promise(r => setTimeout(r, 800));
+                    if (typeof window.clearPendingSignup === 'function') window.clearPendingSignup();
+                    hideOtpPanel();
+                    const banner = document.createElement('div');
+                    banner.textContent = '✅ Account created! Please log in.';
+                    banner.style.cssText = 'position:absolute;top:16px;left:50%;transform:translateX(-50%);background:var(--indigo-600);color:#fff;padding:9px 22px;border-radius:var(--r-pill);font-weight:600;font-size:.82rem;z-index:200;white-space:nowrap;box-shadow:0 4px 16px -4px rgba(99,102,241,.5);';
+                    document.querySelector('.modal-fixed').appendChild(banner);
+                    setTimeout(() => banner.remove(), 3500);
+                });
+            }
+
+            if (otpResendBtn) {
+                otpResendBtn.addEventListener('click', async function () {
+                    const pending = typeof window.getPendingSignup === 'function'
+                        ? window.getPendingSignup() : null;
+                    if (!pending) return;
+
+                    otpResendBtn.disabled = true;
+                    if (otpError) otpError.textContent = '';
+
+                    // ── DEMO MODE: mock resend (remove when backend is ready) ──
+                    await new Promise(r => setTimeout(r, 400));
+
+                    resetOtp();
+                    startCountdown(120);
+                });
+            }
+
+            if (otpBackBtn) {
+                otpBackBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    hideOtpPanel();
+
+                    document.getElementById('tabSignupBtn').classList.add('active');
+                    document.getElementById('tabLoginBtn').classList.remove('active');
+                });
+            }
+
+            window.showOtpPanel = showOtpPanel;
+            window.hideOtpPanel = hideOtpPanel;
+
+        })();
+    </script>
+
+    <script src="/static/js/api.js?v=2"></script>
+    <script src="/static/js/login.js?v=2"></script>
+</body>
+
+</html>

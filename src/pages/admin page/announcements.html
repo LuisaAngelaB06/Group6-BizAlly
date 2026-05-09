@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title data-translate="announcements_page_title">Announcements - AlliTrack Admin</title>
+    <script src="../../scripts/theme.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
+    <link rel="stylesheet" href="../../styles/admin page/announcements.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <script src="../../scripts/mobile-restriction.js"></script>
+    <script src="../../scripts/admin-preference-manager.js"></script>
+    <script src="../../scripts/admin-data-manager.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Access Denied Modal -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to
+                Home</button>
+        </div>
+    </div>
+
+    <div class="app">
+        <div class="shell">
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
+                            style="width: 32px; height: 32px;">
+                    </div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle" data-translate="admin_dashboard">Admin Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="/admin/index-admin.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
+                    <a href="/admin/all-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
+                    </a>
+                    <a href="/admin/staff-management.html" data-section="users">
+                        <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
+                    </a>
+                    <a href="/admin/announcements.html" class="active" data-section="announcements">
+                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="system_management">System Management</div>
+                    <a href="/admin/system-settings.html" data-section="system-settings">
+                        <i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span>
+                    </a>
+                    <a href="/admin/system-analytics.html" data-section="analytics">
+                        <i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span>
+                    </a>
+                    <a href="/admin/system-logs.html" data-section="logs">
+                        <i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
+                    <a href="/admin/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
+                    </a>
+                    <a href="/admin/profile-settings.html" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Announcements">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="announcementSearch" placeholder="Search announcements by title or content..."
+                            data-translate-placeholder="search_announcements" aria-label="Search announcements" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div id="userName" style="font-weight:700">Admin</div>
+                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">admin@allitrack.com</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div id="userAvatar" class="avatar">A</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="/admin/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="/admin/preferences.html" data-translate="settings">Settings</a>
+                            <a href="/" id="logoutBtn" data-translate="logout">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="content">
+                    <div class="page-header">
+                        <div class="header-content">
+                            <h1><i class="fas fa-bullhorn"></i> <span
+                                    data-translate="announcements_title">Announcements</span></h1>
+                            <p class="subtitle" data-translate="announcements_description">Create, manage, and publish
+                                system-wide announcements</p>
+                        </div>
+                    </div>
+
+                    <div class="announcements-container">
+                        <div class="form-card">
+                            <div class="form-header">
+                                <div>
+                                    <h2 id="formTitle" data-translate="create_announcement">Create new announcement</h2>
+                                </div>
+                            </div>
+
+                            <form id="announcementForm">
+                                <input type="hidden" id="announcementId" value="">
+
+                                <div class="form-group">
+                                    <label><i class="far fa-heading"></i> <span
+                                            data-translate="title">Title</span></label>
+                                    <input type="text" id="title"
+                                        placeholder="e.g. Server maintenance, feature update..."
+                                        data-translate-placeholder="announcement_title_placeholder" required>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label><i class="fas fa-flag"></i> <span
+                                                data-translate="priority">Priority</span></label>
+                                        <select id="priority" class="filter-select">
+                                            <option value="high" data-translate="high">High</option>
+                                            <option value="normal" selected data-translate="normal">Normal</option>
+                                            <option value="low" data-translate="low">Low</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>
+                                            <i class="fas fa-calendar"></i> <span data-translate="expires_on">Expires
+                                                on</span>
+                                        </label>
+                                        <input type="date" id="expiryDate" class="filter-select">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label><i class="fas fa-align-left"></i> <span
+                                            data-translate="content">Content</span></label>
+                                    <textarea id="content" rows="4" placeholder="Write the full announcement message..."
+                                        data-translate-placeholder="announcement_content_placeholder"
+                                        required></textarea>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                                        <i class="fas fa-paper-plane"></i> <span id="submitBtnText"
+                                            data-translate="publish_announcement">Publish announcement</span>
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" id="cancelEditBtn"
+                                        onclick="resetForm()">
+                                        <i class="fas fa-times"></i> <span data-translate="cancel">Cancel</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="list-card">
+                            <div class="list-header">
+                                <h3>
+                                    <i class="fas fa-list-check"></i> <span data-translate="all_announcements">All
+                                        announcements</span>
+                                </h3>
+                                <span class="badge" id="announcementCounter">0</span>
+                            </div>
+
+                            <div class="filter-bar">
+                                <input type="text" id="searchInput" placeholder="Search by title or content..."
+                                    data-translate-placeholder="filter_announcements" onkeyup="filterAnnouncements()">
+                                <button class="btn btn-secondary" onclick="filterAnnouncements()">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <select id="priorityFilter" class="filter-select" aria-label="Filter by priority">
+                                    <option value="all">All priorities</option>
+                                    <option value="high">High</option>
+                                    <option value="normal">Normal</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+
+                            <div id="announcementListContainer" class="announcement-list">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="site-footer">
+                    <div>&copy; 2025 Business Alliance Inc.</div>
+                    <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal" id="deleteConfirmationModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i> <span
+                        data-translate="confirm_delete">Confirm Delete</span></h3>
+                <button class="modal-close" id="closeDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="deleteMessage"></p>
+                <div id="selectedAnnouncementsList" class="selected-tickets-list"
+                    style="display: none; margin-top: 15px; max-height: 200px; overflow-y: auto;">
+                    <h4 style="margin-bottom: 10px; font-size: 0.9rem;" data-translate="selected_announcements">Selected
+                        Announcements:</h4>
+                    <ul id="announcementsToDeleteList"></ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelDeleteBtn" data-translate="cancel">Cancel</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn" data-translate="delete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script>
+        const API_BASE_URL =
+            window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                ? "http://127.0.0.1:5000/api/admin"
+                : "https://group6-bizally.onrender.com/api/admin";
+
+        const SOCKET_BASE_URL =
+            window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                ? "http://127.0.0.1:5000"
+                : "https://group6-bizally.onrender.com";
+
+        const socket = io(SOCKET_BASE_URL);
+
+        const translations = {
+            en: {
+                announcements_page_title: "Announcements - AlliTrack Admin",
+                announcements_title: "Announcements",
+                announcements_description: "Create, manage, and publish system-wide announcements",
+                search_announcements: "Search announcements by title or content...",
+                filter_announcements: "Search by title or content...",
+                create_announcement: "Create new announcement",
+                edit_announcement: "Edit announcement",
+                publish_announcement: "Publish announcement",
+                update_announcement: "Update announcement",
+                title: "Title",
+                priority: "Priority",
+                expires_on: "Expires on",
+                content: "Content",
+                all_announcements: "All announcements",
+                high: "High",
+                normal: "Normal",
+                low: "Low",
+                cancel: "Cancel",
+                delete: "Delete",
+                confirm_delete: "Confirm Delete",
+                selected_announcements: "Selected Announcements:",
+                delete_announcement_confirm: "Are you sure you want to delete this announcement?",
+                delete_announcements_confirm: "Are you sure you want to delete {count} selected announcements?",
+                delete_success: "Announcement deleted successfully",
+                delete_error: "Error deleting announcement",
+                no_announcements_found: "No announcements found",
+                create_first_announcement: "Create your first announcement.",
+                try_different_search: "Try a different search term.",
+                no_expiry: "No expiry",
+                created: "Created",
+                expires: "Expires",
+                announcement_title_placeholder: "e.g. Server maintenance, feature update...",
+                announcement_content_placeholder: "Write the full announcement message...",
+
+                admin_dashboard: "Admin Dashboard",
+                dashboard: "Dashboard",
+                ticket_management: "Ticket Management",
+                all_tickets: "All Tickets",
+                users_management: "Users Management",
+                announcements: "Announcements",
+                system_management: "System Management",
+                system_settings: "System Settings",
+                analytics: "Analytics",
+                system_logs: "System Logs",
+                admin_tools: "Admin Tools",
+                preferences: "Preferences",
+                profile_settings: "Profile Settings",
+                profile: "Profile",
+                settings: "Settings",
+                logout: "Logout",
+                admin_dashboard_template: "AlliTrack Admin Dashboard"
+            },
+            fil: {
+                announcements_page_title: "Mga Anunsyo - AlliTrack Admin",
+                announcements_title: "Mga Anunsyo",
+                announcements_description: "Lumikha, mamahala, at mag-publish ng mga anunsyo sa buong sistema",
+                search_announcements: "Maghanap ng anunsyo sa pamamagitan ng pamagat o nilalaman...",
+                filter_announcements: "Maghanap sa pamagat o nilalaman...",
+                create_announcement: "Lumikha ng bagong anunsyo",
+                edit_announcement: "I-edit ang anunsyo",
+                publish_announcement: "I-publish ang anunsyo",
+                update_announcement: "I-update ang anunsyo",
+                title: "Pamagat",
+                priority: "Prayoridad",
+                expires_on: "Nag-e-expire sa",
+                content: "Nilalaman",
+                all_announcements: "Lahat ng anunsyo",
+                high: "Mataas",
+                normal: "Katamtaman",
+                low: "Mababa",
+                cancel: "Kanselahin",
+                delete: "I-delete",
+                confirm_delete: "Kumpirmahin ang Pag-delete",
+                selected_announcements: "Mga Napiling Anunsyo:",
+                delete_announcement_confirm: "Sigurado ka bang gusto mong i-delete ang anunsyong ito?",
+                delete_announcements_confirm: "Sigurado ka bang gusto mong i-delete ang {count} napiling mga anunsyo?",
+                delete_success: "Matagumpay na na-delete ang anunsyo",
+                delete_error: "Error sa pag-delete ng anunsyo",
+                no_announcements_found: "Walang nahanap na anunsyo",
+                create_first_announcement: "Lumikha ng iyong unang anunsyo.",
+                try_different_search: "Subukan ang ibang termino sa paghahanap.",
+                no_expiry: "Walang expiration",
+                created: "Nilikha",
+                expires: "Nag-e-expire",
+                announcement_title_placeholder: "Hal: Server maintenance, feature update...",
+                announcement_content_placeholder: "Isulat ang buong mensahe ng anunsyo...",
+
+                admin_dashboard: "Admin Dashboard",
+                dashboard: "Dashboard",
+                ticket_management: "Pamamahala ng Ticket",
+                all_tickets: "Lahat ng Ticket",
+                users_management: "Pamamahala ng User",
+                announcements: "Mga Anunsyo",
+                system_management: "Pamamahala ng Sistema",
+                system_settings: "Mga Setting ng Sistema",
+                analytics: "Analitika",
+                system_logs: "Mga Log ng Sistema",
+                admin_tools: "Mga Tool ng Admin",
+                preferences: "Mga Kagustuhan",
+                profile_settings: "Mga Setting ng Profile",
+                profile: "Profile",
+                settings: "Mga Setting",
+                logout: "Logout",
+                admin_dashboard_template: "Dashboard ng Admin ng AlliTrack"
+            }
+        };
+
+        let announcements = [];
+        let selectedAnnouncements = new Set();
+        let isFetchingAnnouncements = false;
+
+        document.addEventListener("DOMContentLoaded", initAnnouncementsPage);
+
+        async function initAnnouncementsPage() {
+            ensureToast();
+            initializeManagers();
+            setupExpiryDateRestriction();
+            setupLogout();
+            setTimeout(setupAccountDropdown, 50);
+            setupEventListeners();
+            safeFetchAnnouncements();
+            setupRealtimeAnnouncements();
+        }
+
+        function safeFetchAnnouncements() {
+            if (isFetchingAnnouncements) return;
+
+            isFetchingAnnouncements = true;
+
+            fetchAnnouncements().finally(() => {
+                isFetchingAnnouncements = false;
+            });
+        }
+
+        function setupRealtimeAnnouncements() {
+            socket.on("new_announcement", () => {
+                console.log("🔔 New announcement");
+                safeFetchAnnouncements();
+            });
+
+            socket.on("announcement_updated", () => {
+                console.log("✏️ Announcement updated");
+                safeFetchAnnouncements();
+            });
+
+            socket.on("announcement_deleted", () => {
+                console.log("🗑️ Announcement deleted");
+                safeFetchAnnouncements();
+            });
+        }
+
+        function setupExpiryDateRestriction() {
+            const expiryInput = document.getElementById("expiryDate");
+            if (!expiryInput) return;
+
+            const today = getTodayDateString();
+            expiryInput.min = today;
+
+            expiryInput.addEventListener("change", function () {
+                if (this.value && this.value < today) {
+                    this.value = "";
+                    showToast("Expiry date cannot be in the past", "error");
+                }
+            });
+        }
+
+        function ensureToast() {
+            if (document.getElementById("toast")) return;
+
+            const toast = document.createElement("div");
+            toast.id = "toast";
+            toast.className = "toast";
+            document.body.appendChild(toast);
+        }
+
+        function initializeManagers() {
+            window.userDataManager?.initializeUserDisplay();
+
+            if (window.preferencesManager) {
+                window.preferencesManager.initialize();
+                applyTranslations(window.preferencesManager.getCurrentLanguage() || "en");
+                return;
+            }
+
+            applyTranslations("en");
+        }
+
+        async function fetchAnnouncements() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/announcements/all`);
+                if (!response.ok) throw new Error(`Server returned ${response.status}`);
+
+                const data = await response.json();
+                announcements = Array.isArray(data)
+                    ? data.map(mapAnnouncementFromServer)
+                    : [];
+
+                /* Remove selected IDs that no longer exist */
+                const existingIds = new Set(announcements.map(item => String(item.id)));
+                selectedAnnouncements = new Set(
+                    Array.from(selectedAnnouncements).filter(id => existingIds.has(String(id)))
+                );
+
+                /* Hide delete bar if nothing is selected */
+                updateBulkActionBar();
+
+                renderAnnouncements(getSearchValue());
+            } catch (error) {
+                console.error("Database fetch failed:", error);
+                showToast("Could not load announcements from server", "error");
+            }
+
+        }
+
+        function mapAnnouncementFromServer(ann) {
+            return {
+                id: ann.announcement_id,
+                title: ann.title || "",
+                content: ann.message || "",
+                priority: (ann.priority || "normal").toLowerCase(),
+                createdAt: ann.created_at,
+                expiryDate: ann.expiry_date,
+                author: ann.created_by
+            };
+        }
+
+        function renderAnnouncements(filterText = "") {
+            const container = document.getElementById("announcementListContainer");
+            const counter = document.getElementById("announcementCounter");
+            if (!container || !counter) return;
+
+            const filtered = getFilteredAnnouncements(filterText);
+            counter.textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                selectedAnnouncements.clear();
+                updateBulkActionBar();
+                container.innerHTML = getEmptyStateHTML(filterText);
+                return;
+            }
+
+            container.innerHTML = filtered.map(getAnnouncementHTML).join("");
+        }
+
+        function getFilteredAnnouncements(filterText = "") {
+            const searchText = filterText.trim().toLowerCase();
+            const priorityFilter = document.getElementById("priorityFilter")?.value || "all";
+
+            return announcements
+                .filter(announcement => {
+                    const matchesSearch =
+                        !searchText ||
+                        announcement.title.toLowerCase().includes(searchText) ||
+                        announcement.content.toLowerCase().includes(searchText);
+
+                    const matchesPriority =
+                        priorityFilter === "all" ||
+                        announcement.priority === priorityFilter;
+
+                    return matchesSearch && matchesPriority;
+                })
+                .sort((a, b) => getNumericId(b.id) - getNumericId(a.id));
+        }
+
+        function getAnnouncementHTML(item) {
+            const priorityClass = getPriorityClass(item.priority);
+            const priorityLabel = capitalize(item.priority || "normal");
+            const isSelected = selectedAnnouncements.has(String(item.id));
+            const editingId = document.getElementById("announcementId")?.value || "";
+            const activeClass = String(editingId) === String(item.id) ? "active-edit" : "";
+            const expiry = item.expiryDate ? formatDateOnly(item.expiryDate) : getTranslation("no_expiry");
+            const created = item.createdAt ? formatDateOnly(item.createdAt) : "-";
+
+            return `
+            <div class="announcement-item ${activeClass} ${isSelected ? "selected" : ""}" 
+     data-announcement-id="${escapeAttribute(item.id)}">
+
+    <div class="announcement-card-main"
+         onclick="toggleAnnouncementSelection('${escapeAttribute(item.id)}')">
+
+        <div class="announcement-card-body">
+            <div class="announcement-card-top">
+                <span class="badge ${priorityClass}">${priorityLabel}</span>
+            </div>
+
+            <div class="item-title">${escapeHTML(item.title)}</div>
+
+            <div class="item-meta">
+                <span><i class="fas fa-clock"></i> ${getTranslation("expires")}: ${expiry}</span>
+                <span><i class="fas fa-calendar-day"></i> ${getTranslation("created")}: ${created}</span>
+            </div>
+
+            <div class="item-excerpt">
+                ${formatAnnouncementContent(item.content)}
+            </div>
+        </div>
+    </div>
+
+    <div class="item-actions">
+        <button class="btn-action btn-edit" onclick="event.stopPropagation(); editAnnouncement('${escapeAttribute(item.id)}')" title="Edit">
+            <i class="fas fa-pencil-alt"></i>
+        </button>
+        <button class="btn-action btn-delete" onclick="event.stopPropagation(); deleteAnnouncement('${escapeAttribute(item.id)}')" title="Delete">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+    </div>
+</div>
+        `;
+        }
+
+        /* Format announcement content by escaping HTML and converting newlines and bullet points */
+        function formatAnnouncementContent(text) {
+            if (!text) return "";
+
+            return escapeHTML(text)
+                .replace(/\n\n/g, "<br><br>")   // paragraph spacing
+                .replace(/\n/g, "<br>")         // line breaks
+                .replace(/- /gm, "• ");          // bullet style
+        }
+
+        /* Generate HTML for empty state with dynamic message based on whether a search term is present */
+        function getEmptyStateHTML(filterText) {
+            return `
+            <div class="empty-state" style="display: flex;">
+                <i class="fas fa-bullhorn" style="font-size: 2.5rem; opacity: 0.5; margin-bottom: 1rem;"></i>
+                <h4>${getTranslation("no_announcements_found")}</h4>
+                <p style="color: var(--text-secondary);">
+                    ${filterText ? getTranslation("try_different_search") : getTranslation("create_first_announcement")}
+                </p>
+            </div>
+        `;
+        }
+
+        /* Reset form to default state for creating new announcement */
+        window.resetForm = function () {
+            const form = document.getElementById("announcementForm");
+            const announcementId = document.getElementById("announcementId");
+
+            form?.reset();
+            if (announcementId) announcementId.value = "";
+
+            setText("formTitle", getTranslation("create_announcement"));
+            setText("submitBtnText", getTranslation("publish_announcement"));
+
+            renderAnnouncements(getSearchValue());
+        };
+
+        /* Populate form with announcement data for editing */
+        window.editAnnouncement = function (id) {
+            const announcement = announcements.find(item => String(item.id) === String(id));
+            if (!announcement) return;
+
+            setValue("announcementId", announcement.id);
+            setValue("title", announcement.title);
+            setValue("priority", announcement.priority || "normal");
+            setValue("content", announcement.content);
+            setValue("expiryDate", announcement.expiryDate ? formatDateOnly(announcement.expiryDate) : "");
+
+            setText("formTitle", getTranslation("edit_announcement"));
+            setText("submitBtnText", getTranslation("update_announcement"));
+
+            renderAnnouncements(getSearchValue());
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        /* Show confirmation modal before deleting an announcement */
+        window.deleteAnnouncement = async function (id) {
+            if (!confirm(getTranslation("delete_announcement_confirm"))) return;
+
+            try {
+                const response = await deleteAnnouncementRequest(id);
+
+                if (!response.ok) {
+                    showToast("Failed to delete from server", "error");
+                    return;
+                }
+
+                selectedAnnouncements.delete(String(id));
+                showToast("Announcement removed from database", "success");
+                await safeFetchAnnouncements();
+            } catch (error) {
+                console.error("Delete failed:", error);
+                showToast("Server connection failed", "error");
+            }
+        };
+
+        window.filterAnnouncements = function () {
+            renderAnnouncements(getSearchValue());
+        };
+
+        /* Show delete confirmation modal with dynamic message and list of selected announcements */
+        window.showDeleteConfirmation = function (ids) {
+            const modal = document.getElementById("deleteConfirmationModal");
+            const deleteMessage = document.getElementById("deleteMessage");
+            const listContainer = document.getElementById("selectedAnnouncementsList");
+            const listEl = document.getElementById("announcementsToDeleteList");
+
+            if (!modal || !deleteMessage || !listContainer || !listEl) return;
+
+            listEl.innerHTML = "";
+
+            if (ids.length === 1) {
+                deleteMessage.textContent = getTranslation("delete_announcement_confirm");
+                listContainer.style.display = "none";
+            } else {
+                deleteMessage.textContent = getTranslation("delete_announcements_confirm").replace("{count}", ids.length);
+                ids.forEach(id => {
+                    const announcement = announcements.find(item => String(item.id) === String(id));
+                    if (!announcement) return;
+
+                    const li = document.createElement("li");
+                    li.textContent = announcement.title;
+                    listEl.appendChild(li);
+                });
+                listContainer.style.display = "block";
+            }
+
+            modal.classList.add("show");
+        };
+
+        /* Toggle selection when clicking on announcement card (but not on buttons) */
+        window.toggleAnnouncementSelection = function (id) {
+            id = String(id);
+
+            if (selectedAnnouncements.has(id)) {
+                selectedAnnouncements.delete(id);
+            } else {
+                selectedAnnouncements.add(id);
+            }
+
+            renderAnnouncements(getSearchValue());
+            updateBulkActionBar();
+        };
+
+        async function confirmDeleteAnnouncements() {
+            const ids = Array.from(selectedAnnouncements);
+            if (ids.length === 0) return;
+
+            try {
+                const results = await Promise.all(ids.map(deleteAnnouncementRequest));
+
+                if (!results.every(response => response.ok)) {
+                    showToast("Failed to delete one or more announcements", "error");
+                    return;
+                }
+
+                selectedAnnouncements.clear();
+                closeDeleteModal();
+                updateBulkActionBar();
+                showToast(getTranslation("delete_success"), "success");
+                safeFetchAnnouncements();
+            } catch (error) {
+                console.error("Bulk delete failed:", error);
+                showToast("Server connection failed", "error");
+            }
+        }
+
+        function deleteAnnouncementRequest(id) {
+            return fetch(`${API_BASE_URL}/announcements/delete`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ announcement_id: id })
+            });
+        }
+
+        function closeDeleteModal() {
+            document.getElementById("deleteConfirmationModal")?.classList.remove("show");
+        }
+
+        function updateBulkActionBar() {
+            let bulkBar = document.getElementById("bulkActionBar");
+            const listCard = document.querySelector(".list-card");
+
+            if (!bulkBar && listCard) {
+                bulkBar = document.createElement("div");
+                bulkBar.id = "bulkActionBar";
+                bulkBar.className = "bulk-action-bar";
+                listCard.insertBefore(bulkBar, document.getElementById("announcementListContainer"));
+            }
+
+            if (!bulkBar) return;
+
+            // ❌ Hide EVERYTHING when no selection
+            if (selectedAnnouncements.size === 0) {
+                bulkBar.style.display = "none";
+                bulkBar.innerHTML = "";
+                return;
+            }
+
+            const visibleIds = getFilteredAnnouncements(getSearchValue()).map(item => String(item.id));
+            const allVisibleSelected =
+                visibleIds.length > 0 &&
+                visibleIds.every(id => selectedAnnouncements.has(id));
+
+            // ✅ Show only when there is selection
+            bulkBar.style.display = "flex";
+            bulkBar.innerHTML = `
+        <span style="margin-right: 12px; font-weight: 600;">
+            ${allVisibleSelected ? "All selected" : `${selectedAnnouncements.size} selected`}
+        </span>
+
+        <button class="btn btn-secondary" onclick="toggleSelectAllAnnouncements()">
+            <i class="fas fa-check-square"></i>
+            ${allVisibleSelected ? "Unselect All" : "Select All"}
+        </button>
+
+        <button class="btn btn-danger" onclick="showDeleteConfirmation(Array.from(selectedAnnouncements))">
+            <i class="fas fa-trash-alt"></i> ${getTranslation("delete")} (${selectedAnnouncements.size})
+        </button>
+    `;
+        }
+
+        window.toggleSelectAllAnnouncements = function () {
+            const visibleIds = getFilteredAnnouncements(getSearchValue()).map(item => String(item.id));
+
+            const allVisibleSelected =
+                visibleIds.length > 0 &&
+                visibleIds.every(id => selectedAnnouncements.has(id));
+
+            if (allVisibleSelected) {
+                visibleIds.forEach(id => selectedAnnouncements.delete(id));
+            } else {
+                visibleIds.forEach(id => selectedAnnouncements.add(id));
+            }
+
+            renderAnnouncements(getSearchValue());
+            updateBulkActionBar();
+        };
+
+        document.getElementById("announcementForm")?.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const editingId = document.getElementById("announcementId")?.value || "";
+            const submitBtn = document.getElementById("submitBtn");
+
+            const payload = {
+                announcement_id: editingId,
+                title: document.getElementById("title")?.value.trim() || "",
+                message: document.getElementById("content")?.value.trim() || "",
+                priority: document.getElementById("priority")?.value || "normal",
+                expiry_date: document.getElementById("expiryDate")?.value || null,
+                admin_id: getCurrentAdminIdentifier()
+            };
+
+            if (!payload.title || !payload.message) {
+                showToast("Please fill in the title and content", "error");
+                return;
+            }
+
+            try {
+                if (submitBtn) submitBtn.disabled = true;
+
+                const endpoint = editingId ? "announcements/update" : "announcements";
+                const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    showToast(result.message || "Failed to save announcement", "error");
+                    return;
+                }
+
+                showToast(editingId ? "Announcement updated!" : "Announcement published!", "success");
+                resetForm();
+                safeFetchAnnouncements();
+            } catch (error) {
+                console.error("Announcement save failed:", error);
+                showToast("Server connection failed", "error");
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        });
+
+        function setupEventListeners() {
+            const searchInput = document.getElementById("searchInput");
+            const headerSearch = document.getElementById("announcementSearch");
+            const deleteModal = document.getElementById("deleteConfirmationModal");
+
+            searchInput?.addEventListener("input", () => renderAnnouncements(searchInput.value));
+
+            headerSearch?.addEventListener("input", function () {
+                if (searchInput) searchInput.value = this.value;
+                renderAnnouncements(this.value);
+            });
+
+            document.getElementById("priorityFilter")?.addEventListener("change", filterAnnouncements);
+            document.getElementById("cancelEditBtn")?.addEventListener("click", resetForm);
+            document.getElementById("closeDeleteModal")?.addEventListener("click", closeDeleteModal);
+            document.getElementById("cancelDeleteBtn")?.addEventListener("click", closeDeleteModal);
+            document.getElementById("confirmDeleteBtn")?.addEventListener("click", confirmDeleteAnnouncements);
+
+            deleteModal?.addEventListener("click", function (event) {
+                if (event.target === this) closeDeleteModal();
+            });
+        }
+
+        document.addEventListener("languageChanged", function (event) {
+            applyTranslations(event.detail.language);
+            renderAnnouncements(getSearchValue());
+        });
+
+        function applyTranslations(language) {
+            const dict = translations[translations[language] ? language : "en"];
+
+            document.querySelectorAll("[data-translate]").forEach(element => {
+                const key = element.dataset.translate;
+                if (!dict[key]) return;
+                element.textContent = dict[key];
+            });
+
+            document.querySelectorAll("[data-translate-placeholder]").forEach(element => {
+                const key = element.dataset.translatePlaceholder;
+                if (dict[key]) element.placeholder = dict[key];
+            });
+
+            if (dict.announcements_page_title) {
+                document.title = dict.announcements_page_title;
+            }
+        }
+
+        function setupAccountDropdown() {
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
+            if (!accountBtn || !accountMenu) return;
+
+            const freshBtn = accountBtn.cloneNode(true);
+            accountBtn.parentNode.replaceChild(freshBtn, accountBtn);
+
+            freshBtn.addEventListener("click", function (event) {
+                event.stopPropagation();
+                accountMenu.classList.toggle("show");
+                freshBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            document.addEventListener("click", function (event) {
+                if (!accountMenu.classList.contains("show")) return;
+                if (freshBtn.contains(event.target) || accountMenu.contains(event.target)) return;
+
+                accountMenu.classList.remove("show");
+                freshBtn.setAttribute("aria-expanded", "false");
+            });
+
+            document.addEventListener("keydown", function (event) {
+                if (event.key !== "Escape") return;
+
+                accountMenu.classList.remove("show");
+                freshBtn.setAttribute("aria-expanded", "false");
+            });
+
+            accountMenu.querySelectorAll("a").forEach(item => {
+                item.addEventListener("click", () => {
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", "false");
+                });
+            });
+
+            freshBtn.style.cursor = "pointer";
+        }
+
+        function setupLogout() {
+            document.getElementById("logoutBtn")?.addEventListener("click", function (event) {
+                event.preventDefault();
+
+                [
+                    "userData",
+                    "adminProfile",
+                    "adminPreferences",
+                    "preferredLanguage"
+                ].forEach(key => localStorage.removeItem(key));
+
+                window.location.href = "/";
+            });
+        }
+
+        function getCurrentAdminIdentifier() {
+            const userData = safeParseJSON(localStorage.getItem("userData"));
+            const adminProfile = safeParseJSON(localStorage.getItem("adminProfile"));
+            const user = { ...userData, ...adminProfile };
+
+            return (
+                user.user_id ||
+                user.user_id ||
+                user.id ||
+                user.Admin_ID ||
+                user.Technician_ID ||
+                user.Name ||
+                user.name ||
+                user.Email ||
+                user.email ||
+                "Admin"
+            );
+        }
+
+        function showToast(message, type = "success") {
+            const toast = document.getElementById("toast");
+            if (!toast) return;
+
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+
+            setTimeout(() => toast.classList.remove("show"), 3000);
+        }
+
+        function getTranslation(key) {
+            const lang = window.preferencesManager?.getCurrentLanguage() || "en";
+            return translations[lang]?.[key] || translations.en[key] || key;
+        }
+
+        function getSearchValue() {
+            return document.getElementById("searchInput")?.value || "";
+        }
+
+        function getNumericId(id) {
+            return parseInt(String(id).replace(/\D/g, ""), 10) || 0;
+        }
+
+        function getPriorityClass(priority) {
+            if (priority === "high") return "badge-high";
+            if (priority === "low") return "badge-low";
+            return "badge-normal";
+        }
+
+        function getExcerpt(text, maxLength = 140) {
+            const value = String(text || "");
+            return value.length > maxLength ? `${value.substring(0, maxLength)}...` : value;
+        }
+
+        function formatDateOnly(value) {
+            if (!value) return "-";
+
+            const rawValue = String(value).trim();
+            const isoDate = rawValue.match(/^(\d{4}-\d{2}-\d{2})/);
+            if (isoDate) return isoDate[1];
+
+            const parsed = new Date(rawValue);
+            if (Number.isNaN(parsed.getTime())) return rawValue.split(" ")[0] || "-";
+
+            const year = parsed.getFullYear();
+            const month = String(parsed.getMonth() + 1).padStart(2, "0");
+            const day = String(parsed.getDate()).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+        }
+
+        function getTodayDateString() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, "0");
+            const day = String(today.getDate()).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+        }
+
+        function escapeHTML(value) {
+            return String(value || "").replace(/[&<>"']/g, char => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+            }[char]));
+        }
+
+        function escapeAttribute(value) {
+            return escapeHTML(String(value || ""));
+        }
+
+        function capitalize(value) {
+            const text = String(value || "");
+            return text.charAt(0).toUpperCase() + text.slice(1);
+        }
+
+        function setText(id, value) {
+            const element = document.getElementById(id);
+            if (element) element.textContent = value;
+        }
+
+        function setValue(id, value) {
+            const element = document.getElementById(id);
+            if (element) element.value = value || "";
+        }
+
+        function safeParseJSON(value) {
+            try {
+                return JSON.parse(value || "{}");
+            } catch {
+                return {};
+            }
+        }
+    </script>
+</body>
+
+</html>

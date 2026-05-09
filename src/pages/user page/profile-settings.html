@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title data-translate="profile_settings_page_title">Profile Settings - AlliTrack</title>
+    <script src="../../scripts/theme.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
+    <link rel="stylesheet" href="../../styles/user page/profile-settings.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <script src="../../scripts/mobile-restriction.js"></script>
+    <script src="../../scripts/user-preference-manager.js"></script>
+    <script src="../../scripts/user-data-manager.js"></script>
+</head>
+
+<body>
+    <!-- Mobile Access Denied Modal -->
+    <div class="mobile-block-overlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">User dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to
+                Home</button>
+        </div>
+    </div>
+
+    <div class="app">
+        <div class="shell">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
+                <div class="brand">
+                    <div class="logo">
+                        <img src="/src/assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
+                            style="width: 32px; height: 32px;">
+                    </div>
+                    <div>
+                        <div class="title">AlliTrack</div>
+                        <div class="subtitle" data-translate="user_dashboard">User Dashboard</div>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="/user/index-user.html" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="support">Support</div>
+                    <a href="/user/my-tickets.html" data-section="tickets">
+                        <i class="fas fa-ticket-alt"></i> <span data-translate="my_tickets">Ticket</span>
+                    </a>
+                    <a href="/user/notifications.html" data-section="notifications">
+                        <i class="fas fa-bell"></i> <span data-translate="notifications">Alert</span>
+                    </a>
+                    <a href="/user/submit-ticket.html" data-section="submit-ticket">
+                        <i class="fas fa-plus-circle"></i> <span data-translate="submit_ticket">New</span>
+                    </a>
+
+                    <div class="nav-section" data-translate="management">Manage</div>
+                    <a href="/user/preferences.html" data-section="preferences">
+                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Settings</span>
+                    </a>
+                    <a href="/user/profile-settings.html" id="profileLink" data-section="profile-settings">
+                        <i class="fas fa-user-cog"></i> Profile Settings
+                        <span id="profileRedDot" class="red-dot" style="display:none;"></span>
+                    </a>
+                    <a href="/user/announcements.html" id="announcementLink">
+                        <i class="fas fa-bullhorn"></i> Announcements
+                        <span id="navRedDot" class="red-dot" style="display: none;"></span>
+                    </a>
+
+                    <div class="nav-section" data-translate="system">System</div>
+                    <a href="/user/account-security.html" data-section="account-security">
+                        <i class="fas fa-shield-alt"></i> <span data-translate="account_security">Security</span>
+                    </a>
+                    <a href="/user/system-information.html" data-section="system-information">
+                        <i class="fas fa-info-circle"></i> <span data-translate="system_information">Info</span>
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <div class="version">v1.2.0</div>
+                    <div>Business Alliance Inc.</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main">
+                <!-- Header -->
+                <header class="header">
+                    <div class="search" role="search" aria-label="Search Tickets">
+                        <i class="fas fa-search" style="opacity:.6"></i>
+                        <input id="q" placeholder="Search tickets, users, IDs..."
+                            data-translate-placeholder="search_tickets" aria-label="Search tickets, users, IDs" />
+                    </div>
+                    <div class="header-actions">
+                        <div style="text-align:right">
+                            <div id="userName" style="font-weight:700">User</div>
+                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">user@example.com</div>
+                        </div>
+                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                            <div id="userAvatar" class="avatar">U</div>
+                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
+                        </div>
+                        <div class="account-menu" id="accountMenu">
+                            <div class="arrow"></div>
+                            <a href="/user/profile-settings.html" data-translate="profile">Profile</a>
+                            <a href="/user/preferences.html" data-translate="settings">Settings</a>
+                            <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Profile Settings Content -->
+                <div class="content">
+                    <div class="profile-content">
+                        <!-- Header with Container -->
+                        <div class="profile-header-container">
+                            <div class="profile-header">
+                                <h1><i class="fas fa-user-cog"></i> <span
+                                        data-translate="profile_settings_title">Profile Settings</span></h1>
+                            </div>
+                        </div>
+
+                        <!-- Profile Photo Section -->
+                        <div class="profile-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title" data-translate="profile_photo">Profile Photo</h2>
+                                        <p class="section-description" data-translate="update_profile_picture">Update
+                                            your profile picture</p>
+                                    </div>
+                                </div>
+
+                                <div class="profile-photo-section">
+                                    <div class="profile-photo" id="profilePhoto">
+                                        <div id="profileInitials">U</div>
+                                        <img id="profileImage" style="display: none;" alt="Profile Photo">
+                                        <div class="profile-photo-overlay">
+                                            <i class="fas fa-camera"></i>
+                                        </div>
+                                    </div>
+                                    <div class="profile-photo-info">
+                                        <div class="profile-photo-title" data-translate="your_profile_picture">Your
+                                            Profile Picture</div>
+                                        <div class="profile-photo-description" data-translate="photo_requirements">
+                                            Upload a new photo. JPG, GIF or PNG. Max size 5MB.
+                                        </div>
+                                        <div class="photo-actions">
+                                            <button type="button" class="btn btn-primary"
+                                                onclick="document.getElementById('photoUpload').click()">
+                                                <i class="fas fa-upload"></i> <span data-translate="upload_photo">Upload
+                                                    Photo</span>
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" onclick="removePhoto()">
+                                                <i class="fas fa-times"></i> <span data-translate="remove">Remove</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="file" id="photoUpload" accept="image/*" style="display: none;"
+                                    onchange="handlePhotoUpload(event)">
+                            </div>
+
+                            <!-- PERSONAL INFORMATION SECTION -->
+                            <div class="profile-section">
+                                <div class="section-header">
+                                    <div class="section-icon"><i class="fas fa-id-card"></i></div>
+                                    <div>
+                                        <h2 class="section-title">Identity Type</h2>
+                                        <p class="section-description">Choose whether you are registering as a Company or an Individual</p>
+                                    </div>
+                                </div>
+                                <div class="profile-form">
+                                    <div class="persona-selector">
+                                        <label class="radio-card">
+                                            <input type="radio" name="profile_persona" value="Individual" checked onchange="handlePersonaChange()">
+                                            <div class="card-content">
+                                                <i class="fas fa-user"></i>
+                                                <span>Individual</span>
+                                            </div>
+                                        </label>
+                                        <label class="radio-card">
+                                            <input type="radio" name="profile_persona" value="Company" onchange="handlePersonaChange()">
+                                            <div class="card-content">
+                                                <i class="fas fa-building"></i>
+                                                <span>Company</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. MAIN INFORMATION FORM -->
+                            <form id="infoForm" class="profile-section">
+                                <div class="section-header">
+                                    <div class="section-icon"><i class="fas fa-address-book"></i></div>
+                                    <div>
+                                        <h2 class="section-title" id="infoTitle">Personal Information</h2>
+                                        <p class="section-description">Update your contact and location details</p>
+                                    </div>
+                                </div>
+
+                                <div class="profile-form">
+                                    <div class="form-grid">
+                                        <!-- Company Specific Fields (Hidden for Individuals) -->
+                                        <div class="form-group company-field">
+                                            <label class="form-label" for="companyName">Company Name <span class="required">*</span></label>
+                                            <input type="text" id="companyName" class="form-input" placeholder="Enter business name">
+                                        </div>
+                                        <div class="form-group company-field">
+                                            <label class="form-label" for="contactPerson">Contact Person <span class="required">*</span></label>
+                                            <input type="text" id="contactPerson" class="form-input" placeholder="Primary contact name">
+                                        </div>
+
+                                        <!-- Always Required Fields -->
+                                        <div class="form-group">
+                                            <label class="form-label" for="contactPhone">Phone or Landline <span class="required">*</span></label>
+                                            <!-- Restricting to numbers/symbols via pattern -->
+                                            <input type="tel" id="contactPhone" class="form-input" placeholder="e.g., 02-8123-4567" pattern="[0-9\-\+\(\)\s]*" required>
+                                        </div>
+                                        <div class="form-group full-width">
+                                            <label class="form-label" for="address">Full Address <span class="required">*</span></label>
+                                            <input type="text" id="address" class="form-input" placeholder="Enter your full address" required>
+                                        </div>
+
+                                        <!-- Optional Company Email -->
+                                        <div class="form-group full-width company-field">
+                                            <label class="form-label" for="companyEmail">Email Address of the Company</label>
+                                            <input type="email" id="companyEmail" class="form-input" placeholder="office@company.com">
+                                        </div>
+                                    </div>
+
+                                    <!-- ACCOUNT INFORMATION (READ-ONLY) -->
+                                    <div class="section-header">
+                                        <div class="section-icon"><i class="fas fa-user-shield"></i></div>
+                                        <div>
+                                            <h2 class="section-title">Account Information</h2>
+                                            <p class="section-description">Update your basic profile information</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">First Name</label>
+                                            <input type="text" id="firstName" class="form-input">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Last Name</label>
+                                            <input type="text" id="lastName" class="form-input">
+                                        </div>
+                                        <div class="form-group full-width">
+                                            <label class="form-label">Email Address</label>
+                                            <input type="email" id="email" class="form-input">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Information</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                           <!-- 4. SEPARATE CHANGE PASSWORD SECTION -->
+                            <form id="passwordForm" class="profile-section">
+                                <div class="section-header">
+                                    <div class="section-icon">
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="section-title" data-translate="change_password">Change Password</h2>
+                                        <p class="section-description" data-translate="update_password_security">Update your password to keep your account secure</p>
+                                    </div>
+                                </div>
+
+                                <div class="profile-form">
+                                    <div class="form-grid">
+                                        <!-- Current Password -->
+                                        <div class="form-group" style="grid-column: span 2;">
+                                            <label class="form-label" for="currentPassword">
+                                                <span data-translate="current_password">Current Password</span> <span class="required">*</span>
+                                            </label>
+                                            <div class="password-wrapper">
+                                                <input type="password" id="currentPassword" class="form-input" placeholder="Enter current password" />
+                                                <i class="fas fa-eye toggle-password" onclick="togglePassword('currentPassword', this)"></i>
+                                            </div>
+                                        </div>
+
+                                        <!-- New Password with Strength Meter -->
+                                        <div class="form-group">
+                                            <label class="form-label" for="newPassword">
+                                                <span data-translate="new_password">New Password</span> <span class="required">*</span>
+                                            </label>
+                                            <div class="password-wrapper">
+                                                <input type="password" id="newPassword" class="form-input" placeholder="Enter new password" />
+                                                <i class="fas fa-eye toggle-password" onclick="togglePassword('newPassword', this)"></i>
+                                            </div>
+
+                                            <div class="password-strength" id="passwordStrength">
+                                                <div class="strength-bar">
+                                                    <div class="strength-fill"></div>
+                                                </div>
+                                                <div class="strength-text" data-translate="password_strength">Password strength</div>
+                                            </div>
+                                            
+                                            <div class="form-error" id="newPasswordError" data-translate="enter_new_password">Please enter a new password</div>
+                                        </div>
+
+                                        <!-- Confirm Password -->
+                                        <div class="form-group">
+                                            <label class="form-label" for="confirmPassword">
+                                                <span data-translate="confirm_password">Confirm Password</span> <span class="required">*</span>
+                                            </label>
+                                            <div class="password-wrapper">
+                                                <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm new password" />
+                                                <i class="fas fa-eye toggle-password" onclick="togglePassword('confirmPassword', this)"></i>
+                                            </div>
+                                            <div class="form-error" id="confirmPasswordError" data-translate="passwords_not_match">Passwords do not match</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-hint" style="margin-top: 10px;">
+                                        <i class="fas fa-info-circle"></i> 
+                                        <span data-translate="password_requirements">Password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters.</span>
+                                    </div>
+
+                                    <div class="form-actions" style="margin-top: 15px;">
+                                        <button type="submit" class="btn btn-secondary" id="updatePasswordBtn">
+                                            <i class="fas fa-key"></i> <span data-translate="update_password">Update Password</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <!-- Footer -->
+                            <footer class="site-footer">
+                                <div>&copy; 2025 Business Alliance Inc.</div>
+                                <div data-translate="dashboard_template">AlliTrack User Dashboard</div>
+                            </footer>
+                        </div>
+                    </div>
+                </div>  
+            </main>
+        </div>
+    </div>
+
+    <script>
+
+        // --- DYNAMIC CONFIGURATION ---
+        if (typeof API_BASE_URL === 'undefined') {
+            window.API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+                ? 'http://127.0.0.1:5000' 
+                : 'https://group6-bizally.onrender.com';
+        }
+
+        // Global variable for this page
+        let userData = JSON.parse(localStorage.getItem("userData") || "{}");
+
+        // Account Dropdown Functionality - FIXED VERSION
+        function setupAccountDropdown() {
+            console.log('🔧 Setting up account dropdown...');
+            const accountBtn = document.getElementById("accountBtn");
+            const accountMenu = document.getElementById("accountMenu");
+
+            if (!accountBtn || !accountMenu) {
+                console.error('❌ Account dropdown elements not found!');
+                return;
+            }
+
+            console.log('✅ Elements found, setting up...');
+
+            // Don't clone elements - just work with existing ones
+            // Remove any existing click listeners
+            const newBtn = accountBtn.cloneNode(true);
+            accountBtn.parentNode.replaceChild(newBtn, accountBtn);
+
+            // Get fresh reference
+            const freshBtn = document.getElementById("accountBtn");
+
+            // Add click event to toggle dropdown
+            freshBtn.addEventListener("click", function (e) {
+                console.log('🎯 Account button clicked!');
+                e.stopPropagation();
+                e.preventDefault();
+
+                const isShowing = accountMenu.classList.contains("show");
+                accountMenu.classList.toggle("show");
+                freshBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", function (e) {
+                if (accountMenu.classList.contains("show") &&
+                    !freshBtn.contains(e.target) &&
+                    !accountMenu.contains(e.target)) {
+                    console.log('🔒 Closing dropdown (clicked outside)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
+                    console.log('🔒 Closing dropdown (Escape key)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                }
+            });
+
+            // Close when clicking menu items (except logout)
+            const menuItems = accountMenu.querySelectorAll("a");
+            menuItems.forEach(item => {
+                item.addEventListener("click", function () {
+                    console.log('🔒 Closing dropdown (menu item clicked)');
+                    accountMenu.classList.remove("show");
+                    freshBtn.setAttribute("aria-expanded", false);
+                });
+            });
+
+            // Ensure button is clickable
+            freshBtn.style.cursor = 'pointer';
+
+            console.log('✅ Account dropdown setup complete');
+        }
+
+        // Translation dictionary for profile settings page
+        const translations = {
+            'en': {
+                // PAGE-SPECIFIC translations only:
+                'profile_settings_page_title': 'Profile Settings - AlliTrack',
+                'profile_settings_title': 'Profile Settings',
+                'search_tickets': 'Search tickets, users, IDs...',
+                'profile_updated': 'Profile updated successfully!',
+                'profile_photo': 'Profile Photo',
+                'update_profile_picture': 'Update your profile picture',
+                'your_profile_picture': 'Your Profile Picture',
+                'photo_requirements': 'Upload a new photo. JPG, GIF or PNG. Max size 5MB.',
+                'upload_photo': 'Upload Photo',
+                'remove': 'Remove',
+                'personal_info': 'Personal Information',
+                'update_basic_info': 'Update your basic profile information',
+                'first_name': 'First Name',
+                'last_name': 'Last Name',
+                'enter_first_name': 'Please enter your first name',
+                'enter_last_name': 'Please enter your last name',
+                'email_address': 'Email Address',
+                'enter_valid_email': 'Please enter a valid email address',
+                'phone_number': 'Phone Number',
+                'department': 'Department',
+                'optional': 'Optional',
+                'change_password': 'Change Password',
+                'update_password_security': 'Update your password to keep your account secure',
+                'current_password': 'Current Password',
+                'enter_current_password': 'Please enter your current password',
+                'new_password': 'New Password',
+                'enter_new_password': 'Please enter a new password',
+                'confirm_password': 'Confirm Password',
+                'passwords_not_match': 'Passwords do not match',
+                'password_strength': 'Password strength',
+                'weak_password': 'Weak password',
+                'medium_strength': 'Medium strength',
+                'strong_password': 'Strong password',
+                'password_requirements': 'Password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters.',
+                'cancel': 'Cancel',
+                'save_changes': 'Save Changes',
+
+                // Navigation (shared with dashboard)
+                'user_dashboard': 'User Dashboard',
+                'dashboard': 'Dashboard',
+                'support': 'Support',
+                'my_tickets': 'Ticket',
+                'notifications': 'Alert',
+                'submit_ticket': 'New',
+                'management': 'Management',
+                'preferences': 'Settings',
+                'profile_settings': 'Profile',
+                'announcements': 'Anunsyo',
+                'system': 'System',
+                'account_security': 'Security',
+                'system_information': 'Info',
+                'profile': 'Profile',
+                'settings': 'Settings',
+                'logout': 'Logout',
+                'dashboard_template': 'AlliTrack User Dashboard'
+            },
+            'fil': {
+                'profile_settings_page_title': 'Mga Setting ng Profile - AlliTrack',
+                'profile_settings_title': 'Mga Setting ng Profile',
+                'search_tickets': 'Maghanap...',
+                'profile_updated': 'Na-update ang profile!',
+                'profile_photo': 'Litrato sa Profile',
+                'update_profile_picture': 'I-update ang litrato',
+                'your_profile_picture': 'Iyong Litrato',
+                'photo_requirements': 'Mag-upload ng bagong litrato. JPG, GIF o PNG. Max 5MB.',
+                'upload_photo': 'Mag-upload ng Litrato',
+                'remove': 'Tanggalin',
+                'personal_info': 'Personal na Impormasyon',
+                'update_basic_info': 'I-update ang impormasyon',
+                'first_name': 'Pangalan',
+                'last_name': 'Apelyido',
+                'enter_first_name': 'Ilagay ang pangalan',
+                'enter_last_name': 'Ilagay ang apelyido',
+                'email_address': 'Email',
+                'enter_valid_email': 'Ilagay ang tamang email',
+                'phone_number': 'Telepono',
+                'department': 'Department',
+                'optional': 'Opsyonal',
+                'change_password': 'Palitan ang Password',
+                'update_password_security': 'I-update ang password',
+                'current_password': 'Kasalukuyang Password',
+                'enter_current_password': 'Ilagay ang kasalukuyang password',
+                'new_password': 'Bagong Password',
+                'enter_new_password': 'Ilagay ang bagong password',
+                'confirm_password': 'Kumpirmahin ang Password',
+                'passwords_not_match': 'Hindi magkatugma ang password',
+                'password_strength': 'Lakas ng Password',
+                'weak_password': 'Mahinang password',
+                'medium_strength': 'Katamtamang lakas',
+                'strong_password': 'Malakas na password',
+                'password_requirements': 'Password: 8+ na character, malaki at maliit na letra, numero, at special characters.',
+                'cancel': 'Kanselahin',
+                'save_changes': 'I-save',
+
+                // Navigation (shared with dashboard)
+                'user_dashboard': 'Dashboard',
+                'dashboard': 'Dashboard',
+                'support': 'Suporta',
+                'my_tickets': 'Ticket',
+                'notifications': 'Alert',
+                'submit_ticket': 'New',
+                'management': 'Pamahalaan',
+                'preferences': 'Mga Setting',
+                'profile_settings': 'Profile',
+                'announcements': 'Mga Anunsyo',
+                'system': 'Sistema',
+                'account_security': 'Seguridad',
+                'system_information': 'Impormasyon',
+                'profile': 'Profile',
+                'settings': 'Mga Setting',
+                'logout': 'Logout',
+                'dashboard_template': 'Dashboard ng User ng AlliTrack'
+            }
+        };
+
+        let initialFormData = "";
+
+        // Initialize the page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🚀 Profile Settings: Starting initialization...');
+
+            // Initialize user data manager FIRST
+            if (window.userDataManager) {
+                console.log('👤 Initializing User Data Manager...');
+                window.userDataManager.initializeUserDisplay();
+            } else {
+                console.error('❌ User Data Manager not found!');
+            }
+
+            // Initialize preferences manager
+            if (window.preferencesManager) {
+                console.log('⚙️ Initializing Preferences Manager...');
+                window.preferencesManager.initialize();
+
+                // Apply theme immediately
+                // Get current language from preferences manager
+                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
+                applyTranslations(currentLang);
+            } else {
+                console.error('❌ Preferences Manager not found!');
+                applyTranslations('en'); // Default to English
+            }
+
+            // Setup theme listener
+            // Cache DOM elements
+            const profileImage = document.getElementById('profileImage');
+            const profileInitials = document.getElementById('profileInitials');
+
+            // Load profile data from localStorage
+            loadProfileData();
+
+            // Initialize form functionality
+            initForm();
+
+            // Setup logout functionality FIRST
+            setupLogout();
+
+            // SETUP ACCOUNT DROPDOWN - CALL THIS AFTER setupLogout
+            setTimeout(() => {
+                console.log('🔄 Setting up account dropdown...');
+                setupAccountDropdown();
+            }, 50);
+
+            console.log('✅ Profile Settings page loaded');
+        });
+
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+        
+
+        // Apply translations to the page
+        function applyTranslations(language) {
+            const lang = translations[language] ? language : 'en';
+            const dict = translations[lang];
+
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.getAttribute('data-translate');
+                if (dict[key]) {
+                    element.textContent = dict[key];
+                }
+            });
+
+            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-translate-placeholder');
+                if (dict[key]) {
+                    element.placeholder = dict[key];
+                }
+            });
+
+            if (dict['profile_settings_page_title']) {
+                document.title = dict['profile_settings_page_title'];
+            }
+        }
+
+        // Listen for language changes from preference-manager.js
+        document.addEventListener('languageChanged', function (e) {
+            console.log('Language changed to:', e.detail.language);
+            applyTranslations(e.detail.language);
+        });
+
+        // Load saved profile data
+        async function loadProfileData(userId) {
+            if (!userId) return;
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/user/profile/${userData.user_id}`);
+                const result = await response.json();
+
+                if (result.status === "success" && result.data) {
+                    const d = result.data;
+                    
+                    // 1. Map data to the text boxes
+                    document.getElementById('firstName').value = d.first_name || "";
+                    document.getElementById('lastName').value = d.last_name || "";
+                    document.getElementById('email').value = d.email || "";
+                    document.getElementById('contactPhone').value = d.phone_number || "";
+                    document.getElementById('address').value = d.address || "";
+                    document.getElementById('companyName').value = d.company_name || "";
+                    document.getElementById('contactPerson').value = d.contact_person || "";
+                    document.getElementById('companyEmail').value = d.company_email || "";
+
+                    initialFormData = JSON.stringify({
+                        first_name: document.getElementById('firstName').value.trim(),
+                        last_name: document.getElementById('lastName').value.trim(),
+                        email: document.getElementById('email').value.trim(),
+                        phone: document.getElementById('contactPhone').value.trim(),
+                        address: document.getElementById('address').value.trim(),
+                        persona: document.querySelector('input[name="profile_persona"]:checked')?.value || 'Individual'
+                    });
+
+                    // 2. Map the Persona (Match the DB string 'Company' or 'Individual')
+                    const radio = document.querySelector(`input[name="profile_persona"][value="${d.profile_persona}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        handlePersonaChange();
+                    }
+
+                    // 3. PERSIST THE PHOTO: Use 'profile_pic_url' from your schema
+                    const imgEl = document.getElementById('profileImage');
+                    const initialsEl = document.getElementById('profileInitials');
+                    if (d.profile_pic_url && d.profile_pic_url !== 'default-avatar.png' && d.profile_pic_url !== 'null') {
+                        imgEl.src = d.profile_pic_url;
+                        imgEl.style.display = 'block';
+                        initialsEl.style.display = 'none';
+                        
+                        // Force the header to sync on load too
+                        const headerAv = document.getElementById('userAvatar');
+                        if (headerAv) headerAv.innerHTML = `<img src="${d.profile_pic_url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+                    } else {
+                        // Ensure initials are shown if no real photo exists
+                        imgEl.style.display = 'none';
+                        initialsEl.style.display = 'block';
+                        updateProfileInitials();
+                    }
+                }
+            } catch (e) { console.error("Load error:", e); }
+        }
+
+        // Update profile initials
+        function updateProfileInitials() {
+            const profileInitials = document.getElementById('profileInitials');
+            if (!profileInitials) return;
+
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const initials = (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase();
+            profileInitials.textContent = initials;
+        }
+
+        // Logout functionality - FIXED VERSION
+        function setupLogout() {
+            console.log('🔐 Setting up logout functionality...');
+
+            // First remove any existing logout buttons to avoid duplicates
+            const existingLogoutBtns = document.querySelectorAll('#logoutBtn');
+            existingLogoutBtns.forEach(btn => {
+                const parent = btn.parentNode;
+                const newBtn = btn.cloneNode(true);
+                parent.replaceChild(newBtn, btn);
+            });
+
+            // Now attach the event listener to the fresh logout button
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                console.log('✅ Logout button found, attaching handler...');
+
+                // Create a robust logout handler
+                const logoutHandler = function (e) {
+                    console.log('🚪 Logout button clicked!');
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Clear user data from localStorage
+                    localStorage.removeItem('userData');
+                    localStorage.removeItem('userProfile');
+                    localStorage.removeItem('userTickets');
+                    localStorage.removeItem('preferredLanguage');
+
+                    console.log('🧹 Cleared localStorage, redirecting to login...');
+
+                    // Redirect to login page
+                    window.location.href = '/';
+                };
+
+                // Remove any existing listeners and attach fresh one
+                logoutBtn.removeEventListener('click', logoutHandler);
+                logoutBtn.addEventListener('click', logoutHandler);
+
+            } else {
+                console.error('❌ Logout button not found!');
+            }
+        }
+
+        function initForm() {
+            const infoForm = document.getElementById('infoForm'); 
+            
+            // 1. Verify the form exists
+            if (!infoForm) {
+                console.error("CRITICAL: Form with ID 'infoForm' was NOT found in the HTML!");
+                return;
+            }
+
+            console.log("SUCCESS: Form found! Listener attached.");
+
+            // 2. Attach the listener
+            infoForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); // Stop the page from refreshing
+                console.log("ACTION: Save button clicked / Form submitted!");
+
+                // 3. Check validation
+                if (typeof validateForm === 'function' && !validateForm()) {
+                    console.warn("BLOCKED: validateForm returned false. Fix your inputs.");
+                    return;
+                }
+
+                console.log("PROCEEDING: Calling saveProfile()...");
+                await saveProfile(); 
+            });
+
+            // --- The rest of your listeners (Password/Initials) ---
+            const newPasswordInput = document.getElementById('newPassword');
+            if (newPasswordInput) {
+                newPasswordInput.addEventListener('input', (e) => checkPasswordStrength(e.target.value));
+            }
+
+            const firstNameInput = document.getElementById('firstName');
+            const lastNameInput = document.getElementById('lastName');
+            if (firstNameInput) firstNameInput.addEventListener('input', updateProfileInitials);
+            if (lastNameInput) lastNameInput.addEventListener('input', updateProfileInitials);
+        }
+
+        function initAvatarInteraction() {
+            const avatarCircle = document.getElementById('profilePhoto');
+            const fileInput = document.getElementById('photoUpload');
+            
+            if (avatarCircle && fileInput) {
+                // Trigger the file input when the circle is pressed
+                avatarCircle.addEventListener('click', () => {
+                    console.log('Avatar circle pressed, opening upload...');
+                    fileInput.click();
+                });
+            }
+        }
+
+        async function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 1. STRICT SIZE CHECK (5MB)
+            const MAX_SIZE = 5 * 1024 * 1024;
+            if (file.size > MAX_SIZE) {
+                showToast(`Error: This file is too big (${(file.size / 1024 / 1024).toFixed(2)}MB). The maximum allowed size is 5MB.`, "error");
+                event.target.value = ""; // Clear the selection so it's not "accepted"
+                return; // STOP execution immediately
+            }
+
+            // 2. Format Check
+            if (!file.type.match('image.*')) {
+                showToast('Please select a valid image file (JPG, PNG, or GIF).', "error");
+                event.target.value = "";
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async function (e) {
+                // Compress the image before showing and saving
+                const compressedBase64 = await compressImage(e.target.result);
+                
+                // Update the big circle visually
+                document.getElementById('profileImage').src = compressedBase64;
+                document.getElementById('profileImage').style.display = 'block';
+                document.getElementById('profileInitials').style.display = 'none';
+
+                // Auto-save instantly
+                const userDataStr = localStorage.getItem("userData");
+                if (userDataStr) {
+                    const userData = JSON.parse(userDataStr);
+                    await autoSavePhoto(userData.user_id, compressedBase64);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function removePhoto() {
+            const profileImage = document.getElementById('profileImage');
+            const profileInitials = document.getElementById('profileInitials');
+
+            if (profileImage && profileInitials) {
+                profileImage.style.display = 'none';
+                profileImage.src = ''; 
+                profileInitials.style.display = 'block';
+                updateProfileInitials(); 
+            }
+
+            const userDataStr = localStorage.getItem("userData");
+            if (userDataStr) {
+                const userData = JSON.parse(userDataStr);
+                // CHANGE: Send the default string instead of null[cite: 3]
+                await autoSavePhoto(userData.user_id, 'default-avatar.png'); 
+            }
+        }
+
+        // Password strength checker
+        function initPasswordStrength() {
+            const newPassInput = document.getElementById('newPassword');
+            const strengthContainer = document.getElementById('passwordStrength');
+            const strengthFill = document.querySelector('.strength-fill');
+            const strengthText = document.querySelector('.strength-text');
+
+            if (!newPassInput || !strengthContainer || !strengthFill) return;
+
+            newPassInput.addEventListener('input', function() {
+                const val = this.value;
+                let score = 0;
+
+                // 1. ALWAYS RESET FIRST
+                strengthContainer.className = 'password-strength';
+                strengthFill.style.width = '0%';
+                strengthText.textContent = "Password strength";
+
+                if (val.length === 0) return; // Exit if empty
+
+                // 2. SCORING LOGIC
+                if (val.length >= 8) score++;
+                if (/[A-Z]/.test(val)) score++;
+                if (/[0-9]/.test(val)) score++;
+                if (/[^A-Za-z0-9]/.test(val)) score++;
+
+                // 3. APPLY STATES
+                if (score <= 2) {
+                    strengthContainer.classList.add('strength-weak');
+                    strengthFill.style.width = '33%';
+                    strengthText.textContent = "Weak";
+                } else if (score === 3) {
+                    strengthContainer.classList.add('strength-medium');
+                    strengthFill.style.width = '66%';
+                    strengthText.textContent = "Medium";
+                } else {
+                    strengthContainer.classList.add('strength-strong');
+                    strengthFill.style.width = '100%';
+                    strengthText.textContent = "Strong";
+                }
+            });
+        }
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+
+            document.querySelectorAll('.form-error').forEach(error => {
+                error.classList.remove('show');
+            });
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.classList.remove('error');
+            });
+
+            // Validate required fields
+            const requiredFields = ['firstName', 'lastName', 'email'];
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field);
+                if (!input.value.trim()) {
+                    const errorElement = document.getElementById(field + 'Error');
+                    if (errorElement) errorElement.classList.add('show');
+                    if (input) input.classList.add('error');
+                    isValid = false;
+                }
+            });
+
+            // Validate email format
+            const email = document.getElementById('email');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (email && email.value && !emailRegex.test(email.value)) {
+                const emailError = document.getElementById('emailError');
+                if (emailError) emailError.classList.add('show');
+                if (email) email.classList.add('error');
+                isValid = false;
+            }
+
+            // Validate password change
+            const currentPassword = document.getElementById('currentPassword');
+            const newPassword = document.getElementById('newPassword');
+            const confirmPassword = document.getElementById('confirmPassword');
+
+            const currentPasswordValue = currentPassword ? currentPassword.value : '';
+            const newPasswordValue = newPassword ? newPassword.value : '';
+            const confirmPasswordValue = confirmPassword ? confirmPassword.value : '';
+
+            if (currentPasswordValue || newPasswordValue || confirmPasswordValue) {
+                if (!currentPasswordValue) {
+                    const currentPasswordError = document.getElementById('currentPasswordError');
+                    if (currentPasswordError) currentPasswordError.classList.add('show');
+                    if (currentPassword) currentPassword.classList.add('error');
+                    isValid = false;
+                }
+
+                if (!newPasswordValue) {
+                    const newPasswordError = document.getElementById('newPasswordError');
+                    if (newPasswordError) newPasswordError.classList.add('show');
+                    if (newPassword) newPassword.classList.add('error');
+                    isValid = false;
+                }
+
+                if (newPasswordValue !== confirmPasswordValue) {
+                    const confirmPasswordError = document.getElementById('confirmPasswordError');
+                    if (confirmPasswordError) confirmPasswordError.classList.add('show');
+                    if (confirmPassword) confirmPassword.classList.add('error');
+                    isValid = false;
+                }
+
+                if (newPasswordValue && newPasswordValue.length < 8) {
+                    const newPasswordError = document.getElementById('newPasswordError');
+                    if (newPasswordError) {
+                        const currentLang = window.preferencesManager ?
+                            window.preferencesManager.getCurrentLanguage() : 'en';
+                        const dict = translations[currentLang] || translations['en'];
+                        newPasswordError.textContent = dict['password_requirements']?.split('.')[0] || 'Password must be at least 8 characters long';
+                        newPasswordError.classList.add('show');
+                    }
+                    if (newPassword) newPassword.classList.add('error');
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
+        async function saveProfile() {
+            try {
+                const userData = JSON.parse(localStorage.getItem("userData"));
+                if (!userData) { console.error("No user data in localStorage"); return; }
+
+                const getVal = (id) => {
+                    const el = document.getElementById(id);
+                    return el ? el.value.trim() : "";
+                };
+
+                const personaEl = document.querySelector('input[name="profile_persona"]:checked');
+
+                // 1. Generate current state snapshot string
+                const currentFormData = JSON.stringify({
+                    first_name: getVal('firstName'),
+                    last_name: getVal('lastName'),
+                    email: getVal('email'),
+                    phone: getVal('contactPhone'),
+                    address: getVal('address'),
+                    persona: personaEl ? personaEl.value : 'Individual'
+                });
+
+                // 2. HAHAHA Here is your custom error toast!
+                if (currentFormData === initialFormData) {
+                    showToast("No changes detected! Your profile is already up to date.", "error");
+                    return; // Stops the rest of the execution
+                }
+
+                const photoEl = document.getElementById('profileImage');
+                const payload = {
+                    user_id: userData.user_id,
+                    first_name: getVal('firstName'),
+                    last_name: getVal('lastName'),
+                    email: getVal('email'),
+                    persona: personaEl ? personaEl.value : 'client',
+                    photo: (photoEl && photoEl.style.display !== 'none') ? photoEl.src : null,
+                    phone: getVal('contactPhone'),
+                    address: getVal('address'),
+                    company_name: getVal('companyName'),
+                    contact_person: getVal('contactPerson'),
+                    company_email: getVal('companyEmail')
+                };
+
+                console.log("SENDING POST WITH PAYLOAD:", payload);
+
+                const response = await fetch(`${API_BASE_URL}/api/auth/user/update-profile`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.status === "success") {
+                    showToast("Profile updated successfully!", "success");
+                    
+                    // Overwrite snapshot to represent newly saved baseline values
+                    initialFormData = currentFormData; 
+
+                    userData.Name = `${payload.first_name} ${payload.last_name}`;
+                    localStorage.setItem("userData", JSON.stringify(userData));
+                    if (window.userDataManager) window.userDataManager.dispatchUserDataChanged();
+                } else {
+                    showToast(result.message || "Save failed", "error");
+                }
+            } catch (error) {
+                console.error("The JavaScript crashed before it could POST:", error);
+                showToast("Server connection error", "error");
+            }
+        }
+
+        function resetForm() {
+            try {
+                if (!window.userDataManager) {
+                    console.error('User Data Manager not available');
+                    return;
+                }
+
+                const userData = window.userDataManager.getUserData();
+                let firstName = 'User';
+                let lastName = '';
+                let email = userData.email || 'user@example.com';
+
+                if (userData.name) {
+                    const nameParts = userData.name.split(' ');
+                    firstName = nameParts[0] || 'User';
+                    lastName = nameParts.slice(1).join(' ') || '';
+                }
+
+                document.getElementById('firstName').value = firstName;
+                document.getElementById('lastName').value = lastName;
+                document.getElementById('email').value = email;
+                document.getElementById('phone').value = '';
+                document.getElementById('department').value = '';
+
+                const currentPassword = document.getElementById('currentPassword');
+                const newPassword = document.getElementById('newPassword');
+                const confirmPassword = document.getElementById('confirmPassword');
+
+                if (currentPassword) currentPassword.value = '';
+                if (newPassword) newPassword.value = '';
+                if (confirmPassword) confirmPassword.value = '';
+
+                removePhoto();
+
+                document.querySelectorAll('.form-error').forEach(error => {
+                    error.classList.remove('show');
+                });
+                document.querySelectorAll('.form-input').forEach(input => {
+                    input.classList.remove('error');
+                });
+
+                const passwordStrength = document.getElementById('passwordStrength');
+                if (passwordStrength) {
+                    passwordStrength.className = 'password-strength';
+                    const strengthText = passwordStrength.querySelector('.strength-text');
+                    const currentLang = window.preferencesManager ?
+                        window.preferencesManager.getCurrentLanguage() : 'en';
+                    const dict = translations[currentLang] || translations['en'];
+                    if (strengthText) strengthText.textContent = dict['password_strength'] || 'Password strength';
+                }
+
+                updateProfileInitials();
+            } catch (error) {
+                console.error('Error resetting form:', error);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            
+            // Find the button you just added the ID to
+            const updatePasswordBtn = document.getElementById("updatePasswordBtn");
+
+            if (updatePasswordBtn) {
+                updatePasswordBtn.addEventListener("click", async function (e) {
+                    e.preventDefault(); // Stop the page from reloading
+
+                    // Grab the exact IDs from your HTML
+                    const oldPassword = document.getElementById("currentPassword").value;
+                    const newPassword = document.getElementById("newPassword").value;
+                    const confirmPassword = document.getElementById("confirmPassword").value;
+
+                    // 1. Basic Validation
+                    if (!oldPassword || !newPassword || !confirmPassword) {
+                        showToast("Please fill in all password fields.", "error");
+                        return;
+                    }
+
+                    if (newPassword !== confirmPassword) {
+                        // You can also change this to use your #confirmPasswordError div!
+                        showToast("Your new passwords do not match!", "error");
+                        return;
+                    }
+
+                    // 2. Grab the logged-in User's ID from local storage
+                    const userDataStr = localStorage.getItem("userData");
+                    if (!userDataStr) {
+                        showToast("You must be logged in to do this.", "error");
+                        return;
+                    }
+                    const userData = JSON.parse(userDataStr);
+
+                    // Change button text so they know it's loading
+                    const originalText = updatePasswordBtn.innerHTML;
+                    updatePasswordBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+                    updatePasswordBtn.disabled = true;
+
+                    // 3. Send the request to your Python server!
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/api/auth/user/change-password`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                user_id: userData.user_id,
+                                old_password: oldPassword,
+                                new_password: newPassword
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok && result.status === "success") {
+                            showToast("✅ Success! " + result.message, "success");
+                            // Clear the text boxes so it looks clean
+                            document.getElementById("currentPassword").value = "";
+                            document.getElementById("newPassword").value = "";
+                            document.getElementById("confirmPassword").value = "";
+                        } else {
+                            showToast("Failed: " + result.message, "error");
+                        }
+                    } catch (error) {
+                        console.error("Change Password Error:", error);
+                        showToast("Unable to connect to the server. Please try again later.", "error");
+                    } finally {
+                        // Reset the button back to normal
+                        updatePasswordBtn.innerHTML = originalText;
+                        updatePasswordBtn.disabled = false;
+                    }
+                });
+            }
+        });
+
+        // 1. Handle the Persona Toggle
+        function handlePersonaChange() {
+            const isCompany = document.querySelector('input[name="profile_persona"]:checked').value === "Company";
+            const companyFields = document.querySelectorAll('.company-field');
+            const infoTitle = document.getElementById('infoTitle');
+
+            infoTitle.textContent = isCompany ? "Company Information" : "Personal Information";
+
+            companyFields.forEach(field => {
+                field.style.display = isCompany ? "block" : "none";
+                const input = field.querySelector('input');
+                // If company is selected, make specific fields required
+                if (input && (input.id === 'companyName' || input.id === 'contactPerson')) {
+                    input.required = isCompany;
+                }
+            });
+        }
+
+        // 2. Fetch data from Supabase on Load
+        async function fetchCurrentProfile(userId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/user/profile/${userId}`);
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    // Update Identity Persona
+                    const personaRadio = document.querySelector(`input[name="profile_persona"][value="${data.persona}"]`);
+                    if (personaRadio) personaRadio.checked = true;
+                    handlePersonaChange();
+
+                    // Map backend data to IDs
+                    document.getElementById('contactPhone').value = data.phone || "";
+                    document.getElementById('address').value = data.address || "";
+                    document.getElementById('companyName').value = data.company_name || "";
+                    document.getElementById('contactPerson').value = data.contact_person || "";
+                    document.getElementById('companyEmail').value = data.company_email || "";
+
+                    // Handle Photo Persistence
+                    const profileImage = document.getElementById('profileImage');
+                    const profileInitials = document.getElementById('profileInitials');
+                    if (data.photo && data.photo !== 'default-avatar.png' && data.photo !== 'null') {
+                        profileImage.src = data.photo;
+                        profileImage.style.display = 'block';
+                        profileInitials.style.display = 'none';
+                    }
+                }
+            } catch (e) { console.error("Persistence fetch failed:", e); }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const sidebarProfileLink = document.querySelector('.nav a[data-section="profile-settings"]');
+            if (sidebarProfileLink) {
+                sidebarProfileLink.classList.add('active');
+            }
+
+            // 1. Initial UI check
+            handlePersonaChange(); 
+            initAvatarInteraction(); // Set up the click on the circle
+            initPasswordStrength();
+            
+            // 2. Load data from the database (Real-time sync)
+            const userDataStr = localStorage.getItem("userData");
+            if (userDataStr) {
+                const userData = JSON.parse(userDataStr);
+                // Fill read-only account info
+                document.getElementById('firstName').value = userData.Name.split(' ')[0] || "";
+                document.getElementById('lastName').value = userData.Name.split(' ').slice(1).join(' ') || "";
+                document.getElementById('email').value = userData.Email || "";
+            
+                loadProfileData(userData.user_id);
+            }
+
+            else {
+                console.warn("No user data found. Redirecting to login...");
+                window.location.href = "/login";
+            }
+        });
+
+        // Helper function to compress Base64 images
+        function compressImage(base64Str, maxWidth = 200, maxHeight = 200) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.src = base64Str;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Maintain aspect ratio
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width *= maxHeight / height;
+                            height = maxHeight;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.8)); // 80% quality JPEG
+                };
+            });
+        }
+
+        async function autoSavePhoto(userId, photoBase64) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/user/update-photo`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: userId, photo_data: photoBase64 })
+                });
+
+                if (response.ok) {
+                    // 1. Update the 'userData' key for this page
+                    let userData = JSON.parse(localStorage.getItem("userData") || '{}');
+                    userData.profile_pic_url = (photoBase64 === 'default-avatar.png') ? null : photoBase64; 
+                    localStorage.setItem("userData", JSON.stringify(userData));
+
+                    // 2. THE CRITICAL SYNC: Update the 'userProfile' key used by UserDataManager
+                    // This ensures the mini-profile header updates correctly
+                    if (window.userDataManager) {
+                        window.userDataManager.updateUserProfile({ 
+                            photo: (photoBase64 === 'default-avatar.png') ? null : photoBase64 
+                        });
+                    }
+                }
+            } catch (e) { 
+                console.error("Sync crash:", e); 
+            }
+        }
+
+        function updateHeaderAndProfileVisually(photoUrl) {
+            const isDefault = !photoUrl || photoUrl === 'default-avatar.png' || photoUrl === 'null';
+            
+            // Update Big Settings Circle
+            const bigImg = document.getElementById('profileImage');
+            const bigInit = document.getElementById('profileInitials');
+            if (bigImg && bigInit) {
+                bigImg.style.display = isDefault ? 'none' : 'block';
+                bigImg.src = isDefault ? '' : photoUrl;
+                bigInit.style.display = isDefault ? 'block' : 'none';
+                if (isDefault) updateProfileInitials(); 
+            }
+
+            // Update Upper Right Header (The fix for image_1e8efd.png)
+            const headerAv = document.getElementById('userAvatar');
+            if (headerAv) {
+                if (isDefault) {
+                    // Put initials back instead of a broken <img> tag
+                    const userData = JSON.parse(localStorage.getItem("userData"));
+                    headerAv.textContent = userData?.Name ? userData.Name.charAt(0).toUpperCase() : 'U';
+                } else {
+                    // Inject the real Base64 image
+                    headerAv.innerHTML = `<img src="${photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+                }
+            }
+        }
+
+        function updateAllAvatars(photoUrl) {
+            const isDefault = !photoUrl || photoUrl === 'default-avatar.png';
+            
+            // Update Big Settings Circle
+            const bigImg = document.getElementById('profileImage');
+            const bigInit = document.getElementById('profileInitials');
+            if (bigImg && bigInit) {
+                bigImg.src = isDefault ? "" : photoUrl;
+                bigImg.style.display = isDefault ? 'none' : 'block';
+                bigInit.style.display = isDefault ? 'block' : 'none';
+            }
+
+            // Update Upper Right Header Avatar
+            const headerAv = document.getElementById('userAvatar');
+            if (headerAv) {
+                if (isDefault) {
+                    const userData = JSON.parse(localStorage.getItem("userData"));
+                    headerAv.textContent = userData?.Name?.charAt(0).toUpperCase() || 'U';
+                } else {
+                    headerAv.innerHTML = `<img src="${photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
