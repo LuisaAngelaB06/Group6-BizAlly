@@ -306,6 +306,23 @@
     <!-- ══════════════════════════════════════════════════════════
          ORIGINAL SCRIPTS — UNTOUCHED
     ══════════════════════════════════════════════════════════ -->
+    <!-- ── GLOBAL UTILITIES (shared by all scripts) ── -->
+    <script>
+        // These must live in global scope so both the main script and the OTP
+        // script can call them without a ReferenceError.
+        function showLoading(msg) {
+            var overlay = document.getElementById('modalLoadingOverlay');
+            var text = document.getElementById('modalLoadingText');
+            if (text) text.textContent = msg || 'Processing...';
+            if (overlay) overlay.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            var overlay = document.getElementById('modalLoadingOverlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+    </script>
+
     <script>
         (function () {
             "use strict";
@@ -351,10 +368,6 @@
             const reqUppercase = document.getElementById('reqUppercase');
             const reqNumber = document.getElementById('reqNumber');
 
-            // Loading overlay
-            const loadingOverlay = document.getElementById('modalLoadingOverlay');
-            const loadingText = document.getElementById('modalLoadingText');
-
             // ========== UTILITY FUNCTIONS ==========
             function validateEmail(email) {
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -374,16 +387,6 @@
                     e.preventDefault();
                     document.execCommand('insertText', false, data.replace(/\s/g, ''));
                 }
-            }
-
-            // ========== LOADING OVERLAY FUNCTIONS ==========
-            function showLoading(msg) {
-                loadingText.textContent = msg || 'Processing...';
-                loadingOverlay.style.display = 'flex';
-            }
-
-            function hideLoading() {
-                loadingOverlay.style.display = 'none';
             }
 
             // ========== AUTHENTICATION FUNCTIONS ==========
@@ -681,18 +684,51 @@
                 showLoading('Sending verification code...');
                 signupBtn.disabled = true;
 
+                // 1. Capture and save BEFORE anything async — reset() must never run first
                 const fName = document.getElementById('modalFirstName').value.trim();
                 const lName = document.getElementById('modalLastName').value.trim();
                 const email = document.getElementById('modalSignupEmail').value.trim();
                 const pwd = document.getElementById('modalSignupPassword').value;
 
-                // ── DEMO MODE: mock send-otp (remove when backend is ready) ──
-                await new Promise(r => setTimeout(r, 900));
-                hideLoading();
-                pendingSignup = { fName, lName, email, pwd };
-                document.getElementById('modalSignupForm').reset();
-                if (typeof window.showOtpPanel === 'function') {
-                    window.showOtpPanel(email);
+                // Store on window immediately so the OTP script can always find it
+                pendingSignup = {
+                    firstName: fName,
+                    lastName: lName,
+                    email: email,
+                    password: pwd
+                };
+
+                try {
+                    const authBase = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                        ? "http://127.0.0.1:5000"
+                        : "https://group6-bizally.onrender.com";
+
+                    // 2. Call /send-otp route in auth_routes.py
+                    const response = await fetch(`${authBase}/api/auth/send-otp`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email: email })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        hideLoading();
+                        // 3. Reset the form ONLY after pendingSignup is safely stored,
+                        //    then show the OTP panel. Order matters here.
+                        document.getElementById('modalSignupForm').reset();
+                        if (typeof window.showOtpPanel === 'function') {
+                            window.showOtpPanel(email);
+                        }
+                    } else {
+                        // On failure, clear the pending data so stale data can't leak
+                        pendingSignup = null;
+                        throw new Error(result.message || "Failed to send code");
+                    }
+                } catch (error) {
+                    hideLoading();
+                    signupBtn.disabled = false;
+                    alert(`Error: ${error.message}`);
                 }
             }
 
@@ -906,35 +942,72 @@
             if (otpForm) {
                 otpForm.addEventListener('submit', async function (e) {
                     e.preventDefault();
-                    const code = getOtpValue();
-                    if (code.length !== 6) return;
 
-                    otpBtn.disabled = true;
-                    if (otpError) otpError.textContent = '';
+                    const code = getOtpValue(); // Function that joins the 6 boxes
+                    // Crucial: Use the window-level helper we defined
+                    const pending = typeof window.getPendingSignup === 'function' ? window.getPendingSignup() : null;
 
-                    const authBase =
-                        window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
-                            ? 'http://127.0.0.1:5000'
-                            : 'https://group6-bizally.onrender.com';
-
-                    const pending = typeof window.getPendingSignup === 'function'
-                        ? window.getPendingSignup() : null;
-
-                    if (!pending) {
-                        if (otpError) otpError.textContent = 'Session expired. Please sign up again.';
-                        otpBtn.disabled = false;
+                    if (!pending || !pending.email) {
+                        alert("Verification data missing. Please try signing up again.");
+                        hideOtpPanel();
                         return;
                     }
 
-                    // ── DEMO MODE: any 6-digit code is accepted (remove when backend is ready) ──
-                    await new Promise(r => setTimeout(r, 800));
-                    if (typeof window.clearPendingSignup === 'function') window.clearPendingSignup();
-                    hideOtpPanel();
-                    const banner = document.createElement('div');
-                    banner.textContent = '✅ Account created! Please log in.';
-                    banner.style.cssText = 'position:absolute;top:16px;left:50%;transform:translateX(-50%);background:var(--indigo-600);color:#fff;padding:9px 22px;border-radius:var(--r-pill);font-weight:600;font-size:.82rem;z-index:200;white-space:nowrap;box-shadow:0 4px 16px -4px rgba(99,102,241,.5);';
-                    document.querySelector('.modal-fixed').appendChild(banner);
-                    setTimeout(() => banner.remove(), 3500);
+                    showLoading('Verifying code...');
+                    otpBtn.disabled = true;
+
+                    try {
+                        const authBase = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                            ? "http://127.0.0.1:5000"
+                            : "https://group6-bizally.onrender.com";
+
+                        // 1. VERIFY OTP
+                        const verifyRes = await fetch(`${authBase}/api/auth/verify-otp`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ email: pending.email, otp: code })
+                        });
+
+                        const verifyResult = await verifyRes.json();
+
+                        if (verifyRes.ok) {
+                            // 2. SIGNUP (Now create the actual Postgres record)
+                            const signupRes = await fetch(`${authBase}/api/auth/signup`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    firstName: pending.firstName,
+                                    lastName: pending.lastName,
+                                    email: pending.email,
+                                    password: pending.password
+                                })
+                            });
+
+                            if (signupRes.ok) {
+                                const signupResult = await signupRes.json();
+                                const user = signupResult.user;
+
+                                // Store session exactly like login does
+                                localStorage.setItem("userData", JSON.stringify(user));
+                                localStorage.setItem("authToken", "registered");
+
+                                hideLoading();
+                                window.clearPendingSignup();
+
+                                // All new signups are 'client' — go straight to user dashboard
+                                window.location.replace("/user/dashboard");
+                            } else {
+                                const errorData = await signupRes.json();
+                                throw new Error(errorData.message || "Final registration failed");
+                            }
+                        } else {
+                            throw new Error(verifyResult.message || "Invalid or expired code");
+                        }
+                    } catch (error) {
+                        hideLoading();
+                        otpError.textContent = error.message;
+                        otpBtn.disabled = false;
+                    }
                 });
             }
 
@@ -946,12 +1019,32 @@
 
                     otpResendBtn.disabled = true;
                     if (otpError) otpError.textContent = '';
+                    showLoading('Resending code...');
 
-                    // ── DEMO MODE: mock resend (remove when backend is ready) ──
-                    await new Promise(r => setTimeout(r, 400));
+                    try {
+                        const authBase = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                            ? "http://127.0.0.1:5000"
+                            : "https://group6-bizally.onrender.com";
 
-                    resetOtp();
-                    startCountdown(120);
+                        // CALL THE REAL BACKEND
+                        const response = await fetch(`${authBase}/api/auth/resend-otp`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ email: pending.email })
+                        });
+
+                        if (response.ok) {
+                            hideLoading();
+                            resetOtp();
+                            startCountdown(120);
+                        } else {
+                            throw new Error("Failed to resend code");
+                        }
+                    } catch (error) {
+                        hideLoading();
+                        otpResendBtn.disabled = false;
+                        alert(error.message);
+                    }
                 });
             }
 

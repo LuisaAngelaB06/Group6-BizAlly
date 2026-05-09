@@ -9,6 +9,11 @@ import re
 import os
 import json
 import base64
+import sib_api_v3_sdk
+import random
+
+from sib_api_v3_sdk.rest import ApiException
+from datetime import datetime, timedelta
 
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
 
@@ -92,15 +97,32 @@ def signup():
         if cursor.fetchone():
             return jsonify({"status": "error", "message": "Email already exists"}), 400
 
-        query = """
+        cursor.execute(
+            """
             INSERT INTO "system_user"
             (Username, first_name, last_name, Email, password_Hash, User_Type, Created_At)
             VALUES (%s, %s, %s, %s, %s, 'client', CURRENT_TIMESTAMP)
-        """
-        cursor.execute(query, (username, first_name, last_name, email, hashed_password))
+            RETURNING user_id, username, first_name, last_name, email, user_type, is_profile_complete, profile_pic_url
+            """,
+            (username, first_name, last_name, email, hashed_password)
+        )
+        new_user = cursor.fetchone()
         conn.commit()
 
-        return jsonify({"status": "success", "message": "Account created successfully"}), 201
+        full_name = f"{new_user['first_name']} {new_user['last_name'] or ''}".strip()
+
+        safe_user = {
+            "user_id": new_user["user_id"],
+            "Username": new_user["username"],
+            "Name": full_name,
+            "Email": new_user["email"],
+            "User_Type": new_user["user_type"],
+            "is_profile_complete": new_user.get("is_profile_complete", False),
+            "profile_pic_url": new_user.get("profile_pic_url"),
+            "Technician_ID": None
+        }
+
+        return jsonify({"status": "success", "user": safe_user}), 201
 
     except Exception as e:
         print(f"Signup error: {e}")
@@ -109,7 +131,6 @@ def signup():
     finally:
         cursor.close()
         conn.close()
-
 
 # ==========================================
 # 3. ADMIN RESET PASSWORD
@@ -585,6 +606,177 @@ def get_profile_completion_status(user_id):
     except Exception as e:
         print(f"Error checking status for user {user_id}: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# ==========================================
+# 10. SEND OTP
+# ==========================================
+@auth_bp.route("/send-otp", methods=["POST"])
+def send_otp():
+    data = request.json
+    email = data.get("email")
+
+    if not email:
+        return jsonify({"status": "error", "message": "Email is required"}), 400
+
+    otp = str(random.randint(100000, 999999))
+    expiry = datetime.now() + timedelta(minutes=10)
+
+    conn = get_connection()
+    if not conn:
+        return jsonify({"status": "error", "message": "Database connection failed"}), 500
+    
+    cursor = conn.cursor()
+    try:
+        # 1. Check for existing user
+        cursor.execute('SELECT * FROM "system_user" WHERE LOWER(Email) = LOWER(%s)', (email,))
+        if cursor.fetchone():
+             return jsonify({"status": "error", "message": "Email already exists"}), 400
+
+        # 2. Save OTP to PostgreSQL
+        query = "INSERT INTO otp_verifications (email, otp_code, expires_at) VALUES (%s, %s, %s)"
+        cursor.execute(query, (email, otp, expiry))
+        conn.commit()
+
+        # 3. BREVO CONFIGURATION
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key['api-key'] = os.getenv("BREVO_API_KEY")
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+
+        # 4. SEND EMAIL
+        # Important: The sender email MUST be verified in your Brevo dashboard
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            sender={"name": "AlliTrack", "email": "melmendoza.educ@gmail.com"},
+            to=[{"email": email}],
+            subject="AlliTrack Verification Code",
+            html_content=f"""
+                <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee;">
+                    <h2>Verify your account</h2>
+                    <p>Use the following code to complete your signup for AlliTrack:</p>
+                    <h1 style="color: #4f46e5;">{otp}</h1>
+                    <p>This code expires in 10 minutes.</p>
+                </div>
+            """
+        )
+
+        api_instance.send_transac_email(send_smtp_email)
+        return jsonify({"status": "success", "message": "OTP sent"}), 200
+
+    except ApiException as e:
+        print(f"Brevo API Error: {e}")
+        return jsonify({"status": "error", "message": "Email service failed"}), 500
+    except Exception as e:
+        print(f"OTP Error: {e}")
+        return jsonify({"status": "error", "message": "Internal server error"}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# ==========================================
+# 11. VERIFY OTP
+# ==========================================
+@auth_bp.route("/verify-otp", methods=["POST"])
+def verify_otp():
+    data = request.json
+    email = data.get("email")
+    otp_code = data.get("otp")
+
+    if not email or not otp_code:
+        return jsonify({"status": "error", "message": "Email and OTP are required"}), 400
+
+    conn = get_connection()
+    if not conn:
+        return jsonify({"status": "error", "message": "Database connection failed"}), 500
+
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        cursor.execute(
+            """
+            SELECT * FROM otp_verifications
+            WHERE email = %s AND otp_code = %s AND expires_at > NOW()
+            ORDER BY created_at DESC LIMIT 1
+            """,
+            (email, otp_code)
+        )
+        record = cursor.fetchone()
+
+        if not record:
+            return jsonify({"status": "error", "message": "Invalid or expired code"}), 400
+
+        # Clean up used OTP
+        cursor.execute("DELETE FROM otp_verifications WHERE email = %s", (email,))
+        conn.commit()
+
+        return jsonify({"status": "success", "message": "OTP verified"}), 200
+
+    except Exception as e:
+        print(f"Verify OTP error: {e}")
+        return jsonify({"status": "error", "message": "Internal server error"}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+
+# ==========================================
+# 12. RESEND OTP
+# ==========================================
+@auth_bp.route("/resend-otp", methods=["POST"])
+def resend_otp():
+    data = request.json
+    email = data.get("email")
+
+    if not email:
+        return jsonify({"status": "error", "message": "Email is required"}), 400
+
+    otp = str(random.randint(100000, 999999))
+    expiry = datetime.now() + timedelta(minutes=10)
+
+    conn = get_connection()
+    if not conn:
+        return jsonify({"status": "error", "message": "Database connection failed"}), 500
+
+    cursor = conn.cursor()
+    try:
+        # Delete any old OTPs for this email first
+        cursor.execute("DELETE FROM otp_verifications WHERE email = %s", (email,))
+
+        # Insert fresh OTP
+        cursor.execute(
+            "INSERT INTO otp_verifications (email, otp_code, expires_at) VALUES (%s, %s, %s)",
+            (email, otp, expiry)
+        )
+        conn.commit()
+
+        # Brevo — same config as send_otp
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key['api-key'] = os.getenv("BREVO_API_KEY")
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            sender={"name": "AlliTrack", "email": "melmendoza.educ@gmail.com"},
+            to=[{"email": email}],
+            subject="AlliTrack — New Verification Code",
+            html_content=f"""
+                <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee;">
+                    <h2>New verification code</h2>
+                    <p>Here's your new code for AlliTrack:</p>
+                    <h1 style="color: #4f46e5;">{otp}</h1>
+                    <p>This code expires in 10 minutes.</p>
+                </div>
+            """
+        )
+
+        api_instance.send_transac_email(send_smtp_email)
+        return jsonify({"status": "success", "message": "OTP resent"}), 200
+
+    except ApiException as e:
+        print(f"Brevo Resend Error: {e}")
+        return jsonify({"status": "error", "message": "Email service failed"}), 500
+    except Exception as e:
+        print(f"Resend OTP error: {e}")
+        return jsonify({"status": "error", "message": "Internal server error"}), 500
     finally:
         cursor.close()
         conn.close()
