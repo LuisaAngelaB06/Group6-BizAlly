@@ -195,6 +195,10 @@ def get_all_announcements_user(user_id):
 def mark_as_read():
     data = request.get_json()
 
+    user_id = data.get('user_id')
+    announcement_id = data.get('announcement_id')
+
+
     conn = get_connection()
     cursor = conn.cursor()
 
