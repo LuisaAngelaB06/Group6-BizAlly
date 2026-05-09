@@ -297,48 +297,67 @@
                         this.classList.add('active');
                     });
                 });
-
-                // ✅ SUBMIT WITH REQUIRED VALIDATION
-                if (submitRating) {
-                    submitRating.addEventListener('click', async function () {
-
-                        const selectedBtn = document.querySelector('.rating-btn.active');
-
-                        // ❌ Block if no rating
-                        if (!selectedBtn) {
-                            alert("Please select a rating before continuing.");
-                            return;
-                        }
-
-                        const ratingValue = selectedBtn.getAttribute('data-rating');
-
-                        const base =
-                            window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
-                                ? "http://127.0.0.1:5000"
-                                : "https://group6-bizally.onrender.com";
-
-                        try {
-                            await fetch(`${base}/api/feedback/submit`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    source: document.title,
-                                    rating: ratingValue
-                                })
-                            });
-                        } catch (error) {
-                            console.error("Feedback failed:", error);
-                        }
-
-                        closeModal();
-
-                        // Redirect to login
-                        window.location.href = `${base}/login`;
-                    });
-                }
-
             });
         })();
+
+        // 🌟 1. RESET BUTTON ON PAGE SHOW (Fixes the infinite spinning on 'Back')
+        window.onpageshow = function(event) {
+            const submitBtn = document.getElementById('submitRating');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Submit & continue';
+            }
+        };
+
+        if (submitRating) {
+            // 🌟 2. PREVENT DOUBLE LISTENER ATTACHMENT
+            const newSubmitBtn = submitRating.cloneNode(true);
+            submitRating.parentNode.replaceChild(newSubmitBtn, submitRating);
+
+            newSubmitBtn.addEventListener('click', async function (e) {
+                e.preventDefault(); // Stop any default form behavior
+
+                const selectedBtn = document.querySelector('.rating-btn.active');
+                if (!selectedBtn) {
+                    alert("Please select a rating before continuing.");
+                    return;
+                }
+
+                // 🛑 STOP DOUBLE POST: Disable immediately and check state
+                if (newSubmitBtn.disabled) return;
+                newSubmitBtn.disabled = true;
+                newSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+                const ratingValue = selectedBtn.getAttribute('data-rating');
+                const base = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                        ? "http://127.0.0.1:5000"
+                        : "https://group6-bizally.onrender.com";
+
+                try {
+                    const response = await fetch(`${base}/api/feedback/submit`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            source: document.title,
+                            rating: ratingValue
+                        })
+                    });
+
+                    if (response.ok) {
+                        // Redirect immediately as requested
+                        window.location.href = `${base}/login`;
+                    } else {
+                        throw new Error("Submission failed");
+                    }
+                } catch (error) {
+                    console.error("Feedback failed:", error);
+                    // Re-enable only if there is an actual error
+                    newSubmitBtn.disabled = false;
+                    newSubmitBtn.innerHTML = 'Submit & continue';
+                    alert("Submission failed. Please try again.");
+                }
+            });
+        }
     </script>
 </body>
 

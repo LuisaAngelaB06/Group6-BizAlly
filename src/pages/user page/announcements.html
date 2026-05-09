@@ -195,16 +195,21 @@
     </div>
 
     <script>
-        const API_BASE_URL =
-            window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
-                ? "http://127.0.0.1:5000/api"
-                : "https://group6-bizally.onrender.com/api";
+        if (typeof API_BASE_URL === 'undefined') {
+            window.API_BASE_URL = 
+                window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                    ? "http://127.0.0.1:5000/api"
+                    : "https://group6-bizally.onrender.com/api";
+        }
 
-        const socket = io(
-            window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
-                ? "http://127.0.0.1:5000"
-                : "https://group6-bizally.onrender.com"
-        );
+        // Similarly for the socket to avoid conflicts
+        if (typeof socket === 'undefined') {
+            window.socket = io(
+                window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                    ? "http://127.0.0.1:5000"
+                    : "https://group6-bizally.onrender.com"
+            );
+        }
 
         // Account Dropdown Functionality - FIXED
         function setupAccountDropdown() {
@@ -464,9 +469,8 @@
                 console.error("User ID not found.");
                 return;
             }
-
             try {
-                const response = await fetch(`${API_BASE_URL}/user/announcements/all/${userId}`);
+                const response = await fetch(`${API_BASE_URL.includes('/api') ? API_BASE_URL : API_BASE_URL + '/api'}/user/announcements/all/${userId}`);
 
                 if (!response.ok) {
                     throw new Error(`Server returned ${response.status}`);
@@ -845,7 +849,9 @@
                 userData.Customer_ID;
 
             try {
-                const response = await fetch(`${API_BASE_URL}/user/announcements/read`, {
+
+                const base = API_BASE_URL.endsWith('/api') ? API_BASE_URL : API_BASE_URL + '/api';
+                const response = await fetch(`${base}/user/announcements/read`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ user_id: userId, announcement_id: id })
