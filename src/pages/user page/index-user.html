@@ -388,6 +388,7 @@
 
             // SETUP ACCOUNT DROPDOWN - CRITICAL ADDITION
             setupAccountDropdown();
+            loadTicketOverview();
 
             console.log('Dashboard page loaded');
 
@@ -659,6 +660,41 @@
                 updateUserDisplay(e.detail.userData || e.detail);
             }
         });
+
+        async function loadTicketOverview() {
+    try {
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        const userEmail = userData.Email || userData.email;
+        if (!userEmail) return;
+
+        const base = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost'
+            ? 'http://127.0.0.1:5000'
+            : 'https://group6-bizally.onrender.com';
+
+        const res = await fetch(`${base}/api/tickets`);
+        const allTickets = await res.json();
+
+        // Filter tickets belonging to this user only
+        const myTickets = allTickets.filter(t => t.Email === userEmail);
+
+        const open       = myTickets.filter(t => t.Status_ID === 1).length;
+        const inProgress = myTickets.filter(t => t.Status_ID === 2).length;
+        const resolved   = myTickets.filter(t => t.Status_ID === 3).length;
+        const closed     = myTickets.filter(t => t.Status_ID === 4).length;
+
+        // Update the count divs
+        const cards = document.querySelectorAll('.status-card .count');
+        if (cards.length >= 4) {
+            cards[0].textContent = open;
+            cards[1].textContent = inProgress;
+            cards[2].textContent = resolved;
+            cards[3].textContent = closed;
+        }
+
+    } catch (err) {
+        console.error('Failed to load ticket overview:', err);
+    }
+}
     </script>
 </body>
 
