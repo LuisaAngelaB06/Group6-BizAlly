@@ -706,12 +706,21 @@
                     if (editingStaffId) {
                         // EDIT existing staff
                         const editingStaff = staffMembers.find(s => s.id === editingStaffId);
+                        if (!editingStaff?.raw_user_id) {
+                            showToast('Could not identify staff user ID', 'error');
+                            return;
+                        }
+                        const nameParts = name.split(' ');
+                        const firstName = nameParts[0];
+                        const lastName = nameParts.slice(1).join(' ');
                         response = await fetch(`${API_BASE_URL}/api/auth/admin/update-user`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
-                                user_id: editingStaff?.raw_user_id || editingStaffId.replace("TECH-", ""),
-                                name, email, status
+                                user_id: editingStaff.raw_user_id,
+                                first_name: firstName,
+                                last_name: lastName,
+                                email, status
                             })
                         });
                     } else {
