@@ -101,7 +101,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
 }
 
 .announcement-type {
@@ -319,7 +319,7 @@
 .announcement-stats {
     display: flex;
     gap: 16px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .stat-card {
@@ -386,16 +386,17 @@
 
 .announcement-modal {
     width: min(680px, 100%);
-    background: #ffffff;
+    background: var(--surface); /* 🌟 SYNCED: Was #ffffff */
     border-radius: 22px;
-    box-shadow: 0 30px 80px rgba(15, 23, 42, 0.35);
+    border: 1px solid var(--border); /* 🌟 SYNCED: Added border */
+    box-shadow: var(--shadow-lg);
     overflow: hidden;
     animation: modalPop 0.18s ease-out;
 }
 
 .modal-header {
     padding: 24px 28px;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -405,7 +406,7 @@
     margin: 0;
     font-size: 1.45rem;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--text-primary);
 }
 
 .modal-close {
@@ -413,14 +414,14 @@
     height: 38px;
     border: none;
     border-radius: 12px;
-    background: #f1f5f9;
-    color: #0f172a;
+    background: var(--hover-bg);
+    color: var(--text-primary);
     font-size: 24px;
     cursor: pointer;
 }
 
 .modal-close:hover {
-    background: #e2e8f0;
+    background: var(--surface-tertiary);
 }
 
 .modal-body {
@@ -431,21 +432,21 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #64748b;
+    color: var(--text-secondary);
     font-size: 0.95rem;
     margin-bottom: 18px;
 }
 
 .modal-body .announcement-meta i {
-    color: #2563eb;
+    color: var(--accent);
 }
 
 .modal-body .announcement-message {
     padding: 20px;
-    background: #f8fafc;
-    border: 1px solid #e5e7eb;
+    background: var(--surface-secondary);
+    border: 1px solid var(--border);
     border-radius: 16px;
-    color: #1e293b;
+    color: var(--text-primary);
     line-height: 1.7;
     font-size: 1rem;
     white-space: pre-wrap;
@@ -453,24 +454,24 @@
 
 .modal-footer {
     padding: 18px 28px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--border);
     display: flex;
     justify-content: flex-end;
-    background: #f8fafc;
+    background: var(--surface-secondary);
 }
 
 .modal-footer .action-btn {
     padding: 10px 18px;
     border-radius: 12px;
-    border: 1px solid #dbeafe;
-    background: #2563eb;
-    color: #ffffff;
+    border: 1px solid var(--accent);
+    background: var(--surface-secondary);
+    color: var(--text-primary);
     font-weight: 700;
     cursor: pointer;
 }
 
 .modal-footer .action-btn:hover {
-    background: #1d4ed8;
+    background: var(--accent-2);
 }
 
 @keyframes modalPop {

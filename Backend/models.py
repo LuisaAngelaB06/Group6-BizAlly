@@ -1,6 +1,6 @@
 from datetime import datetime
 # Import db from where it is initialized (extensions or app)
-from extensions import db 
+from Backend.extensions import db 
 
 class SystemFeedback(db.Model):
     __tablename__ = 'system_feedback'

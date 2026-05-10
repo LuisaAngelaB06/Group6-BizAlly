@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from database import get_connection
+from Backend.database import get_connection
 from psycopg2.extras import RealDictCursor
-from socketio_instance import socketio
+from Backend.socketio_instance import socketio
 
 announcement_bp = Blueprint("announcements", __name__)
 
@@ -194,6 +194,10 @@ def get_all_announcements_user(user_id):
 @announcement_bp.route("/user/announcements/read", methods=["POST"])
 def mark_as_read():
     data = request.get_json()
+
+    user_id = data.get('user_id')
+    announcement_id = data.get('announcement_id')
+
 
     conn = get_connection()
     cursor = conn.cursor()

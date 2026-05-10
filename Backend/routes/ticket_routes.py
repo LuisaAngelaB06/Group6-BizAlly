@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from psycopg2.extras import RealDictCursor
 
-from database import get_connection
+from Backend.database import get_connection
 
 ticket_bp = Blueprint("tickets", __name__)
 
