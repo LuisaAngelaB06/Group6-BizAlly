@@ -43,29 +43,25 @@
                     </div>
                 </div>
                 <nav class="nav">
-                    <a href="/admin/index-admin.html" data-section="dashboard"><i
-                            class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span></a>
+                    <a href="/admin/index-admin.html" data-section="dashboard"><i class="fas fa-chart-line"></i> <span
+                            data-translate="dashboard">Dashboard</span></a>
                     <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
-                    <a href="/admin/all-tickets.html" data-section="tickets"><i
-                            class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span></a>
+                    <a href="/admin/all-tickets.html" data-section="tickets"><i class="fas fa-ticket-alt"></i> <span
+                            data-translate="all_tickets">All Tickets</span></a>
                     <a href="/admin/staff-management.html" class="active" data-section="users"><i
                             class="fas fa-users"></i> <span data-translate="users_management">Staff
                             Management</span></a>
-                    <a href="/admin/announcements.html" data-section="announcements"><i
-                            class="fas fa-bullhorn"></i>
+                    <a href="/admin/announcements.html" data-section="announcements"><i class="fas fa-bullhorn"></i>
                         <span data-translate="announcements">Announcements</span></a>
                     <div class="nav-section" data-translate="system_management">System Management</div>
-                    <a href="/admin/system-settings.html" data-section="system-settings"><i
-                            class="fas fa-cogs"></i>
+                    <a href="/admin/system-settings.html" data-section="system-settings"><i class="fas fa-cogs"></i>
                         <span data-translate="system_settings">System Settings</span></a>
-                    <a href="/admin/system-analytics.html" data-section="analytics"><i
-                            class="fas fa-chart-bar"></i>
+                    <a href="/admin/system-analytics.html" data-section="analytics"><i class="fas fa-chart-bar"></i>
                         <span data-translate="analytics">Analytics</span></a>
-                    <a href="/admin/system-logs.html" data-section="logs"><i
-                            class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span></a>
+                    <a href="/admin/system-logs.html" data-section="logs"><i class="fas fa-clipboard-list"></i> <span
+                            data-translate="system_logs">System Logs</span></a>
                     <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
-                    <a href="/admin/preferences.html" data-section="preferences"><i
-                            class="fas fa-sliders-h"></i>
+                    <a href="/admin/preferences.html" data-section="preferences"><i class="fas fa-sliders-h"></i>
                         <span data-translate="preferences">Preferences</span></a>
                     <a href="/admin/profile-settings.html" data-section="profile-settings"><i
                             class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile
@@ -83,8 +79,8 @@
                 <header class="header">
                     <div class="search" role="search" aria-label="Search Staff">
                         <i class="fas fa-search" style="opacity:.6"></i>
-                        <input id="staffSearch" placeholder="Search staff by name, email, role..."
-                            data-translate-placeholder="search_staff" aria-label="Search staff" />
+                        <input id="staffSearch" placeholder="Search staff by name, email..."
+                            data-translate-placeholder="search_staff" aria-label="Search staff" autocomplete="off" />
                     </div>
                     <div class="header-actions">
                         <div style="text-align:right">
@@ -114,7 +110,7 @@
                                 <span data-translate="staff_management">Staff Management</span>
                             </h1>
                             <p class="subtitle" data-translate="staff_management_description">Manage staff accounts,
-                                roles, and permissions</p>
+                                and permissions</p>
                         </div>
                     </div>
 
@@ -146,6 +142,9 @@
                                 <button class="btn btn-secondary" id="refreshStaffBtn">
                                     <i class="fas fa-sync-alt"></i> <span data-translate="refresh">Refresh</span>
                                 </button>
+                                <button class="btn btn-primary" id="addStaffBtn">
+                                    <i class="fas fa-plus"></i> <span data-translate="add_staff">Add Staff</span>
+                                </button>
                             </div>
                         </div>
 
@@ -158,12 +157,14 @@
                                             <th style="width: 120px; text-align: center; padding-left: 35px;">
                                                 <input type="checkbox" id="selectAllStaff" title="Select All">
                                             </th>
-                                            <th data-translate="staff_id" style="width: 140px; padding-left: 35px;">Staff ID</th>
+                                            <th data-translate="staff_id" style="width: 140px; padding-left: 35px;">
+                                                Technician ID</th>
                                             <th data-translate="name">Name</th>
                                             <th data-translate="email" style="width: 280px;">Email</th>
-                                            <th data-translate="role" style="width: 120px; padding-left: 35px;">Role</th>
+                                            </th>
                                             <th data-translate="status" style="width: 110px;">Status</th>
-                                            <th data-translate="actions" style="width: 160px; text-align: center;">Actions</th>
+                                            <th data-translate="actions" style="width: 160px; text-align: center;">
+                                                Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="staffTableBody">
@@ -207,12 +208,11 @@
         </div>
     </div>
 
-    <!-- MODALS -->
     <!-- Add/Edit Staff Modal -->
     <div class="modal" id="staffFormModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-user-cog"></i> <span id="modalTitle" data-translate="add_staff">Add Staff</span>
+                <h3> <span id="modalTitle" data-translate="add_staff">Add Staff</span>
                 </h3>
                 <button class="modal-close" id="closeFormModal">&times;</button>
             </div>
@@ -221,7 +221,7 @@
                     <input type="hidden" id="staffId" value="">
                     <div class="form-group">
                         <label for="fullName" data-translate="full_name">Full Name</label>
-                        <input type="text" id="fullName" class="form-control" required placeholder="e.g. Jane Doe">
+                        <input type="text" id="fullName" class="form-control" required placeholder="Full Name">
                     </div>
                     <div class="form-group">
                         <label for="email" data-translate="email">Email</label>
@@ -232,7 +232,7 @@
                         <select id="status" class="form-control">
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
-                            <option value="suspended">Suspended</option> 
+                            <option value="suspended">Suspended</option>
                         </select>
                     </div>
                 </form>
@@ -267,13 +267,76 @@
         </div>
     </div>
 
+    <!-- Reset Password Modal -->
+    <div class="modal" id="resetPwdModal">
+        <div class="modal-content" style="max-width:480px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-key" style="color:#f59e0b;"></i> <span>Reset Password</span></h3>
+                <button class="modal-close" id="closeResetPwdModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="reset-pwd-info">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>This will <strong>immediately reset</strong> the staff member's password. They will need to use
+                        the new temporary password to log in, then change it on next sign-in.</p>
+                </div>
+                <div class="reset-pwd-target">
+                    <span class="target-name" id="resetPwdName">—</span>
+                    <span class="target-email" id="resetPwdEmail">—</span>
+                    <span class="target-id" id="resetPwdId">—</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelResetPwdBtn">Cancel</button>
+                <button class="btn" id="confirmResetPwdBtn"
+                    style="background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border-color:#f59e0b;">
+                    <i class="fas fa-key"></i> Reset Password
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Password Verification Modal -->
+    <div class="modal" id="adminVerifyModal">
+        <div class="modal-content" style="max-width:420px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-lock" style="color:var(--accent);"></i> Admin Verification</h3>
+                <button class="modal-close" id="closeAdminVerifyModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom:14px;font-size:0.9rem;color:var(--text-secondary);">Please enter your admin
+                    password to continue.</p>
+                <div class="form-group" style="position:relative;">
+                    <label for="adminVerifyPassword">Password</label>
+                    <div style="position:relative;">
+                        <input type="password" id="adminVerifyPassword" class="form-control" style="padding-right:42px;"
+                            autocomplete="new-password" />
+                        <button type="button" id="adminVerifyToggle" tabindex="-1"
+                            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:0;">
+                            <i class="fas fa-eye" id="adminVerifyToggleIcon"></i>
+                        </button>
+                    </div>
+                    <div id="adminVerifyError" style="display:none;margin-top:8px;color:#ef4444;font-size:0.82rem;">
+                        <i class="fas fa-exclamation-circle"></i> <span id="adminVerifyErrorText">Incorrect password.
+                            Please try again.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelAdminVerifyBtn">Cancel</button>
+                <button class="btn btn-primary" id="confirmAdminVerifyBtn"><i class="fas fa-unlock"></i>
+                    Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div id="toast" class="toast"></div>
 
     <script>
         if (typeof API_BASE_URL === 'undefined') {
             window.API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-                ? 'http://127.0.0.1:5000' 
+                ? 'http://127.0.0.1:5000'
                 : 'https://group6-bizally.onrender.com';
         }
         (function () {
@@ -284,21 +347,18 @@
                 en: {
                     staff_management_title: 'Staff Management - AlliTrack Admin',
                     staff_management: 'Staff Management',
-                    staff_management_description: 'Manage staff accounts, roles, and permissions',
-                    search_staff: 'Search staff by name, email, role...',
+                    staff_management_description: 'Manage staff accounts, and permissions',
+                    search_staff: 'Search staff by name, email...',
                     add_staff: 'Add Staff',
                     delete_selected: 'Delete Selected',
                     refresh: 'Refresh',
                     clear_filters: 'Clear Filters',
-                    staff_id: 'Staff ID',
+                    staff_id: 'Technician ID',
                     name: 'Name',
                     email: 'Email',
-                    role: 'Role',
                     status: 'Status',
                     admin_access: 'Admin',
                     actions: 'Actions',
-                    all_roles: 'All Roles',
-                    admin: 'Admin',
                     all_status: 'All Status',
                     active: 'Active',
                     inactive: 'Inactive',
@@ -334,20 +394,17 @@
                     staff_management_title: 'Pamamahala ng Staff - AlliTrack Admin',
                     staff_management: 'Pamamahala ng Staff',
                     staff_management_description: 'Pamahalaan ang mga staff account, tungkulin, at pahintulot',
-                    search_staff: 'Maghanap ng staff sa pangalan, email, tungkulin...',
+                    search_staff: 'Maghanap ng staff sa pangalan, email...',
                     add_staff: 'Magdagdag ng Staff',
                     delete_selected: 'I-delete ang Napili',
                     refresh: 'I-refresh',
                     clear_filters: 'Tanggalin ang Filters',
-                    staff_id: 'Staff ID',
+                    staff_id: 'Technician ID',
                     name: 'Pangalan',
                     email: 'Email',
-                    role: 'Tungkulin',
                     status: 'Status',
                     admin_access: 'Admin',
                     actions: 'Mga Aksyon',
-                    all_roles: 'Lahat ng Tungkulin',
-                    admin: 'Admin',
                     all_status: 'Lahat ng Status',
                     active: 'Aktibo',
                     inactive: 'Hindi Aktibo',
@@ -382,14 +439,15 @@
 
             // ---------- REAL STAFF DATA FROM DATABASE ----------
             let staffMembers = [];
+            window._staffMembers = staffMembers;
 
             async function fetchRealStaff() {
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/admin/users`);
+                    const response = await fetch(`${API_BASE_URL}/api/auth/admin/users`);
                     const realUsers = await response.json();
-                    
+
                     if (!Array.isArray(realUsers)) return;
-                    
+
                     staffMembers = realUsers
                         .filter(user => {
                             const type = (user.User_Type || user.user_type || "").toLowerCase();
@@ -397,14 +455,22 @@
                         })
                         // Replace the .map section inside fetchRealStaff with this:
                         .map(user => ({
-                            id: String(user.user_id || user.user_id || "0"), 
-                            name: user.Name || user.name || "Missing Name", 
-                            email: user.Email || user.email || "Missing Email", 
-                            role: 'Admin',
-                            // 🚀 THE FIX: Pull the actual Account_Status from Python
-                            status: (user.Account_Status || user.account_status || 'active').toLowerCase() 
-                        }));
-                    
+                            id: user.technician_id
+                                ? `TECH-${String(user.technician_id).padStart(2, '0')}`
+                                : `TECH-??`,
+                            raw_technician_id: user.technician_id,
+                            raw_user_id: user.user_id,
+                            name: `${user.first_name || user.First_Name || ""} ${user.last_name || user.Last_Name || ""}`.trim() || user.Name || user.name || "Missing Name",
+                            email: user.email || user.Email || "Missing Email",
+                            status: (user.account_status || user.Account_Status || 'active').toLowerCase()
+                        }))
+                        .sort((a, b) => {
+                            const numA = parseInt(a.id.replace(/\D/g, ''), 10);
+                            const numB = parseInt(b.id.replace(/\D/g, ''), 10);
+                            return numA - numB;
+                        });
+
+                    window._staffMembers = staffMembers;
                     loadStaff();
                 } catch (error) {
                     console.error("❌ THE FETCH FAILED:", error);
@@ -463,10 +529,9 @@
                 const searchTerm = document.getElementById('staffSearch')?.value.toLowerCase() || '';
 
                 currentFilteredStaff = staffMembers.filter(staff => {
-                    // FIXED: Removed the role filter check!
                     if (statusFilter !== 'all' && staff.status !== statusFilter) return false;
                     if (searchTerm) {
-                        const haystack = `${staff.id} ${staff.name} ${staff.email} ${staff.role}`.toLowerCase();
+                        const haystack = `${staff.id} ${staff.name} ${staff.email}`.toLowerCase();
                         if (!haystack.includes(searchTerm)) return false;
                     }
                     return true;
@@ -488,12 +553,10 @@
                         <td style="padding-left: 35px;"><strong>${staff.id}</strong></td>
                         <td>${staff.name}</td>
                         <td><span style="font-size:0.75rem; color:var(--text-secondary);">${staff.email}</span></td>
-                        <td style="padding-left: 35px;"><span class="badge badge-admin">Admin</span></td>
                         <td>
-                            <span class="badge ${
-                                staff.status === 'active' ? 'badge-active' : 
-                                staff.status === 'suspended' ? 'badge-suspended' : 'badge-inactive'
-                            }">
+                            <span class="badge ${staff.status === 'active' ? 'badge-active' :
+                            staff.status === 'suspended' ? 'badge-suspended' : 'badge-inactive'
+                        }">
                                 ${staff.status.charAt(0).toUpperCase() + staff.status.slice(1)}
                             </span>
                         </td>
@@ -501,7 +564,6 @@
                             <div class="action-buttons" style="justify-content: center; display: flex; gap: 8px;">
                                 <button class="btn-action btn-edit" data-staff-id="${staff.id}" title="Edit"><i class="fas fa-edit"></i></button>
                                 <button class="btn-action btn-reset-pwd" data-staff-id="${staff.id}" title="Reset Password" style="color: #f59e0b;"><i class="fas fa-key"></i></button>
-                                <button class="btn-action btn-delete" data-staff-id="${staff.id}" title="Delete"><i class="fas fa-trash-alt"></i></button>
                             </div>
                         </td>
                     `;
@@ -532,10 +594,9 @@
 
                 // Reset Password Listener
                 document.querySelectorAll('.btn-reset-pwd').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
+                    btn.addEventListener('click', function (e) {
                         const rawId = e.currentTarget.dataset.staffId;
-                        const numericId = rawId.replace("STF-", ""); 
-                        forcePasswordReset(numericId);
+                        requireAdminVerify(() => openResetPwdModal(rawId));
                     });
                 });
             }
@@ -551,14 +612,16 @@
             function handleEdit(e) {
                 const id = e.currentTarget.dataset.staffId;
                 const staff = staffMembers.find(s => s.id === id);
-                if (staff) openEditModal(staff);
+                if (staff) requireAdminVerify(() => openEditModal(staff));
             }
 
             function handleDeleteSingle(e) {
                 const id = e.currentTarget.dataset.staffId;
-                selectedStaff.clear();
-                selectedStaff.add(id);
-                showDeleteConfirmation([id]);
+                requireAdminVerify(() => {
+                    selectedStaff.clear();
+                    selectedStaff.add(id);
+                    showDeleteConfirmation([id]);
+                });
             }
 
             // ---------- MODALS ----------
@@ -575,18 +638,18 @@
 
                 document.getElementById('staffFormModal').classList.add('show');
             }
-            
+
             // ---------- MODALS & FORM LOGIC ----------
 
             // This function handles opening the Edit pop-up
             function openEditModal(staff) {
                 console.log("Attempting to open modal for ID:", staff.id);
                 editingStaffId = staff.id;
-                
+
                 // Update text and IDs to match your HTML
                 const modalTitle = document.getElementById('modalTitle');
                 if (modalTitle) modalTitle.innerHTML = '<i class="fas fa-user-edit"></i> Edit Staff';
-                
+
                 const saveBtn = document.getElementById('saveStaffBtn');
                 if (saveBtn) saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
 
@@ -611,7 +674,7 @@
             }
 
             // ---------- FIXED MODAL LOGIC (INSIDE THE BUBBLE) ----------
-            
+
             // 1. This function closes the pop-up
             function closeFormModal() {
                 const modal = document.getElementById('staffFormModal');
@@ -625,32 +688,49 @@
                 const nameField = document.getElementById('fullName');
                 const emailField = document.getElementById('email');
                 const statusField = document.getElementById('status');
-                
+
                 if (!nameField || !emailField) return;
 
                 const name = nameField.value.trim();
                 const email = emailField.value.trim();
                 const status = statusField.value;
 
+                if (!name || !email) {
+                    showToast('Name and email are required', 'error');
+                    return;
+                }
+
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/admin/update-user`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            user_id: editingStaffId.replace("STF-", ""), 
-                            name: name,
-                            email: email,
-                            status: status
-                        })
-                    });
+                    let response;
+
+                    if (editingStaffId) {
+                        // EDIT existing staff
+                        const editingStaff = staffMembers.find(s => s.id === editingStaffId);
+                        response = await fetch(`${API_BASE_URL}/api/auth/admin/update-user`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                user_id: editingStaff?.raw_user_id || editingStaffId.replace("TECH-", ""),
+                                name, email, status
+                            })
+                        });
+                    } else {
+                        // CREATE new staff
+                        response = await fetch(`${API_BASE_URL}/api/auth/admin/create-user`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ name, email, status })
+                        });
+                    }
+
+                    const result = await response.json();
 
                     if (response.ok) {
-                        showToast('Account updated in database!', 'success');
-                        closeFormModal(); // Now it can find this function!
-                        fetchRealStaff(); // Refresh the table
+                        showToast(editingStaffId ? 'Account updated!' : 'Staff created! Default password: Password2026!', 'success');
+                        closeFormModal();
+                        fetchRealStaff();
                     } else {
-                        const result = await response.json();
-                        showToast(result.message, 'error');
+                        showToast(result.message || 'Error saving staff', 'error');
                     }
                 } catch (error) {
                     console.error("Save failed:", error);
@@ -689,23 +769,28 @@
 
             async function confirmDelete() {
                 const ids = Array.from(selectedStaff);
-                
+
                 try {
                     // Send the list of IDs to Python to hard delete from MySQL
-                    const response = await fetch(`${API_BASE_URL}/api/admin/delete-users`, {
+                    const response = await fetch(`${API_BASE_URL}/api/auth/admin/delete-users`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ user_ids: ids })
+                        body: JSON.stringify({
+                            user_ids: ids.map(id => {
+                                const staff = staffMembers.find(s => s.id === id);
+                                return staff?.raw_user_id || id.replace("TECH-", "");
+                            })
+                        })
                     });
-                    
+
                     const result = await response.json();
-                    
+
                     if (response.ok) {
                         showToast('Accounts permanently deleted!', 'success');
                         selectedStaff.clear();
                         document.getElementById('deleteConfirmModal').classList.remove('show');
                         // Pull the fresh data from the database
-                        fetchRealStaff(); 
+                        fetchRealStaff();
                     } else {
                         showToast(result.message, 'error');
                     }
@@ -793,13 +878,15 @@
                     loadStaff();
                     showToast('Filters cleared', 'success');
                 });
-                
+
                 document.getElementById('refreshStaffBtn').addEventListener('click', () => { fetchRealStaff(); showToast('Refreshed', 'success'); });
-                
-                // FIXED: Removed the addStaffBtn listener because we deleted the button!
-                
+
+                document.getElementById('addStaffBtn').addEventListener('click', () => {
+                    requireAdminVerify(openAddModal);
+                });
+
                 document.getElementById('deleteStaffBtn').addEventListener('click', () => {
-                    if (selectedStaff.size) showDeleteConfirmation(Array.from(selectedStaff));
+                    if (selectedStaff.size) requireAdminVerify(() => showDeleteConfirmation(Array.from(selectedStaff)));
                     else showToast(translations[getCurrentLanguage()].no_staff_selected, 'error');
                 });
 
@@ -836,12 +923,19 @@
                 document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
                 // Close modal on outside click
                 window.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('modal')) e.target.classList.remove('show');
+                    if (e.target.classList.contains('modal')) {
+                        if (e.target.id === 'adminVerifyModal') closeAdminVerifyModal();
+                        else e.target.classList.remove('show');
+                    }
                 });
                 // Escape
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
-                        document.querySelectorAll('.modal.show').forEach(m => m.classList.remove('show'));
+                        if (document.getElementById('adminVerifyModal').classList.contains('show')) {
+                            closeAdminVerifyModal();
+                        } else {
+                            document.querySelectorAll('.modal.show').forEach(m => m.classList.remove('show'));
+                        }
                     }
                 });
                 // Logout
@@ -871,7 +965,7 @@
                 menu.querySelectorAll("a").forEach(a => a.addEventListener("click", () => menu.classList.remove("show")));
             }
 
-        // ---------- INITIALIZE ----------
+            // ---------- INITIALIZE ----------
             document.addEventListener('DOMContentLoaded', function () {
                 // Inject toast
                 if (!document.getElementById('toast')) {
@@ -885,39 +979,168 @@
                     const lang = window.preferencesManager.getCurrentLanguage() || 'en';
                     applyTranslations(lang);
                 } else applyTranslations('en');
-                
+
                 setupAccountDropdown();
                 setupEventListeners();
-                
+
                 // THIS IS THE FIX: We call fetchRealStaff() INSIDE the bubble!
-                fetchRealStaff(); 
+                fetchRealStaff();
             });
+            // ---------- ADMIN PASSWORD VERIFICATION GATE ----------
+            let _adminVerifyCallback = null;
+
+            function requireAdminVerify(callback) {
+                _adminVerifyCallback = callback;
+                const modal = document.getElementById('adminVerifyModal');
+                const input = document.getElementById('adminVerifyPassword');
+                const err = document.getElementById('adminVerifyError');
+                const btn = document.getElementById('confirmAdminVerifyBtn');
+                input.value = '';
+                err.style.display = 'none';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-unlock"></i> Confirm';
+                modal.classList.add('show');
+                setTimeout(() => input.focus(), 80);
+            }
+
+            function closeAdminVerifyModal() {
+                document.getElementById('adminVerifyModal').classList.remove('show');
+                _adminVerifyCallback = null;
+            }
+
+            async function submitAdminVerify() {
+                const password = document.getElementById('adminVerifyPassword').value;
+                const err = document.getElementById('adminVerifyError');
+                const errText = document.getElementById('adminVerifyErrorText');
+                const btn = document.getElementById('confirmAdminVerifyBtn');
+
+                if (!password) {
+                    err.style.display = 'block';
+                    errText.textContent = 'Password is required.';
+                    return;
+                }
+
+                const email = document.getElementById('userEmail')?.textContent?.trim() || '';
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying…';
+                err.style.display = 'none';
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    if (response.ok) {
+                        document.getElementById('adminVerifyModal').classList.remove('show');
+                        const cb = _adminVerifyCallback;
+                        _adminVerifyCallback = null;
+                        if (typeof cb === 'function') cb();
+                    } else {
+                        err.style.display = 'block';
+                        errText.textContent = 'Incorrect password. Please try again.';
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fas fa-unlock"></i> Confirm';
+                        document.getElementById('adminVerifyPassword').focus();
+                    }
+                } catch (error) {
+                    err.style.display = 'block';
+                    errText.textContent = 'Could not reach the server. Please try again.';
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-unlock"></i> Confirm';
+                    console.error('Admin verify error:', error);
+                }
+            }
+
+            // Wire admin verify modal controls
+            document.getElementById('closeAdminVerifyModal').addEventListener('click', closeAdminVerifyModal);
+            document.getElementById('cancelAdminVerifyBtn').addEventListener('click', closeAdminVerifyModal);
+            document.getElementById('confirmAdminVerifyBtn').addEventListener('click', submitAdminVerify);
+            document.getElementById('adminVerifyPassword').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') submitAdminVerify();
+            });
+            document.getElementById('adminVerifyToggle').addEventListener('click', function () {
+                const input = document.getElementById('adminVerifyPassword');
+                const icon = document.getElementById('adminVerifyToggleIcon');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'fas fa-eye-slash';
+                } else {
+                    input.type = 'password';
+                    icon.className = 'fas fa-eye';
+                }
+            });
+            document.getElementById('adminVerifyModal').addEventListener('click', function (e) {
+                if (e.target === this) closeAdminVerifyModal();
+            });
+
         })(); // <-- This closes the frontend developer's protective bubble
 
         // ==========================================
         // ADMIN TOOL: Reset User Password
         // ==========================================
-        async function forcePasswordReset(userId) {
-            if(!confirm("Are you sure you want to reset this user's password?")) return;
+
+        // Holds the numeric ID pending confirmation
+        let _pendingResetUserId = null;
+
+        function openResetPwdModal(rawId) {
+            const numericId = String(rawId).replace("TECH-", "");
+            _pendingResetUserId = numericId;
+
+            // Look up staff details for display
+            const staffArr = window._staffMembers || [];
+            const staff = staffArr.find(s => String(s.id).replace("STF-", "") === numericId || s.id === rawId);
+
+            document.getElementById('resetPwdName').textContent = staff ? staff.name : '—';
+            document.getElementById('resetPwdEmail').textContent = staff ? staff.email : '—';
+            document.getElementById('resetPwdId').textContent = staff ? `ID: ${staff.id}` : `ID: ${rawId}`;
+
+            document.getElementById('resetPwdModal').classList.add('show');
+        }
+
+        async function confirmResetPassword() {
+            if (!_pendingResetUserId) return;
+
+            const btn = document.getElementById('confirmResetPwdBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resetting…';
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/admin/reset-password`, {
+                const response = await fetch(`${API_BASE_URL}/api/auth/admin/reset-password`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ target_user_id: userId })
+                    body: JSON.stringify({ target_user_id: _pendingResetUserId })
                 });
-                
+
                 const result = await response.json();
-                if(response.ok) {
-                    alert("✅ " + result.message); 
+                document.getElementById('resetPwdModal').classList.remove('show');
+
+                if (response.ok) {
+                    if (typeof showToast === 'function') showToast(result.message || 'Password reset successfully', 'success');
+                    else alert("✅ " + (result.message || 'Password reset successfully'));
                 } else {
-                    alert("❌ Failed: " + result.message);
+                    if (typeof showToast === 'function') showToast('Failed: ' + (result.message || 'Unknown error'), 'error');
+                    else alert("❌ Failed: " + result.message);
                 }
             } catch (error) {
-                alert("❌ Server Error: Could not reach the backend.");
+                document.getElementById('resetPwdModal').classList.remove('show');
+                if (typeof showToast === 'function') showToast('Server error: could not reach the backend', 'error');
+                else alert("❌ Server Error: Could not reach the backend.");
                 console.error(error);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-key"></i> Reset Password';
+                _pendingResetUserId = null;
             }
         }
+
+        // Wire up the Reset Password modal buttons (outside the IIFE so they always reach the modal)
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('closeResetPwdModal')?.addEventListener('click', () => document.getElementById('resetPwdModal').classList.remove('show'));
+            document.getElementById('cancelResetPwdBtn')?.addEventListener('click', () => document.getElementById('resetPwdModal').classList.remove('show'));
+            document.getElementById('confirmResetPwdBtn')?.addEventListener('click', confirmResetPassword);
+        });
     </script>
 </body>
 

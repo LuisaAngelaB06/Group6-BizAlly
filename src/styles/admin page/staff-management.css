@@ -643,3 +643,99 @@
     color: #ef4444;
     margin-right: 8px;
 }
+
+/* ============ SCROLLBAR DESIGN (matches all-tickets) ============ */
+.table-responsive::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-2);
+}
+
+/* ============ RESET PASSWORD MODAL ============ */
+.reset-pwd-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+}
+
+.reset-pwd-info i {
+    color: #f59e0b;
+    font-size: 1.2rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.reset-pwd-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.reset-pwd-info p strong {
+    color: var(--text-primary);
+}
+
+.reset-pwd-target {
+    background: var(--hover-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.reset-pwd-target .target-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.reset-pwd-target .target-email {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+
+.reset-pwd-target .target-id {
+    font-size: 0.78rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-top: 2px;
+}
+/* ============ PASSWORD GATE MODAL ============ */
+.pwd-gate-error {
+    color: #ef4444;
+    font-size: 0.82rem;
+    margin-top: 6px;
+}
+
+#pwdGateInput:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+#pwdGateInput.input-error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}

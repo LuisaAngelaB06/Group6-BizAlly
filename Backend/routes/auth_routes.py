@@ -233,13 +233,22 @@ def get_all_staff():
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
-        cursor.execute('SELECT user_id, first_name, last_name, Email, User_Type, Account_Status FROM "system_user"')
+        cursor.execute('''
+        SELECT su.user_id, su.first_name, su.last_name, su.email, su.user_type,
+               su.account_status, t.technician_id
+        FROM "system_user" AS su
+        LEFT JOIN "technician" AS t ON t.user_id = su.user_id
+        WHERE LOWER(su.user_type) = \'admin\'
+        ''')
         users = cursor.fetchall()
 
         formatted = []
         for u in users:
             formatted.append({
                 "user_id": u["user_id"],
+                "technician_id": u["technician_id"],
+                "first_name": u["first_name"] or "",
+                "last_name": u["last_name"] or "",
                 "Name": f"{u['first_name']} {u['last_name'] or ''}".strip(),
                 "Email": u["email"],
                 "User_Type": u["user_type"],
@@ -648,7 +657,7 @@ def send_otp():
         # 4. SEND EMAIL
         # Important: The sender email MUST be verified in your Brevo dashboard
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            sender={"name": "AlliTrack", "email": "melmendoza.educ@gmail.com"},
+            sender={"name": "AlliTrack", "email": "noreply.allitrack@gmail.com"},
             to=[{"email": email}],
             subject="AlliTrack Verification Code",
             html_content=f"""
@@ -755,7 +764,7 @@ def resend_otp():
         api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
 
         send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            sender={"name": "AlliTrack", "email": "melmendoza.educ@gmail.com"},
+            sender={"name": "AlliTrack", "email": "noreply.allitrack@gmail.com"},
             to=[{"email": email}],
             subject="AlliTrack — New Verification Code",
             html_content=f"""
@@ -777,6 +786,68 @@ def resend_otp():
     except Exception as e:
         print(f"Resend OTP error: {e}")
         return jsonify({"status": "error", "message": "Internal server error"}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# ==========================================
+# 13. CREATE STAFF (Admin)
+# ==========================================
+@auth_bp.route("/admin/create-user", methods=["POST"])
+def admin_create_user():
+    data = request.json
+    name = data.get("name", "").strip()
+    email = data.get("email", "").strip()
+    status = data.get("status", "active")
+
+    if not name or not email:
+        return jsonify({"status": "error", "message": "Name and email are required"}), 400
+
+    name_parts = name.split(" ", 1)
+    first_name = name_parts[0]
+    last_name = name_parts[1] if len(name_parts) > 1 else ""
+    username = email.split("@")[0]
+    temp_password = generate_password_hash("Password2026!")
+
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    try:
+        cursor.execute('SELECT user_id FROM "system_user" WHERE LOWER(Email) = LOWER(%s)', (email,))
+        if cursor.fetchone():
+            return jsonify({"status": "error", "message": "Email already exists"}), 400
+
+        cursor.execute(
+            """
+            INSERT INTO "system_user"
+            (Username, first_name, last_name, Email, password_Hash, User_Type, Account_Status, Created_At)
+            VALUES (%s, %s, %s, %s, %s, 'admin', %s, CURRENT_TIMESTAMP)
+            RETURNING user_id
+            """,
+            (username, first_name, last_name, email, temp_password, status)
+        )
+        new_user = cursor.fetchone()
+
+        # Auto-create technician record so they get a technician_id
+        cursor.execute(
+            'INSERT INTO "technician" (user_id) VALUES (%s) RETURNING technician_id',
+            (new_user["user_id"],)
+        )
+        tech = cursor.fetchone()
+        conn.commit()
+
+        return jsonify({
+        "status": "success",
+        "message": "Staff created",
+        "user_id": new_user["user_id"],
+        "technician_id": tech["technician_id"]
+    }), 201
+
+    except Exception as e:
+        conn.rollback()
+        print(f"Create staff error: {e}")
+        return jsonify({"status": "error", "message": "Database error"}), 500
+
     finally:
         cursor.close()
         conn.close()
