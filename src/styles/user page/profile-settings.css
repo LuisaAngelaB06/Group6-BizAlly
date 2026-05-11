@@ -41,20 +41,22 @@
 }
 
 .profile-section {
-    padding: 0px !important; /* Reduce section padding */
-    margin-bottom: 0px !important;
+    padding: 20px 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--border);
 }
 
 .profile-section:last-child {
-    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
 }
 
 .section-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-top: 0px;
-    margin-bottom: 10px !important;
+    margin-top: 0;
+    margin-bottom: 16px;
     padding-bottom: 12px;
     border-bottom: 1px solid var(--border);
 }
@@ -87,15 +89,13 @@
 .profile-form {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0.75rem !important;
+    gap: 16px;
 }
 
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem 1.5rem !important;
-    margin-bottom: 1rem !important;
-    margin-top: 1rem !important;
+    gap: 16px;
     align-items: start;
 }
 
@@ -330,8 +330,8 @@
     display: flex;
     gap: 12px;
     justify-content: flex-end;
-    margin-top: 0.75rem !important;
-    padding-top: 0.75rem !important;
+    margin-top: 20px;
+    padding-top: 16px;
     border-top: 1px solid var(--border);
 }
 
@@ -530,33 +530,23 @@
 }
 
 /* FIX: Adjust the specific spacing for Company/Personal fields */
-.company-field {
-    margin-bottom: 0.25rem !important; /* Tightens the gap after the input */
-}
-
 .company-field .form-label {
-    margin-bottom: 8px !important; /* Fixes the 'too close' label in image_a24449.png */
     display: block;
 }
 
 .company-field .form-input {
     width: 100% !important;
-    max-width: 100% !important; /* Ensure it fills its half of the grid */
+    max-width: 100% !important;
 }
 
-/* FIX: Space after Email address */
-#infoForm .form-actions {
-    margin-top: 0.5rem !important; /* Lessen space after Email address */
-    padding-top: 0.75rem !important;
-}
-
+/* Account Information sub-header inside infoForm */
 #infoForm .section-header {
-    margin-top: 8px !important;    /* Space before the new header */
-    margin-bottom: 0 !important;      /* REMOVE the gap after the header line */
-    padding-bottom: 5px !important;   /* Thinner line spacing */
+    margin-top: 20px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
 }
 
-/* FIX: Space around Identity Type */
+/* FIX: Space around Identity Type section */
 .profile-section:has(.persona-selector) {
-    margin-bottom: 0.5rem !important;
+    padding-bottom: 20px;
 }

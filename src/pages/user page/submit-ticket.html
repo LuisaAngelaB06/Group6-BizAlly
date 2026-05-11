@@ -62,7 +62,7 @@
                     <a href="/user/preferences.html" data-section="preferences">
                         <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Settings</span>
                     </a>
-                    <a href="/user/profile-settings.html" >
+                    <a href="/user/profile-settings.html">
                         <i class="fas fa-user-cog"></i> Profile Settings
                         <span id="profileRedDot" class="red-dot" style="display:none;"></span>
                     </a>
@@ -135,7 +135,8 @@
                                     <span data-translate="ticket_id_generated">Ticket ID: </span>
                                     <strong id="generatedTicketId">TKT-0000</strong>
                                 </div>
-                                <div data-translate="ticket_under_review">Your ticket has been submitted and is under review. We'll notify you of updates.</div>
+                                <div data-translate="ticket_under_review">Your ticket has been submitted and is under
+                                    review. We'll notify you of updates.</div>
                             </div>
                             <div class="form-actions">
                                 <button class="btn btn-secondary" onclick="resetForm()"
@@ -201,7 +202,7 @@
     <script>
         if (typeof API_BASE_URL === 'undefined') {
             window.API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-                ? 'http://127.0.0.1:5000' 
+                ? 'http://127.0.0.1:5000'
                 : 'https://group6-bizally.onrender.com';
         }
         // Account Dropdown Functionality - FIXED
@@ -356,6 +357,15 @@
         document.addEventListener('DOMContentLoaded', function () {
             console.log('🚀 Submit Ticket: Starting initialization...');
 
+            // 1. DYNAMIC TOAST CREATION (Ensures notification container is ready first)
+            if (!document.getElementById('toast')) {
+                const toast = document.createElement('div');
+                toast.id = 'toast';
+                toast.className = 'toast';
+                document.body.appendChild(toast);
+            }
+
+            // 2. INITIALIZE MANAGERS
             if (window.userDataManager) {
                 window.userDataManager.initializeUserDisplay();
             }
@@ -368,17 +378,31 @@
                 applyTranslations('en');
             }
 
+            // 3. UI SETUP
             setupLogout();
             setupAccountDropdown();
-            loadAndDisplayUserData(); // Restored to sync user profiles accurately
+            loadAndDisplayUserData();
 
-            // ====================================================
-            // 🌟 UNIFIED TICKET ASYNCHRONOUS FORM SUBMIT HANDLER
-            // ====================================================
+            // 4. PROFILE COMPLETION CHECK
+            const newTicketButton = document.getElementById('submitTicketBtn') || document.querySelector('.btn-new-ticket');
+            if (newTicketButton) {
+                newTicketButton.addEventListener('click', function (event) {
+                    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                    if (!userData.is_profile_complete) {
+                        event.preventDefault();
+                        showToast("⚠️ Please complete your profile first.", "error");
+                        setTimeout(() => {
+                            window.location.href = "/user/profile-settings.html";
+                        }, 2000);
+                    }
+                });
+            }
+
+            // 5. ASYNCHRONOUS FORM SUBMIT HANDLER
             const form = document.getElementById("ticketForm");
             if (form) {
                 form.addEventListener("submit", async function (e) {
-                    e.preventDefault(); // Lock browser page reloads
+                    e.preventDefault();
 
                     if (!validateForm()) {
                         console.warn("Form validation rejected.");
@@ -387,20 +411,18 @@
 
                     const subjectInput = document.getElementById("ticketSubject");
                     const descriptionInput = document.getElementById("ticketDescription");
-
-                    // Read current active session parameters safely inside this handler scope
                     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+
                     if (!userData.user_id) {
-                        showToast("Session expired. Please log in again.", "error"); // Replaced alert
+                        showToast("Session expired. Please log in again.", "error");
                         window.location.href = "/";
                         return;
                     }
 
-                    // MATCHING THE EXACT FLASK DATABASE ROW COLUMN EXPECTATIONS
                     const ticketData = {
-                        Service_Type_ID: 1, 
+                        Service_Type_ID: 1,
                         user_id: userData.user_id,
-                        Status_ID: 1, 
+                        Status_ID: 1,
                         Concern_Title: subjectInput.value.trim(),
                         Description: descriptionInput.value.trim(),
                         Priority: "Medium"
@@ -419,35 +441,30 @@
 
                         if (response.ok) {
                             const result = await response.json();
-                            
-                            // Clear and hide inputs, then show confirmation frame layout
                             form.reset();
                             form.style.display = 'none';
-                            
+
                             const successMessage = document.getElementById('successMessage');
                             if (successMessage) successMessage.classList.add('show');
 
-                            // Bind generated ticket index row numbers dynamically to the card
                             const idElement = document.getElementById('generatedTicketId');
                             if (idElement) {
-                                // 🌟 FIX: Safely reads regular, uppercase, or nested object response parameters
                                 const ticketId = result.ticket_id || result.Ticket_ID || result.data?.ticket_id || "TKT-GENERATED";
                                 idElement.textContent = ticketId;
                             }
                         } else {
-                            showToast("❌ Server error submitting ticket.", "error"); // Replaced alert
+                            showToast("❌ Server error submitting ticket.", "error");
                             if (submitBtn) submitBtn.innerHTML = originalBtnText;
                         }
                     } catch (error) {
                         console.error("Network crash:", error);
-                        showToast("Connection failed. Please check your backend terminal.", "error"); // Replaced alert
+                        showToast("Connection failed. Please check your backend terminal.", "error");
                         if (submitBtn) submitBtn.innerHTML = originalBtnText;
                     }
                 });
             }
-            // ====================================================
 
-            console.log('✅ Submit Ticket page loaded');
+            console.log('✅ Submit Ticket page fully loaded and merged');
         });
 
         // Setup theme listener
@@ -568,19 +585,6 @@
             applyTranslations(e.detail.language);
         });
 
-        // Setup logout functionality (Duplicate listener layer retained for complete safety)
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                localStorage.removeItem('userData');
-                localStorage.removeItem('userProfile');
-                localStorage.removeItem('dashboardLanguage');
-                localStorage.removeItem('notificationSettings');
-                window.location.href = '/';
-            });
-        }
-
         // Form validation
         function validateForm() {
             let isValid = true;
@@ -629,7 +633,8 @@
             const submitBtn = document.querySelector('#ticketForm button[type="submit"]');
             if (submitBtn) {
                 submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span data-translate="submit_ticket">Submit Ticket</span>';
-                
+                submitBtn.disabled = false; // Add this to ensure the user can click it again
+
                 // Instantly re-translate the label text so it matches your active language selection
                 if (window.preferencesManager) {
                     const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
@@ -651,35 +656,26 @@
         }
 
         function viewTicket() {
-            // 🌟 FIX: Use absolute Flask routing paths instead of breaking relative folders
-            window.location.href = '/user/my-tickets.html';
-        }
-
-        function viewTicket() {
             showToast("Redirecting to your tickets...", "info"); // Replaced alert
             setTimeout(() => {
                 window.location.href = '/user/my-tickets.html';
             }, 1000);
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const newTicketButton = document.getElementById('submitTicketBtn') || document.querySelector('.btn-new-ticket');
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
 
-            if (newTicketButton) {
-                newTicketButton.addEventListener('click', function(event) {
-                    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
 
-                    // Block access if profile completion state is not validated
-                    if (!userData.is_profile_complete) {
-                        event.preventDefault(); // Kill the button click routing
-                        alert("⚠️ Profile Incomplete: Please configure your profile settings before opening a support ticket.");
-                        window.location.href = "/user/profile-settings.html";
-                    }
-                });
-            }
-        });
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
     </script>
-    
+
 </body>
 
 </html>

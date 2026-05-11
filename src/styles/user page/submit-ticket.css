@@ -249,33 +249,42 @@
     }
 }
 
+/* Unified Toast Styles (Admin Style) */
 .toast {
     position: fixed;
-    top: 24px;
-    right: 24px;
+    top: 20px;
+    right: 20px;
     padding: 16px 24px;
+    border-radius: 8px;
     background: var(--surface);
     color: var(--text-primary);
-    border-radius: var(--radius);
+    font-weight: 500;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(-20px); /* Slide down starting point */
+    transition: all 0.3s var(--ease);
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--border);
     display: flex;
     align-items: center;
-    gap: 12px;
-    z-index: 9999;
-    transform: translateX(150%); /* Hidden by default */
-    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    gap: 10px;
 }
 
 .toast.show {
-    transform: translateX(0); /* Slide in */
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.toast.success { border-left: 4px solid #10b981; }
-.toast.error { border-left: 4px solid #ef4444; }
-.toast.info { border-left: 4px solid var(--accent); }
+/* Success Checkmark Icon */
+.toast.success::before {
+    content: "✓";
+    color: #10b981;
+    font-weight: bold;
+}
 
-.toast i { font-size: 1.2rem; }
-.toast.success i { color: #10b981; }
-.toast.error i { color: #ef4444; }
-.toast.info i { color: var(--accent); }
+/* Error X Icon */
+.toast.error::before {
+    content: "✗";
+    color: #ef4444;
+    font-weight: bold;
+}
