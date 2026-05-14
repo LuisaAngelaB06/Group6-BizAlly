@@ -48,11 +48,11 @@
         </div>
 
         <nav class="sidebar-nav">
-            <div class="nav-group-label">Overview</div>
+            <div class="nav-group-label">OVERVIEW</div>
             <a href="/admin/index-admin.html" class="nav-item" data-section="dashboard"><i
                     class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span></a>
 
-            <div class="nav-group-label">Ticket Management</div>
+            <div class="nav-group-label">OPERATIONS</div>
             <a href="/admin/all-tickets.html" class="nav-item" data-section="tickets"><i class="fas fa-ticket-alt"></i>
                 <span data-translate="all_tickets">All Tickets</span></a>
             <a href="/admin/staff-management.html" class="nav-item" data-section="users"><i class="fas fa-users"></i>
@@ -60,7 +60,7 @@
             <a href="/admin/announcements.html" class="nav-item" data-section="announcements"><i
                     class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span></a>
 
-            <div class="nav-group-label">System</div>
+            <div class="nav-group-label">SYSTEM CONTROL</div>
             <a href="/admin/system-settings.html" class="nav-item" data-section="system-settings"><i
                     class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span></a>
             <a href="/admin/system-analytics.html" class="nav-item" data-section="analytics"><i
@@ -68,7 +68,7 @@
             <a href="/admin/system-logs.html" class="nav-item active" data-section="logs"><i
                     class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span></a>
 
-            <div class="nav-group-label">Admin Tools</div>
+            <div class="nav-group-label">PERSONAL SETTINGS</div>
             <a href="/admin/preferences.html" class="nav-item" data-section="preferences"><i
                     class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span></a>
             <a href="/admin/profile-settings.html" class="nav-item" data-section="profile-settings"><i
@@ -77,7 +77,6 @@
 
         <div class="sidebar-footer">
             <div>v1.2.0 &mdash; Business Alliance Inc.</div>
-            <div style="margin-top:3px">admin@allitrack.com</div>
         </div>
     </aside>
 
@@ -103,14 +102,14 @@
                         <div class="avatar-btn" id="userAvatar">A</div>
                         <div class="account-info">
                             <div class="a-name" id="userName">Admin</div>
-                            <div class="a-email" id="userEmail">admin@allitrack.com</div>
+                            <div class="a-email" id="userEmail"></div>
                         </div>
                         <i class="fas fa-chevron-down account-chevron"></i>
                     </button>
                     <div class="account-menu" id="accountMenu">
                         <div class="account-menu-header">
                             <div class="amh-name" id="menuUserName">Admin</div>
-                            <div class="amh-email" id="menuUserEmail">admin@allitrack.com</div>
+                            <div class="amh-email" id="menuUserEmail"></div>
                         </div>
                         <a href="/admin/profile-settings.html" data-translate="profile"><i class="fas fa-user"></i>
                             Profile</a>
@@ -126,7 +125,7 @@
         <main class="content">
             <div class="page-header">
                 <div class="page-title-group">
-                    <div class="eyebrow"><i class="fas fa-clipboard-list"></i> Admin Console</div>
+                    <div class="eyebrow"><i class="fas fa-clipboard-list"></i> System Control</div>
                     <h1 data-translate="system_logs_title">System Logs</h1>
                     <p class="desc" data-translate="system_logs_description">Monitor and review system activities, user
                         actions, and security events</p>
@@ -307,15 +306,15 @@
                 // Navigation (shared with other pages)
                 'admin_dashboard': 'Admin Dashboard',
                 'dashboard': 'Dashboard',
-                'ticket_management': 'Ticket Management',
+                'ticket_management': 'OPERATIONS',
                 'all_tickets': 'All Tickets',
                 'users_management': 'Users Management',
                 'announcements': 'Announcements',
-                'system_management': 'System Management',
+                'system_management': 'SYSTEM CONTROL',
                 'system_settings': 'System Settings',
                 'analytics': 'Analytics',
                 'system_logs': 'System Logs',
-                'admin_tools': 'Admin Tools',
+                'admin_tools': 'PERSONAL SETTINGS',
                 'preferences': 'Preferences',
                 'profile_settings': 'Profile Settings',
                 'profile': 'Profile',
@@ -368,15 +367,15 @@
                 // Navigation (shared with other pages)
                 'admin_dashboard': 'Admin Dashboard',
                 'dashboard': 'Dashboard',
-                'ticket_management': 'Pamamahala ng Ticket',
+                'ticket_management': 'OPERATIONS',
                 'all_tickets': 'Lahat ng Ticket',
                 'users_management': 'Pamamahala ng User',
                 'announcements': 'Mga Anunsyo',
-                'system_management': 'Pamamahala ng Sistema',
+                'system_management': 'SYSTEM CONTROL',
                 'system_settings': 'Mga Setting ng Sistema',
                 'analytics': 'Analitika',
                 'system_logs': 'Mga Log ng Sistema',
-                'admin_tools': 'Mga Tool ng Admin',
+                'admin_tools': 'PERSONAL SETTINGS',
                 'preferences': 'Mga Kagustuhan',
                 'profile_settings': 'Mga Setting ng Profile',
                 'profile': 'Profile',
@@ -391,7 +390,7 @@
                 id: 'LOG-001',
                 timestamp: '2025-02-09 09:15:23',
                 level: 'info',
-                user: 'admin@allitrack.com',
+                user: 'Admin',
                 action: 'User Login',
                 description: 'Successful administrator login',
                 ipAddress: '192.168.1.100',
@@ -421,7 +420,7 @@
                 id: 'LOG-003',
                 timestamp: '2025-02-09 11:45:12',
                 level: 'info',
-                user: 'admin@allitrack.com',
+                user: 'Admin',
                 action: 'Ticket Update',
                 description: 'Updated ticket #TKT-789 priority to High',
                 ipAddress: '192.168.1.100',

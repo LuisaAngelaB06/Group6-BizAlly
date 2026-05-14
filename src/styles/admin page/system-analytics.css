@@ -1079,42 +1079,6 @@ body {
     width: 100%;
 }
 
-.toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 14px 18px;
-    border-radius: var(--radius-sm);
-    background: var(--bg-1);
-    color: var(--text);
-    border: 1px solid var(--border-bright);
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
-    z-index: 9999;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-10px);
-    transition: all 0.2s var(--ease);
-    font-size: 0.86rem;
-    font-weight: 600;
-}
-
-.toast.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.toast.success {
-    border-color: rgba(16, 232, 154, 0.3);
-}
-
-.toast.error {
-    border-color: rgba(244, 63, 94, 0.35);
-}
-
-.toast.info {
-    border-color: rgba(59, 123, 255, 0.35);
-}
-
 @media print {
 
     .sidebar,

@@ -19,9 +19,10 @@ class PreferencesManager {
                 systemSettings: "System Settings",
                 analytics: "Analytics",
                 logs: "System Logs",
-                ticketManagement: "Ticket Management",
-                systemManagement: "System Management",
-                adminTools: "Admin Tools",
+                overview: "OVERVIEW",
+                ticketManagement: "OPERATIONS",
+                systemManagement: "SYSTEM CONTROL",
+                adminTools: "PERSONAL SETTINGS",
                 admin_dashboard: "Admin Dashboard",
                 all_tickets: "All Tickets",
                 users_management: "Users Management",
@@ -116,9 +117,10 @@ class PreferencesManager {
                 systemSettings: "Setting ng Sistema",
                 analytics: "Analitika",
                 logs: "Log ng Sistema",
-                ticketManagement: "Pamamahala ng Ticket",
-                systemManagement: "Pamamahala ng Sistema",
-                adminTools: "Mga Tool ng Admin",
+                overview: "OVERVIEW",
+                ticketManagement: "OPERATIONS",
+                systemManagement: "SYSTEM CONTROL",
+                adminTools: "PERSONAL SETTINGS",
                 admin_dashboard: "Admin Dashboard",
                 all_tickets: "Lahat ng Ticket",
                 users_management: "Pamamahala ng User",
@@ -578,6 +580,7 @@ class PreferencesManager {
 
     applyCommonTranslations(lang, language) {
         console.log('=== APPLYING COMMON TRANSLATIONS ===');
+        document.documentElement.lang = language === 'fil' ? 'fil' : 'en';
         
         const translationMap = {
             'dashboard': 'dashboard',
@@ -603,8 +606,7 @@ class PreferencesManager {
             console.log(`Processing: ${section} -> key: ${translationKey}`);
             
             if (translationKey && lang[translationKey]) {
-                const icon = element.querySelector('i')?.outerHTML || '';
-                element.innerHTML = `${icon} ${lang[translationKey]}`;
+                this.setTranslatedText(element, lang[translationKey]);
                 console.log(`✓ Updated ${section} to: ${lang[translationKey]}`);
             } else {
                 console.log(`✗ No translation for ${section} (key: ${translationKey})`);
@@ -615,18 +617,19 @@ class PreferencesManager {
         const navSections = document.querySelectorAll('.nav-group-label, .nav-section');
         console.log(`Found ${navSections.length} section headers`);
         
-        if (navSections[0] && lang.ticketManagement) {
-            navSections[0].textContent = lang.ticketManagement;
-            console.log(`✓ Updated Ticket Management to: ${lang.ticketManagement}`);
-        }
-        if (navSections[1] && lang.systemManagement) {
-            navSections[1].textContent = lang.systemManagement;
-            console.log(`✓ Updated System Management to: ${lang.systemManagement}`);
-        }
-        if (navSections[2] && lang.adminTools) {
-            navSections[2].textContent = lang.adminTools;
-            console.log(`✓ Updated Admin Tools to: ${lang.adminTools}`);
-        }
+        const sectionLabels = [
+            { index: 0, key: 'overview', name: 'Overview' },
+            { index: 1, key: 'ticketManagement', name: 'Operations' },
+            { index: 2, key: 'systemManagement', name: 'System Control' },
+            { index: 3, key: 'adminTools', name: 'Personal Settings' }
+        ];
+
+        sectionLabels.forEach(({ index, key, name }) => {
+            if (navSections[index] && lang[key]) {
+                navSections[index].textContent = lang[key];
+                console.log(`✓ Updated ${name} to: ${lang[key]}`);
+            }
+        });
 
         // Update header search placeholder
         const searchInput = document.getElementById('q');
@@ -647,17 +650,32 @@ class PreferencesManager {
         console.log(`Found ${accountMenuLinks.length} account menu links`);
         
         if (accountMenuLinks[0] && lang.profile) {
-            accountMenuLinks[0].textContent = lang.profile;
+            this.setTranslatedText(accountMenuLinks[0], lang.profile);
             console.log(`✓ Updated Profile to: ${lang.profile}`);
         }
         if (accountMenuLinks[1] && lang.settings) {
-            accountMenuLinks[1].textContent = lang.settings;
+            this.setTranslatedText(accountMenuLinks[1], lang.settings);
             console.log(`✓ Updated Settings to: ${lang.settings}`);
         }
         if (accountMenuLinks[2] && lang.logout) {
-            accountMenuLinks[2].textContent = lang.logout;
+            this.setTranslatedText(accountMenuLinks[2], lang.logout);
             console.log(`✓ Updated Logout to: ${lang.logout}`);
         }
+
+        // Update any common translated labels available in the shared dictionary.
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.getAttribute('data-translate');
+            if (lang[key]) {
+                this.setTranslatedText(element, lang[key]);
+            }
+        });
+
+        document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+            const key = element.getAttribute('data-translate-placeholder');
+            if (lang[key]) {
+                element.placeholder = lang[key];
+            }
+        });
 
         // Update accessibility labels
         const sidebar = document.querySelector('.sidebar');
@@ -671,6 +689,38 @@ class PreferencesManager {
         }
 
         console.log('=== COMMON TRANSLATIONS COMPLETE ===');
+    }
+
+    setTranslatedText(element, text) {
+        if (!element) return;
+
+        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+            element.placeholder = text;
+            return;
+        }
+
+        if (element.tagName === 'OPTION') {
+            element.textContent = text;
+            return;
+        }
+
+        const icon = element.querySelector(':scope > i');
+        if (!icon) {
+            element.textContent = text;
+            return;
+        }
+
+        let label = element.querySelector(':scope > span');
+        if (!label) {
+            label = document.createElement('span');
+            Array.from(element.childNodes).forEach(node => {
+                if (node !== icon) node.remove();
+            });
+            element.appendChild(document.createTextNode(' '));
+            element.appendChild(label);
+        }
+
+        label.textContent = text;
     }
 
     applyPreferencesTranslations(lang, language) {

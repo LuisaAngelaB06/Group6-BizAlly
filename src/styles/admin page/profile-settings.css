@@ -1338,44 +1338,6 @@ select.form-input {
     border-top: 1px solid var(--border);
 }
 
-/* Toast Message - NEW VERSION (same as preferences page) */
-.toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 16px 24px;
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--text-primary);
-    font-weight: 500;
-    z-index: 9999;
-    opacity: 0;
-    transform: translateY(-20px);
-    transition: all 0.3s var(--ease);
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.toast.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.toast.success::before {
-    content: "✓";
-    color: #10b981;
-    font-weight: bold;
-}
-
-.toast.error::before {
-    content: "✗";
-    color: #ef4444;
-    font-weight: bold;
-}
-
 /* Danger Zone */
 .danger-zone {
     border: 1px solid rgba(239, 68, 68, 0.3);

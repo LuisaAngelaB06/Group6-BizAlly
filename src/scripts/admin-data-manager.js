@@ -10,7 +10,7 @@
 
     const DEFAULT_ADMIN = {
         name: 'Admin',
-        email: 'admin@allitrack.com',
+        email: '',
         initials: 'AD'
     };
 

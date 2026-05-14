@@ -1327,41 +1327,6 @@ body {
     color: var(--text);
 }
 
-/* ─── TOAST ──────────────────────────────────── */
-.toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--surface);
-    border: 1px solid var(--border-bright);
-    border-radius: var(--radius-sm);
-    padding: 12px 20px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    transform: translateY(20px);
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.25s var(--ease);
-    z-index: 9999;
-}
-
-.toast.show {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.toast.success {
-    border-color: rgba(16, 232, 154, 0.4);
-    color: var(--green);
-}
-
-.toast.error {
-    border-color: rgba(244, 63, 94, 0.4);
-    color: var(--red);
-}
-
 /* ─── FOOTER ─────────────────────────────────── */
 .site-footer {
     padding: 20px 40px;
@@ -1444,8 +1409,6 @@ body {
         max-width: 180px;
     }
 }
-
-/* ─── STAFF-MANAGEMENT UI CLASSES (applied to all-tickets) ─── */
 
 /* Card wrapper — matches staff-container.card */
 .card {
