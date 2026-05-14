@@ -300,7 +300,70 @@
             </div>
         </div>
     </div>
-    
+
+    <!-- EDIT TICKET MODAL -->
+    <div class="modal" id="editTicketModal">
+        <div class="modal-content" style="max-width:620px;">
+            <div class="modal-header">
+                <div class="modal-header-top">
+                    <h3>
+                        <i class="fas fa-pen" style="color:var(--accent);"></i>
+                        <span data-translate="edit_ticket">Edit Ticket</span>
+                    </h3>
+                    <button class="modal-close" id="closeEditModal">&times;</button>
+                </div>
+                <div class="ticket-header">
+                    <div>
+                        <div class="ticket-id" id="editTicketId"></div>
+                        <div class="ticket-subject" id="editTicketSubject"></div>
+                    </div>
+                    <div class="ticket-meta">
+                        <span>Status: <strong id="currentStatus"></strong></span>
+                        <span>Priority: <strong id="currentPriority"></strong></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editStatus" data-translate="status">Status</label>
+                    <select id="editStatus" class="form-control">
+                        <option value="open" data-translate="open">Open</option>
+                        <option value="in_progress" data-translate="in_progress">In Progress</option>
+                        <option value="resolved" data-translate="resolved">Resolved</option>
+                        <option value="closed" data-translate="closed">Closed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editPriority" data-translate="priority">Priority</label>
+                    <select id="editPriority" class="form-control">
+                        <option value="low" data-translate="low">Low</option>
+                        <option value="medium" data-translate="medium">Medium</option>
+                        <option value="high" data-translate="high">High</option>
+                        <option value="urgent" data-translate="urgent">Urgent</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editAssignedTo" data-translate="assigned_to">Assigned To</label>
+                    <select id="editAssignedTo" class="form-control">
+                        <option value="">Unassigned</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editResolution">Resolution</label>
+                    <textarea id="editResolution" class="form-control" rows="4"
+                        placeholder="Add resolution notes"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelEditBtn" data-translate="cancel">Cancel</button>
+                <button class="btn btn-primary" id="saveTicketChangesBtn">
+                    <i class="fas fa-save"></i>
+                    <span>Save Changes</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Admin Password Verification Modal -->
     <div class="modal" id="adminVerifyModal">
         <div class="modal-content" style="max-width:420px;">
@@ -502,6 +565,7 @@
         /* ── STATE ────────────────────────────────────── */
         let sampleTickets = [];
         let currentFilteredTickets = [];
+        let technicians = [];
         let currentlyEditingTicketId = null;
         let selectedTickets = new Set();
         let currentPage = 1;
@@ -630,6 +694,40 @@
         }
 
         /* ── API: FETCH TICKETS ───────────────────────── */
+        async function fetchTechniciansFromAPI() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/technicians`);
+                if (!res.ok) throw new Error(`Technicians failed with status ${res.status}`);
+                technicians = await res.json();
+                populateTechnicianSelect();
+            } catch (err) {
+                technicians = [];
+                populateTechnicianSelect();
+                console.error('Failed to fetch technicians:', err);
+                showToast('Failed to load technicians', 'error');
+            }
+        }
+
+        function populateTechnicianSelect(selectedId = '') {
+            const select = document.getElementById('editAssignedTo');
+            if (!select) return;
+
+            const selected = selectedId ? String(selectedId) : select.value;
+            select.innerHTML = '<option value="">Unassigned</option>';
+
+            technicians.forEach(tech => {
+                const id = tech.Technician_ID ?? tech.technician_id;
+                if (!id) return;
+
+                const option = document.createElement('option');
+                option.value = String(id);
+                option.textContent = tech.Name || tech.name || tech.Email || tech.email || `Technician ${id}`;
+                select.appendChild(option);
+            });
+
+            select.value = selected;
+        }
+
         async function fetchTicketsFromAPI() {
             try {
                 const res = await fetch(`${API_BASE_URL}/api/tickets`);
@@ -660,7 +758,7 @@
                         category: ticket.Service_Type || 'Support',
                         department: 'IT',
                         lastUpdated: ticket.Last_Updated || ticket.Date_Created,
-                        resolution: ticket.Resolution || ''
+                        resolution: ticket.Resolution_Details || ticket.Resolution || ''
                     };
                 });
                 currentPage = 1;
@@ -923,7 +1021,10 @@
             currentlyEditingTicketId = id;
 
             const modal = document.getElementById('editTicketModal');
-            if (!modal) return;
+            if (!modal) {
+                showToast('Edit form is unavailable', 'error');
+                return;
+            }
 
             document.getElementById('editTicketId').textContent = t.id;
             document.getElementById('editTicketSubject').textContent = t.subject;
@@ -931,7 +1032,7 @@
             document.getElementById('currentPriority').textContent = t.priority;
             document.getElementById('editStatus').value = t.status;
             document.getElementById('editPriority').value = t.priority;
-            document.getElementById('editAssignedTo').value = t.assignedTo === 'Unassigned' ? '' : (t.Technician_ID || '');
+            populateTechnicianSelect(t.Technician_ID || '');
             document.getElementById('editResolution').value = t.resolution || '';
 
             modal.classList.add('show');
@@ -958,23 +1059,29 @@
                     Status_ID: statusMap[newStatus] || 1,
                     Priority: newPriority,
                     Technician_ID: newAssignedTo || null,
-                    Resolution: newResolution
+                    Resolution_Details: newResolution
                 };
-                await fetch(`${API_BASE_URL}/api/tickets/${t.id.replace('TKT-', '')}`, {
+                const response = await fetch(`${API_BASE_URL}/api/tickets/${t.id.replace('TKT-', '')}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+                if (!response.ok) throw new Error(`Save failed with status ${response.status}`);
 
                 t.status = newStatus;
                 t.priority = newPriority;
                 t.resolution = newResolution;
-                if (newAssignedTo) t.Technician_ID = newAssignedTo;
+                t.Technician_ID = newAssignedTo || null;
+                const assignedTech = technicians.find(tech => String(tech.Technician_ID ?? tech.technician_id) === String(newAssignedTo));
+                t.assignedTo = assignedTech
+                    ? (assignedTech.Name || assignedTech.name || assignedTech.Email || assignedTech.email)
+                    : 'Unassigned';
 
                 closeEditModal();
                 loadTickets();
                 showToast(getDict().ticket_saved || 'Ticket saved successfully', 'success');
             } catch (err) {
+                console.error('Error saving ticket:', err);
                 showToast(getDict().error_saving || 'Error saving ticket', 'error');
             }
         }
@@ -1158,6 +1265,13 @@
                 if (e.target === this) closeModal();
             });
 
+            document.getElementById('closeEditModal').addEventListener('click', closeEditModal);
+            document.getElementById('cancelEditBtn').addEventListener('click', closeEditModal);
+            document.getElementById('saveTicketChangesBtn').addEventListener('click', saveTicketChanges);
+            document.getElementById('editTicketModal').addEventListener('click', function (e) {
+                if (e.target === this) closeEditModal();
+            });
+
             document.addEventListener('keydown', e => {
                 if (e.key === 'Escape') {
                     closeModal();
@@ -1184,6 +1298,7 @@
             setupMenuToggle();
             setupEventListeners();
             setupPagination();
+            fetchTechniciansFromAPI();
             fetchTicketsFromAPI();
             console.log('✅ All Tickets: init complete');
         });

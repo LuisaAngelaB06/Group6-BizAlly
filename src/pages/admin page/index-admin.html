@@ -174,59 +174,24 @@
             </div>
 
             <div class="section-label"><span data-translate="recent_activity">Recent Activity</span></div>
-            <div class="dashboard-grid">
 
-                <div class="card">
+            <div class="dashboard-grid">
+                <div class="card activity-card">
                     <div class="card-head">
-                        <h3><i class="fas fa-history"></i> <span data-translate="recent_activity">Recent Activity</span>
+                        <h3>
+                            <i class="fas fa-history"></i>
+                            <span data-translate="recent_activity">Recent Activity</span>
                         </h3>
                     </div>
-                    <div class="activity-list">
-                        <div class="activity-item">
-                            <div class="activity-icon ticket"><i class="fas fa-user-plus"></i></div>
-                            <div class="activity-details">
-                                <div class="activity-title" data-translate="new_user_registered">New user registered
-                                </div>
-                                <div class="activity-meta" data-translate="john_doe_added">John Doe joined the platform
-                                </div>
-                            </div>
-                            <div class="activity-time" data-translate="hours_ago">2 hours ago</div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon update"><i class="fas fa-ticket-alt"></i></div>
-                            <div class="activity-details">
-                                <div class="activity-title" data-translate="ticket_assigned">Ticket assigned</div>
-                                <div class="activity-meta" data-translate="ticket_assigned_to_support">Ticket #TKT-4587
-                                    assigned to Support Team</div>
-                            </div>
-                            <div class="activity-time" data-translate="yesterday">Yesterday</div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon resolved"><i class="fas fa-check"></i></div>
-                            <div class="activity-details">
-                                <div class="activity-title" data-translate="system_update">System update completed</div>
-                                <div class="activity-meta" data-translate="version_updated">Updated to version 1.2.0
-                                </div>
-                            </div>
-                            <div class="activity-time" data-translate="days_ago">2 days ago</div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon ticket"><i class="fas fa-shield-alt"></i></div>
-                            <div class="activity-details">
-                                <div class="activity-title" data-translate="security_audit">Security audit completed
-                                </div>
-                                <div class="activity-meta" data-translate="no_issues_found">No security issues found
-                                </div>
-                            </div>
-                            <div class="activity-time" data-translate="days_ago_3">3 days ago</div>
-                        </div>
-                    </div>
+
+                    <div class="activity-list" id="recentActivityList"></div>
                 </div>
 
-                <div class="card">
+                <div class="card quick-card">
                     <div class="card-head">
                         <h3><i class="fas fa-bolt"></i> <span data-translate="quick_actions">Quick Actions</span></h3>
                     </div>
+
                     <div class="quick-actions-grid">
                         <a href="/admin/all-tickets.html" class="action-card">
                             <div class="action-icon"><i class="fas fa-ticket-alt"></i></div>
@@ -255,8 +220,8 @@
                     </div>
                 </div>
             </div>
-
         </div>
+
         <footer class="site-footer">
             <div>&copy; 2025 Business Alliance Inc.</div>
             <div>Admin Dashboard &mdash; v1.2.0</div>
@@ -462,8 +427,148 @@
             setupAccountDropdown();
             setupMenuToggle();
             loadDashboardStats();
+            loadRecentActivity();
             console.log('✅ Dashboard: init complete');
         });
+
+        function timeAgo(dateValue) {
+            if (!dateValue) return "Recently";
+
+            const date = new Date(dateValue);
+
+            if (isNaN(date.getTime())) {
+                return "Recently";
+            }
+
+            const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+
+            if (seconds < 60) return "Just now";
+            if (seconds < 3600) {
+                return `${Math.floor(seconds / 60)} minutes ago`;
+            }
+
+            if (seconds < 86400) {
+                return `${Math.floor(seconds / 3600)} hours ago`;
+            }
+
+            if (seconds < 172800) {
+                return "Yesterday";
+            }
+
+            return `${Math.floor(seconds / 86400)} days ago`;
+        }
+
+        function getActivityIcon(ticket) {
+
+            if (ticket.Status_ID == 3 || ticket.Status_ID == 4) {
+                return `
+            <div class="activity-icon resolved">
+                <i class="fas fa-check"></i>
+            </div>
+        `;
+            }
+
+            if (ticket.Status_ID == 2) {
+                return `
+            <div class="activity-icon update">
+                <i class="fas fa-spinner"></i>
+            </div>
+        `;
+            }
+
+            if (ticket.Technician_ID) {
+                return `
+            <div class="activity-icon update">
+                <i class="fas fa-user-check"></i>
+            </div>
+        `;
+            }
+
+            return `
+        <div class="activity-icon ticket">
+            <i class="fas fa-folder-open"></i>
+        </div>
+    `;
+        }
+
+        function getActivityTitle(ticket) {
+            if (ticket.Status_ID == 3) return "Ticket resolved";
+            if (ticket.Status_ID == 4) return "Ticket closed";
+            if (ticket.Status_ID == 2) return "Ticket in progress";
+
+            if (ticket.Technician_ID) {
+                return "Ticket assigned";
+            }
+
+            return "Ticket created";
+        }
+
+        async function loadRecentActivity() {
+            const list = document.getElementById("recentActivityList");
+            if (!list) return;
+
+            list.innerHTML = `<div class="activity-meta">Loading recent activity...</div>`;
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/tickets`);
+                const tickets = await res.json();
+
+                const recent = tickets
+                    .sort((a, b) =>
+                        new Date(b.Last_Updated || b.Date_Created) -
+                        new Date(a.Last_Updated || a.Date_Created)
+                    )
+                    .slice(0, 5);
+
+                if (!recent.length) {
+                    list.innerHTML = `
+                <div class="activity-meta">
+                    No recent activity yet.
+                </div>
+            `;
+                    return;
+                }
+
+                list.innerHTML = recent.map(ticket => `
+                    <div class="activity-item">
+
+                        ${getActivityIcon(ticket)}
+
+                    <div class="activity-details">
+
+                        <div class="activity-title">
+                            ${getActivityTitle(ticket)}
+                        </div>
+
+                    <div class="activity-meta">
+                        Ticket #${ticket.Ticket_ID}
+                        ${ticket.Concern_Title ? `— ${ticket.Concern_Title}` : ""}
+
+                        ${ticket.Technician_Name &&
+                        ticket.Technician_Name !== "Unassigned"
+                        ? `<br>Assigned to ${ticket.Technician_Name}`
+                        : ""}
+                    </div>
+
+            </div>
+
+            <div class="activity-time">
+                ${timeAgo(ticket.Last_Updated || ticket.Date_Created)}
+            </div>
+
+        </div>
+    `).join("");
+
+            } catch (err) {
+                console.error("Recent activity failed:", err);
+
+                list.innerHTML = `
+            <div class="activity-meta">
+                Unable to load recent activity.
+            </div>
+        `;
+            }
+        }
     </script>
 </body>
 
