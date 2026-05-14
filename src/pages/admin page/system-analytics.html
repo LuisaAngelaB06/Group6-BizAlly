@@ -12,297 +12,306 @@
     <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
     <link rel="stylesheet" href="../../styles/admin page/system-analytics.css" />
     <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
-    <script src="../../scripts/admin-preference-manager.js"></script>
-    <script src="../../scripts/admin-data-manager.js"></script>
+    <script src="../../scripts/mobile-restriction.js" defer></script>
+    <script src="../../scripts/admin-preference-manager.js" defer></script>
+    <script src="../../scripts/admin-data-manager.js" defer></script>
 </head>
 
 <body>
-    <!-- Mobile Access Denied Modal -->
-    <div class="mobile-block-overlay">
+    <div class="mobile-block-overlay" id="mobileBlockOverlay">
         <div class="mobile-block-card">
             <i class="fas fa-laptop"></i>
             <h2 data-translate="mobile_restricted">Desktop only</h2>
             <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
                 desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to
+            <button class="btn btn-primary" onclick="window.location.href='/'" data-translate="go_back">Back to
                 Home</button>
         </div>
     </div>
 
-    <div class="app">
-        <div class="shell">
-            <!-- Sidebar -->
-            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
-                <div class="brand">
-                    <div class="logo">
-                        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
-                            style="width: 32px; height: 32px;">
-                    </div>
-                    <div>
-                        <div class="title">AlliTrack</div>
-                        <div class="subtitle" data-translate="admin_dashboard">Admin Dashboard</div>
-                    </div>
-                </div>
-                <nav class="nav">
-                    <a href="/admin/index-admin.html" data-section="dashboard">
-                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
-                    </a>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-                    <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
-                    <a href="/admin/all-tickets.html" data-section="tickets">
-                        <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
-                    </a>
-                    <a href="/admin/staff-management.html" data-section="users">
-                        <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
-                    </a>
-                    <a href="/admin/announcements.html" data-section="announcements">
-                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
-                    </a>
-
-                    <div class="nav-section" data-translate="system_management">System Management</div>
-                    <a href="/admin/system-settings.html" data-section="system-settings">
-                        <i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span>
-                    </a>
-                    <a href="/admin/system-analytics.html" class="active" data-section="analytics">
-                        <i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span>
-                    </a>
-                    <a href="/admin/system-logs.html" data-section="logs">
-                        <i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span>
-                    </a>
-
-                    <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
-                    <a href="/admin/preferences.html" data-section="preferences">
-                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
-                    </a>
-                    <a href="/admin/profile-settings.html" data-section="profile-settings">
-                        <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
-                    </a>
-                </nav>
-                <div class="sidebar-footer">
-                    <div class="version">v1.2.0</div>
-                    <div>Business Alliance Inc.</div>
-                </div>
-            </aside>
-
-            <!-- Main Content Area -->
-            <main class="main">
-                <!-- Header -->
-                <header class="header">
-                    <div class="search" role="search" aria-label="Search Analytics">
-                        <i class="fas fa-search" style="opacity:.6"></i>
-                        <input id="q" placeholder="Search metrics, reports..."
-                            data-translate-placeholder="search_analytics" aria-label="Search analytics" />
-                    </div>
-                    <div class="header-actions">
-                        <div style="text-align:right">
-                            <div id="userName" style="font-weight:700">Admin</div>
-                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">admin@allitrack.com</div>
-                        </div>
-                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div id="userAvatar" class="avatar">A</div>
-                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
-                        </div>
-                        <div class="account-menu" id="accountMenu">
-                            <div class="arrow"></div>
-                            <a href="/admin/profile-settings.html" data-translate="profile">Profile</a>
-                            <a href="/admin/preferences.html" data-translate="settings">Settings</a>
-                            <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
-                        </div>
-                    </div>
-                </header>
-
-                <!-- Analytics Content -->
-                <div class="content">
-                    <!-- Page Header -->
-                    <div class="page-header">
-                        <div class="header-content">
-                            <h1><i class="fas fa-chart-bar"></i> <span data-translate="analytics_title">System
-                                    Analytics</span></h1>
-                            <p class="subtitle" data-translate="analytics_description">Monitor system performance, user
-                                engagement, and business metrics</p>
-                        </div>
-                    </div>
-
-                    <!-- Key Metrics Cards - Single Straight Line -->
-                    <div class="metrics-grid single-line">
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <div class="metric-icon" style="background: linear-gradient(135deg, #3B82F6, #1E40AF);">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                                <div class="metric-trend up">
-                                    <i class="fas fa-arrow-up"></i> 
-                                </div>
-                            </div>
-                            <div class="metric-value"></div>
-                            <div class="metric-label" data-translate="active_users">Active Users</div>
-                            <div class="metric-description" data-translate="active_users_desc">Users active in last 30
-                                days</div>
-                        </div>
-
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <div class="metric-icon" style="background: linear-gradient(135deg, #10B981, #047857);">
-                                    <i class="fas fa-ticket-alt"></i>
-                                </div>
-                                <div class="metric-trend up">
-                                    <i class="fas fa-arrow-up"></i> 
-                                </div>
-                            </div>
-                            <div class="metric-value"></div>
-                            <div class="metric-label" data-translate="tickets_resolved">Tickets Resolved</div>
-                            <div class="metric-description" data-translate="tickets_resolved_desc">This month</div>
-                        </div>
-
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <div class="metric-icon" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">
-                                    <i class="fas fa-chart-line"></i>
-                                </div>
-                                <div class="metric-trend up">
-                                    <i class="fas fa-arrow-up"></i>
-                                </div>
-                            </div>
-                            <div class="metric-value"></div>
-                            <div class="metric-label" data-translate="satisfaction_rate">Satisfaction Rate</div>
-                            <div class="metric-description" data-translate="satisfaction_rate_desc">Based on surveys
-                            </div>
-                        </div>
-
-                         <div class="metric-card">
-                            <div class="metric-header">
-                                <div class="metric-icon" style="background: linear-gradient(135deg, #F59E0B, #D97706);">
-                                    <i class="fas fa-comment-dots"></i>
-                                </div>
-                                <div class="metric-trend up">
-                                    <i class="fas fa-arrow-up"></i>
-                                </div>
-                            </div>
-                            <div class="metric-value"></div>
-                            <div class="metric-label" data-translate="feedback_surveys">Feedback Surveys</div>
-                            <div class="metric-description" data-translate="feedback_surveys_desc">Responses collected
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Charts Section -->
-                    <div class="charts-section">
-                        <div class="charts-row">
-                            <div class="chart-container">
-                                <div class="chart-header">
-                                    <h3><i class="fas fa-chart-bar"></i> <span data-translate="user_activity">User
-                                            Activity</span></h3>
-                                    <select class="chart-filter" id="activityFilter">
-                                        <option value="daily" data-translate="daily" selected>Daily</option>
-                                        <option value="weekly" data-translate="weekly">Weekly</option>
-                                        <option value="hourly" data-translate="hourly">Hourly</option>
-                                    </select>
-                                </div>
-                                <div class="chart-wrapper">
-                                    <canvas id="userActivityChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Row 3: Single large chart -->
-                        <div class="charts-row full-width">
-                            <div class="chart-container full-width">
-                                <div class="chart-header">
-                                    <h3><i class="fas fa-trend-up"></i> <span
-                                            data-translate="performance_over_time">Performance Over Time</span></h3>
-                                    <div class="chart-legend">
-                                        <div class="legend-item">
-                                            <span class="legend-color" style="background-color: #3B82F6;"></span>
-                                            <span data-translate="tickets_opened">Tickets Opened</span>
-                                        </div>
-                                        <div class="legend-item">
-                                            <span class="legend-color" style="background-color: #10B981;"></span>
-                                            <span data-translate="tickets_resolved">Tickets Resolved</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="chart-wrapper">
-                                    <canvas id="performanceChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Data Tables Section -->
-                    <div class="tables-section">
-                        <div class="table-container">
-                            <div class="table-header">
-                                <h3><i class="fas fa-table"></i> <span data-translate="top_performers">Top Performing
-                                        Agents</span></h3>
-                                <button class="btn btn-secondary" data-translate="view_all">View All</button>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="analytics-table" id="topAgentsTable">
-                                    <thead>
-                                        <tr>
-                                            <th data-translate="agent_name">Agent Name</th>
-                                            <th data-translate="tickets_resolved">Tickets Resolved</th>
-                                            <th data-translate="satisfaction_rate">Satisfaction Rate</th>
-                                            <th data-translate="performance_score">Performance Score</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Data will be populated by JavaScript -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                    <!-- Export and Reports Section -->
-                    <div class="reports-section">
-                        <div class="reports-header">
-                            <h3><i class="fas fa-file-export"></i> <span data-translate="reports_export">Reports &
-                                    Export</span></h3>
-                            <p data-translate="reports_description">Generate detailed reports and export analytics data
-                            </p>
-                        </div>
-                        <div class="reports-grid">
-                            <div class="report-card">
-                                <div class="report-icon">
-                                    <i class="fas fa-file-excel"></i>
-                                </div>
-                                <h4 data-translate="data_export">Data Export</h4>
-                                <p data-translate="data_export_desc">Export raw analytics data for external analysis</p>
-                                
-                                <select id="exportTimeframe" class="chart-filter" style="width: 100%; margin-bottom: 16px; padding: 10px;">
-                                    <option value="yesterday">Yesterday</option>
-                                    <option value="last_7_days" selected>Last 7 Days</option>
-                                    <option value="last_month">Last Month</option>
-                                </select>
-
-                                <button class="btn btn-primary" id="btnDataExport">
-                                    <i class="fas fa-download"></i> <span data-translate="export">Export Data</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Footer -->
-                <footer class="site-footer">
-                    <div>&copy; 2025 Business Alliance Inc.</div>
-                    <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
-                </footer>
-            </main>
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main Sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo"
+                    onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-bolt\'></i>'">
+            </div>
+            <div class="brand-text">
+                <div class="name">AlliTrack</div>
+                <div class="sub">Admin Console</div>
+            </div>
         </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-group-label">Overview</div>
+            <a href="/admin/index-admin.html" class="nav-item" data-section="dashboard"><i
+                    class="fas fa-chart-line"></i> Dashboard</a>
+
+            <div class="nav-group-label">Ticket Management</div>
+            <a href="/admin/all-tickets.html" class="nav-item" data-section="tickets"><i class="fas fa-ticket-alt"></i>
+                All Tickets</a>
+            <a href="/admin/staff-management.html" class="nav-item" data-section="users"><i class="fas fa-users"></i>
+                Staff Management</a>
+            <a href="/admin/announcements.html" class="nav-item" data-section="announcements"><i
+                    class="fas fa-bullhorn"></i> Announcements</a>
+
+            <div class="nav-group-label">System</div>
+            <a href="/admin/system-settings.html" class="nav-item" data-section="system-settings"><i
+                    class="fas fa-cogs"></i> System Settings</a>
+            <a href="/admin/system-analytics.html" class="nav-item active" data-section="analytics"><i
+                    class="fas fa-chart-bar"></i> Analytics</a>
+            <a href="/admin/system-logs.html" class="nav-item" data-section="logs"><i class="fas fa-clipboard-list"></i>
+                System Logs</a>
+
+            <div class="nav-group-label">Admin Tools</div>
+            <a href="/admin/preferences.html" class="nav-item" data-section="preferences"><i
+                    class="fas fa-sliders-h"></i> Preferences</a>
+            <a href="/admin/profile-settings.html" class="nav-item" data-section="profile-settings"><i
+                    class="fas fa-user-cog"></i> Profile Settings</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div>v1.2.0 &mdash; Business Alliance Inc.</div>
+            <div style="margin-top:3px">admin@allitrack.com</div>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle" aria-label="Open sidebar" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span>Admin</span>
+                <span class="crumb-sep"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i></span>
+                <span class="crumb-current" data-translate="analytics">Analytics</span>
+            </div>
+            <div class="topbar-right">
+                <div class="account-wrap">
+                    <button class="account-btn" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar-btn" id="userAvatar">AD</div>
+                        <div class="account-info">
+                            <div class="a-name" id="userNameDisplay">Admin</div>
+                            <div class="a-email" id="userEmailDisplay">admin@allitrack.com</div>
+                        </div>
+                        <i class="fas fa-chevron-down account-chevron"></i>
+                    </button>
+                    <div class="account-menu" id="accountMenu">
+                        <div class="account-menu-header">
+                            <div class="amh-name" id="menuUserName">Admin</div>
+                            <div class="amh-email" id="menuUserEmail">admin@allitrack.com</div>
+                        </div>
+                        <a href="/admin/profile-settings.html" data-translate="profile"><i class="fas fa-user"></i>
+                            Profile</a>
+                        <a href="/admin/preferences.html" data-translate="settings"><i class="fas fa-cog"></i>
+                            Settings</a>
+                        <a href="/" id="logoutBtn" class="logout" data-translate="logout"><i
+                                class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="page-header">
+                <div class="page-title-group">
+                    <div class="eyebrow"><i class="fas fa-chart-bar"></i> Admin Console</div>
+                    <h1 data-translate="analytics_title">System Analytics</h1>
+                    <p class="desc" data-translate="analytics_description">Monitor system performance, user engagement,
+                        and business metrics.</p>
+                </div>
+            </div>
+
+            <div class="kpi-grid analytics-kpis">
+                <div class="kpi-card">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#3B82F6,#1E40AF)">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="kpi-badge up"><i class="fas fa-arrow-up"></i> Live</div>
+                    </div>
+                    <div class="kpi-value metric-value">0</div>
+                    <div class="kpi-label" data-translate="active_users">Active Users</div>
+                    <div class="kpi-desc" data-translate="active_users_desc">Users active in last 30 days</div>
+                </div>
+                <div class="kpi-card teal">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#10B981,#047857)">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <div class="kpi-badge up"><i class="fas fa-arrow-up"></i> Live</div>
+                    </div>
+                    <div class="kpi-value metric-value">0</div>
+                    <div class="kpi-label" data-translate="tickets_resolved">Tickets Resolved</div>
+                    <div class="kpi-desc" data-translate="tickets_resolved_desc">This month</div>
+                </div>
+                <div class="kpi-card violet">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#8B5CF6,#7C3AED)">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="kpi-badge up"><i class="fas fa-arrow-up"></i> Live</div>
+                    </div>
+                    <div class="kpi-value metric-value">0%</div>
+                    <div class="kpi-label" data-translate="satisfaction_rate">Satisfaction Rate</div>
+                    <div class="kpi-desc" data-translate="satisfaction_rate_desc">Based on surveys</div>
+                </div>
+                <div class="kpi-card amber">
+                    <div class="kpi-top">
+                        <div class="kpi-icon" style="background:linear-gradient(135deg,#F59E0B,#D97706)">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <div class="kpi-badge neutral"><i class="fas fa-minus"></i> Live</div>
+                    </div>
+                    <div class="kpi-value metric-value">0</div>
+                    <div class="kpi-label" data-translate="feedback_surveys">Feedback Surveys</div>
+                    <div class="kpi-desc" data-translate="feedback_surveys_desc">Responses collected</div>
+                </div>
+            </div>
+
+            <div class="section-label"><span data-translate="system_metrics">System Metrics</span></div>
+            <div class="dashboard-grid full analytics-grid">
+                <div class="card chart-card">
+                    <div class="card-head">
+                        <h3><i class="fas fa-chart-bar"></i> <span data-translate="user_activity">User Activity</span>
+                        </h3>
+                        <select class="chart-filter" id="activityFilter">
+                            <option data-translate="daily" selected value="daily">Daily</option>
+                            <option data-translate="weekly" value="weekly">Weekly</option>
+                            <option data-translate="hourly" value="hourly">Hourly</option>
+                        </select>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="userActivityChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card chart-card">
+                    <div class="card-head">
+                        <h3><i class="fas fa-chart-line"></i> <span data-translate="performance_over_time">Performance
+                                Over Time</span></h3>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <span class="legend-color" style="background-color:#3B82F6;"></span>
+                                <span data-translate="tickets_opened">Tickets Opened</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color" style="background-color:#10B981;"></span>
+                                <span data-translate="tickets_resolved">Tickets Resolved</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-label"><span data-translate="top_performers">Top Performing Agents</span></div>
+            <div class="dashboard-grid analytics-bottom-grid">
+                <div class="card table-card">
+                    <div class="card-head">
+                        <h3><i class="fas fa-table"></i> <span data-translate="top_performers">Top Performing
+                                Agents</span></h3>
+                        <button class="btn btn-ghost btn-sm" data-translate="view_all">View All</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="analytics-table" id="topAgentsTable">
+                            <thead>
+                                <tr>
+                                    <th data-translate="agent_name">Agent Name</th>
+                                    <th data-translate="tickets_resolved">Tickets Resolved</th>
+                                    <th data-translate="satisfaction_rate">Satisfaction Rate</th>
+                                    <th data-translate="performance_score">Performance Score</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card reports-section">
+                    <div class="card-head reports-header">
+                        <h3><i class="fas fa-file-export"></i> <span data-translate="reports_export">Reports &amp;
+                                Export</span></h3>
+                    </div>
+                    <p class="report-lead" data-translate="reports_description">Generate detailed reports and export
+                        analytics data.</p>
+                    <div class="quick-actions-grid reports-grid">
+                        <div class="action-card report-card">
+                            <div class="action-icon report-icon"><i class="fas fa-file-excel"></i></div>
+                            <div class="action-title" data-translate="data_export">Data Export</div>
+                            <div class="action-desc" data-translate="data_export_desc">Export raw analytics data for
+                                external analysis</div>
+                            <select class="chart-filter" id="exportTimeframe">
+                                <option value="yesterday">Yesterday</option>
+                                <option selected value="last_7_days">Last 7 Days</option>
+                                <option value="last_month">Last Month</option>
+                            </select>
+                            <button class="btn btn-primary" id="btnDataExport">
+                                <i class="fas fa-download"></i> <span data-translate="export">Export Data</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            <div>&copy; 2025 Business Alliance Inc.</div>
+            <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
+        </footer>
     </div>
 
-    <!-- Toast for notifications -->
     <div id="toast" class="toast"></div>
 
     <script>
+        function setupMenuToggle() {
+            const toggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (!toggle || !sidebar || !overlay) return;
+            const open = () => {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+                toggle.setAttribute('aria-expanded', 'true');
+                toggle.innerHTML = '<i class="fas fa-times"></i>';
+            };
+            const close = () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.innerHTML = '<i class="fas fa-bars"></i>';
+            };
+            toggle.addEventListener('click', e => { e.stopPropagation(); sidebar.classList.contains('open') ? close() : open(); });
+            overlay.addEventListener('click', close);
+            document.addEventListener('keydown', e => { if (e.key === 'Escape' && sidebar.classList.contains('open')) close(); });
+        }
+
+        function syncMobileOverlay() {
+            const overlay = document.getElementById('mobileBlockOverlay');
+            if (!overlay) return;
+            overlay.style.display = document.body.classList.contains('mobile-block-active') ? 'flex' : 'none';
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            setupMenuToggle();
+            syncMobileOverlay();
+            window.addEventListener('resize', () => setTimeout(syncMobileOverlay, 20));
+        });
+    </script>
+    <script>
         if (typeof API_BASE_URL === 'undefined') {
             window.API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-                ? 'http://127.0.0.1:5000' 
+                ? 'http://127.0.0.1:5000'
                 : 'https://group6-bizally.onrender.com';
         }
         // Translation dictionary for analytics page
@@ -311,7 +320,6 @@
                 'analytics_page_title': 'System Analytics - AlliTrack Admin',
                 'analytics_title': 'System Analytics',
                 'analytics_description': 'Monitor system performance, user engagement, and business metrics',
-                'search_analytics': 'Search metrics, reports...',
                 'time_period': 'Time Period',
                 'apply': 'Apply',
                 'active_users': 'Active Users',
@@ -391,7 +399,6 @@
                 'analytics_page_title': 'System Analytics - AlliTrack Admin',
                 'analytics_title': 'Analitika ng Sistema',
                 'analytics_description': 'Subaybayan ang pagganap ng system at metrics ng negosyo',
-                'search_analytics': 'Maghanap ng metrics, reports...',
                 'time_period': 'Panahon',
                 'apply': 'Ilapat',
                 'active_users': 'Aktibong User',
@@ -475,12 +482,6 @@
         // Initialize the page when DOM is loaded
         document.addEventListener('DOMContentLoaded', function () {
             console.log('📊 Analytics: Starting initialization...');
-
-            // Initialize user data manager
-            if (window.userDataManager) {
-                window.userDataManager.initializeUserDisplay();
-            }
-
             // Initialize preferences manager
             if (window.preferencesManager) {
                 window.preferencesManager.initialize();
@@ -490,10 +491,6 @@
             } else {
                 applyTranslations('en');
             }
-
-            // Setup logout functionality
-            setupLogout();
-
             // Setup account dropdown
             setTimeout(() => {
                 console.log('🔄 Setting up account dropdown...');
@@ -606,39 +603,6 @@
         }
 
         // Logout functionality
-        function setupLogout() {
-            console.log('🔐 Setting up logout functionality...');
-
-            // Remove any existing logout buttons to avoid duplicates
-            const existingLogoutBtns = document.querySelectorAll('#logoutBtn');
-            existingLogoutBtns.forEach(btn => {
-                const parent = btn.parentNode;
-                const newBtn = btn.cloneNode(true);
-                parent.replaceChild(newBtn, btn);
-            });
-
-            // Now attach the event listener to the fresh logout button
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                const logoutHandler = function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    // Clear user data from localStorage
-                    localStorage.removeItem('userData');
-                    localStorage.removeItem('adminProfile');
-                    localStorage.removeItem('adminPreferences');
-                    localStorage.removeItem('preferredLanguage');
-
-                    // Redirect to login page
-                    window.location.href = '/';
-                };
-
-                logoutBtn.removeEventListener('click', logoutHandler);
-                logoutBtn.addEventListener('click', logoutHandler);
-            }
-        }
-
         // Initialize date range picker
         function initializeDatePicker() {
             $('#dateRangePicker').daterangepicker({
@@ -807,17 +771,6 @@
                 });
             });
 
-            // 7. Search functionality (Already had a guard)
-            const searchInput = document.getElementById('q');
-            if (searchInput) {
-                let searchTimeout;
-                searchInput.addEventListener('input', function () {
-                    clearTimeout(searchTimeout);
-                    searchTimeout = setTimeout(() => {
-                        console.log('Searching for:', this.value);
-                    }, 500);
-                });
-            }
         }
 
         // Update charts based on date range
@@ -916,10 +869,10 @@
                 // --- TOP SECTION: REAL METRICS ---
                 const totalTickets = allSystemTickets.length;
                 const resolvedTickets = allSystemTickets.filter(t => t.Status_ID === 3 || t.Status_ID === 4).length;
-                
+
                 // Calculate unique users (based on emails)
                 const uniqueUsers = new Set(allSystemTickets.map(t => t.Email).filter(e => e)).size;
-                
+
                 // Dynamic Satisfaction (Based on resolution rate)
                 const satRate = totalTickets > 0 ? (80 + ((resolvedTickets / totalTickets) * 15)).toFixed(1) : 0;
 
@@ -952,21 +905,21 @@
             if (timeframe === 'daily') {
                 labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                 data = [0, 0, 0, 0, 0, 0, 0];
-                
+
                 allSystemTickets.forEach(t => {
-                    if(t.Date_Created) {
+                    if (t.Date_Created) {
                         // Ensure correct local parsing
                         const d = new Date(t.Date_Created.replace(' ', 'T'));
                         data[d.getDay()]++; // Adds to the specific day of the week
                     }
                 });
-            } 
+            }
             else if (timeframe === 'hourly') {
                 labels = ['8AM', '10AM', '12PM', '2PM', '4PM', '6PM'];
                 data = [0, 0, 0, 0, 0, 0];
-                
+
                 allSystemTickets.forEach(t => {
-                    if(t.Date_Created) {
+                    if (t.Date_Created) {
                         const h = new Date(t.Date_Created.replace(' ', 'T')).getHours();
                         if (h >= 8 && h < 10) data[0]++;
                         else if (h >= 10 && h < 12) data[1]++;
@@ -976,13 +929,13 @@
                         else if (h >= 18) data[5]++;
                     }
                 });
-            } 
+            }
             else if (timeframe === 'weekly') {
                 labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
                 data = [0, 0, 0, 0];
-                
+
                 allSystemTickets.forEach(t => {
-                    if(t.Date_Created) {
+                    if (t.Date_Created) {
                         const dayOfMonth = new Date(t.Date_Created.replace(' ', 'T')).getDate();
                         if (dayOfMonth <= 7) data[0]++;
                         else if (dayOfMonth <= 14) data[1]++;
@@ -1005,12 +958,12 @@
             let resolved = [0, 0, 0, 0];
 
             allSystemTickets.forEach(t => {
-                if(t.Date_Created) {
+                if (t.Date_Created) {
                     const dayOfMonth = new Date(t.Date_Created.replace(' ', 'T')).getDate();
                     let weekIdx = dayOfMonth <= 7 ? 0 : (dayOfMonth <= 14 ? 1 : (dayOfMonth <= 21 ? 2 : 3));
-                    
+
                     opened[weekIdx]++;
-                    
+
                     // If status is Resolved (3) or Closed (4)
                     if (t.Status_ID === 3 || t.Status_ID === 4) {
                         resolved[weekIdx]++;
@@ -1026,7 +979,7 @@
         // 5. Real Top Agents Table Engine
         function updateTopAgentsTable() {
             const agentStats = {};
-            
+
             allSystemTickets.forEach(t => {
                 const techName = t.Technician_Name;
                 if (techName && techName !== 'Unassigned') {
@@ -1041,14 +994,14 @@
             // Sort by most resolved and take top 5
             const topAgents = Object.values(agentStats).sort((a, b) => b.resolved - a.resolved).slice(0, 5);
             const tbody = document.querySelector('#topAgentsTable tbody');
-            
+
             if (tbody) {
                 tbody.innerHTML = '';
                 if (topAgents.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No agent data available yet.</td></tr>';
                 } else {
                     topAgents.forEach(agent => {
-                        const score = Math.min(99, 85 + (agent.resolved * 2)); 
+                        const score = Math.min(99, 85 + (agent.resolved * 2));
                         const satRate = Math.min(100, 88 + (agent.resolved * 1.5)).toFixed(1) + '%';
 
                         const row = document.createElement('tr');
@@ -1074,7 +1027,7 @@
             // A. User Activity Chart Filter (Daily/Weekly/Hourly)
             const activityFilter = document.getElementById('activityFilter');
             if (activityFilter) {
-                activityFilter.addEventListener('change', function() {
+                activityFilter.addEventListener('change', function () {
                     updateUserActivityChart(this.value);
                 });
             }
@@ -1083,21 +1036,21 @@
             const btnDataExport = document.getElementById('btnDataExport');
             if (btnDataExport) {
                 btnDataExport.addEventListener('click', async (e) => {
-                    e.preventDefault(); e.stopImmediatePropagation(); 
+                    e.preventDefault(); e.stopImmediatePropagation();
                     const timeframe = document.getElementById('exportTimeframe').value;
                     showToast(`Compiling database report for ${timeframe.replace(/_/g, ' ')}...`, 'info');
-                    
+
                     try {
                         // Fetch fresh data for export
                         const res = await fetch(`${API_BASE_URL}/api/tickets`);
                         const tickets = await res.json();
-                        
+
                         let csv = "Ticket ID,Subject,Requester,Assigned To,Priority,Status,Created Date\n";
                         tickets.forEach(t => {
                             let statusStr = t.Status_ID == 1 ? 'Open' : t.Status_ID == 2 ? 'In Progress' : t.Status_ID == 3 ? 'Resolved' : 'Closed';
                             csv += `${t.Ticket_ID},"${t.Concern_Title}","${t.Email || 'No Email'}","${t.Technician_Name || 'Unassigned'}",${t.Priority},${statusStr},${t.Date_Created}\n`;
                         });
-                        
+
                         const blob = new Blob([csv], { type: 'text/csv' });
                         const url = window.URL.createObjectURL(blob);
                         const a = document.createElement('a');
@@ -1105,7 +1058,7 @@
                         a.download = `AlliTrack_Export_${timeframe}_${new Date().toISOString().split('T')[0]}.csv`;
                         document.body.appendChild(a);
                         a.click(); document.body.removeChild(a);
-                        
+
                         showToast('Data Export Downloaded Successfully!', 'success');
                     } catch (err) {
                         showToast('Export failed: Database connection error', 'error');
@@ -1119,7 +1072,7 @@
             setTimeout(() => {
                 injectRealAnalytics();
                 activateDeadButtons();
-            }, 600); 
+            }, 600);
         });
     </script>
 </body>

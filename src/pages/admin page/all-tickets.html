@@ -2,508 +2,506 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title data-translate="all_tickets_page_title">All Tickets - AlliTrack Admin</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-translate="all_tickets_page_title">All Tickets — AlliTrack</title>
     <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
     <link rel="stylesheet" href="../../styles/admin page/all-tickets.css" />
+    <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
+        rel="stylesheet" />
+    <script src="../../scripts/admin-data-manager.js" defer></script>
+    <script src="../../scripts/admin-preference-manager.js" defer></script>
     <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
-    <script src="../../scripts/admin-preference-manager.js"></script>
-    <script src="../../scripts/admin-data-manager.js"></script>
-    <script src="../../scripts/mobile-restriction.js"></script>
-    <script src="../../scripts/admin-tickets.js"></script>
+    <script src="../../scripts/mobile-restriction.js" defer></script>
 </head>
 
 <body>
-    <!-- Mobile Access Denied Modal -->
-    <div class="mobile-block-overlay">
+
+    <!-- Mobile Block -->
+    <div class="mobile-block-overlay" id="mobileBlockOverlay">
         <div class="mobile-block-card">
             <i class="fas fa-laptop"></i>
             <h2 data-translate="mobile_restricted">Desktop only</h2>
             <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
                 desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to Home</button>
+            <button class="btn btn-primary" onclick="window.location.href='/'" data-translate="go_back">Back to
+                Home</button>
         </div>
     </div>
 
-    <div class="app">
-        <div class="shell">
-            <!-- Sidebar -->
-            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
-                <div class="brand">
-                    <div class="logo">
-                        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
-                            style="width: 32px; height: 32px;">
-                    </div>
-                    <div>
-                        <div class="title">AlliTrack</div>
-                        <div class="subtitle" data-translate="admin_dashboard">Admin Dashboard</div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main Sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo"
+                    onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-bolt\'></i>'">
+            </div>
+            <div class="brand-text">
+                <div class="name">AlliTrack</div>
+                <div class="sub">Admin Console</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-group-label">Overview</div>
+            <a href="/admin/index-admin.html" class="nav-item" data-section="dashboard">
+                <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
+            </a>
+
+            <div class="nav-group-label" data-translate="ticket_management">Overview</div>
+            <a href="/admin/all-tickets.html" class="nav-item active" data-section="tickets">
+                <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
+            </a>
+            <a href="/admin/staff-management.html" class="nav-item" data-section="users">
+                <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
+            </a>
+            <a href="/admin/announcements.html" class="nav-item" data-section="announcements">
+                <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+            </a>
+
+            <div class="nav-group-label" data-translate="system_management">Operations</div>
+            <a href="/admin/system-settings.html" class="nav-item" data-section="system-settings">
+                <i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span>
+            </a>
+            <a href="/admin/system-analytics.html" class="nav-item" data-section="analytics">
+                <i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span>
+            </a>
+            <a href="/admin/system-logs.html" class="nav-item" data-section="logs">
+                <i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span>
+            </a>
+
+            <div class="nav-group-label" data-translate="admin_tools">Personal Settings</div>
+            <a href="/admin/preferences.html" class="nav-item" data-section="preferences">
+                <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
+            </a>
+            <a href="/admin/profile-settings.html" class="nav-item" data-section="profile-settings">
+                <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div>v1.2.0 &mdash; Business Alliance Inc.</div>
+            <div style="margin-top:3px">admin@allitrack.com</div>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-wrapper">
+
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle" aria-label="Open sidebar" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span>Admin</span>
+                <span class="crumb-sep"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i></span>
+                <span class="crumb-current" data-translate="all_tickets">All Tickets</span>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-search" role="search" aria-label="Search Tickets">
+                    <i class="fas fa-search"></i>
+                    <input id="ticketSearch" placeholder="Search tickets by ID, name, or priority…"
+                        data-translate-placeholder="search_tickets" aria-label="Search tickets" />
+                </div>
+                <div class="account-wrap">
+                    <button class="account-btn" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar-btn" id="userAvatar">AD</div>
+                        <div class="account-info">
+                            <div class="a-name" id="userNameDisplay">Admin</div>
+                            <div class="a-email" id="userEmailDisplay">admin@allitrack.com</div>
+                        </div>
+                        <i class="fas fa-chevron-down account-chevron"></i>
+                    </button>
+                    <div class="account-menu" id="accountMenu">
+                        <div class="account-menu-header">
+                            <div class="amh-name" id="menuUserName">Admin</div>
+                            <div class="amh-email" id="menuUserEmail">admin@allitrack.com</div>
+                        </div>
+                        <a href="/admin/profile-settings.html" data-translate="profile">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                        <a href="/admin/preferences.html" data-translate="settings">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
+                        <a href="/" id="logoutBtn" class="logout" data-translate="logout">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
                     </div>
                 </div>
-                <nav class="nav">
-                    <a href="/admin/index-admin.html" data-section="dashboard">
-                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
-                    </a>
+            </div>
+        </header>
 
-                    <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
-                    <a href="/admin/all-tickets.html" class="active" data-section="tickets">
-                        <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
-                    </a>
-                    <a href="/admin/staff-management.html" data-section="users">
-                        <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
-                    </a>
-                    <a href="/admin/announcements.html" data-section="announcements">
-                        <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
-                    </a>
+        <div class="content">
 
-                    <div class="nav-section" data-translate="system_management">System Management</div>
-                    <a href="/admin/system-settings.html" data-section="system-settings">
-                        <i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span>
-                    </a>
-                    <a href="/admin/system-analytics.html" data-section="analytics">
-                        <i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span>
-                    </a>
-                    <a href="/admin/system-logs.html" data-section="logs">
-                        <i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span>
-                    </a>
-
-                    <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
-                    <a href="/admin/preferences.html" data-section="preferences">
-                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
-                    </a>
-                    <a href="/admin/profile-settings.html" data-section="profile-settings">
-                        <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
-                    </a>
-                </nav>
-                <div class="sidebar-footer">
-                    <div class="version">v1.2.0</div>
-                    <div>Business Alliance Inc.</div>
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title-group">
+                    <div class="eyebrow"><i class="fas fa-ticket-alt"></i> Ticket Management</div>
+                    <h1 data-translate="all_tickets_title">All Tickets</h1>
+                    <p class="desc" data-translate="all_tickets_description">Manage and monitor all support tickets in
+                        the system</p>
                 </div>
-            </aside>
+            </div>
 
-            <!-- Main Content Area -->
-            <main class="main">
-                <!-- Header -->
-                <header class="header">
-                    <div class="search" role="search" aria-label="Search Tickets">
-                        <i class="fas fa-search" style="opacity:.6"></i>
-                        <input id="ticketSearch" placeholder="Search tickets by ID, name, or priority..."
-                            data-translate-placeholder="search_tickets" aria-label="Search tickets" />
+            <!-- Tickets container — matches staff-container card structure -->
+            <div class="tickets-container card">
+                <!-- Toolbar: filters + actions -->
+                <div class="staff-toolbar">
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label for="statusFilter" class="filter-label" data-translate="status">Status</label>
+                            <select id="statusFilter" class="filter-select">
+                                <option value="all" data-translate="all_status">All Status</option>
+                                <option value="open" data-translate="open">Open</option>
+                                <option value="in_progress" data-translate="in_progress">In Progress</option>
+                                <option value="resolved" data-translate="resolved">Resolved</option>
+                                <option value="closed" data-translate="closed">Closed</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="priorityFilter" class="filter-label" data-translate="priority">Priority</label>
+                            <select id="priorityFilter" class="filter-select">
+                                <option value="all" data-translate="all_priority">All Priority</option>
+                                <option value="low" data-translate="low">Low</option>
+                                <option value="medium" data-translate="medium">Medium</option>
+                                <option value="high" data-translate="high">High</option>
+                                <option value="urgent" data-translate="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" id="clearFilters">
+                            <i class="fas fa-times"></i>
+                            <span data-translate="clear_filters">Clear Filters</span>
+                        </button>
                     </div>
-                    <div class="header-actions">
-                        <div style="text-align:right">
-                            <div id="userName" style="font-weight:700">Admin</div>
-                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">admin@allitrack.com</div>
-                        </div>
-                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div id="userAvatar" class="avatar">A</div>
-                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
-                        </div>
-                        <div class="account-menu" id="accountMenu">
-                            <div class="arrow"></div>
-                            <a href="/admin/profile-settings.html" data-translate="profile">Profile</a>
-                            <a href="/admin/preferences.html" data-translate="settings">Settings</a>
-                            <a href="/" id="logoutBtn" data-translate="logout">Logout</a>
-                        </div>
-                    </div>
-                </header>
-
-                <!-- All Tickets Content -->
-                <div class="content">
-                    <!-- Page Header -->
-                    <div class="page-header">
-                        <div class="header-content">
-                            <h1><i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets_title">All
-                                    Tickets</span></h1>
-                            <p class="subtitle" data-translate="all_tickets_description">Manage and monitor all support
-                                tickets in the system</p>
-                        </div>
-                    </div>
-
-                    <!-- Tickets Container -->
-                    <div class="tickets-container">
-                        <!-- Filters and Actions -->
-                        <div class="tickets-toolbar">
-                            <div class="filters">
-                                <div class="filter-group">
-                                    <label for="statusFilter" class="filter-label"
-                                        data-translate="status">Status</label>
-                                    <select id="statusFilter" class="filter-select">
-                                        <option value="all" data-translate="all_status">All Status</option>
-                                        <option value="open" data-translate="open">Open</option>
-                                        <option value="in_progress" data-translate="in_progress">In Progress</option>
-                                        <option value="resolved" data-translate="resolved">Resolved</option>
-                                        <option value="closed" data-translate="closed">Closed</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <label for="priorityFilter" class="filter-label"
-                                        data-translate="priority">Priority</label>
-                                    <select id="priorityFilter" class="filter-select">
-                                        <option value="all" data-translate="all_priority">All Priority</option>
-                                        <option value="low" data-translate="low">Low</option>
-                                        <option value="medium" data-translate="medium">Medium</option>
-                                        <option value="high" data-translate="high">High</option>
-                                        <option value="urgent" data-translate="urgent">Urgent</option>
-                                    </select>
-                                </div>
-                                <button class="btn btn-secondary" id="clearFilters">
-                                    <i class="fas fa-times"></i> <span data-translate="clear_filters">Clear
-                                        Filters</span>
-                                </button>
-                            </div>
-                            <div class="actions">
-                                <button class="btn btn-danger" id="deleteTicketsBtn" style="display: none;">
-                                    <i class="fas fa-trash-alt"></i> <span data-translate="delete_selected">Delete
-                                        Selected</span>
-                                </button>
-                                <button class="btn btn-secondary" id="refreshTickets">
-                                    <i class="fas fa-sync-alt"></i> <span data-translate="refresh">Refresh</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Tickets Table -->
-                        <div class="tickets-table-container">
-                            <div class="table-responsive">
-                                <table class="tickets-table" id="ticketsTable">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 30px;">
-                                                <input type="checkbox" id="selectAllTickets" title="Select All">
-                                            </th>
-                                            <th data-translate="ticket_id">Ticket ID</th>
-                                            <th data-translate="requester">Requester</th>
-                                            <th data-translate="assigned_to">Assigned To</th>
-                                            <th data-translate="priority">Priority</th>
-                                            <th data-translate="status">Status</th>
-                                            <th data-translate="created">Created</th>
-                                            <th data-translate="actions">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="ticketsTbody">
-                                        <!-- Ticket entries will be populated here -->
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Pagination -->
-                            <div class="pagination-container" id="paginationContainer">
-                                <div class="pagination-info" id="paginationInfo"></div>
-                                <div class="pagination-controls">
-                                    <button class="pagination-btn" id="firstPageBtn" title="First Page">
-                                        <i class="fas fa-angle-double-left"></i>
-                                    </button>
-                                    <button class="pagination-btn" id="prevPageBtn" title="Previous Page">
-                                        <i class="fas fa-angle-left"></i>
-                                    </button>
-                                    <div class="pagination-numbers" id="paginationNumbers"></div>
-                                    <button class="pagination-btn" id="nextPageBtn" title="Next Page">
-                                        <i class="fas fa-angle-right"></i>
-                                    </button>
-                                    <button class="pagination-btn" id="lastPageBtn" title="Last Page">
-                                        <i class="fas fa-angle-double-right"></i>
-                                    </button>
-                                </div>
-                                <div class="pagination-page-size">
-                                    <label for="pageSizeSelect" data-translate="items_per_page">Items per page:</label>
-                                    <select id="pageSizeSelect" class="page-size-select">
-                                        <option value="5">5</option>
-                                        <option value="10" selected>10</option>
-                                        <option value="20">20</option>
-                                        <option value="50">50</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ============ FIXED: Ticket Details Modal with Sticky Header ============ -->
-                        <div class="modal" id="ticketDetailsModal">
-                            <div class="modal-content">
-                                <!-- Modal Header with integrated ticket header (STICKY) -->
-                                <div class="modal-header modal-header-ticket">
-                                    <div class="modal-header-top">
-                                        <h3>
-                                            <i class="fas fa-ticket-alt"></i>
-                                            <span data-translate="ticket_details">Ticket Details</span>
-                                        </h3>
-                                        <button class="modal-close" id="closeModal">&times;</button>
-                                    </div>
-
-                                    <!-- Ticket Header Content - Part of sticky header -->
-                                    <div class="ticket-header" id="modalTicketHeader">
-                                        <!-- Dynamically populated by JavaScript -->
-                                    </div>
-                                </div>
-
-                                <!-- Scrollable Modal Body -->
-                                <div class="modal-body">
-                                    <div class="ticket-details-content" id="ticketDetailsContent">
-                                        <!-- Ticket details will be populated here -->
-                                    </div>
-                                </div>
-
-                                <div class="modal-footer">
-                                    <button class="btn btn-secondary" id="closeDetailsBtn"
-                                        data-translate="close">Close</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Delete Confirmation Modal - FIXED: Sticky header/footer -->
-                        <div class="modal" id="deleteConfirmationModal">
-                            <div class="modal-content" style="max-width: 500px;">
-                                <div class="modal-header">
-                                    <div class="modal-header-top">
-                                        <h3>
-                                            <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
-                                            <span data-translate="confirm_delete">Confirm Delete</span>
-                                        </h3>
-                                        <button class="modal-close" id="closeDeleteModal">&times;</button>
-                                    </div>
-                                </div>
-                                <div class="modal-body">
-                                    <p id="deleteMessage"></p>
-                                    <div id="selectedTicketsList" class="selected-tickets-list"
-                                        style="display: none; margin-top: 15px; max-height: 200px; overflow-y: auto;">
-                                        <h4 style="margin-bottom: 10px; font-size: 0.9rem;">Selected Tickets:</h4>
-                                        <ul id="ticketsToDeleteList"></ul>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button class="btn btn-secondary" id="cancelDeleteBtn"
-                                        data-translate="cancel">Cancel</button>
-                                    <button class="btn btn-danger" id="confirmDeleteBtn"
-                                        data-translate="confirm_delete_btn">Delete</button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="actions">
+                        <button class="btn btn-danger" id="deleteTicketsBtn" style="display:none;">
+                            <i class="fas fa-trash-alt"></i>
+                            <span data-translate="delete_selected">Delete Selected</span>
+                        </button>
+                        <button class="btn btn-secondary" id="refreshTickets">
+                            <i class="fas fa-sync-alt"></i>
+                            <span data-translate="refresh">Refresh</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Footer -->
-                <footer class="site-footer">
-                    <div>&copy; 2025 Business Alliance Inc.</div>
-                    <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
-                </footer>
-            </main>
+                <!-- Tickets Table -->
+                <div class="staff-table-container">
+                    <div class="table-responsive">
+                        <table class="tickets-table" id="ticketsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width:36px;">
+                                        <input type="checkbox" id="selectAllTickets" title="Select All">
+                                    </th>
+                                    <th data-translate="ticket_id">Ticket ID</th>
+                                    <th data-translate="requester">Requester</th>
+                                    <th data-translate="assigned_to">Assigned To</th>
+                                    <th data-translate="priority">Priority</th>
+                                    <th data-translate="status">Status</th>
+                                    <th data-translate="created">Created</th>
+                                    <th data-translate="actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ticketsTbody"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination-container" id="paginationContainer">
+                        <div class="pagination-info" id="paginationInfo"></div>
+                        <div class="pagination-controls">
+                            <button class="pagination-btn" id="firstPageBtn" title="First Page">
+                                <i class="fas fa-angle-double-left"></i>
+                            </button>
+                            <button class="pagination-btn" id="prevPageBtn" title="Previous Page">
+                                <i class="fas fa-angle-left"></i>
+                            </button>
+                            <div class="pagination-numbers" id="paginationNumbers"></div>
+                            <button class="pagination-btn" id="nextPageBtn" title="Next Page">
+                                <i class="fas fa-angle-right"></i>
+                            </button>
+                            <button class="pagination-btn" id="lastPageBtn" title="Last Page">
+                                <i class="fas fa-angle-double-right"></i>
+                            </button>
+                        </div>
+                        <div class="pagination-page-size">
+                            <label for="pageSizeSelect" data-translate="items_per_page">Items per page:</label>
+                            <select id="pageSizeSelect" class="page-size-select">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /content -->
+
+        <footer class="site-footer">
+            <div>&copy; 2025 Business Alliance Inc.</div>
+            <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
+        </footer>
+
+    </div><!-- /main-wrapper -->
+
+    <!-- ════ TICKET DETAILS MODAL ════ -->
+    <div class="modal" id="ticketDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header modal-header-ticket">
+                <div class="modal-header-top">
+                    <h3>
+                        <i class="fas fa-ticket-alt"></i>
+                        <span data-translate="ticket_details">Ticket Details</span>
+                    </h3>
+                    <button class="modal-close" id="closeModal">&times;</button>
+                </div>
+                <div class="ticket-header" id="modalTicketHeader"></div>
+            </div>
+            <div class="modal-body">
+                <div class="ticket-details-content" id="ticketDetailsContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="closeDetailsBtn" data-translate="close">Close</button>
+            </div>
         </div>
     </div>
+
+    <!-- ════ DELETE CONFIRMATION MODAL ════ -->
+    <div class="modal" id="deleteConfirmationModal">
+        <div class="modal-content" style="max-width:500px;">
+            <div class="modal-header">
+                <div class="modal-header-top">
+                    <h3>
+                        <i class="fas fa-exclamation-triangle" style="color:var(--red)"></i>
+                        <span data-translate="confirm_delete">Confirm Delete</span>
+                    </h3>
+                    <button class="modal-close" id="closeDeleteModal">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p id="deleteMessage" style="color:var(--text-2);font-size:0.9rem;line-height:1.6;"></p>
+                <div id="selectedTicketsList" class="selected-tickets-list" style="display:none;">
+                    <h4>Selected Tickets:</h4>
+                    <ul id="ticketsToDeleteList"></ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelDeleteBtn" data-translate="cancel">Cancel</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn" data-translate="confirm_delete_btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Password Verification Modal -->
+    <div class="modal" id="adminVerifyModal">
+        <div class="modal-content" style="max-width:420px;">
+            <div class="modal-header">
+                <div class="modal-header-top">
+                    <h3><i class="fas fa-lock" style="color:var(--accent);"></i> Admin Verification</h3>
+                    <button class="modal-close" id="closeAdminVerifyModal">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom:14px;font-size:0.9rem;color:var(--text-2);">Please enter your admin
+                    password to continue.</p>
+                <div class="form-group" style="position:relative;">
+                    <label for="adminVerifyPassword">Password</label>
+                    <div style="position:relative;">
+                        <input type="password" id="adminVerifyPassword" class="form-control" style="padding-right:42px;"
+                            autocomplete="new-password" />
+                        <button type="button" id="adminVerifyToggle" tabindex="-1"
+                            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:0;">
+                            <i class="fas fa-eye" id="adminVerifyToggleIcon"></i>
+                        </button>
+                    </div>
+                    <div id="adminVerifyError" style="display:none;margin-top:8px;color:#ef4444;font-size:0.82rem;">
+                        <i class="fas fa-exclamation-circle"></i> <span id="adminVerifyErrorText">Incorrect password.
+                            Please try again.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelAdminVerifyBtn">Cancel</button>
+                <button class="btn btn-primary" id="confirmAdminVerifyBtn"><i class="fas fa-unlock"></i>
+                    Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
 
     <script>
-
+        /* ── API BASE URL ─────────────────────────────── */
         if (typeof API_BASE_URL === 'undefined') {
-            window.API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+            window.API_BASE_URL = (
+                window.location.hostname === '127.0.0.1' ||
+                window.location.hostname === 'localhost'
+            )
                 ? 'http://127.0.0.1:5000'
                 : 'https://group6-bizally.onrender.com';
         }
-        // Translation dictionary for tickets page
+
+        /* ── TRANSLATIONS ─────────────────────────────── */
         const translations = {
-            'en': {
-                'all_tickets_page_title': 'All Tickets - AlliTrack Admin',
-                'all_tickets_title': 'All Tickets',
-                'all_tickets_description': 'Manage and monitor all support tickets in the system',
-                'search_tickets': 'Search tickets by ID, name, or priority...',
-                'total_tickets': 'Total Tickets',
-                'open_tickets': 'Open',
-                'resolved_tickets': 'Resolved',
-                'status': 'Status',
-                'all_status': 'All Status',
-                'open': 'Open',
-                'in_progress': 'In Progress',
-                'resolved': 'Resolved',
-                'closed': 'Closed',
-                'priority': 'Priority',
-                'all_priority': 'All Priority',
-                'low': 'Low',
-                'medium': 'Medium',
-                'high': 'High',
-                'urgent': 'Urgent',
-                'clear_filters': 'Clear Filters',
-                'refresh': 'Refresh',
-                'ticket_id': 'Ticket ID',
-                'requester': 'Requester',
-                'assigned_to': 'Assigned To',
-                'created': 'Created',
-                'actions': 'Actions',
-                'ticket_details': 'Ticket Details',
-                'close': 'Close',
-                'update_ticket': 'Update Ticket',
-                'view_details': 'View Details',
-                'edit': 'Edit',
-                'delete': 'Delete',
-                'description': 'Description',
-                'category': 'Category',
-                'department': 'Department',
-                'last_updated': 'Last Updated',
-                'due_date': 'Due Date',
-                'email': 'Email',
-                'ticket_updated': 'Ticket updated successfully',
-                'ticket_refreshed': 'Tickets refreshed successfully',
-                'no_tickets_found': 'No Tickets Found',
-                'no_tickets_description': 'No tickets match your current filters. Try adjusting your search criteria.',
-                'subject': 'Subject',
-                'cancel': 'Cancel',
-                'save_changes': 'Save Changes',
-                'save': 'Save',
-                'edit_ticket': 'Edit Ticket',
-                'ticket_saved': 'Ticket saved successfully',
-                'error_saving': 'Error saving ticket',
-                'ticket_info': 'Ticket Information',
-                'current_values': 'Current Values',
-                'new_values': 'New Values',
-                'select_all': 'Select All',
-                'delete_selected': 'Delete Selected',
-                'confirm_delete': 'Confirm Delete',
-                'confirm_delete_btn': 'Delete',
-                'delete_success': 'Tickets deleted successfully',
-                'delete_error': 'Error deleting tickets',
-                'no_tickets_selected': 'No tickets selected',
-                'delete_ticket_confirm': 'Are you sure you want to delete this ticket?',
-                'delete_tickets_confirm': 'Are you sure you want to delete {count} selected tickets?',
-                'items_per_page': 'Items per page:',
-                'showing': 'Showing',
-                'to': 'to',
-                'of': 'of',
-                'tickets': 'tickets',
-                'page': 'Page',
-                'contact_number': 'Contact Number',
-                'ticket_overview': 'Ticket Overview',
-                'requester_info': 'Requester Information',
-                'ticket_metadata': 'Ticket Metadata',
-                'phone': 'Phone',
-                'admin_dashboard': 'Admin Dashboard',
-                'dashboard': 'Dashboard',
-                'ticket_management': 'Ticket Management',
-                'all_tickets': 'All Tickets',
-                'users_management': 'Users Management',
-                'announcements': 'Announcements',
-                'system_management': 'System Management',
-                'system_settings': 'System Settings',
-                'analytics': 'Analytics',
-                'system_logs': 'System Logs',
-                'admin_tools': 'Admin Tools',
-                'preferences': 'Preferences',
-                'profile_settings': 'Profile Settings',
-                'profile': 'Profile',
-                'settings': 'Settings',
-                'logout': 'Logout',
-                'admin_dashboard_template': 'AlliTrack Admin Dashboard'
+            en: {
+                all_tickets_page_title: 'All Tickets — AlliTrack',
+                all_tickets_title: 'All Tickets',
+                all_tickets_description: 'Manage and monitor all support tickets in the system',
+                search_tickets: 'Search tickets by ID, name, or priority…',
+                status: 'Status',
+                all_status: 'All Status',
+                open: 'Open',
+                in_progress: 'In Progress',
+                resolved: 'Resolved',
+                closed: 'Closed',
+                priority: 'Priority',
+                all_priority: 'All Priority',
+                low: 'Low',
+                medium: 'Medium',
+                high: 'High',
+                urgent: 'Urgent',
+                clear_filters: 'Clear Filters',
+                refresh: 'Refresh',
+                ticket_id: 'Ticket ID',
+                requester: 'Requester',
+                assigned_to: 'Assigned To',
+                created: 'Created',
+                actions: 'Actions',
+                ticket_details: 'Ticket Details',
+                close: 'Close',
+                description: 'Description',
+                subject: 'Subject',
+                cancel: 'Cancel',
+                save_changes: 'Save Changes',
+                edit_ticket: 'Edit Ticket',
+                ticket_info: 'Ticket Information',
+                current_values: 'Current Values',
+                new_values: 'New Values',
+                delete_selected: 'Delete Selected',
+                confirm_delete: 'Confirm Delete',
+                confirm_delete_btn: 'Delete',
+                delete_success: 'Tickets deleted successfully',
+                delete_error: 'Error deleting tickets',
+                no_tickets_selected: 'No tickets selected',
+                delete_ticket_confirm: 'Are you sure you want to delete this ticket?',
+                delete_tickets_confirm: 'Are you sure you want to delete {count} selected tickets?',
+                items_per_page: 'Items per page:',
+                showing: 'Showing',
+                to: 'to',
+                of: 'of',
+                tickets: 'tickets',
+                no_tickets_found: 'No tickets found',
+                no_tickets_description: 'No tickets match your current filters. Try adjusting your search criteria.',
+                ticket_saved: 'Ticket saved successfully',
+                error_saving: 'Error saving ticket',
+                ticket_refreshed: 'Tickets refreshed successfully',
+                dashboard: 'Dashboard',
+                ticket_management: 'Ticket Management',
+                all_tickets: 'All Tickets',
+                users_management: 'Staff Management',
+                announcements: 'Announcements',
+                system_management: 'System Management',
+                system_settings: 'System Settings',
+                analytics: 'Analytics',
+                system_logs: 'System Logs',
+                admin_tools: 'Admin Tools',
+                preferences: 'Preferences',
+                profile_settings: 'Profile Settings',
+                profile: 'Profile',
+                settings: 'Settings',
+                logout: 'Logout',
+                admin_dashboard_template: 'AlliTrack Admin Dashboard',
+                mobile_restricted: 'Desktop only',
+                mobile_block_message: 'Admin dashboard is optimized for larger screens. Please open on a desktop or tablet in landscape mode.',
+                go_back: 'Back to Home'
             },
-            'fil': {
-                'all_tickets_page_title': 'All Tickets - AlliTrack Admin',
-                'all_tickets_title': 'Lahat ng Ticket',
-                'all_tickets_description': 'Pamahalaan ang lahat ng support ticket sa system',
-                'search_tickets': 'Maghanap ng ticket sa pamamagitan ng ID, pangalan, o priority...',
-                'total_tickets': 'Kabuuan ng Ticket',
-                'open_tickets': 'Bukas',
-                'resolved_tickets': 'Nalutas',
-                'status': 'Status',
-                'all_status': 'Lahat ng Status',
-                'open': 'Bukas',
-                'in_progress': 'In Progress',
-                'resolved': 'Nalutas',
-                'closed': 'Sarado',
-                'priority': 'Priority',
-                'all_priority': 'Lahat ng Priority',
-                'low': 'Mababa',
-                'medium': 'Katamtaman',
-                'high': 'Mataas',
-                'urgent': 'Agad',
-                'clear_filters': 'Tanggalin ang Filters',
-                'refresh': 'I-refresh',
-                'ticket_id': 'Ticket ID',
-                'requester': 'Nag-request',
-                'assigned_to': 'Itinalaga Sa',
-                'created': 'Nilikha',
-                'actions': 'Mga Aksyon',
-                'ticket_details': 'Detalye ng Ticket',
-                'close': 'Isara',
-                'update_ticket': 'I-update ang Ticket',
-                'view_details': 'View',
-                'edit': 'I-edit',
-                'delete': 'I-delete',
-                'description': 'Deskripsyon',
-                'category': 'Kategorya',
-                'department': 'Department',
-                'last_updated': 'Huling Na-update',
-                'due_date': 'Takdang Petsa',
-                'email': 'Email',
-                'ticket_updated': 'Matagumpay na na-update ang ticket',
-                'ticket_refreshed': 'Matagumpay na na-refresh ang mga ticket',
-                'no_tickets_found': 'Walang Natagpuang Ticket',
-                'no_tickets_description': 'Walang ticket na tumutugma sa iyong filters. Subukang baguhin ang iyong search.',
-                'subject': 'Paksa',
-                'cancel': 'Kanselahin',
-                'save_changes': 'I-save ang Mga Pagbabago',
-                'save': 'I-save',
-                'edit_ticket': 'I-edit ang Ticket',
-                'ticket_saved': 'Matagumpay na na-save ang ticket',
-                'error_saving': 'Error sa pag-save ng ticket',
-                'ticket_info': 'Impormasyon ng Ticket',
-                'current_values': 'Kasalukuyang Halaga',
-                'new_values': 'Bagong Halaga',
-                'select_all': 'Piliin Lahat',
-                'delete_selected': 'I-delete ang Napili',
-                'confirm_delete': 'Kumpirmahin ang Pag-delete',
-                'confirm_delete_btn': 'I-delete',
-                'delete_success': 'Matagumpay na na-delete ang mga ticket',
-                'delete_error': 'Error sa pag-delete ng mga ticket',
-                'no_tickets_selected': 'Walang napiling ticket',
-                'delete_ticket_confirm': 'Sigurado ka bang gusto mong i-delete ang ticket na ito?',
-                'delete_tickets_confirm': 'Sigurado ka bang gusto mong i-delete ang {count} napiling mga ticket?',
-                'items_per_page': 'Mga item bawat pahina:',
-                'showing': 'Ipinapakita',
-                'to': 'hanggang',
-                'of': 'ng',
-                'tickets': 'mga ticket',
-                'page': 'Pahina',
-                'contact_number': 'Numero ng Kontak',
-                'ticket_overview': 'Pangkalahatang-ideya ng Ticket',
-                'requester_info': 'Impormasyon ng Nag-request',
-                'ticket_metadata': 'Metadata ng Ticket',
-                'phone': 'Telepono',
-                'admin_dashboard': 'Admin Dashboard',
-                'dashboard': 'Dashboard',
-                'ticket_management': 'Pamamahala ng Ticket',
-                'all_tickets': 'Lahat ng Ticket',
-                'users_management': 'Pamamahala ng User',
-                'announcements': 'Mga Anunsyo',
-                'system_management': 'Pamamahala ng Sistema',
-                'system_settings': 'Mga Setting ng Sistema',
-                'analytics': 'Analitika',
-                'system_logs': 'Mga Log ng Sistema',
-                'admin_tools': 'Mga Tool ng Admin',
-                'preferences': 'Mga Kagustuhan',
-                'profile_settings': 'Mga Setting ng Profile',
-                'profile': 'Profile',
-                'settings': 'Mga Setting',
-                'logout': 'Logout',
-                'admin_dashboard_template': 'Dashboard ng Admin ng AlliTrack'
+            fil: {
+                all_tickets_page_title: 'Lahat ng Ticket — AlliTrack',
+                all_tickets_title: 'Lahat ng Ticket',
+                all_tickets_description: 'Pamahalaan ang lahat ng support ticket sa system',
+                search_tickets: 'Maghanap ng ticket sa pamamagitan ng ID, pangalan, o priority…',
+                status: 'Status',
+                all_status: 'Lahat ng Status',
+                open: 'Bukas',
+                in_progress: 'In Progress',
+                resolved: 'Nalutas',
+                closed: 'Sarado',
+                priority: 'Priority',
+                all_priority: 'Lahat ng Priority',
+                low: 'Mababa',
+                medium: 'Katamtaman',
+                high: 'Mataas',
+                urgent: 'Agad',
+                clear_filters: 'Tanggalin ang Filters',
+                refresh: 'I-refresh',
+                ticket_id: 'Ticket ID',
+                requester: 'Nag-request',
+                assigned_to: 'Itinalaga Sa',
+                created: 'Nilikha',
+                actions: 'Mga Aksyon',
+                ticket_details: 'Detalye ng Ticket',
+                close: 'Isara',
+                description: 'Deskripsyon',
+                subject: 'Paksa',
+                cancel: 'Kanselahin',
+                save_changes: 'I-save ang Mga Pagbabago',
+                edit_ticket: 'I-edit ang Ticket',
+                ticket_info: 'Impormasyon ng Ticket',
+                current_values: 'Kasalukuyang Halaga',
+                new_values: 'Bagong Halaga',
+                delete_selected: 'I-delete ang Napili',
+                confirm_delete: 'Kumpirmahin ang Pag-delete',
+                confirm_delete_btn: 'I-delete',
+                delete_success: 'Matagumpay na na-delete ang mga ticket',
+                delete_error: 'Error sa pag-delete ng tickets',
+                no_tickets_selected: 'Walang napiling ticket',
+                delete_ticket_confirm: 'Sigurado ka bang gusto mong i-delete ang ticket na ito?',
+                delete_tickets_confirm: 'Sigurado ka bang gusto mong i-delete ang {count} napiling ticket?',
+                items_per_page: 'Mga item bawat pahina:',
+                showing: 'Ipinapakita',
+                to: 'hanggang',
+                of: 'sa',
+                tickets: 'mga ticket',
+                no_tickets_found: 'Walang natagpuang ticket',
+                no_tickets_description: 'Walang ticket na tumutugma sa iyong filters. Subukang baguhin ang iyong search.',
+                ticket_saved: 'Matagumpay na na-save ang ticket',
+                error_saving: 'Error sa pag-save ng ticket',
+                ticket_refreshed: 'Matagumpay na na-refresh ang mga ticket',
+                dashboard: 'Dashboard',
+                ticket_management: 'Pamamahala ng Ticket',
+                all_tickets: 'Lahat ng Ticket',
+                users_management: 'Pamamahala ng User',
+                announcements: 'Mga Anunsyo',
+                system_management: 'Pamamahala ng Sistema',
+                system_settings: 'Mga Setting ng Sistema',
+                analytics: 'Analitika',
+                system_logs: 'Mga Log ng Sistema',
+                admin_tools: 'Mga Tool ng Admin',
+                preferences: 'Mga Kagustuhan',
+                profile_settings: 'Mga Setting ng Profile',
+                profile: 'Profile',
+                settings: 'Mga Setting',
+                logout: 'Logout',
+                admin_dashboard_template: 'Dashboard ng Admin ng AlliTrack',
+                mobile_restricted: 'Desktop lamang',
+                mobile_block_message: 'Ang admin dashboard ay optimized para sa mas malalaking screen. Mangyaring buksan sa desktop o tablet sa landscape mode.',
+                go_back: 'Bumalik sa Home'
             }
         };
 
-        // Function to extract first name from email
-        function getFirstNameFromEmail(email) {
-            if (!email) return 'Unknown';
-            const username = email.split('@')[0];
-            if (username.includes('.')) {
-                const firstName = username.split('.')[0];
-                return firstName.charAt(0).toUpperCase() + firstName.slice(1);
-            } else if (username.includes('_')) {
-                const firstName = username.split('_')[0];
-                return firstName.charAt(0).toUpperCase() + firstName.slice(1);
-            } else {
-                return username.charAt(0).toUpperCase() + username.slice(1);
-            }
-        }
-
-        // Sample tickets data
-        let sampleTickets = []
-
-        // Global variables
+        /* ── STATE ────────────────────────────────────── */
+        let sampleTickets = [];
         let currentFilteredTickets = [];
         let currentlyEditingTicketId = null;
         let selectedTickets = new Set();
@@ -511,814 +509,536 @@
         let itemsPerPage = 10;
         let totalPages = 1;
 
-        // Initialize the page when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('🚀 All Tickets: Starting initialization...');
+        /* ── HELPERS ──────────────────────────────────── */
+        function getDict() {
+            const lang = window.preferencesManager?.getCurrentLanguage?.() ||
+                localStorage.getItem('dashboardLanguage') || 'en';
+            return translations[lang] || translations.en;
+        }
 
-            // Add Toast HTML element to body
-            const toast = document.createElement('div');
-            toast.id = 'toast';
-            toast.className = 'toast';
-            document.body.appendChild(toast);
+        function getFirstNameFromEmail(email) {
+            if (!email) return 'Unknown';
+            const u = email.split('@')[0];
+            const sep = u.includes('.') ? '.' : u.includes('_') ? '_' : null;
+            const first = sep ? u.split(sep)[0] : u;
+            return first.charAt(0).toUpperCase() + first.slice(1);
+        }
 
-            // Initialize user data manager
-            if (window.userDataManager) {
-                window.userDataManager.initializeUserDisplay();
-            }
+        function convertStatus(id) {
+            return { 1: 'open', 2: 'in_progress', 3: 'resolved', 4: 'closed' }[id] || 'open';
+        }
 
-            // Initialize preferences manager
-            if (window.preferencesManager) {
-                window.preferencesManager.initialize();
-                // Get current language from preferences manager
-                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
-                applyTranslations(currentLang);
-            } else {
-                applyTranslations('en');
-            }
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            if (!t) return;
+            t.textContent = msg;
+            t.className = `toast ${type}`;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
 
-            // Setup logout functionality
-            setupLogout();
+        /* ── TRANSLATIONS APPLY ───────────────────────── */
+        function applyTranslations(lang) {
+            const dict = translations[lang] || translations.en;
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const k = el.getAttribute('data-translate');
+                if (!dict[k]) return;
+                if (el.tagName === 'OPTION') el.textContent = dict[k];
+                else if (el.tagName === 'INPUT') el.placeholder = dict[k];
+                else el.textContent = dict[k];
+            });
+            document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+                const k = el.getAttribute('data-translate-placeholder');
+                if (dict[k]) el.placeholder = dict[k];
+            });
+            if (dict.all_tickets_page_title) document.title = dict.all_tickets_page_title;
+        }
 
-            // Setup account dropdown
-            setTimeout(() => {
-                console.log('🔄 Setting up account dropdown...');
-                setupAccountDropdown();
-            }, 50);
-
-            // Load and display tickets
-            loadTickets();
-
-            // Setup event listeners
-            setupEventListeners();
-
-            // Setup pagination
-            setupPagination();
-
-            console.log('✅ All Tickets page loaded');
-        });
-
-        // Account Dropdown Functionality
+        /* ── ACCOUNT DROPDOWN ─────────────────────────── */
         function setupAccountDropdown() {
-            console.log('🔧 Setting up account dropdown...');
-            const accountBtn = document.getElementById("accountBtn");
-            const accountMenu = document.getElementById("accountMenu");
+            const btn = document.getElementById('accountBtn');
+            const menu = document.getElementById('accountMenu');
+            if (!btn || !menu) return;
 
-            if (!accountBtn || !accountMenu) {
-                console.error('❌ Account dropdown elements not found!');
-                return;
-            }
+            const fresh = btn.cloneNode(true);
+            btn.parentNode.replaceChild(fresh, btn);
 
-            const newBtn = accountBtn.cloneNode(true);
-            accountBtn.parentNode.replaceChild(newBtn, accountBtn);
-            const freshBtn = document.getElementById("accountBtn");
-
-            freshBtn.addEventListener("click", function (e) {
-                console.log('🎯 Account button clicked!');
+            fresh.addEventListener('click', e => {
                 e.stopPropagation();
                 e.preventDefault();
-                const isShowing = accountMenu.classList.contains("show");
-                accountMenu.classList.toggle("show");
-                freshBtn.setAttribute("aria-expanded", accountMenu.classList.contains("show"));
+                menu.classList.toggle('show');
+                fresh.setAttribute('aria-expanded', menu.classList.contains('show'));
             });
 
-            document.addEventListener("click", function (e) {
-                if (accountMenu.classList.contains("show") &&
-                    !freshBtn.contains(e.target) &&
-                    !accountMenu.contains(e.target)) {
-                    console.log('🔒 Closing dropdown (clicked outside)');
-                    accountMenu.classList.remove("show");
-                    freshBtn.setAttribute("aria-expanded", false);
+            document.addEventListener('click', e => {
+                if (menu.classList.contains('show') &&
+                    !fresh.contains(e.target) && !menu.contains(e.target)) {
+                    menu.classList.remove('show');
+                    fresh.setAttribute('aria-expanded', 'false');
                 }
             });
 
-            document.addEventListener("keydown", function (e) {
-                if (e.key === "Escape" && accountMenu.classList.contains("show")) {
-                    console.log('🔒 Closing dropdown (Escape key)');
-                    accountMenu.classList.remove("show");
-                    freshBtn.setAttribute("aria-expanded", false);
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape' && menu.classList.contains('show')) {
+                    menu.classList.remove('show');
+                    fresh.setAttribute('aria-expanded', 'false');
                 }
             });
 
-            const menuItems = accountMenu.querySelectorAll("a");
-            menuItems.forEach(item => {
-                item.addEventListener("click", function () {
-                    console.log('🔒 Closing dropdown (menu item clicked)');
-                    accountMenu.classList.remove("show");
-                    freshBtn.setAttribute("aria-expanded", false);
-                });
-            });
-
-            freshBtn.style.cursor = 'pointer';
+            menu.querySelectorAll('a').forEach(a =>
+                a.addEventListener('click', () => {
+                    menu.classList.remove('show');
+                    fresh.setAttribute('aria-expanded', 'false');
+                })
+            );
         }
 
-        // Apply translations to the page
-        function applyTranslations(language) {
-            const lang = translations[language] ? language : 'en';
-            const dict = translations[lang];
+        /* ── SIDEBAR TOGGLE ───────────────────────────── */
+        function setupMenuToggle() {
+            const toggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (!toggle || !sidebar) return;
 
-            document.querySelectorAll('[data-translate]').forEach(element => {
-                const key = element.getAttribute('data-translate');
-                if (dict[key]) {
-                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') {
-                        if (element.type !== 'text' && element.type !== 'email' && element.type !== 'password' && element.type !== 'tel') {
-                            element.textContent = dict[key];
-                        }
-                    } else if (element.tagName === 'OPTION') {
-                        element.textContent = dict[key];
-                    } else {
-                        element.textContent = dict[key];
+            const open = () => {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+                toggle.setAttribute('aria-expanded', 'true');
+                toggle.innerHTML = '<i class="fas fa-times"></i>';
+            };
+
+            const close = () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.innerHTML = '<i class="fas fa-bars"></i>';
+            };
+
+            toggle.addEventListener('click', e => {
+                e.stopPropagation();
+                sidebar.classList.contains('open') ? close() : open();
+            });
+            overlay.addEventListener('click', close);
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape' && sidebar.classList.contains('open')) close();
+            });
+        }
+
+        /* ── MOBILE OVERLAY ───────────────────────────── */
+        function syncMobileOverlay() {
+            const o = document.getElementById('mobileBlockOverlay');
+            if (o) o.style.display = document.body.classList.contains('mobile-block-active') ? 'flex' : 'none';
+        }
+
+        /* ── API: FETCH TICKETS ───────────────────────── */
+        async function fetchTicketsFromAPI() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/tickets`);
+                const data = await res.json();
+                sampleTickets = data.map(ticket => {
+                    const fullName = (ticket.Requestor_Name || '').trim();
+                    let displayName = 'User';
+                    if (fullName) {
+                        const parts = fullName.split(' ').filter(Boolean);
+                        displayName = parts.length >= 3
+                            ? parts.slice(0, parts.length - 1).join(' ')
+                            : parts[0];
                     }
-                }
-            });
-
-            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
-                const key = element.getAttribute('data-translate-placeholder');
-                if (dict[key]) {
-                    element.placeholder = dict[key];
-                }
-            });
-
-            if (dict['all_tickets_page_title']) {
-                document.title = dict['all_tickets_page_title'];
+                    return {
+                        id: 'TKT-' + (ticket.Ticket_ID || '0'),
+                        subject: ticket.Concern_Title || 'No Subject',
+                        requester: ticket.Email || 'User',
+                        firstName: fullName || 'User',
+                        requesterFirstName: displayName,
+                        contactPhone: ticket.Phone || 'N/A',
+                        address: ticket.Address || 'N/A',
+                        assignedTo: ticket.Technician_Name || 'Unassigned',
+                        Technician_ID: ticket.Technician_ID,
+                        priority: (ticket.Priority || 'medium').toLowerCase(),
+                        status: convertStatus(ticket.Status_ID || 1),
+                        created: ticket.Date_Created || new Date().toISOString(),
+                        description: ticket.Description || '',
+                        category: ticket.Service_Type || 'Support',
+                        department: 'IT',
+                        lastUpdated: ticket.Last_Updated || ticket.Date_Created,
+                        resolution: ticket.Resolution || ''
+                    };
+                });
+                currentPage = 1;
+                loadTickets();
+            } catch (err) {
+                console.error('Failed to fetch tickets:', err);
+                showToast('Failed to load tickets', 'error');
             }
         }
 
-        // Logout functionality
-        function setupLogout() {
-            console.log('🔐 Setting up logout functionality...');
-            const existingLogoutBtns = document.querySelectorAll('#logoutBtn');
-            existingLogoutBtns.forEach(btn => {
-                const parent = btn.parentNode;
-                const newBtn = btn.cloneNode(true);
-                parent.replaceChild(newBtn, btn);
-            });
-
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                console.log('✅ Logout button found, attaching handler...');
-                const logoutHandler = function (e) {
-                    console.log('🚪 Logout button clicked!');
-                    e.preventDefault();
-                    e.stopPropagation();
-                    localStorage.removeItem('userData');
-                    localStorage.removeItem('adminProfile');
-                    localStorage.removeItem('adminPreferences');
-                    localStorage.removeItem('preferredLanguage');
-                    console.log('🧹 Cleared localStorage, redirecting to login...');
-                    window.location.href = '/';
-                };
-                logoutBtn.removeEventListener('click', logoutHandler);
-                logoutBtn.addEventListener('click', logoutHandler);
-            } else {
-                console.error('❌ Logout button not found!');
-            }
-        }
-
-        // Load tickets and populate table
+        /* ── FILTER & RENDER ──────────────────────────── */
         function loadTickets() {
-            const ticketsTableBody = document.querySelector('#ticketsTable tbody');
-            if (!ticketsTableBody) return;
+            const status = document.getElementById('statusFilter').value;
+            const priority = document.getElementById('priorityFilter').value;
+            const search = document.getElementById('ticketSearch').value.trim().toLowerCase();
 
-            ticketsTableBody.innerHTML = '';
-
-            const statusFilter = document.getElementById('statusFilter').value;
-            const priorityFilter = document.getElementById('priorityFilter').value;
-            const searchTerm = document.getElementById('ticketSearch').value.toLowerCase();
-
-            currentFilteredTickets = sampleTickets.filter(ticket => {
-                if (statusFilter !== 'all' && ticket.status !== statusFilter) return false;
-                if (priorityFilter !== 'all' && ticket.priority !== priorityFilter) return false;
-                if (searchTerm) {
-                    const searchableText = [
-                        ticket.id, ticket.subject, ticket.requester,
-                        ticket.requesterFirstName, ticket.assignedTo,
-                        ticket.priority, ticket.status, ticket.category, ticket.department
-                    ].join(' ').toLowerCase();
-                    if (!searchableText.includes(searchTerm)) return false;
-                }
-                return true;
+            currentFilteredTickets = sampleTickets.filter(t => {
+                const matchStatus = status === 'all' || t.status === status;
+                const matchPriority = priority === 'all' || t.priority === priority;
+                const matchSearch = !search || [
+                    t.id, t.subject, t.requester, t.firstName,
+                    t.requesterFirstName, t.assignedTo, t.priority, t.status
+                ].some(v => v?.toLowerCase().includes(search));
+                return matchStatus && matchPriority && matchSearch;
             });
 
-            totalPages = Math.ceil(currentFilteredTickets.length / itemsPerPage);
-            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            totalPages = Math.max(1, Math.ceil(currentFilteredTickets.length / itemsPerPage));
+            if (currentPage > totalPages) currentPage = totalPages;
 
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const ticketsToDisplay = currentFilteredTickets.slice(startIndex, endIndex);
-
-            if (ticketsToDisplay.length === 0) {
-                selectedTickets.clear();
-                updateDeleteButtonVisibility();
-            }
-
-            ticketsToDisplay.forEach(ticket => {
-                if (!ticket.requesterFirstName) {
-                    ticket.requesterFirstName = getFirstNameFromEmail(ticket.requester);
-                }
-                const row = createTicketRow(ticket);
-                ticketsTableBody.appendChild(row);
-            });
-
+            renderTickets();
             updatePaginationDisplay();
         }
 
-        // Create a table row for a ticket entry
-        function createTicketRow(ticket) {
-            const row = document.createElement('tr');
-            row.dataset.ticketId = ticket.id;
-            const isSelected = selectedTickets.has(ticket.id);
+        function renderTickets() {
+            const tbody = document.getElementById('ticketsTbody');
+            if (!tbody) return;
 
-            let priorityBadge = '';
-            switch (ticket.priority) {
-                case 'low': priorityBadge = '<span class="badge badge-low">Low</span>'; break;
-                case 'medium': priorityBadge = '<span class="badge badge-medium">Medium</span>'; break;
-                case 'high': priorityBadge = '<span class="badge badge-high">High</span>'; break;
-                case 'urgent': priorityBadge = '<span class="badge badge-urgent">Urgent</span>'; break;
+            const start = (currentPage - 1) * itemsPerPage;
+            const pageTickets = currentFilteredTickets.slice(start, start + itemsPerPage);
+            const dict = getDict();
+
+            if (pageTickets.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <i class="fas fa-ticket-alt"></i>
+                                <h3>${dict.no_tickets_found || 'No tickets found'}</h3>
+                                <p>${dict.no_tickets_description || 'No tickets match your current filters.'}</p>
+                            </div>
+                        </td>
+                    </tr>`;
+                return;
             }
 
-            let statusBadge = '';
-            switch (ticket.status) {
-                case 'open': statusBadge = '<span class="badge badge-open">Open</span>'; break;
-                case 'in_progress': statusBadge = '<span class="badge badge-progress">Pending</span>'; break;
-                case 'resolved': statusBadge = '<span class="badge badge-resolved">Resolved</span>'; break;
-                case 'closed': statusBadge = '<span class="badge badge-closed">Closed</span>'; break;
-            }
+            tbody.innerHTML = pageTickets.map(t => {
+                const priorityIcons = { low: 'fa-arrow-down', medium: 'fa-minus', high: 'fa-arrow-up', urgent: 'fa-exclamation' };
+                const statusLabels = { open: 'Open', in_progress: 'In Progress', resolved: 'Resolved', closed: 'Closed' };
+                const date = t.created ? new Date(t.created).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+                const isSelected = selectedTickets.has(t.id);
 
-            row.innerHTML = `
-                <td>
-                    <input type="checkbox" class="ticket-checkbox" data-ticket-id="${ticket.id}" ${isSelected ? 'checked' : ''}>
-                </td>
-                <td><strong>${ticket.id}</strong></td>
-                <td>
-                    <div class="requester-info">
-                        <div class="requester-name">${ticket.requesterFirstName}</div>
-                    </div>
-                </td>
-                <td>${ticket.assignedTo}</td>
-                <td>${priorityBadge}</td>
-                <td>${statusBadge}</td>
-                <td>
-                    ${new Date(ticket.created).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
-                </td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="btn-action btn-view" data-ticket-id="${ticket.id}" title="View Details">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn-action btn-edit" data-ticket-id="${ticket.id}" title="Edit Ticket">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                    </div>
-                </td>
-            `;
-
-            const checkbox = row.querySelector('.ticket-checkbox');
-            checkbox.addEventListener('change', function () {
-                if (this.checked) selectedTickets.add(ticket.id);
-                else selectedTickets.delete(ticket.id);
-                updateDeleteButtonVisibility();
-                updateSelectAllCheckbox();
-            });
-
-            row.querySelector('.btn-view').addEventListener('click', function () {
-                showTicketDetails(ticket.id);
-            });
-
-            row.querySelector('.btn-edit').addEventListener('click', function () {
-                editTicket(ticket.id);
-            });
-
-            return row;
+                return `
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="ticket-checkbox"
+                                data-ticket-id="${t.id}" ${isSelected ? 'checked' : ''}
+                                onchange="toggleTicketSelection('${t.id}', this.checked)">
+                        </td>
+                        <td><strong>${t.id}</strong></td>
+                        <td>
+                            <div class="requester-info">
+                                <span class="requester-name">${t.requesterFirstName || t.firstName || 'User'}</span>
+                                <span style="font-size:0.78rem;color:var(--text-3)">${t.requester}</span>
+                            </div>
+                        </td>
+                        <td>${t.assignedTo || 'Unassigned'}</td>
+                        <td>
+                            <span class="badge badge-${t.priority}">
+                                <i class="fas ${priorityIcons[t.priority] || 'fa-minus'}"></i>
+                                ${t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-${t.status === 'in_progress' ? 'progress' : t.status}">
+                                ${statusLabels[t.status] || t.status}
+                            </span>
+                        </td>
+                        <td style="color:var(--text-3);font-size:0.82rem">${date}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action btn-view" onclick="viewTicket('${t.id}')" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn-action btn-edit" onclick="editTicket('${t.id}')" title="Edit Ticket">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+            }).join('');
         }
 
-        function showTicketDetails(ticketId) {
-            const ticket = sampleTickets.find(t => t.id === ticketId);
-            if (!ticket) return;
+        /* ── TICKET SELECTION ─────────────────────────── */
+        function toggleTicketSelection(id, checked) {
+            checked ? selectedTickets.add(id) : selectedTickets.delete(id);
+            updateDeleteButtonVisibility();
+            updateSelectAllCheckbox();
+        }
 
-            // --- LOCAL TIME FORMATTING ---
-            // Converts GMT strings to the user's local system time
-            const localCreated = new Date(ticket.created).toLocaleString();
-            const localUpdated = new Date(ticket.lastUpdated).toLocaleString();
+        function updateDeleteButtonVisibility() {
+            const btn = document.getElementById('deleteTicketsBtn');
+            if (btn) btn.style.display = selectedTickets.size > 0 ? 'inline-flex' : 'none';
+        }
 
-            const modal = document.getElementById('ticketDetailsModal');
-            const modalTicketHeader = document.getElementById('modalTicketHeader');
-            const detailsContent = document.getElementById('ticketDetailsContent');
+        function getCurrentPageTicketIds() {
+            const start = (currentPage - 1) * itemsPerPage;
+            return currentFilteredTickets.slice(start, start + itemsPerPage).map(t => t.id);
+        }
 
-            const currentLang = window.preferencesManager ? window.preferencesManager.getCurrentLanguage() : 'en';
-            const dict = translations[currentLang] || translations['en'];
+        function updateSelectAllCheckbox() {
+            const cb = document.getElementById('selectAllTickets');
+            if (!cb) return;
+            const ids = getCurrentPageTicketIds();
+            cb.checked = ids.length > 0 && ids.every(id => selectedTickets.has(id));
+            cb.indeterminate = ids.some(id => selectedTickets.has(id)) && !cb.checked;
+        }
 
-            // Header: Uses localCreated and displays ticket metadata
-            modalTicketHeader.innerHTML = `
-        <div class="ticket-meta">
-            <div class="ticket-id">${ticket.id}</div>
-            <div class="ticket-date">${localCreated}</div>
-        </div>
-        <h2 class="ticket-subject">${ticket.subject}</h2>
-        <div class="ticket-tags">
-            <span class="badge badge-${ticket.priority}">
-                <i class="fas fa-flag"></i> ${ticket.priority.toUpperCase()}
-            </span>
-            <span class="badge badge-${ticket.status === 'in_progress' ? 'progress' : ticket.status}">
-                <i class="fas fa-circle"></i> ${ticket.status.replace('_', ' ').toUpperCase()}
-            </span>
-        </div>
-    `;
+        /* ── VIEW TICKET MODAL ────────────────────────── */
+        function viewTicket(id) {
+            const t = sampleTickets.find(x => x.id === id);
+            if (!t) return;
 
-            // Body: Incorporates FULL NAME (firstName + lastName) and local dates
-            detailsContent.innerHTML = `
-        <div class="ticket-single-block">
-            <div class="ticket-section">
-                <div class="section-header">
-                    <i class="fas fa-align-left"></i>
-                    <h3>${dict['description'] || 'Description'}</h3>
+            const date = t.created ? new Date(t.created).toLocaleString('en-US', {
+                month: 'long', day: 'numeric', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            }) : 'N/A';
+
+            const updated = t.lastUpdated ? new Date(t.lastUpdated).toLocaleString('en-US', {
+                month: 'short', day: 'numeric', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            }) : 'N/A';
+
+            const statusLabels = { open: 'Open', in_progress: 'In Progress', resolved: 'Resolved', closed: 'Closed' };
+            const priorityIcons = { low: 'fa-arrow-down', medium: 'fa-minus', high: 'fa-arrow-up', urgent: 'fa-exclamation' };
+
+            document.getElementById('modalTicketHeader').innerHTML = `
+                <div class="ticket-meta">
+                    <span class="ticket-id">${t.id}</span>
+                    <span class="ticket-date">${date}</span>
                 </div>
-                <div class="description-box">${ticket.description.trim()}</div>
-            </div>
+                <div class="ticket-subject">${t.subject}</div>
+                <div class="ticket-tags">
+                    <span class="badge badge-${t.priority}">
+                        <i class="fas ${priorityIcons[t.priority] || 'fa-minus'}"></i>
+                        ${t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}
+                    </span>
+                    <span class="badge badge-${t.status === 'in_progress' ? 'progress' : t.status}">
+                        ${statusLabels[t.status] || t.status}
+                    </span>
+                </div>`;
 
-            <div class="ticket-section">
-                <div class="section-header">
-                    <i class="fas fa-info-circle"></i>
-                    <h3>Details & Assignment</h3>
-                </div>
-
-                <div class="details-single-block">
-                    <div class="details-row">
-                        <div class="detail-group">
-                            <label class="info-label">Requester</label>
-                            <div class="info-value">
-                                <strong>${ticket.firstName}</strong><br>
-                                <span class="sub-value">${ticket.requester}</span>
-                            </div>
+            document.getElementById('ticketDetailsContent').innerHTML = `
+                <div class="ticket-single-block">
+                    <div class="ticket-section">
+                        <div class="section-header">
+                            <i class="fas fa-align-left"></i>
+                            <h3>Description</h3>
                         </div>
-                        <div class="detail-group">
-                            <label class="info-label">Contact Number</label>
-                            <div class="info-value">
-                                <i class="fas fa-phone"></i> ${ticket.contactPhone}
+                        <div class="description-box">${t.description || 'No description provided.'}</div>
+                    </div>
+                    <div class="ticket-section">
+                        <div class="section-header">
+                            <i class="fas fa-info-circle"></i>
+                            <h3>Ticket Details</h3>
+                        </div>
+                        <div class="details-single-block">
+                            <div class="details-row">
+                                <div class="detail-group">
+                                    <div class="info-label">Requester</div>
+                                    <div class="info-value">
+                                        <i class="fas fa-user"></i>
+                                        <span><strong>${t.firstName || 'N/A'}</strong></span>
+                                    </div>
+                                </div>
+                                <div class="detail-group">
+                                    <div class="info-label">Email</div>
+                                    <div class="info-value">
+                                        <i class="fas fa-envelope"></i>
+                                        <span>${t.requester || 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="details-row">
+                                <div class="detail-group">
+                                    <div class="info-label">Phone</div>
+                                    <div class="info-value">
+                                        <i class="fas fa-phone"></i>
+                                        <span>${t.contactPhone || 'N/A'}</span>
+                                    </div>
+                                </div>
+                                <div class="detail-group">
+                                    <div class="info-label">Category</div>
+                                    <div class="info-value">
+                                        <i class="fas fa-tag"></i>
+                                        <span>${t.category || 'Support'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="details-row">
+                                <div class="detail-group">
+                                    <div class="info-label">Assigned To</div>
+                                    <div class="info-value">
+                                        <i class="fas fa-user-tie"></i>
+                                        <span>${t.assignedTo || 'Unassigned'}</span>
+                                    </div>
+                                </div>
+                                <div class="detail-group">
+                                    <div class="info-label">Address</div>
+                                    <div class="info-value">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>${t.address || 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="details-row footer-row">
+                                <div class="detail-group">
+                                    <div class="info-label">Timeline</div>
+                                    <div class="info-value timeline-value">
+                                        <span>Created: ${date}</span>
+                                        <span class="separator">|</span>
+                                        <span>Updated: ${updated}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="details-row">
-                        <div class="detail-group full-width">
-                            <label class="info-label">Address</label>
-                            <div class="info-value">
-                                <i class="fas fa-map-marker-alt"></i> ${ticket.address || 'No address provided'}
-                            </div>
+                    ${t.resolution ? `
+                    <div class="ticket-section resolution-section">
+                        <div class="section-header">
+                            <i class="fas fa-check-circle"></i>
+                            <h3>Resolution</h3>
                         </div>
-                    </div>
+                        <div class="description-box">${t.resolution}</div>
+                    </div>` : ''}
+                </div>`;
 
-                    <div class="details-row">
-                        <div class="detail-group">
-                            <label class="info-label">Technician</label>
-                            <div class="info-value">
-                                <i class="fas fa-user-tie"></i> ${ticket.assignedTo}
-                            </div>
-                        </div>
-                        <div class="detail-group">
-                            <label class="info-label">Priority</label>
-                            <div class="info-value">
-                                <span class="badge badge-${ticket.priority}">${ticket.priority.toUpperCase()}</span>
-                            </div>
-                        </div>
-                    </div>
+            document.getElementById('ticketDetailsModal').classList.add('show');
+        }
 
-                    <div class="details-row footer-row">
-                        <div class="detail-group">
-                            <label class="info-label">Timeline</label>
-                            <div class="info-value timeline-value">
-                                <span><strong>Created:</strong> ${localCreated}</span>
-                                <span class="separator">|</span>
-                                <span><strong>Updated:</strong> ${localUpdated}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            ${ticket.resolutionDetails ? `
-            <div class="ticket-section resolution-section">
-                <div class="section-header">
-                    <i class="fas fa-check-double"></i>
-                    <h3>Resolution Notes</h3>
-                </div>
-                <div class="description-box">${ticket.resolutionDetails.trim()}</div>
-            </div>` : ''}
-        </div>
-    `;
+        function closeModal() {
+            document.getElementById('ticketDetailsModal')?.classList.remove('show');
+            const em = document.getElementById('editTicketModal');
+            if (em?.classList.contains('show')) closeEditModal();
+        }
 
-            // Re-attach event listeners for closing the modal
-            document.getElementById('closeModal').onclick = closeModal;
-            document.getElementById('closeDetailsBtn').onclick = closeModal;
+        /* ── EDIT TICKET MODAL ────────────────────────── */
+        function editTicket(id) {
+            const t = sampleTickets.find(x => x.id === id);
+            if (!t) return;
+            currentlyEditingTicketId = id;
+
+            const modal = document.getElementById('editTicketModal');
+            if (!modal) return;
+
+            document.getElementById('editTicketId').textContent = t.id;
+            document.getElementById('editTicketSubject').textContent = t.subject;
+            document.getElementById('currentStatus').textContent = t.status.replace('_', ' ');
+            document.getElementById('currentPriority').textContent = t.priority;
+            document.getElementById('editStatus').value = t.status;
+            document.getElementById('editPriority').value = t.priority;
+            document.getElementById('editAssignedTo').value = t.assignedTo === 'Unassigned' ? '' : (t.Technician_ID || '');
+            document.getElementById('editResolution').value = t.resolution || '';
+
             modal.classList.add('show');
         }
 
-        // Edit ticket function
-        function editTicket(ticketId) {
-            const ticket = sampleTickets.find(t => t.id === ticketId);
-            if (!ticket) return;
-
-            currentlyEditingTicketId = ticketId;
-
-            const currentLang = window.preferencesManager ?
-                window.preferencesManager.getCurrentLanguage() : 'en';
-            const dict = translations[currentLang] || translations['en'];
-
-            showEditModal(ticket, dict);
-        }
-
-        // Show edit modal with form
-        function showEditModal(ticket, dict) {
-            const currentPriority = ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1);
-            const currentStatus = ticket.status === 'in_progress' ? 'In Progress' :
-                ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1);
-
-            const editModalHTML = `
-                <div class="modal edit-modal" id="editTicketModal">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <div class="modal-header-top">
-                                <h3>
-                                    <i class="fas fa-edit"></i> 
-                                    <span>${dict['edit_ticket'] || 'Edit Ticket'} - ${ticket.id}</span>
-                                </h3>
-                                <button class="modal-close" id="closeEditModal">&times;</button>
-                            </div>
-                        </div>
-                        <div class="modal-body">
-                            <div class="ticket-info-header">
-                                <h4>${dict['ticket_info'] || 'Ticket Information'}</h4>
-                                <p><strong>${dict['subject'] || 'Subject'}:</strong> ${ticket.subject}</p>
-                                <p><strong>${dict['requester'] || 'Requester'}:</strong> ${ticket.requester}</p>
-                            </div>
-                            
-                            <form id="editTicketForm" class="edit-form">
-                                <div class="form-section">
-                                    <h4>${dict['current_values'] || 'Current Values'}</h4>
-                                    <div class="current-values">
-                                        <div class="current-value-item">
-                                            <span class="current-label">${dict['assigned_to'] || 'Assigned To'}:</span>
-                                            <span class="current-value">${ticket.assignedTo}</span>
-                                        </div>
-                                        <div class="current-value-item">
-                                            <span class="current-label">${dict['priority'] || 'Priority'}:</span>
-                                            <span class="current-value badge badge-${ticket.priority}">${currentPriority}</span>
-                                        </div>
-                                        <div class="current-value-item">
-                                            <span class="current-label">${dict['status'] || 'Status'}:</span>
-                                            <span class="current-value badge badge-${ticket.status === 'in_progress' ? 'progress' : ticket.status}">${currentStatus}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-section">
-                                    <h4>${dict['new_values'] || 'New Values'}</h4>
-
-                                    <div class="form-group">
-                                        <label for="editAssignedTo">${dict['assigned_to'] || 'Assigned To'}</label>
-                                        <select id="editAssignedTo" class="form-select">
-                                            <option value="">Loading technicians...</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="editPriority">${dict['priority'] || 'Priority'}</label>
-                                        <select id="editPriority" class="form-select">
-                                            <option value="low" ${ticket.priority === 'low' ? 'selected' : ''}>${dict['low'] || 'Low'}</option>
-                                            <option value="medium" ${ticket.priority === 'medium' ? 'selected' : ''}>${dict['medium'] || 'Medium'}</option>
-                                            <option value="high" ${ticket.priority === 'high' ? 'selected' : ''}>${dict['high'] || 'High'}</option>
-                                            <option value="urgent" ${ticket.priority === 'urgent' ? 'selected' : ''}>${dict['urgent'] || 'Urgent'}</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="editStatus">${dict['status'] || 'Status'}</label>
-                                        <select id="editStatus" class="form-select">
-                                            <option value="open" ${ticket.status === 'open' ? 'selected' : ''}>${dict['open'] || 'Open'}</option>
-                                            <option value="in_progress" ${ticket.status === 'in_progress' ? 'selected' : ''}>${dict['in_progress'] || 'In Progress'}</option>
-                                            <option value="resolved" ${ticket.status === 'resolved' ? 'selected' : ''}>${dict['resolved'] || 'Resolved'}</option>
-                                            <option value="closed" ${ticket.status === 'closed' ? 'selected' : ''}>${dict['closed'] || 'Closed'}</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="editResolution">${dict['resolution_details'] || 'Resolution Notes'}</label>
-                                        <textarea id="editResolution" class="form-textarea" placeholder="Describe the fix or current progress...">${ticket.resolutionDetails}</textarea>
-                                    </div>
-
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" id="cancelEditBtn">${dict['cancel'] || 'Cancel'}</button>
-                            <button type="button" class="btn btn-primary" id="saveEditBtn">${dict['save_changes'] || 'Save Changes'}</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            const existingModal = document.getElementById('editTicketModal');
-            if (existingModal) existingModal.remove();
-
-            document.body.insertAdjacentHTML('beforeend', editModalHTML);
-            const editModal = document.getElementById('editTicketModal');
-            editModal.classList.add('show');
-
-            loadTechnicians(ticket);
-            addEditFormStyles();
-            setupEditModalListeners();
-        }
-
-        // Add CSS styles for edit form
-        function addEditFormStyles() {
-            if (document.getElementById('editFormStyles')) return;
-
-            const style = document.createElement('style');
-            style.id = 'editFormStyles';
-            style.textContent = `
-                .edit-form { display: flex; flex-direction: column; gap: 20px; }
-                .ticket-info-header { background: var(--hover-bg); padding: 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border); }
-                .ticket-info-header h4 { margin: 0 0 12px 0; font-size: 1rem; color: var(--text-primary); }
-                .ticket-info-header p { margin: 8px 0; font-size: 0.9rem; color: var(--text-secondary); }
-                .form-section { margin-bottom: 24px; }
-                .form-section h4 { margin: 0 0 16px 0; font-size: 1rem; color: var(--text-primary); font-weight: 600; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
-                .current-values { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 24px; }
-                .current-value-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; background: var(--hover-bg); border-radius: 6px; border: 1px solid var(--border); }
-                .current-label { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
-                .current-value { font-size: 0.9rem; color: var(--text-secondary); }
-                .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-                .form-label { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
-                .form-input, .form-textarea, .form-select { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-primary); font-size: 0.9rem; font-family: inherit; transition: all 0.2s var(--ease); }
-                .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-                .form-textarea { resize: vertical; min-height: 100px; }
-                .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px; }
-                @media (max-width: 768px) { .form-row { grid-template-columns: 1fr; gap: 12px; } .current-value-item { flex-direction: column; align-items: flex-start; gap: 8px; } }
-            `;
-            document.head.appendChild(style);
-        }
-
-        // Setup edit modal event listeners
-        function setupEditModalListeners() {
-            const closeEditModalBtn = document.getElementById('closeEditModal');
-            if (closeEditModalBtn) closeEditModalBtn.addEventListener('click', closeEditModal);
-
-            const cancelEditBtn = document.getElementById('cancelEditBtn');
-            if (cancelEditBtn) cancelEditBtn.addEventListener('click', closeEditModal);
-
-            const saveEditBtn = document.getElementById('saveEditBtn');
-            if (saveEditBtn) saveEditBtn.addEventListener('click', saveTicketChanges);
-
-            const editModalElement = document.getElementById('editTicketModal');
-            if (editModalElement) {
-                editModalElement.addEventListener('click', function (e) {
-                    if (e.target === this) closeEditModal();
-                });
-            }
-
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') {
-                    const editModal = document.getElementById('editTicketModal');
-                    if (editModal && editModal.classList.contains('show')) closeEditModal();
-                }
-            });
-        }
-
-        // Close edit modal
         function closeEditModal() {
-            const editModal = document.getElementById('editTicketModal');
-            if (editModal) {
-                editModal.classList.remove('show');
-                setTimeout(() => { editModal.remove(); }, 300);
-            }
+            document.getElementById('editTicketModal')?.classList.remove('show');
             currentlyEditingTicketId = null;
         }
 
-        // Save ticket changes
         async function saveTicketChanges() {
             if (!currentlyEditingTicketId) return;
+            const t = sampleTickets.find(x => x.id === currentlyEditingTicketId);
+            if (!t) return;
 
-            const technicianID = document.getElementById('editAssignedTo').value;
-            const status = document.getElementById('editStatus').value;
-            const priority = document.getElementById('editPriority').value;
-            const resolution = document.getElementById('editResolution').value.trim();
-
-            if (!technicianID || technicianID === "Select team or person") {
-                showToast('Please select a valid "Technician" value', 'error');
-                return;
-            }
-
-            if (!status) {
-                showToast('Please select a status', 'error');
-                return;
-            }
-
-            if (!priority) {
-                showToast('Please select a priority', 'error');
-                return;
-            }
-
-            // 🔥 SMART CHECK: Require resolution notes if closing/resolving
-            if ((status === 'resolved' || status === 'closed') && resolution === "") {
-                showToast('Resolution Notes are required to resolve or close a ticket.', 'error');
-                // Optional: Highlight the box so the user knows what they missed
-                document.getElementById('editResolution').style.borderColor = '#ef4444';
-                return;
-            }
-
-            // Extract numeric ticket ID (e.g., TKT-7 -> 7)
-            const ticketId = currentlyEditingTicketId.replace("TKT-", "");
-
-            // Convert status to DB number
-            const statusMap = {
-                open: 1,
-                in_progress: 2,
-                resolved: 3,
-                closed: 4
-            };
+            const statusMap = { open: 1, in_progress: 2, resolved: 3, closed: 4 };
+            const newStatus = document.getElementById('editStatus').value;
+            const newPriority = document.getElementById('editPriority').value;
+            const newAssignedTo = document.getElementById('editAssignedTo').value;
+            const newResolution = document.getElementById('editResolution').value;
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/tickets/${ticketId}`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        Status_ID: statusMap[status],
-                        Priority: priority,
-                        Technician_ID: technicianID,
-                        Resolution_Details: resolution
-                    })
+                const payload = {
+                    Status_ID: statusMap[newStatus] || 1,
+                    Priority: newPriority,
+                    Technician_ID: newAssignedTo || null,
+                    Resolution: newResolution
+                };
+                await fetch(`${API_BASE_URL}/api/tickets/${t.id.replace('TKT-', '')}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) {
-                    throw new Error("Server responded with an error");
-                }
+                t.status = newStatus;
+                t.priority = newPriority;
+                t.resolution = newResolution;
+                if (newAssignedTo) t.Technician_ID = newAssignedTo;
 
-                // Fetch fresh data from the server (this automatically updates sampleTickets and calls loadTickets)
-                await fetchTicketsFromAPI();
-
-                const currentLang = window.preferencesManager ? window.preferencesManager.getCurrentLanguage() : 'en';
-                const dict = translations[currentLang] || translations['en'];
-
-                showToast(dict['ticket_saved'] || 'Ticket saved successfully', 'success');
                 closeEditModal();
-
-            } catch (error) {
-                console.error("API update failed:", error);
-                showToast("Server update failed", "error");
+                loadTickets();
+                showToast(getDict().ticket_saved || 'Ticket saved successfully', 'success');
+            } catch (err) {
+                showToast(getDict().error_saving || 'Error saving ticket', 'error');
             }
         }
 
-        // Helper function to get current date time
-        function getCurrentDateTime() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-        }
-
-        // Update delete button visibility
-        function updateDeleteButtonVisibility() {
-            const deleteBtn = document.getElementById('deleteTicketsBtn');
-            if (deleteBtn) {
-                if (selectedTickets.size > 0) {
-                    deleteBtn.style.display = 'flex';
-                    const currentLang = window.preferencesManager ?
-                        window.preferencesManager.getCurrentLanguage() : 'en';
-                    const dict = translations[currentLang] || translations['en'];
-                    deleteBtn.innerHTML = `<i class="fas fa-trash-alt"></i> <span>${dict['delete_selected']} (${selectedTickets.size})</span>`;
-                } else {
-                    deleteBtn.style.display = 'none';
-                }
+        /* ── DELETE TICKETS ───────────────────────────── */
+        function deleteSelectedTickets() {
+            const ids = Array.from(selectedTickets);
+            if (ids.length === 0) {
+                showToast(getDict().no_tickets_selected || 'No tickets selected', 'error');
+                return;
             }
-        }
 
-        // Update select all checkbox state
-        function updateSelectAllCheckbox() {
-            const selectAllCheckbox = document.getElementById('selectAllTickets');
-            if (!selectAllCheckbox) return;
-
-            const currentPageTickets = getCurrentPageTicketIds();
-            const allSelected = currentPageTickets.length > 0 &&
-                currentPageTickets.every(id => selectedTickets.has(id));
-
-            selectAllCheckbox.checked = allSelected;
-            selectAllCheckbox.indeterminate = !allSelected &&
-                currentPageTickets.some(id => selectedTickets.has(id));
-        }
-
-        // Get ticket IDs on current page
-        function getCurrentPageTicketIds() {
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const currentPageTickets = currentFilteredTickets.slice(startIndex, endIndex);
-            return currentPageTickets.map(ticket => ticket.id);
-        }
-
-        // Show delete confirmation modal
-        function showDeleteConfirmation(ticketIds) {
+            const dict = getDict();
             const modal = document.getElementById('deleteConfirmationModal');
-            const deleteMessage = document.getElementById('deleteMessage');
-            const ticketsList = document.getElementById('ticketsToDeleteList');
-            const selectedTicketsList = document.getElementById('selectedTicketsList');
+            const msgEl = document.getElementById('deleteMessage');
+            const listWrap = document.getElementById('selectedTicketsList');
+            const listEl = document.getElementById('ticketsToDeleteList');
 
-            if (!modal || !deleteMessage) return;
+            listEl.innerHTML = '';
 
-            const currentLang = window.preferencesManager ?
-                window.preferencesManager.getCurrentLanguage() : 'en';
-            const dict = translations[currentLang] || translations['en'];
-
-            ticketsList.innerHTML = '';
-
-            if (ticketIds.length === 1) {
-                const ticket = sampleTickets.find(t => t.id === ticketIds[0]);
-                if (ticket) {
-                    deleteMessage.textContent = dict['delete_ticket_confirm'] || 'Are you sure you want to delete this ticket?';
-                    deleteMessage.innerHTML += `<br><br><strong>${ticket.id}</strong>: ${ticket.subject}`;
-                    selectedTicketsList.style.display = 'none';
-                }
+            if (ids.length === 1) {
+                const t = sampleTickets.find(x => x.id === ids[0]);
+                msgEl.innerHTML = (dict.delete_ticket_confirm || 'Are you sure?') +
+                    (t ? `<br><br><strong>${t.id}</strong>: ${t.subject}` : '');
+                listWrap.style.display = 'none';
             } else {
-                const message = (dict['delete_tickets_confirm'] || 'Are you sure you want to delete {count} selected tickets?')
-                    .replace('{count}', ticketIds.length);
-                deleteMessage.textContent = message;
-
-                ticketIds.forEach(ticketId => {
-                    const ticket = sampleTickets.find(t => t.id === ticketId);
-                    if (ticket) {
+                msgEl.textContent = (dict.delete_tickets_confirm || 'Delete {count} tickets?')
+                    .replace('{count}', ids.length);
+                ids.forEach(id => {
+                    const t = sampleTickets.find(x => x.id === id);
+                    if (t) {
                         const li = document.createElement('li');
-                        li.innerHTML = `<strong>${ticket.id}</strong>: ${ticket.subject}`;
-                        ticketsList.appendChild(li);
+                        li.innerHTML = `<strong>${t.id}</strong>: ${t.subject}`;
+                        listEl.appendChild(li);
                     }
                 });
-
-                selectedTicketsList.style.display = 'block';
+                listWrap.style.display = 'block';
             }
 
             modal.classList.add('show');
         }
 
-        // Delete selected tickets
-        function deleteSelectedTickets() {
-            if (selectedTickets.size === 0) {
-                const currentLang = window.preferencesManager ?
-                    window.preferencesManager.getCurrentLanguage() : 'en';
-                const dict = translations[currentLang] || translations['en'];
-                showToast(dict['no_tickets_selected'] || 'No tickets selected', 'error');
-                return;
-            }
-
-            const ticketIdsToDelete = Array.from(selectedTickets);
-            showDeleteConfirmation(ticketIdsToDelete);
-        }
-
-        // Confirm and execute deletion
         async function confirmDeleteTickets() {
-
-            const ticketIdsToDelete = Array.from(selectedTickets);
-
+            const ids = Array.from(selectedTickets);
             try {
-
-                for (let ticketId of ticketIdsToDelete) {
-
-                    // Convert TKT-7 → 7
-                    const numericId = ticketId.replace("TKT-", "");
-
-                    await fetch(`${API_BASE_URL}/api/tickets/${numericId}`, {
-                        method: "DELETE"
+                for (const id of ids) {
+                    await fetch(`${API_BASE_URL}/api/tickets/${id.replace('TKT-', '')}`, {
+                        method: 'DELETE'
                     });
-
                 }
-
-                // Refresh tickets from API
                 fetchTicketsFromAPI();
-
-            } catch (error) {
-
-                console.error("Delete failed:", error);
-                showToast("Delete failed", "error");
+            } catch (err) {
+                showToast('Delete failed', 'error');
                 return;
-
             }
 
             selectedTickets.clear();
-
-            const modal = document.getElementById('deleteConfirmationModal');
-            if (modal) modal.classList.remove('show');
-
-            const currentLang = window.preferencesManager ?
-                window.preferencesManager.getCurrentLanguage() : 'en';
-
-            const dict = translations[currentLang] || translations['en'];
-
-            showToast(dict['delete_success'] || 'Tickets deleted successfully', 'success');
-
+            document.getElementById('deleteConfirmationModal')?.classList.remove('show');
+            showToast(getDict().delete_success || 'Tickets deleted successfully', 'success');
             updateDeleteButtonVisibility();
         }
 
-        // Setup pagination
+        /* ── PAGINATION ───────────────────────────────── */
         function setupPagination() {
             document.getElementById('pageSizeSelect').addEventListener('change', function () {
                 itemsPerPage = parseInt(this.value);
@@ -1331,323 +1051,242 @@
             document.getElementById('nextPageBtn').addEventListener('click', () => goToPage(currentPage + 1));
             document.getElementById('lastPageBtn').addEventListener('click', () => goToPage(totalPages));
 
-            const selectAllCheckbox = document.getElementById('selectAllTickets');
-            if (selectAllCheckbox) {
-                selectAllCheckbox.addEventListener('change', function () {
-                    const currentPageTicketIds = getCurrentPageTicketIds();
-
-                    if (this.checked) {
-                        currentPageTicketIds.forEach(id => selectedTickets.add(id));
-                    } else {
-                        currentPageTicketIds.forEach(id => selectedTickets.delete(id));
-                    }
-
-                    document.querySelectorAll('.ticket-checkbox').forEach(checkbox => {
-                        const ticketId = checkbox.getAttribute('data-ticket-id');
-                        checkbox.checked = selectedTickets.has(ticketId);
-                    });
-
-                    updateDeleteButtonVisibility();
+            document.getElementById('selectAllTickets').addEventListener('change', function () {
+                const ids = getCurrentPageTicketIds();
+                this.checked
+                    ? ids.forEach(id => selectedTickets.add(id))
+                    : ids.forEach(id => selectedTickets.delete(id));
+                document.querySelectorAll('.ticket-checkbox').forEach(cb => {
+                    cb.checked = selectedTickets.has(cb.getAttribute('data-ticket-id'));
                 });
-            }
+                updateDeleteButtonVisibility();
+            });
         }
 
-        // Update pagination display
-        function updatePaginationDisplay() {
-            const paginationNumbers = document.getElementById('paginationNumbers');
-            const paginationInfo = document.getElementById('paginationInfo');
-            const firstPageBtn = document.getElementById('firstPageBtn');
-            const prevPageBtn = document.getElementById('prevPageBtn');
-            const nextPageBtn = document.getElementById('nextPageBtn');
-            const lastPageBtn = document.getElementById('lastPageBtn');
-
-            if (!paginationNumbers || !paginationInfo) return;
-
-            const currentLang = window.preferencesManager ?
-                window.preferencesManager.getCurrentLanguage() : 'en';
-            const dict = translations[currentLang] || translations['en'];
-
-            const startIndex = (currentPage - 1) * itemsPerPage + 1;
-            const endIndex = Math.min(currentPage * itemsPerPage, currentFilteredTickets.length);
-
-            if (currentFilteredTickets.length === 0) {
-                paginationInfo.textContent = `${dict['no_tickets_found'] || 'No tickets found'}`;
-            } else {
-                paginationInfo.textContent = `${dict['showing'] || 'Showing'} ${startIndex} ${dict['to'] || 'to'} ${endIndex} ${dict['of'] || 'of'} ${currentFilteredTickets.length} ${dict['tickets'] || 'tickets'}`;
-            }
-
-            paginationNumbers.innerHTML = '';
-            addPageNumber(1, paginationNumbers);
-
-            if (currentPage > 3) {
-                const ellipsis = document.createElement('span');
-                ellipsis.className = 'pagination-ellipsis';
-                ellipsis.textContent = '...';
-                paginationNumbers.appendChild(ellipsis);
-            }
-
-            const startPage = Math.max(2, currentPage - 1);
-            const endPage = Math.min(totalPages - 1, currentPage + 1);
-
-            for (let i = startPage; i <= endPage; i++) {
-                if (i !== 1 && i !== totalPages) addPageNumber(i, paginationNumbers);
-            }
-
-            if (currentPage < totalPages - 2) {
-                const ellipsis = document.createElement('span');
-                ellipsis.className = 'pagination-ellipsis';
-                ellipsis.textContent = '...';
-                paginationNumbers.appendChild(ellipsis);
-            }
-
-            if (totalPages > 1) addPageNumber(totalPages, paginationNumbers);
-
-            firstPageBtn.disabled = currentPage === 1;
-            prevPageBtn.disabled = currentPage === 1;
-            nextPageBtn.disabled = currentPage === totalPages || totalPages === 0;
-            lastPageBtn.disabled = currentPage === totalPages || totalPages === 0;
-
-            updateSelectAllCheckbox();
-        }
-
-        // Add page number button
-        function addPageNumber(pageNumber, container) {
-            const button = document.createElement('button');
-            button.className = 'pagination-number';
-            if (pageNumber === currentPage) button.classList.add('active');
-            button.textContent = pageNumber;
-            button.addEventListener('click', () => goToPage(pageNumber));
-            container.appendChild(button);
-        }
-
-        // Go to specific page
         function goToPage(page) {
             if (page < 1 || page > totalPages || page === currentPage) return;
             currentPage = page;
             loadTickets();
-            const tableContainer = document.querySelector('.tickets-table-container');
-            if (tableContainer) tableContainer.scrollTop = 0;
         }
 
-        // Setup event listeners
+        function updatePaginationDisplay() {
+            const nums = document.getElementById('paginationNumbers');
+            const info = document.getElementById('paginationInfo');
+            const first = document.getElementById('firstPageBtn');
+            const prev = document.getElementById('prevPageBtn');
+            const next = document.getElementById('nextPageBtn');
+            const last = document.getElementById('lastPageBtn');
+            if (!nums || !info) return;
+
+            const dict = getDict();
+            const start = (currentPage - 1) * itemsPerPage + 1;
+            const end = Math.min(currentPage * itemsPerPage, currentFilteredTickets.length);
+
+            info.textContent = currentFilteredTickets.length === 0
+                ? (dict.no_tickets_found || 'No tickets found')
+                : `${dict.showing} ${start} ${dict.to} ${end} ${dict.of} ${currentFilteredTickets.length} ${dict.tickets}`;
+
+            nums.innerHTML = '';
+            addPageNum(1, nums);
+            if (currentPage > 3) {
+                const e = document.createElement('span');
+                e.className = 'pagination-ellipsis';
+                e.textContent = '…';
+                nums.appendChild(e);
+            }
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                if (i !== 1 && i !== totalPages) addPageNum(i, nums);
+            }
+            if (currentPage < totalPages - 2) {
+                const e = document.createElement('span');
+                e.className = 'pagination-ellipsis';
+                e.textContent = '…';
+                nums.appendChild(e);
+            }
+            if (totalPages > 1) addPageNum(totalPages, nums);
+
+            first.disabled = prev.disabled = currentPage === 1;
+            next.disabled = last.disabled = currentPage === totalPages || totalPages === 0;
+            updateSelectAllCheckbox();
+        }
+
+        function addPageNum(n, container) {
+            const btn = document.createElement('button');
+            btn.className = 'pagination-number' + (n === currentPage ? ' active' : '');
+            btn.textContent = n;
+            btn.addEventListener('click', () => goToPage(n));
+            container.appendChild(btn);
+        }
+
+        /* ── EVENT LISTENERS ──────────────────────────── */
         function setupEventListeners() {
             document.getElementById('statusFilter').addEventListener('change', loadTickets);
             document.getElementById('priorityFilter').addEventListener('change', loadTickets);
 
-            const clearFiltersBtn = document.getElementById('clearFilters');
-            if (clearFiltersBtn) {
-                clearFiltersBtn.addEventListener('click', function () {
-                    document.getElementById('statusFilter').value = 'all';
-                    document.getElementById('priorityFilter').value = 'all';
-                    document.getElementById('ticketSearch').value = '';
-                    loadTickets();
-                    showToast('Filters cleared', 'success');
-                });
-            }
+            document.getElementById('clearFilters').addEventListener('click', () => {
+                document.getElementById('statusFilter').value = 'all';
+                document.getElementById('priorityFilter').value = 'all';
+                document.getElementById('ticketSearch').value = '';
+                loadTickets();
+                showToast('Filters cleared', 'success');
+            });
 
-            const refreshBtn = document.getElementById('refreshTickets');
-            if (refreshBtn) {
-                refreshBtn.addEventListener('click', async function refreshTickets() {
-                    await fetchTicketsFromAPI();
-                    const currentLang = window.preferencesManager ?
-                        window.preferencesManager.getCurrentLanguage() : 'en';
-                    const dict = translations[currentLang] || translations['en'];
-                    showToast(dict['ticket_refreshed'] || 'Tickets refreshed successfully', 'success');
-                });
-            }
+            document.getElementById('refreshTickets').addEventListener('click', async () => {
+                await fetchTicketsFromAPI();
+                showToast(getDict().ticket_refreshed || 'Tickets refreshed', 'success');
+            });
 
-            const deleteBtn = document.getElementById('deleteTicketsBtn');
-            if (deleteBtn) deleteBtn.addEventListener('click', deleteSelectedTickets);
+            document.getElementById('deleteTicketsBtn').addEventListener('click', deleteSelectedTickets);
 
-            const closeDeleteModalBtn = document.getElementById('closeDeleteModal');
-            if (closeDeleteModalBtn) {
-                closeDeleteModalBtn.addEventListener('click', function () {
-                    document.getElementById('deleteConfirmationModal').classList.remove('show');
-                });
-            }
+            document.getElementById('closeDeleteModal').addEventListener('click', () =>
+                document.getElementById('deleteConfirmationModal').classList.remove('show'));
+            document.getElementById('cancelDeleteBtn').addEventListener('click', () =>
+                document.getElementById('deleteConfirmationModal').classList.remove('show'));
+            document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDeleteTickets);
+            document.getElementById('deleteConfirmationModal').addEventListener('click', function (e) {
+                if (e.target === this) this.classList.remove('show');
+            });
 
-            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-            if (cancelDeleteBtn) {
-                cancelDeleteBtn.addEventListener('click', function () {
-                    document.getElementById('deleteConfirmationModal').classList.remove('show');
-                });
-            }
-
-            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-            if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', confirmDeleteTickets);
-
-            const deleteModal = document.getElementById('deleteConfirmationModal');
-            if (deleteModal) {
-                deleteModal.addEventListener('click', function (e) {
-                    if (e.target === this) this.classList.remove('show');
-                });
-            }
-
-            const searchInput = document.getElementById('ticketSearch');
             let searchTimeout;
-            if (searchInput) {
-                searchInput.addEventListener('input', function () {
-                    clearTimeout(searchTimeout);
-                    searchTimeout = setTimeout(() => {
-                        currentPage = 1;
-                        loadTickets();
-                    }, 300);
-                });
-            }
+            document.getElementById('ticketSearch').addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => { currentPage = 1; loadTickets(); }, 300);
+            });
 
-            const closeModalBtn = document.getElementById('closeModal');
-            const closeDetailsBtn = document.getElementById('closeDetailsBtn');
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+            document.getElementById('closeDetailsBtn').addEventListener('click', closeModal);
+            document.getElementById('ticketDetailsModal').addEventListener('click', function (e) {
+                if (e.target === this) closeModal();
+            });
 
-            if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-            if (closeDetailsBtn) closeDetailsBtn.addEventListener('click', closeModal);
-
-            const modalElement = document.getElementById('ticketDetailsModal');
-            if (modalElement) {
-                modalElement.addEventListener('click', function (e) {
-                    if (e.target === this) closeModal();
-                });
-            }
-
-            document.addEventListener('keydown', function (e) {
+            document.addEventListener('keydown', e => {
                 if (e.key === 'Escape') {
                     closeModal();
-                    const deleteModal = document.getElementById('deleteConfirmationModal');
-                    if (deleteModal && deleteModal.classList.contains('show')) deleteModal.classList.remove('show');
+                    const dm = document.getElementById('deleteConfirmationModal');
+                    if (dm?.classList.contains('show')) dm.classList.remove('show');
+                    const em = document.getElementById('editTicketModal');
+                    if (em?.classList.contains('show')) closeEditModal();
                 }
             });
         }
 
-        // Close modal
-        function closeModal() {
-            const modal = document.getElementById('ticketDetailsModal');
-            if (modal) modal.classList.remove('show');
-        }
-
-        // Show toast message
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            if (!toast) return;
-            toast.textContent = message;
-            toast.className = `toast ${type}`;
-            toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 3000);
-        }
-
-        // Listen for language changes
-        document.addEventListener('languageChanged', function (e) {
-            applyTranslations(e.detail.language);
-        });
-
-        function convertStatus(statusId) {
-
-            if (statusId == 1) return "open";
-            if (statusId == 2) return "in_progress";
-            if (statusId == 3) return "resolved";
-            if (statusId == 4) return "closed";
-            return "open";
-
-        }
-
-        async function fetchTicketsFromAPI() {
-
-            try {
-
-                const response = await fetch(`${API_BASE_URL}/api/tickets`);
-                const data = await response.json();
-
-                // UPDATE the mapping inside fetchTicketsFromAPI() in all-tickets.html
-                sampleTickets = data.map(ticket => {
-                    // Build display name from Requestor_Name (prioritize DB full name over email fallback).
-                    // Handles double first names like "Jhon Lloyd Dela Vega" → "Jhon Lloyd"
-                    // by keeping all name parts that are NOT the last name (i.e. all but the final word).
-                    // Falls back to "User" only when no name is available.
-                    const fullName = (ticket.Requestor_Name || "").trim();
-                    let displayName = "User";
-                    if (fullName) {
-                        const parts = fullName.split(" ").filter(Boolean);
-                        // If 3+ parts (e.g. "Jhon Lloyd Dela Vega"), keep all but the last word as the display name.
-                        // If 2 parts (e.g. "John Doe"), keep only the first word.
-                        // If 1 part, use it as-is.
-                        displayName = parts.length >= 3 ? parts.slice(0, parts.length - 1).join(" ") : parts[0];
-                    }
-
-                    return {
-                        id: "TKT-" + (ticket.Ticket_ID || "0"),
-                        subject: ticket.Concern_Title || "No Subject",
-                        requester: ticket.Email || "User",
-                        firstName: fullName || "User",         // Full name used in modal details
-                        requesterFirstName: displayName,       // Shortened display name used in table row
-
-                        // Safeguard the phone number
-                        contactPhone: ticket.Phone || "N/A",
-
-                        // Capture address if available, otherwise use a default value
-                        address: ticket.Address || "N/A",
-
-                        assignedTo: ticket.Technician_Name || "Unassigned",
-                        Technician_ID: ticket.Technician_ID,
-
-                        // ADD NULL CHECKS HERE to prevent crashes
-                        priority: (ticket.Priority || "medium").toLowerCase(),
-                        status: convertStatus(ticket.Status_ID || 1),
-
-                        created: ticket.Date_Created || new Date().toISOString(),
-                        description: ticket.Description || "",
-                        category: ticket.Service_Type || "Support",
-                        department: "IT",
-                        lastUpdated: ticket.Last_Updated || ticket.Date_Created,
-                        resolutionDetails: ticket.Resolution_Details || ""
-                    };
-                });
-
-                loadTickets();
-
-            } catch (error) {
-                console.error("Failed to load tickets:", error);
-            }
-
-        }
-
-        document.addEventListener("DOMContentLoaded", function () {
+        /* ── INIT ─────────────────────────────────────── */
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 All Tickets: init start');
+            applyTranslations(
+                window.preferencesManager?.getCurrentLanguage?.() ||
+                localStorage.getItem('dashboardLanguage') || 'en'
+            );
+            if (window.preferencesManager) window.preferencesManager.applySavedPreferences?.();
+            if (window.ThemeManager) window.ThemeManager.applySavedTheme();
+            syncMobileOverlay();
+            window.addEventListener('resize', () => setTimeout(syncMobileOverlay, 20));
+            setupAccountDropdown();
+            setupMenuToggle();
+            setupEventListeners();
+            setupPagination();
             fetchTicketsFromAPI();
+            console.log('✅ All Tickets: init complete');
         });
 
-        async function loadTechnicians(ticket) {
+        document.addEventListener('languageChanged', e =>
+            applyTranslations(e.detail?.language || 'en'));
+        document.addEventListener('languageReloaded', () =>
+            applyTranslations(window.preferencesManager?.getCurrentLanguage?.() || 'en'));
+        window.addEventListener('storage', e => {
+            if (e.key === 'dashboardLanguage' || e.key === 'langReloadTimestamp') {
+                setTimeout(() => applyTranslations(localStorage.getItem('dashboardLanguage') || 'en'), 100);
+            }
+        });
+        /* ── ADMIN VERIFICATION MODAL ─────────────────── */
+        let _adminVerifyCallback = null;
 
-            try {
+        function openAdminVerifyModal(callback) {
+            _adminVerifyCallback = callback;
+            const modal = document.getElementById('adminVerifyModal');
+            const input = document.getElementById('adminVerifyPassword');
+            const err = document.getElementById('adminVerifyError');
+            const btn = document.getElementById('confirmAdminVerifyBtn');
+            input.value = '';
+            err.style.display = 'none';
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-unlock"></i> Confirm';
+            modal.classList.add('show');
+            setTimeout(() => input.focus(), 80);
+        }
 
-                const response = await fetch(`${API_BASE_URL}/api/technicians`);
-                const techs = await response.json();
+        function closeAdminVerifyModal() {
+            document.getElementById('adminVerifyModal').classList.remove('show');
+            _adminVerifyCallback = null;
+        }
 
-                const select = document.getElementById("editAssignedTo");
+        async function submitAdminVerify() {
+            const password = document.getElementById('adminVerifyPassword').value;
+            const err = document.getElementById('adminVerifyError');
+            const errText = document.getElementById('adminVerifyErrorText');
+            const btn = document.getElementById('confirmAdminVerifyBtn');
 
-                if (!select) return;
-
-                select.innerHTML = "";
-
-                techs.forEach(t => {
-
-                    const option = document.createElement("option");
-
-                    option.value = t.Technician_ID;
-                    option.textContent = t.Name;
-
-                    // preselect assigned technician
-                    if (ticket && ticket.Technician_ID && t.Technician_ID == ticket.Technician_ID) {
-                        option.selected = true;
-                    }
-
-                    select.appendChild(option);
-
-                });
-
-            } catch (error) {
-
-                console.error("Failed to load technicians:", error);
-
+            if (!password) {
+                err.style.display = 'block';
+                errText.textContent = 'Password is required.';
+                return;
             }
 
+            const email = document.getElementById('userEmailDisplay')?.textContent?.trim() || '';
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying…';
+            err.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    document.getElementById('adminVerifyModal').classList.remove('show');
+                    const cb = _adminVerifyCallback;
+                    _adminVerifyCallback = null;
+                    if (typeof cb === 'function') cb();
+                } else {
+                    err.style.display = 'block';
+                    errText.textContent = 'Incorrect password. Please try again.';
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-unlock"></i> Confirm';
+                    document.getElementById('adminVerifyPassword').focus();
+                }
+            } catch (error) {
+                err.style.display = 'block';
+                errText.textContent = 'Could not reach the server. Please try again.';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-unlock"></i> Confirm';
+                console.error('Admin verify error:', error);
+            }
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('closeAdminVerifyModal')?.addEventListener('click', closeAdminVerifyModal);
+            document.getElementById('cancelAdminVerifyBtn')?.addEventListener('click', closeAdminVerifyModal);
+            document.getElementById('confirmAdminVerifyBtn')?.addEventListener('click', submitAdminVerify);
+            document.getElementById('adminVerifyPassword')?.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') submitAdminVerify();
+            });
+            document.getElementById('adminVerifyToggle')?.addEventListener('click', function () {
+                const input = document.getElementById('adminVerifyPassword');
+                const icon = document.getElementById('adminVerifyToggleIcon');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'fas fa-eye-slash';
+                } else {
+                    input.type = 'password';
+                    icon.className = 'fas fa-eye';
+                }
+            });
+            document.getElementById('adminVerifyModal')?.addEventListener('click', function (e) {
+                if (e.target === this) closeAdminVerifyModal();
+            });
+        });
     </script>
 </body>
 

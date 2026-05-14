@@ -7,205 +7,221 @@
     <title data-translate="staff_management_title">Staff Management - AlliTrack Admin</title>
     <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
     <link rel="stylesheet" href="../../styles/admin page/staff-management.css" />
     <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
-    <script src="../../scripts/mobile-restriction.js"></script>
-    <script src="../../scripts/admin-preference-manager.js"></script>
-    <script src="../../scripts/admin-data-manager.js"></script>
+    <script src="../../scripts/mobile-restriction.js" defer></script>
+    <script src="../../scripts/admin-preference-manager.js" defer></script>
+    <script src="../../scripts/admin-data-manager.js" defer></script>
 </head>
 
 <body>
-    <!-- Mobile Access Denied Modal -->
-    <div class="mobile-block-overlay">
+    <div class="mobile-block-overlay" id="mobileBlockOverlay">
         <div class="mobile-block-card">
             <i class="fas fa-laptop"></i>
             <h2 data-translate="mobile_restricted">Desktop only</h2>
             <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
                 desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to
+            <button class="btn btn-primary" onclick="window.location.href='/'" data-translate="go_back">Back to
                 Home</button>
         </div>
     </div>
 
-    <div class="app">
-        <div class="shell">
-            <!-- SIDEBAR (identical to all-tickets) -->
-            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
-                <div class="brand">
-                    <div class="logo">
-                        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
-                            style="width: 32px; height: 32px;">
-                    </div>
-                    <div>
-                        <div class="title">AlliTrack</div>
-                        <div class="subtitle" data-translate="admin_dashboard">Admin Dashboard</div>
-                    </div>
-                </div>
-                <nav class="nav">
-                    <a href="/admin/index-admin.html" data-section="dashboard"><i class="fas fa-chart-line"></i> <span
-                            data-translate="dashboard">Dashboard</span></a>
-                    <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
-                    <a href="/admin/all-tickets.html" data-section="tickets"><i class="fas fa-ticket-alt"></i> <span
-                            data-translate="all_tickets">All Tickets</span></a>
-                    <a href="/admin/staff-management.html" class="active" data-section="users"><i
-                            class="fas fa-users"></i> <span data-translate="users_management">Staff
-                            Management</span></a>
-                    <a href="/admin/announcements.html" data-section="announcements"><i class="fas fa-bullhorn"></i>
-                        <span data-translate="announcements">Announcements</span></a>
-                    <div class="nav-section" data-translate="system_management">System Management</div>
-                    <a href="/admin/system-settings.html" data-section="system-settings"><i class="fas fa-cogs"></i>
-                        <span data-translate="system_settings">System Settings</span></a>
-                    <a href="/admin/system-analytics.html" data-section="analytics"><i class="fas fa-chart-bar"></i>
-                        <span data-translate="analytics">Analytics</span></a>
-                    <a href="/admin/system-logs.html" data-section="logs"><i class="fas fa-clipboard-list"></i> <span
-                            data-translate="system_logs">System Logs</span></a>
-                    <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
-                    <a href="/admin/preferences.html" data-section="preferences"><i class="fas fa-sliders-h"></i>
-                        <span data-translate="preferences">Preferences</span></a>
-                    <a href="/admin/profile-settings.html" data-section="profile-settings"><i
-                            class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile
-                            Settings</span></a>
-                </nav>
-                <div class="sidebar-footer">
-                    <div class="version">v1.2.0</div>
-                    <div>Business Alliance Inc.</div>
-                </div>
-            </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-            <!-- MAIN CONTENT -->
-            <main class="main">
-                <!-- Header with account dropdown (identical) -->
-                <header class="header">
-                    <div class="search" role="search" aria-label="Search Staff">
-                        <i class="fas fa-search" style="opacity:.6"></i>
-                        <input id="staffSearch" placeholder="Search staff by name, email..."
-                            data-translate-placeholder="search_staff" aria-label="Search staff" autocomplete="off" />
-                    </div>
-                    <div class="header-actions">
-                        <div style="text-align:right">
-                            <div id="userName" style="font-weight:700">Admin</div>
-                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">admin@allitrack.com</div>
-                        </div>
-                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div id="userAvatar" class="avatar">A</div>
-                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
-                        </div>
-                        <div class="account-menu" id="accountMenu">
-                            <div class="arrow"></div>
-                            <a href="/admin/profile-settings.html" data-translate="profile">Profile</a>
-                            <a href="/admin/preferences.html" data-translate="settings">Settings</a>
-                            <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
-                        </div>
-                    </div>
-                </header>
-
-                <!-- Staff Management Content -->
-                <div class="content">
-                    <!-- Page Header - WITH page-header class container (EXACTLY like all-tickets) -->
-                    <div class="page-header">
-                        <div class="header-content">
-                            <h1>
-                                <i class="fas fa-users" style="color:var(--accent);"></i>
-                                <span data-translate="staff_management">Staff Management</span>
-                            </h1>
-                            <p class="subtitle" data-translate="staff_management_description">Manage staff accounts,
-                                and permissions</p>
-                        </div>
-                    </div>
-
-                    <!-- Staff container – matches tickets-container size -->
-                    <div class="staff-container">
-                        <!-- Toolbar: filters + actions -->
-                        <div class="staff-toolbar">
-                            <div class="filters">
-                                <div class="filter-group">
-                                    <label for="statusFilter" class="filter-label"
-                                        data-translate="status">Status</label>
-                                    <select id="statusFilter" class="filter-select">
-                                        <option value="all" data-translate="all_status">All Status</option>
-                                        <option value="active" data-translate="active">Active</option>
-                                        <option value="inactive" data-translate="inactive">Inactive</option>
-                                        <option value="suspended" data-translate="suspended">Suspended</option>
-                                    </select>
-                                </div>
-                                <button class="btn btn-secondary" id="clearFiltersBtn">
-                                    <i class="fas fa-times"></i> <span data-translate="clear_filters">Clear
-                                        Filters</span>
-                                </button>
-                            </div>
-                            <div class="actions">
-                                <button class="btn btn-danger" id="deleteStaffBtn" style="display:none;">
-                                    <i class="fas fa-trash-alt"></i> <span data-translate="delete_selected">Delete
-                                        Selected</span>
-                                </button>
-                                <button class="btn btn-secondary" id="refreshStaffBtn">
-                                    <i class="fas fa-sync-alt"></i> <span data-translate="refresh">Refresh</span>
-                                </button>
-                                <button class="btn btn-primary" id="addStaffBtn">
-                                    <i class="fas fa-plus"></i> <span data-translate="add_staff">Add Staff</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Staff Table - exact sizing as all-tickets -->
-                        <div class="staff-table-container">
-                            <div class="table-responsive">
-                                <table class="staff-table" id="staffTable">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 120px; text-align: center; padding-left: 35px;">
-                                                <input type="checkbox" id="selectAllStaff" title="Select All">
-                                            </th>
-                                            <th data-translate="staff_id" style="width: 140px; padding-left: 35px;">
-                                                Technician ID</th>
-                                            <th data-translate="name">Name</th>
-                                            <th data-translate="email" style="width: 280px;">Email</th>
-                                            </th>
-                                            <th data-translate="status" style="width: 110px;">Status</th>
-                                            <th data-translate="actions" style="width: 160px; text-align: center;">
-                                                Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="staffTableBody">
-                                        <!-- JS population -->
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!-- Pagination -->
-                            <div class="pagination-container">
-                                <div class="pagination-info" id="paginationInfo"></div>
-                                <div class="pagination-controls">
-                                    <button class="pagination-btn" id="firstPageBtn" title="First Page"><i
-                                            class="fas fa-angle-double-left"></i></button>
-                                    <button class="pagination-btn" id="prevPageBtn" title="Previous Page"><i
-                                            class="fas fa-angle-left"></i></button>
-                                    <div class="pagination-numbers" id="paginationNumbers"></div>
-                                    <button class="pagination-btn" id="nextPageBtn" title="Next Page"><i
-                                            class="fas fa-angle-right"></i></button>
-                                    <button class="pagination-btn" id="lastPageBtn" title="Last Page"><i
-                                            class="fas fa-angle-double-right"></i></button>
-                                </div>
-                                <div class="pagination-page-size">
-                                    <label for="pageSizeSelect" data-translate="items_per_page">Items per page:</label>
-                                    <select id="pageSizeSelect" class="page-size-select">
-                                        <option value="5">5</option>
-                                        <option value="10" selected>10</option>
-                                        <option value="20">20</option>
-                                        <option value="50">50</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Footer -->
-                <footer class="site-footer">
-                    <div>&copy; 2025 Business Alliance Inc.</div>
-                    <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
-                </footer>
-            </main>
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main Sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo"
+                    onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-bolt\'></i>'">
+            </div>
+            <div class="brand-text">
+                <div class="name">AlliTrack</div>
+                <div class="sub">Admin Console</div>
+            </div>
         </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-group-label">Overview</div>
+            <a href="/admin/index-admin.html" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
+
+            <div class="nav-group-label">Ticket Management</div>
+            <a href="/admin/all-tickets.html" class="nav-item" data-section="tickets"><i class="fas fa-ticket-alt"></i>
+                All Tickets</a>
+            <a href="/admin/staff-management.html" class="nav-item active" data-section="users"><i
+                    class="fas fa-users"></i>
+                Staff Management</a>
+            <a href="/admin/announcements.html" class="nav-item" data-section="announcements"><i
+                    class="fas fa-bullhorn"></i> Announcements</a>
+
+            <div class="nav-group-label">System</div>
+            <a href="/admin/system-settings.html" class="nav-item" data-section="system-settings"><i
+                    class="fas fa-cogs"></i> System Settings</a>
+            <a href="/admin/system-analytics.html" class="nav-item" data-section="analytics"><i
+                    class="fas fa-chart-bar"></i> Analytics</a>
+            <a href="/admin/system-logs.html" class="nav-item" data-section="logs"><i class="fas fa-clipboard-list"></i>
+                System Logs</a>
+
+            <div class="nav-group-label">Admin Tools</div>
+            <a href="/admin/preferences.html" class="nav-item" data-section="preferences"><i
+                    class="fas fa-sliders-h"></i> Preferences</a>
+            <a href="/admin/profile-settings.html" class="nav-item" data-section="profile-settings"><i
+                    class="fas fa-user-cog"></i> Profile Settings</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div>v1.2.0 &mdash; Business Alliance Inc.</div>
+            <div style="margin-top:3px">admin@allitrack.com</div>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle" aria-label="Open sidebar" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span>Admin</span>
+                <span class="crumb-sep"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i></span>
+                <span class="crumb-current" data-translate="users_management">Staff Management</span>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-search" role="search" aria-label="Search Staff">
+                    <i class="fas fa-search"></i>
+                    <input id="staffSearch" placeholder="Search staff by name, email..."
+                        data-translate-placeholder="search_staff" aria-label="Search staff" autocomplete="off" />
+                </div>
+
+                <div class="account-wrap">
+                    <button class="account-btn" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar-btn" id="userAvatar">AD</div>
+                        <div class="account-info">
+                            <div class="a-name" id="userName">Admin</div>
+                            <div class="a-email" id="userEmail">admin@allitrack.com</div>
+                        </div>
+                        <i class="fas fa-chevron-down account-chevron"></i>
+                    </button>
+                    <div class="account-menu" id="accountMenu">
+                        <div class="account-menu-header">
+                            <div class="amh-name" id="menuUserName">Admin</div>
+                            <div class="amh-email" id="menuUserEmail">admin@allitrack.com</div>
+                        </div>
+                        <a href="/admin/profile-settings.html" data-translate="profile"><i class="fas fa-user"></i>
+                            Profile</a>
+                        <a href="/admin/preferences.html" data-translate="settings"><i class="fas fa-cog"></i>
+                            Settings</a>
+                        <a href="#" id="logoutBtn" class="logout" data-translate="logout"><i
+                                class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <!-- Page Header - WITH page-header class container (EXACTLY like all-tickets) -->
+            <div class="page-header">
+                <div class="page-title-group">
+                    <div class="eyebrow"><i class="fas fa-users"></i> Admin Console</div>
+                    <h1 data-translate="staff_management">Staff Management</h1>
+                    <p class="desc" data-translate="staff_management_description">Manage staff accounts, and permissions
+                    </p>
+                </div>
+            </div>
+
+            <!-- Staff container – matches tickets-container size -->
+            <div class="staff-container card">
+                <!-- Toolbar: filters + actions -->
+                <div class="staff-toolbar">
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label for="statusFilter" class="filter-label" data-translate="status">Status</label>
+                            <select id="statusFilter" class="filter-select">
+                                <option value="all" data-translate="all_status">All Status</option>
+                                <option value="active" data-translate="active">Active</option>
+                                <option value="inactive" data-translate="inactive">Inactive</option>
+                                <option value="suspended" data-translate="suspended">Suspended</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" id="clearFiltersBtn">
+                            <i class="fas fa-times"></i> <span data-translate="clear_filters">Clear
+                                Filters</span>
+                        </button>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-danger" id="deleteStaffBtn" style="display:none;">
+                            <i class="fas fa-trash-alt"></i> <span data-translate="delete_selected">Delete
+                                Selected</span>
+                        </button>
+                        <button class="btn btn-secondary" id="refreshStaffBtn">
+                            <i class="fas fa-sync-alt"></i> <span data-translate="refresh">Refresh</span>
+                        </button>
+                        <button class="btn btn-primary" id="addStaffBtn">
+                            <i class="fas fa-plus"></i> <span data-translate="add_staff">Add Staff</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Staff Table - exact sizing as all-tickets -->
+                <div class="staff-table-container">
+                    <div class="table-responsive">
+                        <table class="staff-table" id="staffTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 120px; text-align: center; padding-left: 35px;">
+                                        <input type="checkbox" id="selectAllStaff" title="Select All">
+                                    </th>
+                                    <th data-translate="staff_id" style="width: 140px; padding-left: 35px;">
+                                        Technician ID</th>
+                                    <th data-translate="name">Name</th>
+                                    <th data-translate="email" style="width: 280px;">Email</th>
+                                    </th>
+                                    <th data-translate="status" style="width: 110px;">Status</th>
+                                    <th data-translate="actions" style="width: 160px; text-align: center;">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staffTableBody">
+                                <!-- JS population -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="pagination-container">
+                        <div class="pagination-info" id="paginationInfo"></div>
+                        <div class="pagination-controls">
+                            <button class="pagination-btn" id="firstPageBtn" title="First Page"><i
+                                    class="fas fa-angle-double-left"></i></button>
+                            <button class="pagination-btn" id="prevPageBtn" title="Previous Page"><i
+                                    class="fas fa-angle-left"></i></button>
+                            <div class="pagination-numbers" id="paginationNumbers"></div>
+                            <button class="pagination-btn" id="nextPageBtn" title="Next Page"><i
+                                    class="fas fa-angle-right"></i></button>
+                            <button class="pagination-btn" id="lastPageBtn" title="Last Page"><i
+                                    class="fas fa-angle-double-right"></i></button>
+                        </div>
+                        <div class="pagination-page-size">
+                            <label for="pageSizeSelect" data-translate="items_per_page">Items per page:</label>
+                            <select id="pageSizeSelect" class="page-size-select">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            <div>&copy; 2025 Business Alliance Inc.</div>
+            <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
+        </footer>
     </div>
 
     <!-- Add/Edit Staff Modal -->
@@ -947,12 +963,6 @@
                         }
                     }
                 });
-                // Logout
-                document.getElementById('logoutBtn')?.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    localStorage.clear();
-                    window.location.href = '/';
-                });
             }
 
             // ---------- ACCOUNT DROPDOWN (copied from all-tickets) ----------
@@ -974,6 +984,36 @@
                 menu.querySelectorAll("a").forEach(a => a.addEventListener("click", () => menu.classList.remove("show")));
             }
 
+            // ---------- MENU TOGGLE SETUP ----------
+            function setupMenuToggle() {
+                const toggle = document.getElementById('menuToggle');
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                if (!toggle || !sidebar || !overlay) return;
+
+                const open = () => {
+                    sidebar.classList.add('open');
+                    overlay.classList.add('active');
+                    toggle.setAttribute('aria-expanded', 'true');
+                    toggle.innerHTML = '<i class="fas fa-times"></i>';
+                };
+                const close = () => {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    toggle.innerHTML = '<i class="fas fa-bars"></i>';
+                };
+
+                toggle.addEventListener('click', e => {
+                    e.stopPropagation();
+                    sidebar.classList.contains('open') ? close() : open();
+                });
+                overlay.addEventListener('click', close);
+                document.addEventListener('keydown', e => {
+                    if (e.key === 'Escape' && sidebar.classList.contains('open')) close();
+                });
+            }
+
             // ---------- INITIALIZE ----------
             document.addEventListener('DOMContentLoaded', function () {
                 // Inject toast
@@ -982,7 +1022,6 @@
                     t.id = 'toast'; t.className = 'toast';
                     document.body.appendChild(t);
                 }
-                if (window.userDataManager) window.userDataManager.initializeUserDisplay();
                 if (window.preferencesManager) {
                     window.preferencesManager.initialize();
                     const lang = window.preferencesManager.getCurrentLanguage() || 'en';
@@ -991,6 +1030,7 @@
 
                 setupAccountDropdown();
                 setupEventListeners();
+                setupMenuToggle();
 
                 // THIS IS THE FIX: We call fetchRealStaff() INSIDE the bubble!
                 fetchRealStaff();

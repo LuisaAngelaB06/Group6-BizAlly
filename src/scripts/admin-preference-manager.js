@@ -593,7 +593,7 @@ class PreferencesManager {
         };
 
         // Update ALL navigation links
-        const navLinks = document.querySelectorAll('.nav a[data-section]');
+        const navLinks = document.querySelectorAll('.sidebar-nav a[data-section], .nav a[data-section], .nav-item[data-section]');
         console.log(`Found ${navLinks.length} navigation links`);
         
         navLinks.forEach(element => {
@@ -612,7 +612,7 @@ class PreferencesManager {
         });
 
         // Update section headers
-        const navSections = document.querySelectorAll('.nav-section');
+        const navSections = document.querySelectorAll('.nav-group-label, .nav-section');
         console.log(`Found ${navSections.length} section headers`);
         
         if (navSections[0] && lang.ticketManagement) {

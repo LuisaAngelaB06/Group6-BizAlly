@@ -7,248 +7,274 @@
     <title data-translate="system_settings_page_title">System Settings - AlliTrack Admin</title>
     <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
     <link rel="stylesheet" href="../../styles/admin page/system-settings.css" />
     <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
-    <script src="../../scripts/mobile-restriction.js"></script>
-    <script src="../../scripts/admin-preference-manager.js"></script>
-    <script src="../../scripts/admin-data-manager.js"></script>
+    <script src="../../scripts/mobile-restriction.js" defer></script>
+    <script src="../../scripts/admin-preference-manager.js" defer></script>
+    <script src="../../scripts/admin-data-manager.js" defer></script>
 </head>
 
 <body>
-    <div class="mobile-block-overlay">
+    <div class="mobile-block-overlay" id="mobileBlockOverlay">
         <div class="mobile-block-card">
             <i class="fas fa-laptop"></i>
             <h2 data-translate="mobile_restricted">Desktop only</h2>
-            <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to Home</button>
+            <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.</p>
+            <button class="btn btn-primary" onclick="window.location.href='/'" data-translate="go_back">Back to
+                Home</button>
         </div>
     </div>
 
-    <div class="app">
-        <div class="shell">
-            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
-                <div class="brand">
-                    <div class="logo">
-                        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img" style="width: 32px; height: 32px;">
-                    </div>
-                    <div>
-                        <div class="title">AlliTrack</div>
-                        <div class="subtitle" data-translate="admin_dashboard">Admin Dashboard</div>
-                    </div>
-                </div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-                <nav class="nav">
-                    <a href="/admin/index-admin.html" data-section="dashboard"><i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span></a>
-
-                    <div class="nav-section" data-translate="ticket_management">Ticket Management</div>
-                    <a href="/admin/all-tickets.html" data-section="tickets"><i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span></a>
-                    <a href="/admin/staff-management.html" data-section="users"><i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span></a>
-                    <a href="/admin/announcements.html" data-section="announcements"><i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span></a>
-
-                    <div class="nav-section" data-translate="system_management">System Management</div>
-                    <a href="/admin/system-settings.html" class="active" data-section="system-settings"><i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span></a>
-                    <a href="/admin/system-analytics.html" data-section="analytics"><i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span></a>
-                    <a href="/admin/system-logs.html" data-section="logs"><i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span></a>
-
-                    <div class="nav-section" data-translate="admin_tools">Admin Tools</div>
-                    <a href="/admin/preferences.html" data-section="preferences"><i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span></a>
-                    <a href="/admin/profile-settings.html" data-section="profile-settings"><i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span></a>
-                </nav>
-
-                <div class="sidebar-footer">
-                    <div class="version">v1.2.0</div>
-                    <div>Business Alliance Inc.</div>
-                </div>
-            </aside>
-
-            <main class="main">
-                <header class="header">
-                    <div class="search" role="search" aria-label="Search Tickets">
-                        <i class="fas fa-search" style="opacity:.6"></i>
-                        <input id="q" name="allitrackSearchQuery" value="" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Search tickets, users, IDs..." data-translate-placeholder="search_tickets" aria-label="Search tickets, users, IDs" />
-                    </div>
-
-                    <div class="header-actions">
-                        <div style="text-align:right">
-                            <div id="userName" style="font-weight:700">Admin</div>
-                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">admin@allitrack.com</div>
-                        </div>
-                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div id="userAvatar" class="avatar">A</div>
-                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
-                        </div>
-                        <div class="account-menu" id="accountMenu">
-                            <div class="arrow"></div>
-                            <a href="/admin/profile-settings.html" data-translate="profile">Profile</a>
-                            <a href="/admin/preferences.html" data-translate="settings">Settings</a>
-                            <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
-                        </div>
-                    </div>
-                </header>
-
-                <div class="content">
-                    <div class="settings-content">
-                        <div class="settings-header-container">
-                            <div class="settings-header">
-                                <h1><i class="fas fa-cogs"></i> <span data-translate="system_settings_title">System Settings</span></h1>
-                                <p class="settings-subtitle" data-translate="system_settings_description">Configure and manage your AlliTrack system settings, preferences, and integrations.</p>
-                            </div>
-                        </div>
-
-                        <form class="settings-container" id="systemSettingsForm">
-                            <div class="settings-section">
-                                <div class="section-header">
-                                    <div class="section-icon"><i class="fas fa-sliders-h"></i></div>
-                                    <div>
-                                        <h2 class="section-title" data-translate="general_settings">General Settings</h2>
-                                        <p class="section-description" data-translate="general_settings_description">Configure basic system preferences and behavior</p>
-                                    </div>
-                                </div>
-
-                                <div class="settings-form">
-                                    <div class="preference-item">
-                                        <div class="preference-content">
-                                            <h3 data-translate="enable_maintenance_mode">Enable Maintenance Mode</h3>
-                                            <p data-translate="maintenance_mode_description">Temporarily disable system access for non-admin users</p>
-                                        </div>
-                                        <label class="switch"><input type="checkbox" id="maintenanceMode"><span class="slider"></span></label>
-                                    </div>
-
-                                    <div class="preference-item">
-                                        <div class="preference-content">
-                                            <h3 data-translate="enable_two_factor">Enable Two-Factor Authentication</h3>
-                                            <p data-translate="two_factor_description">Require 2FA for all admin accounts</p>
-                                        </div>
-                                        <label class="switch"><input type="checkbox" id="twoFactorAuth" checked><span class="slider"></span></label>
-                                    </div>
-
-                                    <div class="preference-item">
-                                        <div class="preference-content">
-                                            <h3 data-translate="enable_email_notifications">Enable Email Notifications</h3>
-                                            <p data-translate="email_notifications_description">Send email notifications for system events</p>
-                                        </div>
-                                        <label class="switch"><input type="checkbox" id="emailNotifications" checked><span class="slider"></span></label>
-                                    </div>
-
-                                    <div class="preference-item">
-                                        <div class="preference-content">
-                                            <h3 data-translate="enable_auto_backup">Enable Automatic Backups</h3>
-                                            <p data-translate="auto_backup_description">Automatically backup system data daily</p>
-                                        </div>
-                                        <label class="switch"><input type="checkbox" id="autoBackup" checked><span class="slider"></span></label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="settings-section">
-                                <div class="section-header">
-                                    <div class="section-icon"><i class="fas fa-shield-alt"></i></div>
-                                    <div>
-                                        <h2 class="section-title" data-translate="security_settings">Security Settings</h2>
-                                        <p class="section-description" data-translate="security_settings_description">Configure system security and access controls</p>
-                                    </div>
-                                </div>
-
-                                <div class="settings-form">
-                                    <div class="form-grid">
-                                        <div class="form-group">
-                                            <label class="form-label" for="sessionTimeout"><i class="fas fa-clock"></i> <span data-translate="session_timeout">Session Timeout</span> <span class="required">*</span></label>
-                                            <select id="sessionTimeout" class="form-input">
-                                                <option value="15">15 minutes</option>
-                                                <option value="30">30 minutes</option>
-                                                <option value="60" selected>1 hour</option>
-                                                <option value="120">2 hours</option>
-                                                <option value="240">4 hours</option>
-                                            </select>
-                                            <div class="form-hint" data-translate="session_timeout_hint">Inactivity timeout before auto-logout</div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label class="form-label" for="passwordPolicy"><i class="fas fa-key"></i> <span data-translate="password_policy">Password Policy</span> <span class="required">*</span></label>
-                                            <select id="passwordPolicy" class="form-input">
-                                                <option value="basic">Basic (6+ characters)</option>
-                                                <option value="medium" selected>Medium (8+ chars, mixed case)</option>
-                                                <option value="strong">Strong (12+ chars, special chars)</option>
-                                                <option value="strict">Strict (16+ chars, no repeats)</option>
-                                            </select>
-                                            <div class="form-hint" data-translate="password_policy_hint">Password requirements for all users</div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label class="form-label" for="maxLoginAttempts"><i class="fas fa-ban"></i> <span data-translate="max_login_attempts">Max Login Attempts</span> <span class="required">*</span></label>
-                                            <select id="maxLoginAttempts" class="form-input">
-                                                <option value="3">3 attempts</option>
-                                                <option value="5" selected>5 attempts</option>
-                                                <option value="10">10 attempts</option>
-                                                <option value="unlimited">Unlimited</option>
-                                            </select>
-                                            <div class="form-hint" data-translate="max_login_attempts_hint">Before account lockout</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="settings-section danger-zone">
-                                <div class="section-header">
-                                    <div class="section-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                                    <div>
-                                        <h2 class="section-title" data-translate="danger_zone">Danger Zone</h2>
-                                        <p class="section-description" data-translate="danger_zone_description">These actions are irreversible. Proceed with caution.</p>
-                                    </div>
-                                </div>
-
-                                <div class="danger-actions">
-                                    <div class="danger-action">
-                                        <div class="danger-action-content">
-                                            <h3><i class="fas fa-trash"></i> <span data-translate="clear_all_logs">Clear All System Logs</span></h3>
-                                            <p data-translate="clear_all_logs_description">Permanently delete all system logs and audit trails</p>
-                                        </div>
-                                        <button type="button" class="btn btn-danger" onclick="showModal('clearLogsModal')" data-translate="clear_logs">Clear Logs</button>
-                                    </div>
-
-                                    <div class="danger-action">
-                                        <div class="danger-action-content">
-                                            <h3><i class="fas fa-database"></i> <span data-translate="reset_database">Reset Database to Defaults</span></h3>
-                                            <p data-translate="reset_database_description">Reset all data to factory defaults (cannot be undone)</p>
-                                        </div>
-                                        <button type="button" class="btn btn-danger" onclick="showModal('resetDatabaseModal')" data-translate="reset_database">Reset Database</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" onclick="requestAdminPassword('discardSettings')"><i class="fas fa-times"></i> <span data-translate="discard_changes">Discard Changes</span></button>
-                                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> <span data-translate="save_settings">Save Settings</span></button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <footer class="site-footer">
-                    <div>&copy; 2025 Business Alliance Inc.</div>
-                    <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
-                </footer>
-            </main>
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main Sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo"
+                    onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-bolt\'></i>'">
+            </div>
+            <div class="brand-text">
+                <div class="name">AlliTrack</div>
+                <div class="sub">Admin Console</div>
+            </div>
         </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-group-label">Overview</div>
+            <a href="/admin/index-admin.html" class="nav-item" data-section="dashboard"><i
+                    class="fas fa-chart-line"></i> Dashboard</a>
+
+            <div class="nav-group-label">Ticket Management</div>
+            <a href="/admin/all-tickets.html" class="nav-item" data-section="tickets"><i class="fas fa-ticket-alt"></i>
+                All Tickets</a>
+            <a href="/admin/staff-management.html" class="nav-item" data-section="users"><i class="fas fa-users"></i>
+                Staff Management</a>
+            <a href="/admin/announcements.html" class="nav-item" data-section="announcements"><i
+                    class="fas fa-bullhorn"></i> Announcements</a>
+
+            <div class="nav-group-label">System</div>
+            <a href="/admin/system-settings.html" class="nav-item active" data-section="system-settings"><i
+                    class="fas fa-cogs"></i> System Settings</a>
+            <a href="/admin/system-analytics.html" class="nav-item" data-section="analytics"><i
+                    class="fas fa-chart-bar"></i> Analytics</a>
+            <a href="/admin/system-logs.html" class="nav-item" data-section="logs"><i class="fas fa-clipboard-list"></i>
+                System Logs</a>
+
+            <div class="nav-group-label">Admin Tools</div>
+            <a href="/admin/preferences.html" class="nav-item" data-section="preferences"><i
+                    class="fas fa-sliders-h"></i> Preferences</a>
+            <a href="/admin/profile-settings.html" class="nav-item" data-section="profile-settings"><i
+                    class="fas fa-user-cog"></i> Profile Settings</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div>v1.2.0 &mdash; Business Alliance Inc.</div>
+            <div style="margin-top:3px">admin@allitrack.com</div>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle" aria-label="Open sidebar" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span>Admin</span>
+                <span class="crumb-sep"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i></span>
+                <span class="crumb-current" data-translate="system_settings">System Settings</span>
+            </div>
+            <div class="topbar-right">
+                <div class="account-wrap">
+                    <button class="account-btn" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar-btn" id="userAvatar">A</div>
+                        <div class="account-info">
+                            <div class="a-name" id="userName">Admin</div>
+                            <div class="a-email" id="userEmail">admin@allitrack.com</div>
+                        </div>
+                        <i class="fas fa-chevron-down account-chevron"></i>
+                    </button>
+                    <div class="account-menu" id="accountMenu">
+                        <div class="account-menu-header">
+                            <div class="amh-name" id="menuUserName">Admin</div>
+                            <div class="amh-email" id="menuUserEmail">admin@allitrack.com</div>
+                        </div>
+                        <a href="/admin/profile-settings.html" data-translate="profile"><i class="fas fa-user"></i>
+                            Profile</a>
+                        <a href="/admin/preferences.html" data-translate="settings"><i class="fas fa-cog"></i>
+                            Settings</a>
+                        <a href="#" id="logoutBtn" class="logout" data-translate="logout"><i
+                                class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="settings-content">
+                <div class="page-header">
+                    <div class="page-title-group">
+                        <div class="eyebrow"><i class="fas fa-cogs"></i> Admin Console</div>
+                        <h1 data-translate="system_settings_title">System Settings</h1>
+                        <p class="desc" data-translate="system_settings_description">Configure and manage your AlliTrack
+                            system settings, preferences, and integrations.</p>
+                    </div>
+                </div>
+
+                <form class="settings-container" id="systemSettingsForm">
+                    <div class="settings-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fas fa-sliders-h"></i></div>
+                            <div>
+                                <h2 class="section-title" data-translate="general_settings">General Settings</h2>
+                                <p class="section-description" data-translate="general_settings_description">Configure
+                                    basic system preferences and behavior</p>
+                            </div>
+                        </div>
+                        <div class="settings-form">
+                            <div class="preference-item">
+                                <div class="preference-content">
+                                    <h3 data-translate="enable_maintenance_mode">Enable Maintenance Mode</h3>
+                                    <p data-translate="maintenance_mode_description">Temporarily disable system access
+                                        for non-admin users</p>
+                                </div>
+                                <label class="switch"><input id="maintenanceMode" type="checkbox" /><span
+                                        class="slider"></span></label>
+                            </div>
+                            <div class="preference-item">
+                                <div class="preference-content">
+                                    <h3 data-translate="enable_two_factor">Enable Two-Factor Authentication</h3>
+                                    <p data-translate="two_factor_description">Require 2FA for all admin accounts</p>
+                                </div>
+                                <label class="switch"><input checked="" id="twoFactorAuth" type="checkbox" /><span
+                                        class="slider"></span></label>
+                            </div>
+                            <div class="preference-item">
+                                <div class="preference-content">
+                                    <h3 data-translate="enable_email_notifications">Enable Email Notifications</h3>
+                                    <p data-translate="email_notifications_description">Send email notifications for
+                                        system events</p>
+                                </div>
+                                <label class="switch"><input checked="" id="emailNotifications" type="checkbox" /><span
+                                        class="slider"></span></label>
+                            </div>
+                            <div class="preference-item">
+                                <div class="preference-content">
+                                    <h3 data-translate="enable_auto_backup">Enable Automatic Backups</h3>
+                                    <p data-translate="auto_backup_description">Automatically backup system data daily
+                                    </p>
+                                </div>
+                                <label class="switch"><input checked="" id="autoBackup" type="checkbox" /><span
+                                        class="slider"></span></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-section">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div>
+                                <h2 class="section-title" data-translate="security_settings">Security Settings</h2>
+                                <p class="section-description" data-translate="security_settings_description">Configure
+                                    system security and access controls</p>
+                            </div>
+                        </div>
+                        <div class="settings-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="sessionTimeout"><i class="fas fa-clock"></i> <span
+                                            data-translate="session_timeout">Session Timeout</span> <span
+                                            class="required">*</span></label>
+                                    <select class="form-input" id="sessionTimeout">
+                                        <option value="15">15 minutes</option>
+                                        <option value="30">30 minutes</option>
+                                        <option selected="" value="60">1 hour</option>
+                                        <option value="120">2 hours</option>
+                                        <option value="240">4 hours</option>
+                                    </select>
+                                    <div class="form-hint" data-translate="session_timeout_hint">Inactivity timeout
+                                        before auto-logout</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-section danger-zone">
+                        <div class="section-header">
+                            <div class="section-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div>
+                                <h2 class="section-title" data-translate="danger_zone">Danger Zone</h2>
+                                <p class="section-description" data-translate="danger_zone_description">These actions
+                                    are irreversible. Proceed with caution.</p>
+                            </div>
+                        </div>
+                        <div class="danger-actions">
+                            <div class="danger-action">
+                                <div class="danger-action-content">
+                                    <h3><i class="fas fa-trash"></i> <span data-translate="clear_all_logs">Clear All
+                                            System Logs</span></h3>
+                                    <p data-translate="clear_all_logs_description">Permanently delete all system logs
+                                        and audit trails</p>
+                                </div>
+                                <button class="btn btn-danger" data-translate="clear_logs"
+                                    onclick="showModal('clearLogsModal')" type="button">Clear Logs</button>
+                            </div>
+                            <div class="danger-action">
+                                <div class="danger-action-content">
+                                    <h3><i class="fas fa-database"></i> <span data-translate="reset_database">Reset
+                                            Database to Defaults</span></h3>
+                                    <p data-translate="reset_database_description">Reset all data to factory defaults
+                                        (cannot be undone)</p>
+                                </div>
+                                <button class="btn btn-danger" data-translate="reset_database"
+                                    onclick="showModal('resetDatabaseModal')" type="button">Reset Database</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="requestAdminPassword('discardSettings')"
+                            type="button"><i class="fas fa-times"></i> <span data-translate="discard_changes">Discard
+                                Changes</span></button>
+                        <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> <span
+                                data-translate="save_settings">Save Settings</span></button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            <div>&copy; 2025 Business Alliance Inc.</div>
+            <div data-translate="admin_dashboard_template">AlliTrack Admin Dashboard</div>
+        </footer>
     </div>
 
     <div class="modal" id="clearLogsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i> <span data-translate="confirm_clear_logs">Confirm Clear Logs</span></h3>
-                <button class="modal-close" onclick="closeModal('clearLogsModal')">&times;</button>
+                <h3><i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i> <span
+                        data-translate="confirm_clear_logs">Confirm Clear Logs</span></h3>
+                <button class="modal-close" onclick="closeModal('clearLogsModal')">×</button>
             </div>
             <div class="modal-body">
-                <p data-translate="clear_logs_warning">Are you sure you want to clear all system logs? This action cannot be undone.</p>
+                <p data-translate="clear_logs_warning">Are you sure you want to clear all system logs? This action
+                    cannot be undone.</p>
                 <div class="form-group" style="margin-top: 20px;">
-                    <label class="form-label" for="clearLogsPassword">Admin Password <span class="required">*</span></label>
-                    <input type="password" id="clearLogsPassword" class="form-input" placeholder="Enter your account password" autocomplete="current-password" />
+                    <label class="form-label" for="clearLogsPassword">Admin Password <span
+                            class="required">*</span></label>
+                    <input autocomplete="current-password" class="form-input" id="clearLogsPassword"
+                        placeholder="Enter your account password" type="password">
+                    </input>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('clearLogsModal')" data-translate="cancel">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="confirmClearSystemLogs()" data-translate="clear_logs">Clear Logs</button>
+                <button class="btn btn-secondary" data-translate="cancel" onclick="closeModal('clearLogsModal')"
+                    type="button">Cancel</button>
+                <button class="btn btn-danger" data-translate="clear_logs" onclick="confirmClearSystemLogs()"
+                    type="button">Clear Logs</button>
             </div>
         </div>
     </div>
@@ -256,19 +282,26 @@
     <div class="modal" id="resetDatabaseModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i> <span data-translate="confirm_reset_database">Confirm Database Reset</span></h3>
-                <button class="modal-close" onclick="closeModal('resetDatabaseModal')">&times;</button>
+                <h3><i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i> <span
+                        data-translate="confirm_reset_database">Confirm Database Reset</span></h3>
+                <button class="modal-close" onclick="closeModal('resetDatabaseModal')">×</button>
             </div>
             <div class="modal-body">
-                <p data-translate="reset_database_warning"><strong>WARNING:</strong> This will reset the database to factory defaults. This action cannot be undone.</p>
+                <p data-translate="reset_database_warning"><strong>WARNING:</strong> This will reset the database to
+                    factory defaults. This action cannot be undone.</p>
                 <div class="form-group" style="margin-top: 20px;">
-                    <label class="form-label" for="resetDatabasePassword">Admin Password <span class="required">*</span></label>
-                    <input type="password" id="resetDatabasePassword" class="form-input" placeholder="Enter your account password" autocomplete="current-password" />
+                    <label class="form-label" for="resetDatabasePassword">Admin Password <span
+                            class="required">*</span></label>
+                    <input autocomplete="current-password" class="form-input" id="resetDatabasePassword"
+                        placeholder="Enter your account password" type="password">
+                    </input>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeModal('resetDatabaseModal')" data-translate="cancel">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="confirmResetDatabase()" data-translate="reset_database">Reset Database</button>
+                <button class="btn btn-secondary" data-translate="cancel" onclick="closeModal('resetDatabaseModal')"
+                    type="button">Cancel</button>
+                <button class="btn btn-danger" data-translate="reset_database" onclick="confirmResetDatabase()"
+                    type="button">Reset Database</button>
             </div>
         </div>
     </div>
@@ -277,21 +310,55 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fas fa-lock" style="color: #2563eb;"></i> Confirm Admin Password</h3>
-                <button class="modal-close" onclick="closeAdminPasswordModal()">&times;</button>
+                <button class="modal-close" onclick="closeAdminPasswordModal()">×</button>
             </div>
             <div class="modal-body">
                 <p id="adminPasswordMessage">Please type your account password to continue.</p>
                 <div class="form-group" style="margin-top: 20px;">
-                    <label class="form-label" for="adminActionPassword">Admin Password <span class="required">*</span></label>
-                    <input type="password" id="adminActionPassword" class="form-input" placeholder="Enter your account password" autocomplete="current-password" />
+                    <label class="form-label" for="adminActionPassword">Admin Password <span
+                            class="required">*</span></label>
+                    <input autocomplete="current-password" class="form-input" id="adminActionPassword"
+                        placeholder="Enter your account password" type="password">
+                    </input>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeAdminPasswordModal()">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="confirmAdminPasswordAction()">Continue</button>
+                <button class="btn btn-secondary" onclick="closeAdminPasswordModal()" type="button">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmAdminPasswordAction()" type="button">Continue</button>
             </div>
         </div>
     </div>
+
+
+    <script>
+        function setupMenuToggle() {
+            const toggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (!toggle || !sidebar || !overlay) return;
+            const open = () => {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+                toggle.setAttribute('aria-expanded', 'true');
+                toggle.innerHTML = '<i class="fas fa-times"></i>';
+            };
+            const close = () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.innerHTML = '<i class="fas fa-bars"></i>';
+            };
+            toggle.addEventListener('click', (event) => {
+                event.stopPropagation();
+                sidebar.classList.contains('open') ? close() : open();
+            });
+            overlay.addEventListener('click', close);
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && sidebar.classList.contains('open')) close();
+            });
+        }
+        document.addEventListener('DOMContentLoaded', setupMenuToggle);
+    </script>
 
     <script>
         const ADMIN_PASSWORD_VERIFY_ENDPOINT = '/api/admin/verify-password';
@@ -305,7 +372,6 @@
                 system_settings_page_title: 'System Settings - AlliTrack Admin',
                 system_settings_title: 'System Settings',
                 system_settings_description: 'Configure and manage your AlliTrack system settings, preferences, and integrations.',
-                search_tickets: 'Search tickets, users, IDs...',
                 admin_dashboard: 'Admin Dashboard',
                 dashboard: 'Dashboard',
                 ticket_management: 'Ticket Management',
@@ -336,10 +402,6 @@
                 security_settings_description: 'Configure system security and access controls',
                 session_timeout: 'Session Timeout',
                 session_timeout_hint: 'Inactivity timeout before auto-logout',
-                password_policy: 'Password Policy',
-                password_policy_hint: 'Password requirements for all users',
-                max_login_attempts: 'Max Login Attempts',
-                max_login_attempts_hint: 'Before account lockout',
                 danger_zone: 'Danger Zone',
                 danger_zone_description: 'These actions are irreversible. Proceed with caution.',
                 clear_all_logs: 'Clear All System Logs',
@@ -363,7 +425,6 @@
                 system_settings_page_title: 'Mga Setting ng Sistema - AlliTrack Admin',
                 system_settings_title: 'Mga Setting ng Sistema',
                 system_settings_description: 'I-configure at pamahalaan ang settings ng AlliTrack system.',
-                search_tickets: 'Maghanap...',
                 admin_dashboard: 'Admin Dashboard',
                 dashboard: 'Dashboard',
                 ticket_management: 'Ticket Management',
@@ -394,10 +455,6 @@
                 security_settings_description: 'I-configure ang system security at access controls',
                 session_timeout: 'Session Timeout',
                 session_timeout_hint: 'Auto-logout kapag inactive',
-                password_policy: 'Password Policy',
-                password_policy_hint: 'Password requirements para sa users',
-                max_login_attempts: 'Max Login Attempts',
-                max_login_attempts_hint: 'Bago ma-lock ang account',
                 danger_zone: 'Danger Zone',
                 danger_zone_description: 'Hindi na mababawi ang actions na ito. Mag-ingat.',
                 clear_all_logs: 'Burahin ang Lahat ng System Logs',
@@ -419,24 +476,22 @@
         document.addEventListener('DOMContentLoaded', () => {
             createToast();
             keepSearchBarEmpty();
-            initializeUserDisplay();
             initializePreferences();
             loadSystemSettings();
             function autoSaveToggles() {
-    const toggleIds = ['maintenanceMode', 'twoFactorAuth', 'emailNotifications', 'autoBackup'];
-    
-    toggleIds.forEach(id => {
-        document.getElementById(id).addEventListener('change', function() {
-            const savedSettings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
-            savedSettings[id] = this.checked;
-            localStorage.setItem('systemSettings', JSON.stringify(savedSettings));
-            showToast(`Setting saved.`, 'success');
-        });
-    });
-}
+                const toggleIds = ['maintenanceMode', 'twoFactorAuth', 'emailNotifications', 'autoBackup'];
+
+                toggleIds.forEach(id => {
+                    document.getElementById(id).addEventListener('change', function () {
+                        const savedSettings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
+                        savedSettings[id] = this.checked;
+                        localStorage.setItem('systemSettings', JSON.stringify(savedSettings));
+                        showToast(`Setting saved.`, 'success');
+                    });
+                });
+            }
             autoSaveToggles();
             initForm();
-            setupLogout();
             setupAccountDropdown();
             initModals();
         });
@@ -457,20 +512,6 @@
             setTimeout(() => { searchInput.value = ''; }, 100);
             setTimeout(() => { searchInput.value = ''; }, 500);
         }
-
-        function initializeUserDisplay() {
-            if (!window.userDataManager) return;
-            window.userDataManager.initializeUserDisplay();
-            const userData = window.userDataManager.getUserData();
-            if (!userData.name) {
-                window.userDataManager.updateUserData({
-                    name: 'Admin User',
-                    email: 'admin@allitrack.com',
-                    role: 'Administrator'
-                });
-            }
-        }
-
         function initializePreferences() {
             if (!window.preferencesManager) {
                 applyTranslations('en');
@@ -480,7 +521,7 @@
             applyTranslations(window.preferencesManager.getCurrentLanguage() || 'en');
         }
 
-        
+
 
         function applyTranslations(language) {
             const dict = translations[language] || translations.en;
@@ -515,21 +556,6 @@
                 requestAdminPassword('saveSettings');
             });
         }
-
-        function setupLogout() {
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (!logoutBtn) return;
-
-            logoutBtn.addEventListener('click', (event) => {
-                event.preventDefault();
-                localStorage.removeItem('userData');
-                    localStorage.removeItem('adminProfile');
-                localStorage.removeItem('adminPreferences');
-                localStorage.removeItem('preferredLanguage');
-                window.location.href = '/';
-            });
-        }
-
         function setupAccountDropdown() {
             const accountBtn = document.getElementById('accountBtn');
             const accountMenu = document.getElementById('accountMenu');
