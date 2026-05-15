@@ -316,6 +316,39 @@ if (typeof window.globalHeartbeatFired === "undefined") {
   }
 
   // ==========================================
+  // TOAST CONTAINER + SHARED SHOWTOAST UTILITY
+  // ==========================================
+  function ensureToastContainer() {
+    let toast = document.getElementById('toast');
+    if (toast) return toast;
+
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+    return toast;
+  }
+
+  function ensureSharedToast() {
+    ensureToastContainer();
+
+    if (typeof window.showToast === 'function') {
+      return;
+    }
+
+    window.showToast = function (message, type = 'success') {
+      const toast = ensureToastContainer();
+      toast.textContent = message;
+      toast.className = `toast ${type}`;
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    };
+  }
+
+  // ==========================================
   // SUBMIT TICKET GUARD (BLOCK IF PROFILE INCOMPLETE)
   // ==========================================
   function setupSubmitTicketGuard() {
@@ -347,6 +380,69 @@ if (typeof window.globalHeartbeatFired === "undefined") {
   }
 
   // ==========================================
+  // MOBILE SIDEBAR TOGGLE (SHARED GLOBAL NAV)
+  // ==========================================
+  function setupMobileSidebarToggle() {
+    const menuToggle = document.getElementById("menuToggle");
+    const sidebar = document.querySelector(".sidebar");
+    const overlay = document.getElementById("sidebarOverlay");
+
+    if (!menuToggle || !sidebar || !overlay) {
+      console.debug("[Sidebar] Mobile sidebar elements not found on this page");
+      return;
+    }
+
+    const openSidebar = () => {
+      sidebar.classList.add("open");
+      overlay.classList.add("active");
+      menuToggle.setAttribute("aria-expanded", "true");
+    };
+
+    const closeSidebar = () => {
+      sidebar.classList.remove("open");
+      overlay.classList.remove("active");
+      menuToggle.setAttribute("aria-expanded", "false");
+    };
+
+    const toggleSidebar = () => {
+      if (sidebar.classList.contains("open")) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    };
+
+    menuToggle.addEventListener("click", function (event) {
+      event.preventDefault();
+      toggleSidebar();
+    });
+
+    overlay.addEventListener("click", closeSidebar);
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && sidebar.classList.contains("open")) {
+        closeSidebar();
+      }
+    });
+
+    sidebar.querySelectorAll(".sidebar-nav a").forEach(link => {
+      link.addEventListener("click", function () {
+        if (sidebar.classList.contains("open")) {
+          closeSidebar();
+        }
+      });
+    });
+
+    window.addEventListener("resize", function () {
+      if (window.innerWidth > 900 && sidebar.classList.contains("open")) {
+        closeSidebar();
+      }
+    });
+
+    console.log("[Sidebar] Mobile sidebar toggle initialized");
+  }
+
+  // ==========================================
   // GLOBAL INITIALIZATION - RUNS ON EVERY PAGE LOAD
   // ==========================================
   const executeGlobalInitializations = () => {
@@ -371,8 +467,14 @@ if (typeof window.globalHeartbeatFired === "undefined") {
     // Try to setup listeners if Socket.IO is already available
     setupAnnouncementSocketListeners();
 
+    // Ensure user toast system is available
+    ensureSharedToast();
+
     // Setup submit ticket guard on every page
     setupSubmitTicketGuard();
+
+    // Setup mobile sidebar toggle for user navigation
+    setupMobileSidebarToggle();
 
     console.log("[RedDot] Global initializations complete");
   };

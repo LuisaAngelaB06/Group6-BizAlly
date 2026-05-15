@@ -7,7 +7,7 @@
 html.dark-theme {
     --bg: #090e1a;
     --bg-1: #0d1526;
-    --bg-2: #111d35;
+    --bg-2: #111d48;
     --surface: #13203e;
     --surface-2: #182845;
     --border: rgba(99, 130, 200, 0.13);
@@ -137,7 +137,7 @@ body {
 .brand-icon {
     width: 36px;
     height: 36px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    background: linear-gradient(148deg, var(--accent), var(--accent-2));
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -241,7 +241,9 @@ body {
    ============================================================ */
 
 .topbar {
-    height: 64px;
+    height: 48px;
+    min-height: 48px;
+    max-height: 48px;
     background: var(--bg-1);
     border-bottom: 1px solid var(--border);
     display: flex;
@@ -251,12 +253,22 @@ body {
     position: sticky;
     top: 0;
     z-index: 50;
+    flex-shrink: 0;
+    overflow: visible;
 }
 
 .topbar-left,
 .topbar-right {
     display: flex;
     align-items: center;
+    min-height: 48px;
+    max-height: 48px;
+    flex-shrink: 0;
+}
+
+.topbar-left > *,
+.topbar-right > * {
+    max-height: 100%;
 }
 
 .topbar-left {
@@ -377,7 +389,7 @@ body {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), var(--accent-3));
+    background: linear-gradient(148deg, var(--accent), var(--accent-3));
     border: 2px solid var(--border-bright);
     display: flex;
     align-items: center;
@@ -531,7 +543,7 @@ body {
 
 .btn-primary:hover {
     background: #5a91ff;
-    box-shadow: 0 0 18px rgba(59, 123, 255, 0.35);
+    box-shadow: 0 0 18px rgba(59, 123, 255, 0.48);
     transform: translateY(-1px);
 }
 
@@ -638,7 +650,7 @@ body {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--surface);
-    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.48);
 }
 
 .mobile-block-card i {
