@@ -2,637 +2,556 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-translate="account_security_page_title">Account Security - AlliTrack</title>
     <script src="../../scripts/theme.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
     <link rel="stylesheet" href="../../styles/user page/account-security.css" />
-    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
-    <script src="../../scripts/mobile-restriction.js"></script>
-    <script src="../../scripts/user-preference-manager.js"></script>
-    <script src="../../scripts/user-data-manager.js"></script>
+    <script src="../../scripts/mobile-restriction.js" defer></script>
+    <script src="../../scripts/user-data-manager.js" defer></script>
+    <script src="../../scripts/user-preference-manager.js" defer></script>
 </head>
 
 <body>
-    <!-- Mobile Access Denied Modal -->
-    <div class="mobile-block-overlay">
+    <div class="mobile-block-overlay" id="mobileBlockOverlay">
         <div class="mobile-block-card">
             <i class="fas fa-laptop"></i>
             <h2 data-translate="mobile_restricted">Desktop only</h2>
             <p data-translate="mobile_block_message">User dashboard is optimized for larger screens. Please open on a
                 desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to
+            <button class="btn btn-primary" onclick="window.location.href='/'" data-translate="go_back">Back to
                 Home</button>
         </div>
     </div>
 
-    <!-- Mobile Access Denied Modal -->
-    <div class="mobile-block-overlay">
-        <div class="mobile-block-card">
-            <i class="fas fa-laptop"></i>
-            <h2 data-translate="mobile_restricted">Desktop only</h2>
-            <p data-translate="mobile_block_message">User dashboard is optimized for larger screens. Please open on a
-                desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to
-                Home</button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main Sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo"
+                    onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-bolt\'></i>'">
+            </div>
+            <div class="brand-text">
+                <div class="name">AlliTrack</div>
+                <div class="sub" data-translate="user_console">User Console</div>
+            </div>
         </div>
-    </div>
 
-    <div class="app">
-        <div class="shell">
-            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
-                <div class="brand">
-                    <div class="logo">
-                        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
-                            style="width: 32px; height: 32px;">
-                    </div>
-                    <div>
-                        <div class="title">AlliTrack</div>
-                        <div class="subtitle" data-translate="user_dashboard">User Dashboard</div>
+        <nav class="sidebar-nav">
+            <div class="nav-group-label" data-translate="overview">OVERVIEW</div>
+            <a href="/user/index-user.html" class="nav-item" data-section="dashboard"><i class="fas fa-chart-line"></i>
+                <span data-translate="dashboard">Dashboard</span></a>
+
+            <div class="nav-group-label" data-translate="support">SUPPORT</div>
+            <a href="/user/my-tickets.html" class="nav-item" data-section="tickets"><i class="fas fa-ticket-alt"></i>
+                <span data-translate="my_tickets">My Tickets</span></a>
+            <a href="/user/notifications.html" class="nav-item" data-section="notifications"><i class="fas fa-bell"></i>
+                <span data-translate="notifications">Notifications</span></a>
+            <a href="/user/submit-ticket.html" class="nav-item" data-section="submit-ticket"><i
+                    class="fas fa-plus-circle"></i> <span data-translate="submit_ticket">Submit a Ticket</span></a>
+
+            <div class="nav-group-label" data-translate="management">MANAGEMENT</div>
+            <a href="/user/preferences.html" class="nav-item" data-section="preferences"><i
+                    class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span></a>
+            <a href="/user/profile-settings.html" class="nav-item" data-section="profile-settings"><i
+                    class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
+                <span id="profileRedDot" class="red-dot hidden"></span></a>
+            <a href="/user/announcements.html" class="nav-item" data-section="announcements" id="announcementLink"><i
+                    class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+                <span id="navRedDot" class="red-dot hidden"></span></a>
+
+            <div class="nav-group-label" data-translate="system">SYSTEM</div>
+            <a href="/user/account-security.html" class="nav-item active" data-section="account-security"><i
+                    class="fas fa-shield-alt"></i> <span data-translate="account_security">Account Security</span></a>
+            <a href="/user/system-information.html" class="nav-item" data-section="system-information"><i
+                    class="fas fa-scale-balanced"></i> <span data-translate="system_information">Legal Center</span></a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div>v1.2.0 &mdash; Business Alliance Inc.</div>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle" aria-label="Open sidebar" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span data-translate="user">User</span>
+                <span class="crumb-sep"><i class="fas fa-chevron-right"></i></span>
+                <span class="crumb-current" data-translate="account_security">Account Security</span>
+            </div>
+            <div class="topbar-right">
+                <div class="account-wrap">
+                    <button class="account-btn" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar-btn" id="userAvatar">U</div>
+                        <div class="account-info">
+                            <div class="a-name" id="userNameDisplay">User</div>
+                            <div class="a-email" id="userEmailDisplay"></div>
+                        </div>
+                        <i class="fas fa-chevron-down account-chevron"></i>
+                    </button>
+                    <div class="account-menu" id="accountMenu">
+                        <div class="account-menu-header">
+                            <div class="amh-name" id="menuUserName">User</div>
+                            <div class="amh-email" id="menuUserEmail"></div>
+                        </div>
+                        <a href="/user/profile-settings.html" data-translate="profile"><i class="fas fa-user"></i>
+                            Profile</a>
+                        <a href="/user/preferences.html" data-translate="settings"><i class="fas fa-cog"></i>
+                            Settings</a>
+                        <a href="/" id="logoutBtn" class="logout" data-translate="logout"><i
+                                class="fas fa-sign-out-alt"></i> Logout</a>
                     </div>
                 </div>
-                <nav class="nav">
-                    <a href="/user/index-user.html" data-section="dashboard">
-                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
-                    </a>
+            </div>
+        </header>
 
-                    <div class="nav-section" data-translate="support">Support</div>
-                    <a href="/user/my-tickets.html" data-section="tickets">
-                        <i class="fas fa-ticket-alt"></i> <span data-translate="my_tickets">My Tickets</span>
-                    </a>
-                    <a href="/user/notifications.html" data-section="notifications">
-                        <i class="fas fa-bell"></i> <span data-translate="notifications">Notifications</span>
-                    </a>
-                    <a href="/user/submit-ticket.html" data-section="submit-ticket">
-                        <i class="fas fa-plus-circle"></i> <span data-translate="submit_ticket">Submit a Ticket</span>
-                    </a>
-
-                    <div class="nav-section" data-translate="management">Management</div>
-                    <a href="/user/preferences.html" data-section="preferences">
-                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
-                    </a>
-                    <a href="/user/profile-settings.html" >
-                        <i class="fas fa-user-cog"></i> Profile Settings
-                        <span id="profileRedDot" class="red-dot" style="display:none;"></span>
-                    </a>
-                    <a href="/user/announcements.html" id="announcementLink">
-                        <i class="fas fa-bullhorn"></i> Announcements
-                        <span id="navRedDot" class="red-dot" style="display: none;"></span>
-                    </a>
-
-                    <div class="nav-section" data-translate="system">System</div>
-                    <a href="/user/account-security.html" class="active"
-                        data-section="account-security">
-                        <i class="fas fa-shield-alt"></i> <span data-translate="account_security">Account
-                            Security</span>
-                    </a>
-                    <a href="/user/system-information.html" data-section="system-information">
-                        <i class="fas fa-info-circle"></i> <span data-translate="system_information">System
-                            Information</span>
-                    </a>
-                </nav>
-                <div class="sidebar-footer">
-                    <div class="version">v1.2.0</div>
-                    <div>Business Alliance Inc.</div>
+        <div class="content">
+            <div class="page-header">
+                <div class="page-title-group">
+                    <div class="eyebrow"><i class="fas fa-shield-alt"></i> <span data-translate="system">System</span>
+                    </div>
+                    <h1 data-translate="account_security_title">Account Security</h1>
+                    <p class="desc" data-translate="account_security_desc">Review recent sign-in activity for your
+                        account.</p>
                 </div>
-            </aside>
+            </div>
 
-            <!-- Main Content Area -->
-            <main class="main">
-                <!-- Header -->
-                <header class="header">
-                    <div class="search" role="search" aria-label="Search Tickets">
-                        <i class="fas fa-search" style="opacity:.6"></i>
-                        <input id="q" placeholder="Search tickets, users, IDs..."
-                            data-translate-placeholder="search_placeholder" aria-label="Search tickets, users, IDs" />
-                    </div>
-                    <div class="header-actions">
-                        <div style="text-align:right">
-                            <div id="userName" style="font-weight:700">User</div>
-                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">user@example.com</div>
-                        </div>
-                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div id="userAvatar" class="avatar">U</div>
-                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
-                        </div>
-                        <div class="account-menu" id="accountMenu">
-                            <div class="arrow"></div>
-                            <a href="/user/profile-settings.html" data-translate="profile">Profile</a>
-                            <a href="/user/preferences.html" data-translate="settings">Settings</a>
-                            <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
-                        </div>
-                    </div>
-                </header>
+            <div class="section-label"><span data-translate="security_controls">Security Controls</span></div>
 
-                <!-- Account Security Content -->
-                <div class="content">
-                    <div class="security-content">
-                        <!-- Header with Container -->
-                        <div class="security-header-container">
-                            <div class="security-header">
-                                <h1><i class="fas fa-shield-alt"></i> <span
-                                        data-translate="account_security_title">Account Security</span></h1>
+            <div class="security-grid dashboard-grid">
+                <section class="card security-card security-settings-card">
+                    <div class="card-head security-card-head">
+                        <h3><i class="fas fa-mobile-alt"></i> <span data-translate="two_factor_auth">Two-Factor
+                                Authentication</span></h3>
+                    </div>
+                    <p class="section-description" data-translate="add_extra_security">Add an extra layer of security
+                        to your account</p>
+
+                    <form id="securityForm" class="security-form">
+                        <div class="two-factor-panel">
+                            <div class="two-factor-copy">
+                                <div class="two-factor-title" data-translate="two_factor_auth_full">Two-Factor
+                                    Authentication (2FA)</div>
+                                <div class="two-factor-description" data-translate="protect_account">Protect your
+                                    account with two-factor authentication. You'll need to enter a verification code
+                                    from
+                                    your authenticator app when signing in.</div>
+                            </div>
+                            <label class="security-toggle" aria-label="Enable two-factor authentication">
+                                <input type="checkbox" id="twoFactorEnabled">
+                                <span class="security-toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="two-factor-setup" id="twoFactorSetup">
+                            <div class="qr-placeholder">
+                                <i class="fas fa-qrcode"></i>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="verificationCode">
+                                    <span data-translate="verification_code">Verification Code</span>
+                                </label>
+                                <input type="text" id="verificationCode" class="form-input"
+                                    placeholder="Enter 6-digit code" data-translate-placeholder="enter_6_digit_code"
+                                    maxlength="6" inputmode="numeric" />
+                                <div class="form-error" id="verificationCodeError" data-translate="please_enter_valid">
+                                    Please enter a valid verification code</div>
                             </div>
                         </div>
 
-                        <!-- Success Message -->
                         <div class="success-message" id="successMessage">
-                            <div class="success-icon">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="success-text" data-translate="security_updated">Security settings updated
-                                successfully!</div>
+                            <i class="fas fa-check"></i>
+                            <span data-translate="security_updated">Security settings updated successfully!</span>
                         </div>
 
-                        <!-- Account Security Form -->
-                        <form class="security-container" id="securityForm">
-                            <!-- Two-Factor Authentication -->
-                            <div class="security-section">
-                                <div class="section-header">
-                                    <div class="section-icon">
-                                        <i class="fas fa-mobile-alt"></i>
-                                    </div>
-                                    <div>
-                                        <h2 class="section-title" data-translate="two_factor_auth">Two-Factor
-                                            Authentication</h2>
-                                        <p class="section-description" data-translate="add_extra_security">Add an extra
-                                            layer of security to your account</p>
-                                    </div>
-                                </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-ghost" id="resetSecurityBtn">
+                                <i class="fas fa-times"></i> <span data-translate="cancel">Cancel</span>
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> <span data-translate="save_security_settings">Save Security
+                                    Settings</span>
+                            </button>
+                        </div>
+                    </form>
+                </section>
 
-                                <div class="two-factor-section">
-                                    <div class="two-factor-header">
-                                        <div>
-                                            <div class="two-factor-title" data-translate="two_factor_auth_full">
-                                                Two-Factor Authentication (2FA)</div>
-                                            <div class="two-factor-description" data-translate="protect_account">
-                                                Protect your account with two-factor authentication. You'll need to
-                                                enter a verification code from your authenticator app when signing in.
-                                            </div>
-                                        </div>
-                                        <div class="setting-control">
-                                            <label class="toggle">
-                                                <input type="checkbox" id="twoFactorEnabled">
-                                                <span class="toggle-slider"></span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div class="two-factor-setup" id="twoFactorSetup">
-                                        <div class="qr-code">
-                                            <div class="qr-placeholder">
-                                                <i class="fas fa-qrcode" style="font-size: 3rem;"></i>
-                                            </div>
-                                            <div class="form-hint" data-translate="scan_qr_code">Scan this QR code with
-                                                your authenticator app</div>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label class="form-label" for="verificationCode">
-                                                <span data-translate="verification_code">Verification Code</span> <span
-                                                    class="required">*</span>
-                                            </label>
-                                            <input type="text" id="verificationCode" class="form-input"
-                                                placeholder="Enter 6-digit code"
-                                                data-translate-placeholder="enter_6_digit_code" maxlength="6" />
-                                            <div class="form-error" id="verificationCodeError"
-                                                data-translate="please_enter_valid">Please enter a valid verification
-                                                code</div>
-                                        </div>
-
-                                        <div class="backup-codes">
-                                            <div class="backup-codes-title" data-translate="backup_codes">Backup Codes
-                                            </div>
-                                            <div class="form-hint" data-translate="save_backup_codes">
-                                                Save these codes in a secure place. You can use them to access your
-                                                account if you lose your authenticator device.
-                                            </div>
-                                            <div class="codes-grid">
-                                                <div>ABCD-EFGH-IJKL</div>
-                                                <div>MNOP-QRST-UVWX</div>
-                                                <div>YZ12-3456-7890</div>
-                                                <div>ABCD-EFGH-IJKL</div>
-                                                <div>MNOP-QRST-UVWX</div>
-                                                <div>YZ12-3456-7890</div>
-                                                <div>ABCD-EFGH-IJKL</div>
-                                                <div>MNOP-QRST-UVWX</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Login History -->
-                            <div class="security-section">
-                                <div class="section-header">
-                                    <div class="section-icon">
-                                        <i class="fas fa-history"></i>
-                                    </div>
-                                    <div>
-                                        <h2 class="section-title" data-translate="login_history">Login History</h2>
-                                        <p class="section-description" data-translate="recent_login_activity">Recent
-                                            login activity on your account</p>
-                                    </div>
-                                </div>
-
-                                <div class="login-history">
-                                    <div class="history-list" id="loginHistoryList">
-                                        <!-- Login history items will be dynamically inserted here -->
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Form Actions -->
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" onclick="resetForm()">
-                                    <i class="fas fa-times"></i> <span data-translate="cancel">Cancel</span>
-                                </button>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> <span data-translate="save_security_settings">Save
-                                        Security Settings</span>
-                                </button>
-                            </div>
-                        </form>
+                <section class="card security-card login-card">
+                    <div class="card-head security-card-head">
+                        <h3><i class="fas fa-history"></i> <span data-translate="login_history">Login History</span>
+                        </h3>
                     </div>
-                </div>
-
-                <!-- Footer -->
-                <footer class="site-footer">
-                    <div>&copy; 2025 Business Alliance Inc.</div>
-                    <div>AlliTrack User Dashboard</div>
-                </footer>
-            </main>
+                    <p class="section-description" data-translate="recent_login_activity">Recent login activity on your
+                        account</p>
+                    <div class="login-history">
+                        <div class="history-list" id="loginHistoryList"></div>
+                    </div>
+                </section>
+            </div>
         </div>
+
+        <footer class="site-footer">
+            <div>&copy; 2025 Business Alliance Inc.</div>
+            <div data-translate="security_template">AlliTrack Account Security</div>
+        </footer>
     </div>
 
     <script>
-        // Translation dictionary
+        const API_BASE_URL = (
+            window.location.hostname === '127.0.0.1' ||
+            window.location.hostname === 'localhost'
+        ) ? 'http://127.0.0.1:5000' : 'https://group6-bizally.onrender.com';
+
         const translations = {
-            'en': {
-                'account_security_page_title': 'Account Security - AlliTrack',
-                'user_dashboard': 'User Dashboard',
-                'dashboard': 'Dashboard',
-                'support': 'Support',
-                'my_tickets': 'My Tickets',
-                'notifications': 'Notifications',
-                'submit_ticket': 'Submit a Ticket',
-                'management': 'Management',
-                'preferences': 'Preferences',
-                'profile_settings': 'Profile Settings',
-                'announcements': 'Announcements',
-                'system': 'System',
-                'account_security': 'Account Security',
-                'system_information': 'System Information',
-                'search_placeholder': 'Search tickets, users, IDs...',
-                'profile': 'Profile',
-                'settings': 'Settings',
-                'logout': 'Logout',
-                'account_security_title': 'Account Security',
-                'security_updated': 'Security settings updated successfully!',
-                'two_factor_auth': 'Two-Factor Authentication',
-                'add_extra_security': 'Add an extra layer of security to your account',
-                'two_factor_auth_full': 'Two-Factor Authentication (2FA)',
-                'protect_account': 'Protect your account with two-factor authentication. You\'ll need to enter a verification code from your authenticator app when signing in.',
-                'login_history': 'Login History',
-                'recent_login_activity': 'Recent login activity on your account',
-                'scan_qr_code': 'Scan this QR code with your authenticator app',
-                'verification_code': 'Verification Code',
-                'enter_6_digit_code': 'Enter 6-digit code',
-                'please_enter_valid': 'Please enter a valid verification code',
-                'backup_codes': 'Backup Codes',
-                'save_backup_codes': 'Save these codes in a secure place. You can use them to access your account if you lose your authenticator device.',
-                'cancel': 'Cancel',
-                'save_security_settings': 'Save Security Settings',
-                'success': 'Success',
-                'failed': 'Failed'
+            en: {
+                account_security_page_title: 'Account Security - AlliTrack',
+                user_console: 'User Console',
+                user: 'User',
+                account_security_desc: 'Review recent sign-in activity for your account.',
+                system_information: 'System Information',
+                login_history: 'Login History',
+                recent_login_activity: 'Recent login activity on your account',
+                security_template: 'AlliTrack Account Security',
+                profile: 'Profile',
+                settings: 'Settings',
+                logout: 'Logout',
+                account_protection: 'Account Protection',
+                security_center: 'Security Center',
+                security_center_desc: 'Manage two-factor authentication and monitor recent access attempts from one secure workspace.',
+                security_monitoring: 'Security monitoring active',
+                database_connected: 'Database Connected',
+                login_history_source: 'Login history is loaded from available security endpoints',
+                security_controls: 'Security Controls',
+                success: 'Success',
+                failed: 'Failed',
+                unknown_device: 'Unknown Device',
+                unknown_location: 'Unknown Location',
+                unknown_ip: 'Unknown IP',
+                loading_login_history: 'Loading login history...',
+                no_login_history: 'No login history found.',
+                unable_login_history: 'Unable to load login history.'
+                ,
+                two_factor_auth: 'Two-Factor Authentication',
+                add_extra_security: 'Add an extra layer of security to your account',
+                two_factor_auth_full: 'Two-Factor Authentication (2FA)',
+                protect_account: 'Protect your account with two-factor authentication. You\'ll need to enter a verification code from your authenticator app when signing in.',
+                verification_code: 'Verification Code',
+                enter_6_digit_code: 'Enter 6-digit code',
+                please_enter_valid: 'Please enter a valid verification code',
+                security_updated: 'Security settings updated successfully!',
+                cancel: 'Cancel',
+                save_security_settings: 'Save Security Settings'
             },
-            'fil': {
-                'account_security_page_title': 'Seguridad ng Account - AlliTrack',
-                'user_dashboard': 'User Dashboard',
-                'dashboard': 'Dashboard',
-                'support': 'SUPORTA',
-                'my_tickets': 'Aking Ticket',
-                'notifications': 'Notipikasyon',
-                'submit_ticket': 'Sumite Ticket',
-                'management': 'PAMAHALAAN',
-                'preferences': 'Kagustuhan',
-                'profile_settings': 'Settings ng Profile',
-                'announcements': 'Anunsyo',
-                'system': 'SISTEMA',
-                'account_security': 'Seguridad',
-                'system_information': 'Impormasyon ng Sistema',
-                'search_placeholder': 'Maghanap ng tickets, users, IDs...',
-                'profile': 'Profile',
-                'settings': 'Settings',
-                'logout': 'Logout',
-                'account_security_title': 'Seguridad ng Account',
-                'security_updated': 'Matagumpay na na-update ang security settings!',
-                'two_factor_auth': 'Pagpapatunay na Dalawang-Hakbang',
-                'add_extra_security': 'Magdagdag ng karagdagang proteksyon sa iyong account',
-                'two_factor_auth_full': 'Pagpapatunay na Dalawang-Hakbang (2FA)',
-                'protect_account': 'Protektahan ang iyong account gamit ang two-factor authentication. Kakailanganin mong maglagay ng verification code mula sa iyong authenticator app kapag nag-log in.',
-                'login_history': 'Kasaysayan ng Pag-login',
-                'recent_login_activity': 'Kamakailang aktibidad ng pag-log in sa iyong account',
-                'scan_qr_code': 'I-scan ang QR code na ito gamit ang iyong authenticator app',
-                'verification_code': 'Verification Code',
-                'enter_6_digit_code': 'Ilagay ang 6-digit na code',
-                'please_enter_valid': 'Pakilagay ng wastong verification code',
-                'backup_codes': 'Backup Codes',
-                'save_backup_codes': 'Itabi ang mga code na ito sa ligtas na lugar. Magagamit mo ang mga ito para ma-access ang iyong account kung mawala ang iyong authenticator device.',
-                'cancel': 'Kanselahin',
-                'save_security_settings': 'I-save ang Security Settings',
-                'success': 'Matagumpay',
-                'failed': 'Nabigo'
+            fil: {
+                account_security_page_title: 'Seguridad ng Account - AlliTrack',
+                user_console: 'User Console',
+                user: 'User',
+                account_security_desc: 'Suriin ang kamakailang sign-in activity ng iyong account.',
+                system_information: 'Impormasyon ng Sistema',
+                login_history: 'Kasaysayan ng Pag-login',
+                recent_login_activity: 'Kamakailang aktibidad ng pag-login sa iyong account',
+                security_template: 'Seguridad ng Account ng AlliTrack',
+                profile: 'Profile',
+                settings: 'Mga Setting',
+                logout: 'Mag-logout',
+                account_protection: 'Proteksyon ng Account',
+                security_center: 'Security Center',
+                security_center_desc: 'Pamahalaan ang two-factor authentication at subaybayan ang mga kamakailang access attempt sa isang secure na workspace.',
+                security_monitoring: 'Aktibo ang security monitoring',
+                database_connected: 'Konektado ang Database',
+                login_history_source: 'Nilo-load ang login history mula sa available na security endpoints',
+                security_controls: 'Mga Security Control',
+                success: 'Matagumpay',
+                failed: 'Nabigo',
+                unknown_device: 'Hindi Kilalang Device',
+                unknown_location: 'Hindi Kilalang Lokasyon',
+                unknown_ip: 'Hindi Kilalang IP',
+                loading_login_history: 'Nilo-load ang login history...',
+                no_login_history: 'Walang login history na nakita.',
+                unable_login_history: 'Hindi ma-load ang login history.'
+                ,
+                two_factor_auth: 'Pagpapatunay na Dalawang-Hakbang',
+                add_extra_security: 'Magdagdag ng karagdagang proteksyon sa iyong account',
+                two_factor_auth_full: 'Pagpapatunay na Dalawang-Hakbang (2FA)',
+                protect_account: 'Protektahan ang iyong account gamit ang two-factor authentication. Kakailanganin mong maglagay ng verification code mula sa iyong authenticator app kapag nag-log in.',
+                verification_code: 'Verification Code',
+                enter_6_digit_code: 'Ilagay ang 6-digit na code',
+                please_enter_valid: 'Pakilagay ng wastong verification code',
+                security_updated: 'Matagumpay na na-update ang security settings!',
+                cancel: 'Kanselahin',
+                save_security_settings: 'I-save ang Security Settings'
             }
         };
 
-        // Account Dropdown Functionality - FIXED
-        function setupAccountDropdown() {
-            console.log('Setting up account dropdown...');
-            const accountBtn = document.getElementById("accountBtn");
-            const accountMenu = document.getElementById("accountMenu");
-
-            if (accountBtn && accountMenu) {
-                // Clear any existing event listeners
-                const newBtn = accountBtn.cloneNode(true);
-                accountBtn.parentNode.replaceChild(newBtn, accountBtn);
-
-                const newMenu = accountMenu.cloneNode(true);
-                accountMenu.parentNode.replaceChild(newMenu, accountMenu);
-
-                const refreshedBtn = document.getElementById("accountBtn");
-                const refreshedMenu = document.getElementById("accountMenu");
-
-                refreshedBtn.addEventListener("click", function (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-
-                    const isShowing = refreshedMenu.classList.contains("show");
-                    refreshedMenu.classList.toggle("show");
-                    refreshedBtn.setAttribute("aria-expanded", !isShowing);
-                });
-
-                document.addEventListener("click", function (e) {
-                    if (!refreshedBtn.contains(e.target) && !refreshedMenu.contains(e.target)) {
-                        refreshedMenu.classList.remove("show");
-                        refreshedBtn.setAttribute("aria-expanded", false);
-                    }
-                });
-
-                document.addEventListener("keydown", function (e) {
-                    if (e.key === "Escape" && refreshedMenu.classList.contains("show")) {
-                        refreshedMenu.classList.remove("show");
-                        refreshedBtn.setAttribute("aria-expanded", false);
-                    }
-                });
-
-                const menuItems = refreshedMenu.querySelectorAll("a");
-                menuItems.forEach(item => {
-                    item.addEventListener("click", function () {
-                        refreshedMenu.classList.remove("show");
-                        refreshedBtn.setAttribute("aria-expanded", false);
-                    });
-                });
-
-                refreshedBtn.style.cursor = 'pointer';
-            }
+        function getCurrentLanguage() {
+            return window.preferencesManager?.getCurrentLanguage?.() ||
+                localStorage.getItem('dashboardLanguage') ||
+                localStorage.getItem('preferredLanguage') ||
+                'en';
         }
 
-        // Initialize the page when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('Account Security: Starting initialization...');
-
-            // Initialize user data manager FIRST
-            if (window.userDataManager) {
-                console.log('User Data Manager found, initializing user display...');
-                window.userDataManager.initializeUserDisplay();
-
-                // Check what user data is available
-                const userData = window.userDataManager.getUserData();
-                console.log('User Data from manager:', userData);
-                console.log('Profile picture URL:', userData.photo);
-            } else {
-                console.error('User Data Manager NOT FOUND! Check if user-data-manager.js is loaded.');
-            }
-
-            // Initialize preferences manager
-            if (window.preferencesManager) {
-                console.log('Preferences Manager found, initializing...');
-                window.preferencesManager.initialize();
-
-                // Apply theme immediately when page loads
-                // Get current language from preferences manager
-                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
-                applyTranslations(currentLang);
-            } else {
-                console.error('Account Security: preferencesManager not found!');
-                applyTranslations('en'); // Default to English
-            }
-
-            // Setup theme listener
-            // SETUP ACCOUNT DROPDOWN - MUST BE CALLED HERE
-            setupAccountDropdown();
-
-            // Setup logout functionality
-            setupLogout();
-
-            // Load security settings
-            loadSecuritySettings();
-
-            // Initialize form functionality
-            initForm();
-
-            // Render login history
-            renderLoginHistory();
-
-            console.log('Account Security page loaded');
-        });
-
-        // Setup theme listener
-        
-
-        // Apply translations to the page
-        function applyTranslations(language) {
-            const lang = translations[language] ? language : 'en';
-            const dict = translations[lang];
-
-            // Translate all elements with data-translate attribute
-            document.querySelectorAll('[data-translate]').forEach(element => {
-                const key = element.getAttribute('data-translate');
-                if (dict[key]) {
-                    element.textContent = dict[key];
-                }
-            });
-
-            // Translate all placeholder texts
-            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
-                const key = element.getAttribute('data-translate-placeholder');
-                if (dict[key]) {
-                    element.placeholder = dict[key];
-                }
-            });
-
-            // Update page title
-            if (dict['account_security_page_title']) {
-                document.title = dict['account_security_page_title'];
-            }
-
-            // Update login history status texts
-            updateLoginHistoryTexts(lang);
+        function t(key) {
+            const dict = translations[getCurrentLanguage()] || translations.en;
+            return dict[key] || translations.en[key] || key;
         }
 
-        // Update login history status texts
-        function updateLoginHistoryTexts(language) {
-            const statusElements = document.querySelectorAll('.history-status');
-            const statusText = language === 'fil' ? {
-                'success': 'Matagumpay',
-                'failed': 'Nabigo'
-            } : {
-                'success': 'Success',
-                'failed': 'Failed'
+        function applyLanguage() {
+            const dict = translations[getCurrentLanguage()] || translations.en;
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (dict[key]) el.textContent = dict[key];
+            });
+            document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-translate-placeholder');
+                if (dict[key]) el.placeholder = dict[key];
+            });
+            if (dict.account_security_page_title) document.title = dict.account_security_page_title;
+        }
+
+        function getCurrentUser() {
+            if (window.userDataManager?.getUserData) return window.userDataManager.getUserData();
+            try { return JSON.parse(localStorage.getItem('userData') || '{}'); }
+            catch { return {}; }
+        }
+
+        function getUserIdentity() {
+            const user = getCurrentUser() || {};
+            return {
+                user,
+                id: user.user_id || user.User_ID || user.id || user.ID || user.client_id || user.Client_ID,
+                email: user.Email || user.email || user.userEmail || user.emailAddress
+            };
+        }
+
+        function getDisplayName(user = {}) {
+            const firstName = user.firstName || user.FirstName || user.First_Name || user.first_name || '';
+            const lastName = user.lastName || user.LastName || user.Last_Name || user.last_name || '';
+            const composedName = `${firstName} ${lastName}`.trim();
+            return user.displayName || user.fullName || user.Name || user.name || user.Username || user.username || composedName || 'User';
+        }
+
+        function getDisplayEmail(user = {}) {
+            return user.Email || user.email || user.userEmail || user.emailAddress || '';
+        }
+
+        function getInitials(name = 'User') {
+            const parts = String(name).trim().split(/\s+/).filter(Boolean);
+            const first = parts[0]?.charAt(0) || 'U';
+            const last = parts.length > 1 ? parts[parts.length - 1].charAt(0) : '';
+            return (first + last).toUpperCase();
+        }
+
+        function syncAccountMenu() {
+            const user = getCurrentUser() || {};
+            const name = getDisplayName(user);
+            const email = getDisplayEmail(user);
+            const fields = {
+                userNameDisplay: name,
+                userEmailDisplay: email,
+                menuUserName: name,
+                menuUserEmail: email
             };
 
-            statusElements.forEach(element => {
-                if (element.classList.contains('status-success')) {
-                    element.textContent = statusText.success;
-                } else if (element.classList.contains('status-failed')) {
-                    element.textContent = statusText.failed;
+            Object.entries(fields).forEach(([id, value]) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.textContent = value;
+                if (id.toLowerCase().includes('email')) el.hidden = !value;
+            });
+
+            const avatar = document.getElementById('userAvatar');
+            if (avatar && !avatar.querySelector('img')) avatar.textContent = getInitials(name);
+        }
+
+        function setupAccountDropdown() {
+            const btn = document.getElementById('accountBtn');
+            const menu = document.getElementById('accountMenu');
+            if (!btn || !menu) return;
+            const fresh = btn.cloneNode(true);
+            btn.parentNode.replaceChild(fresh, btn);
+            fresh.addEventListener('click', e => {
+                e.stopPropagation();
+                e.preventDefault();
+                menu.classList.toggle('show');
+                fresh.setAttribute('aria-expanded', menu.classList.contains('show'));
+            });
+            document.addEventListener('click', e => {
+                if (menu.classList.contains('show') && !fresh.contains(e.target) && !menu.contains(e.target)) {
+                    menu.classList.remove('show');
+                    fresh.setAttribute('aria-expanded', 'false');
+                }
+            });
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape' && menu.classList.contains('show')) {
+                    menu.classList.remove('show');
+                    fresh.setAttribute('aria-expanded', 'false');
                 }
             });
         }
 
-        // Update user display in header - simplified version
-        function updateUserDisplay(userData) {
-            if (!userData) {
-                console.warn('No user data found in localStorage');
-                return;
-            }
-
-            // Update user name
-            const userNameElement = document.getElementById('userName');
-            if (userNameElement && userData.name) {
-                userNameElement.textContent = userData.name;
-            }
-
-            // Update user email
-            const userEmailElement = document.getElementById('userEmail');
-            if (userEmailElement && userData.email) {
-                userEmailElement.textContent = userData.email;
-            }
-
-            // Note: The avatar is handled by userDataManager.initializeUserDisplay()
+        function setupMenuToggle() {
+            const toggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (!toggle || !sidebar || !overlay) return;
+            const open = () => {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+                toggle.setAttribute('aria-expanded', 'true');
+                toggle.innerHTML = '<i class="fas fa-times"></i>';
+            };
+            const close = () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.innerHTML = '<i class="fas fa-bars"></i>';
+            };
+            toggle.addEventListener('click', e => {
+                e.stopPropagation();
+                sidebar.classList.contains('open') ? close() : open();
+            });
+            overlay.addEventListener('click', close);
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape' && sidebar.classList.contains('open')) close();
+            });
         }
 
-        // Logout functionality
         function setupLogout() {
             const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function (e) {
-                    e.preventDefault();
-
-                    // Clear user data from localStorage
-                    localStorage.removeItem('userData');
-                    localStorage.removeItem('userProfile');
-
-                    // Redirect to login page
-                    window.location.href = '/';
-                });
-            }
+            if (!logoutBtn) return;
+            logoutBtn.addEventListener('click', event => {
+                event.preventDefault();
+                ['userData', 'userProfile', 'loggedInUser', 'currentUser', 'user', 'loginData', 'authData', 'isLoggedIn'].forEach(key => localStorage.removeItem(key));
+                sessionStorage.clear();
+                window.location.href = '/';
+            });
         }
 
-        // Initialize form functionality
-        function initForm() {
-            const securityForm = document.getElementById('securityForm');
-            if (securityForm) {
-                securityForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-
-                    if (validateForm()) {
-                        saveSecuritySettings();
-                    }
-                });
-            }
-
-            // Two-factor authentication toggle
-            const twoFactorToggle = document.getElementById('twoFactorEnabled');
-            const twoFactorSetup = document.getElementById('twoFactorSetup');
-
-            if (twoFactorToggle && twoFactorSetup) {
-                twoFactorToggle.addEventListener('change', (e) => {
-                    if (e.target.checked) {
-                        twoFactorSetup.classList.add('show');
-                    } else {
-                        twoFactorSetup.classList.remove('show');
-                    }
-                });
-            }
-
-            // REMOVE the setupAccountDropdown() call from here
-            // It's already called directly in DOMContentLoaded
-        }
-
-        // Sample login history data
-        const loginHistory = [
-            {
-                id: 1,
-                device: "Chrome sa Windows",
-                location: "New York, NY, USA",
-                ip: "192.168.1.100",
-                time: "2025-03-20T14:30:00",
-                status: "success"
-            },
-            {
-                id: 2,
-                device: "Safari sa macOS",
-                location: "San Francisco, CA, USA",
-                ip: "192.168.1.101",
-                time: "2025-03-19T09:15:00",
-                status: "success"
-            },
-            {
-                id: 3,
-                device: "Firefox sa Linux",
-                location: "London, UK",
-                ip: "192.168.1.102",
-                time: "2025-03-18T16:45:00",
-                status: "success"
-            },
-            {
-                id: 4,
-                device: "Mobile App iOS",
-                location: "Tokyo, Japan",
-                ip: "192.168.1.103",
-                time: "2025-03-17T22:20:00",
-                status: "success"
-            },
-            {
-                id: 5,
-                device: "Unknown Device",
-                location: "Beijing, China",
-                ip: "192.168.1.104",
-                time: "2025-03-16T03:10:00",
-                status: "failed"
-            }
-        ];
-
-        // Load saved security settings
         function loadSecuritySettings() {
             const savedSettings = JSON.parse(localStorage.getItem('securitySettings') || '{}');
             const twoFactorToggle = document.getElementById('twoFactorEnabled');
             const twoFactorSetup = document.getElementById('twoFactorSetup');
-
-            if (twoFactorToggle && twoFactorSetup && savedSettings.twoFactorEnabled) {
-                twoFactorToggle.checked = true;
-                twoFactorSetup.classList.add('show');
-            }
+            if (!twoFactorToggle || !twoFactorSetup) return;
+            twoFactorToggle.checked = !!savedSettings.twoFactorEnabled;
+            twoFactorSetup.classList.toggle('show', twoFactorToggle.checked);
         }
 
-        // Format date for display
-        function formatDateTime(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', {
+        function validateForm() {
+            const twoFactorToggle = document.getElementById('twoFactorEnabled');
+            const verificationCode = document.getElementById('verificationCode');
+            const verificationCodeError = document.getElementById('verificationCodeError');
+            verificationCode?.classList.remove('error');
+            verificationCodeError?.classList.remove('show');
+            if (twoFactorToggle?.checked && (!verificationCode?.value || verificationCode.value.length !== 6)) {
+                verificationCode?.classList.add('error');
+                verificationCodeError?.classList.add('show');
+                return false;
+            }
+            return true;
+        }
+
+        function saveSecuritySettings() {
+            const twoFactorToggle = document.getElementById('twoFactorEnabled');
+            localStorage.setItem('securitySettings', JSON.stringify({
+                twoFactorEnabled: !!twoFactorToggle?.checked,
+                lastUpdated: new Date().toISOString()
+            }));
+            const successMessage = document.getElementById('successMessage');
+            successMessage?.classList.add('show');
+            setTimeout(() => successMessage?.classList.remove('show'), 3000);
+        }
+
+        function resetForm() {
+            const verificationCode = document.getElementById('verificationCode');
+            const twoFactorToggle = document.getElementById('twoFactorEnabled');
+            const twoFactorSetup = document.getElementById('twoFactorSetup');
+            const verificationCodeError = document.getElementById('verificationCodeError');
+            if (verificationCode) verificationCode.value = '';
+            if (twoFactorToggle) twoFactorToggle.checked = false;
+            twoFactorSetup?.classList.remove('show');
+            verificationCode?.classList.remove('error');
+            verificationCodeError?.classList.remove('show');
+        }
+
+        function initForm() {
+            const securityForm = document.getElementById('securityForm');
+            const twoFactorToggle = document.getElementById('twoFactorEnabled');
+            const twoFactorSetup = document.getElementById('twoFactorSetup');
+            const resetSecurityBtn = document.getElementById('resetSecurityBtn');
+
+            twoFactorToggle?.addEventListener('change', e => {
+                twoFactorSetup?.classList.toggle('show', e.target.checked);
+            });
+            resetSecurityBtn?.addEventListener('click', resetForm);
+            securityForm?.addEventListener('submit', e => {
+                e.preventDefault();
+                if (validateForm()) saveSecuritySettings();
+            });
+        }
+
+        async function apiRequest(path, options = {}) {
+            const response = await fetch(`${API_BASE_URL}${path}`, {
+                ...options,
+                headers: { 'Content-Type': 'application/json', ...(options.headers || {}) }
+            });
+            if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+            return response.json();
+        }
+
+        function normalizeLoginHistory(data) {
+            const rows = Array.isArray(data) ? data : data?.history || data?.loginHistory || data?.data || [];
+            return rows.map((row, index) => ({
+                id: row.id || row.Login_ID || row.login_id || index,
+                device: row.device || row.Device || row.browser || row.Browser || row.user_agent || row.User_Agent || t('unknown_device'),
+                location: row.location || row.Location || row.city || row.City || t('unknown_location'),
+                ip: row.ip || row.IP_Address || row.ip_address || row.IpAddress || t('unknown_ip'),
+                time: row.time || row.Login_Time || row.login_time || row.created_at || row.Created_At || row.Date_Created || row.date,
+                status: String(row.status || row.Status || row.result || row.Result || 'success').toLowerCase().includes('fail') ? 'failed' : 'success'
+            }));
+        }
+
+        async function fetchLoginHistory() {
+            const { id, email } = getUserIdentity();
+            const params = new URLSearchParams();
+            if (id) params.set('user_id', id);
+            if (email) params.set('email', email);
+            const query = params.toString();
+            const endpoints = [
+                `/api/login-history${query ? `?${query}` : ''}`,
+                `/api/user-login-history${query ? `?${query}` : ''}`,
+                `/api/security/login-history${query ? `?${query}` : ''}`
+            ];
+
+            for (const endpoint of endpoints) {
+                try {
+                    const data = await apiRequest(endpoint);
+                    const history = normalizeLoginHistory(data);
+                    if (history.length) return history;
+                } catch (err) {
+                    console.info(`${endpoint} unavailable:`, err.message);
+                }
+            }
+
+            try { return normalizeLoginHistory(JSON.parse(localStorage.getItem('loginHistory') || '[]')); }
+            catch { return []; }
+        }
+
+        function formatDateTime(dateValue) {
+            if (!dateValue) return '';
+            const date = new Date(dateValue);
+            if (Number.isNaN(date.getTime())) return String(dateValue);
+            return date.toLocaleString(undefined, {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric',
@@ -641,138 +560,65 @@
             });
         }
 
-        // Render login history
-        function renderLoginHistory() {
-            const loginHistoryList = document.getElementById('loginHistoryList');
-            if (!loginHistoryList) return;
-
-            loginHistoryList.innerHTML = '';
-
-            loginHistory.forEach(login => {
-                const historyItem = document.createElement('div');
-                historyItem.className = 'history-item';
-
-                // Get current language for status text
-                const currentLang = window.preferencesManager ?
-                    (window.preferencesManager.getCurrentLanguage() || 'en') : 'en';
-                const statusText = currentLang === 'fil' ?
-                    (login.status === 'success' ? 'Matagumpay' : 'Nabigo') :
-                    (login.status === 'success' ? 'Success' : 'Failed');
-
-                historyItem.innerHTML = `
-                <div class="history-icon">
-                    <i class="fas fa-desktop"></i>
-                </div>
-                <div class="history-details">
-                    <div class="history-device">${login.device}</div>
-                    <div class="history-meta">
-                        ${login.location} • ${login.ip} • ${formatDateTime(login.time)}
+        async function renderLoginHistory() {
+            const list = document.getElementById('loginHistoryList');
+            if (!list) return;
+            list.innerHTML = `<div class="activity-meta loading">${t('loading_login_history')}</div>`;
+            try {
+                const history = await fetchLoginHistory();
+                if (!history.length) {
+                    list.innerHTML = `<div class="activity-meta empty">${t('no_login_history')}</div>`;
+                    return;
+                }
+                list.innerHTML = history.map(login => `
+                    <div class="history-item">
+                        <div class="history-icon"><i class="fas ${login.status === 'failed' ? 'fa-triangle-exclamation' : 'fa-desktop'}"></i></div>
+                        <div class="history-details">
+                            <div class="history-device">${login.device}</div>
+                            <div class="history-meta">${login.location} &bull; ${login.ip} &bull; ${formatDateTime(login.time)}</div>
+                        </div>
+                        <div class="history-status status-${login.status}">${login.status === 'failed' ? t('failed') : t('success')}</div>
                     </div>
-                </div>
-                <div class="history-status status-${login.status}">
-                    ${statusText}
-                </div>
-            `;
-                loginHistoryList.appendChild(historyItem);
-            });
-        }
-
-        // Form validation
-        function validateForm() {
-            let isValid = true;
-
-            // Reset errors
-            document.querySelectorAll('.form-error').forEach(error => {
-                error.classList.remove('show');
-            });
-            document.querySelectorAll('.form-input').forEach(input => {
-                input.classList.remove('error');
-            });
-
-            // Validate 2FA if enabled
-            const twoFactorToggle = document.getElementById('twoFactorEnabled');
-            if (twoFactorToggle && twoFactorToggle.checked) {
-                const verificationCode = document.getElementById('verificationCode');
-                if (!verificationCode || !verificationCode.value || verificationCode.value.length !== 6) {
-                    const verificationCodeError = document.getElementById('verificationCodeError');
-                    if (verificationCodeError) verificationCodeError.classList.add('show');
-                    if (verificationCode) verificationCode.classList.add('error');
-                    isValid = false;
-                }
-            }
-
-            return isValid;
-        }
-
-        function saveSecuritySettings() {
-            try {
-                // Collect security settings
-                const twoFactorToggle = document.getElementById('twoFactorEnabled');
-                const securityData = {
-                    twoFactorEnabled: twoFactorToggle ? twoFactorToggle.checked : false,
-                    lastUpdated: new Date().toISOString()
-                };
-
-                // Save to localStorage
-                localStorage.setItem('securitySettings', JSON.stringify(securityData));
-
-                // Show success message
-                const successMessage = document.getElementById('successMessage');
-                if (successMessage) {
-                    successMessage.classList.add('show');
-
-                    // Hide success message after 3 seconds
-                    setTimeout(() => {
-                        successMessage.classList.remove('show');
-                    }, 3000);
-                }
-
-                console.log('Security settings saved:', securityData);
-            } catch (error) {
-                console.error('Error saving security settings:', error);
+                `).join('');
+            } catch (err) {
+                console.error('Login history failed:', err);
+                list.innerHTML = `<div class="activity-meta empty">${t('unable_login_history')}</div>`;
             }
         }
 
-        function resetForm() {
-            try {
-                // Clear verification code
-                const verificationCode = document.getElementById('verificationCode');
-                if (verificationCode) verificationCode.value = '';
-
-                // Reset 2FA toggle
-                const twoFactorToggle = document.getElementById('twoFactorEnabled');
-                const twoFactorSetup = document.getElementById('twoFactorSetup');
-
-                if (twoFactorToggle) twoFactorToggle.checked = false;
-                if (twoFactorSetup) twoFactorSetup.classList.remove('show');
-
-                // Reset errors
-                document.querySelectorAll('.form-error').forEach(error => {
-                    error.classList.remove('show');
-                });
-                document.querySelectorAll('.form-input').forEach(input => {
-                    input.classList.remove('error');
-                });
-            } catch (error) {
-                console.error('Error resetting form:', error);
-            }
+        function syncMobileOverlay() {
+            const overlay = document.getElementById('mobileBlockOverlay');
+            if (!overlay) return;
+            overlay.style.display = document.body.classList.contains('mobile-block-active') ? 'flex' : '';
         }
 
-        // Listen for language changes from preference-manager.js
-        document.addEventListener('languageChanged', function (e) {
-            console.log('Language changed to:', e.detail.language);
-            applyTranslations(e.detail.language);
-            renderLoginHistory(); // Re-render with new language
+        function refreshSecurityPage() {
+            syncAccountMenu();
+            applyLanguage();
+            renderLoginHistory();
+        }
+
+        document.addEventListener('languageChanged', refreshSecurityPage);
+        document.addEventListener('languageReloaded', refreshSecurityPage);
+        document.addEventListener('userDataChanged', () => setTimeout(refreshSecurityPage, 100));
+        window.addEventListener('storage', e => {
+            if (['dashboardLanguage', 'preferredLanguage', 'langReloadTimestamp', 'userData', 'userProfile'].includes(e.key)) {
+                setTimeout(refreshSecurityPage, 100);
+            }
         });
 
-        // Listen for user data changes
-        document.addEventListener('userDataChanged', function (e) {
-            console.log('User data changed event received:', e.detail);
-            // Update display if needed
-            if (window.userDataManager) {
-                window.userDataManager.updateHeaderAvatar();
-                window.userDataManager.updateUserInfo();
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.userDataManager) window.userDataManager.initializeUserDisplay();
+            if (window.preferencesManager) window.preferencesManager.initialize();
+            if (window.ThemeManager) window.ThemeManager.applySavedTheme();
+            setupAccountDropdown();
+            setupMenuToggle();
+            setupLogout();
+            loadSecuritySettings();
+            initForm();
+            syncMobileOverlay();
+            window.addEventListener('resize', () => setTimeout(syncMobileOverlay, 20));
+            setTimeout(refreshSecurityPage, 100);
         });
     </script>
 </body>

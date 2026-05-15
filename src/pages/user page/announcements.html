@@ -1,219 +1,275 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title data-translate="announcements_page_title">Announcements - AlliTrack</title>
+    <title data-translate="announcements_page_title">
+        Announcements - AlliTrack
+    </title>
     <script src="../../scripts/theme.js"></script>
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
     <link rel="stylesheet" href="../../styles/user page/announcements.css" />
-    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
-    <script src="../../scripts/mobile-restriction.js"></script>
-    <script src="../../scripts/user-preference-manager.js"></script>
-    <script src="../../scripts/user-data-manager.js"></script>
+    <script src="../../scripts/mobile-restriction.js" defer></script>
+    <script src="../../scripts/user-preference-manager.js" defer></script>
+    <script src="../../scripts/user-data-manager.js" defer></script>
 </head>
 
 <body>
-    <!-- Mobile Access Denied Modal -->
-    <div class="mobile-block-overlay">
+    <div class="mobile-block-overlay" id="mobileBlockOverlay">
         <div class="mobile-block-card">
             <i class="fas fa-laptop"></i>
             <h2 data-translate="mobile_restricted">Desktop only</h2>
-            <p data-translate="mobile_block_message">User dashboard is optimized for larger screens. Please open on a
-                desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to
-                Home</button>
+            <p data-translate="mobile_block_message">
+                User dashboard is optimized for larger screens. Please open on a
+                desktop or tablet in landscape mode.
+            </p>
+            <button class="btn btn-primary" onclick="window.location.href = '/'" data-translate="go_back">
+                Back to Home
+            </button>
         </div>
     </div>
 
-    <div class="app">
-        <div class="shell">
-            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
-                <div class="brand">
-                    <div class="logo">
-                        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
-                            style="width: 32px; height: 32px;">
-                    </div>
-                    <div>
-                        <div class="title">AlliTrack</div>
-                        <div class="subtitle" data-translate="user_dashboard">User Dashboard</div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main Sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" onerror="
+              this.style.display = 'none';
+              this.parentElement.innerHTML = '<i class=\'fas fa-bolt\'></i>';
+            " />
+            </div>
+            <div class="brand-text">
+                <div class="name">AlliTrack</div>
+                <div class="sub" data-translate="user_dashboard">User Console</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-group-label" data-translate="overview">OVERVIEW</div>
+            <a href="/user/index-user.html" class="nav-item" data-section="dashboard"><i class="fas fa-chart-line"></i>
+                <span data-translate="dashboard">Dashboard</span></a>
+
+            <div class="nav-group-label" data-translate="support">SUPPORT</div>
+            <a href="/user/my-tickets.html" class="nav-item" data-section="tickets"><i class="fas fa-ticket-alt"></i>
+                <span data-translate="my_tickets">My Tickets</span></a>
+            <a href="/user/notifications.html" class="nav-item" data-section="notifications"><i class="fas fa-bell"></i>
+                <span data-translate="notifications">Notifications</span></a>
+            <a href="/user/submit-ticket.html" class="nav-item" data-section="submit-ticket"><i
+                    class="fas fa-plus-circle"></i>
+                <span data-translate="submit_ticket">Submit a Ticket</span></a>
+
+            <div class="nav-group-label" data-translate="management">
+                MANAGEMENT
+            </div>
+            <a href="/user/preferences.html" class="nav-item" data-section="preferences"><i
+                    class="fas fa-sliders-h"></i>
+                <span data-translate="preferences">Preferences</span></a>
+            <a href="/user/profile-settings.html" class="nav-item" data-section="profile-settings"><i
+                    class="fas fa-user-cog"></i>
+                <span data-translate="profile_settings">Profile Settings</span>
+                <span id="profileRedDot" class="red-dot" style="display: none"></span></a>
+            <a href="/user/announcements.html" class="nav-item active" data-section="announcements"
+                id="announcementLink"><i class="fas fa-bullhorn"></i>
+                <span data-translate="announcements">Announcements</span>
+                <span id="navRedDot" class="red-dot" style="display: none"></span></a>
+
+            <div class="nav-group-label" data-translate="system">SYSTEM</div>
+            <a href="/user/account-security.html" class="nav-item" data-section="account-security"><i
+                    class="fas fa-shield-alt"></i>
+                <span data-translate="account_security">Account Security</span></a>
+            <a href="/user/system-information.html" class="nav-item" data-section="system-information"><i
+                    class="fas fa-scale-balanced"></i> <span data-translate="system_information">Legal Center</span></a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div>v1.2.0 &mdash; Business Alliance Inc.</div>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle" aria-label="Open sidebar" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span data-translate="user_dashboard">User</span>
+                <span class="crumb-sep"><i class="fas fa-chevron-right" style="font-size: 0.6rem"></i></span>
+                <span class="crumb-current" data-translate="announcements_title">Announcements</span>
+            </div>
+            <div class="topbar-right">
+                <div class="account-wrap">
+                    <button class="account-btn" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar-btn" id="userAvatar">U</div>
+                        <div class="account-info">
+                            <div class="a-name" id="userNameDisplay">User</div>
+                            <div class="a-email" id="userEmailDisplay"></div>
+                        </div>
+                        <i class="fas fa-chevron-down account-chevron"></i>
+                    </button>
+                    <div class="account-menu" id="accountMenu">
+                        <div class="account-menu-header">
+                            <div class="amh-name" id="menuUserName">User</div>
+                            <div class="amh-email" id="menuUserEmail"></div>
+                        </div>
+                        <a href="/user/profile-settings.html" data-translate="profile"><i class="fas fa-user"></i>
+                            Profile</a>
+                        <a href="/user/preferences.html" data-translate="settings"><i class="fas fa-cog"></i>
+                            Settings</a>
+                        <a href="/" id="logoutBtn" class="logout" data-translate="logout"><i
+                                class="fas fa-sign-out-alt"></i> Logout</a>
                     </div>
                 </div>
-                <nav class="nav">
-                    <a href="/user/index-user.html" data-section="dashboard">
-                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
-                    </a>
+            </div>
+        </header>
 
-                    <div class="nav-section" data-translate="support">Support</div>
-                    <a href="/user/my-tickets.html" data-section="tickets">
-                        <i class="fas fa-ticket-alt"></i> <span data-translate="my_tickets">My Tickets</span>
-                    </a>
-                    <a href="/user/notifications.html" data-section="notifications">
-                        <i class="fas fa-bell"></i> <span data-translate="notifications">Notifications</span>
-                    </a>
-                    <a href="/user/submit-ticket.html" data-section="submit-ticket">
-                        <i class="fas fa-plus-circle"></i> <span data-translate="submit_ticket">Submit a Ticket</span>
-                    </a>
-
-                    <div class="nav-section" data-translate="management">Management</div>
-                    <a href="/user/preferences.html" data-section="preferences">
-                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
-                    </a>
-                    <a href="/user/profile-settings.html" >
-                        <i class="fas fa-user-cog"></i> Profile Settings
-                        <span id="profileRedDot" class="red-dot" style="display:none;"></span>
-                    </a>
-                    <a href="/user/announcements.html" id="announcementLink" class="active"
-                        data-section="announcements">
+        <div class="content">
+            <div class="page-header">
+                <div class="page-title-group">
+                    <div class="eyebrow">
                         <i class="fas fa-bullhorn"></i>
                         <span data-translate="announcements">Announcements</span>
-                        <span id="navRedDot" class="red-dot" style="display: none;"></span>
-                    </a>
-
-                    <div class="nav-section" data-translate="system">System</div>
-                    <a href="/user/account-security.html" data-section="account-security">
-                        <i class="fas fa-shield-alt"></i> <span data-translate="account_security">Account
-                            Security</span>
-                    </a>
-                    <a href="/user/system-information.html" data-section="system-information">
-                        <i class="fas fa-info-circle"></i> <span data-translate="system_information">System
-                            Information</span>
-                    </a>
-                </nav>
-                <div class="sidebar-footer">
-                    <div class="version">v1.2.0</div>
-                    <div>Business Alliance Inc.</div>
+                    </div>
+                    <h1 data-translate="announcements_title">Announcements</h1>
+                    <p class="desc">
+                        Read the latest notices and updates from the AlliTrack team.
+                    </p>
                 </div>
-            </aside>
+            </div>
 
-            <!-- Main Content Area -->
-            <main class="main">
-                <!-- Header -->
-                <header class="header">
-                    <div class="search" role="search" aria-label="Search Tickets">
-                        <i class="fas fa-search" style="opacity:.6"></i>
-                        <input id="q" placeholder="Search announcements..."
-                            data-translate-placeholder="search_announcements" aria-label="Search announcements" />
-                    </div>
-                    <div class="header-actions">
-                        <div style="text-align:right">
-                            <div id="userName" style="font-weight:700">User</div>
-                            <div id="userEmail" style="font-size:.82rem;color:var(--muted)">user@example.com</div>
-                        </div>
-                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div id="userAvatar" class="avatar">U</div>
-                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
-                        </div>
-                        <div class="account-menu" id="accountMenu">
-                            <div class="arrow"></div>
-                            <a href="/user/profile-settings.html" data-translate="profile">Profile</a>
-                            <a href="/user/preferences.html" data-translate="settings">Settings</a>
-                            <a href="#" id="logoutBtn" data-translate="logout">Logout</a>
-                        </div>
-                    </div>
-                </header>
-
-                <!-- Announcements Content -->
-                <div class="content">
-                    <div class="announcements-content">
-                        <!-- Header with Container -->
-                        <div class="announcements-header-container">
-                            <div class="announcements-header">
-                                <h1><i class="fas fa-bullhorn"></i> <span
-                                        data-translate="announcements_title">Announcements</span></h1>
-                                <div class="announcements-controls">
-                                    <div class="filter-group">
-                                        <button class="filter-btn active" data-filter="all"
-                                            data-translate="filter_all">All</button>
-                                        <button class="filter-btn" data-filter="unread"
-                                            data-translate="filter_unread">Unread</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Statistics -->
-                        <div class="announcement-stats">
-                            <div class="stat-card">
-                                <div class="stat-icon icon-notice"><i class="fas fa-bullhorn"></i></div>
-                                <div class="stat-info">
-                                    <div class="stat-count" id="totalAnnouncements">0</div>
-                                    <div class="stat-label" data-translate="total_announcements">Total Announcements
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-icon icon-maintenance"><i class="fas fa-envelope-open"></i></div>
-                                <div class="stat-info">
-                                    <div class="stat-count" id="unreadCount">0</div>
-                                    <div class="stat-label" data-translate="unread_announcements">Unread Announcements
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Announcements Grid -->
-                        <div class="announcements-grid" id="announcementsContainer">
-                            <!-- Announcements will be dynamically inserted here -->
-                        </div>
-                    </div>
+            <div class="announcements-toolbar card">
+                <div class="toolbar-search" role="search" aria-label="Search announcements">
+                    <i class="fas fa-search"></i>
+                    <input id="q" type="search" placeholder="Search announcements..."
+                        data-translate-placeholder="search_announcements" aria-label="Search announcements" />
                 </div>
-
-                <!-- Announcement Detail Modal -->
-                <div class="modal" id="announcementDetailModal">
-                    <div class="modal-content announcement-modal">
-                        <div class="modal-header">
-                            <h3 id="detailTitle"></h3>
-                            <button class="modal-close" onclick="closeAnnouncementModal()">&times;</button>
-                        </div>
-
-                        <div class="modal-body">
-                            <div class="announcement-meta">
-                                <i class="far fa-clock"></i>
-                                <span id="detailDate"></span>
-                            </div>
-
-                            <div class="announcement-message" id="detailMessage"></div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button class="action-btn" onclick="closeAnnouncementModal()">Close</button>
-                        </div>
-                    </div>
+                <div class="filter-group" role="group" aria-label="Announcement filters">
+                    <button class="filter-btn active" data-filter="all" data-translate="filter_all">
+                        All
+                    </button>
+                    <button class="filter-btn" data-filter="unread" data-translate="filter_unread">
+                        Unread
+                    </button>
                 </div>
+            </div>
 
-                <!-- Footer -->
-                <footer class="site-footer">
-                    <div>&copy; 2025 Business Alliance Inc.</div>
-                    <div data-translate="footer_text">AlliTrack User Dashboard</div>
-                </footer>
-            </main>
+            <div class="section-label">
+                <span data-translate="announcements_title">Announcements</span>
+            </div>
+
+            <section class="announcement-list-card" aria-live="polite">
+                <div class="announcements-grid" id="announcementsContainer">
+                    <!-- Announcements will be dynamically inserted here -->
+                </div>
+            </section>
         </div>
+
+        <div class="modal" id="announcementDetailModal">
+            <div class="modal-content announcement-modal">
+                <div class="modal-header">
+                    <h3 id="detailTitle"></h3>
+                    <button class="modal-close" onclick="closeAnnouncementModal()">
+                        &times;
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="announcement-meta">
+                        <i class="far fa-clock"></i>
+                        <span id="detailDate"></span>
+                    </div>
+
+                    <div class="announcement-message" id="detailMessage"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="action-btn" onclick="closeAnnouncementModal()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            <div>&copy; 2025 Business Alliance Inc.</div>
+            <div data-translate="footer_text">AlliTrack User Dashboard</div>
+        </footer>
     </div>
 
     <script>
-        if (typeof API_BASE_URL === 'undefined') {
-            window.API_BASE_URL = 
-                window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+        function setupMenuToggle() {
+            const toggle = document.getElementById("menuToggle");
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("sidebarOverlay");
+            if (!toggle || !sidebar || !overlay) return;
+
+            const open = () => {
+                sidebar.classList.add("open");
+                overlay.classList.add("active");
+                toggle.setAttribute("aria-expanded", "true");
+                toggle.innerHTML = '<i class="fas fa-times"></i>';
+            };
+            const close = () => {
+                sidebar.classList.remove("open");
+                overlay.classList.remove("active");
+                toggle.setAttribute("aria-expanded", "false");
+                toggle.innerHTML = '<i class="fas fa-bars"></i>';
+            };
+
+            toggle.addEventListener("click", (e) => {
+                e.stopPropagation();
+                sidebar.classList.contains("open") ? close() : open();
+            });
+            overlay.addEventListener("click", close);
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape" && sidebar.classList.contains("open")) close();
+            });
+        }
+
+        function syncMobileOverlay() {
+            const overlay = document.getElementById("mobileBlockOverlay");
+            if (!overlay) return;
+            overlay.style.display = document.body.classList.contains(
+                "mobile-block-active",
+            )
+                ? "flex"
+                : "";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            setupMenuToggle();
+            syncMobileOverlay();
+            window.addEventListener("resize", () =>
+                setTimeout(syncMobileOverlay, 20),
+            );
+        });
+    </script>
+
+    <script>
+        if (typeof API_BASE_URL === "undefined") {
+            window.API_BASE_URL =
+                window.location.hostname === "127.0.0.1" ||
+                    window.location.hostname === "localhost"
                     ? "http://127.0.0.1:5000/api"
                     : "https://group6-bizally.onrender.com/api";
         }
 
-        // Similarly for the socket to avoid conflicts
-        if (typeof socket === 'undefined') {
-            window.socket = io(
-                window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
-                    ? "http://127.0.0.1:5000"
-                    : "https://group6-bizally.onrender.com"
-            );
+        // Keep the existing database/API connection and Socket.IO endpoint.
+        if (typeof socket === "undefined") {
+            window.socket = io(getSocketServerUrl());
         }
 
         // Account Dropdown Functionality - FIXED
         function setupAccountDropdown() {
-            console.log('Setting up account dropdown...');
+            console.log("Setting up account dropdown...");
             const accountBtn = document.getElementById("accountBtn");
             const accountMenu = document.getElementById("accountMenu");
 
@@ -238,150 +294,213 @@
                 });
 
                 document.addEventListener("click", function (e) {
-                    if (!refreshedBtn.contains(e.target) && !refreshedMenu.contains(e.target)) {
+                    if (
+                        !refreshedBtn.contains(e.target) &&
+                        !refreshedMenu.contains(e.target)
+                    ) {
                         refreshedMenu.classList.remove("show");
                         refreshedBtn.setAttribute("aria-expanded", false);
                     }
                 });
 
                 document.addEventListener("keydown", function (e) {
-                    if (e.key === "Escape" && refreshedMenu.classList.contains("show")) {
+                    if (
+                        e.key === "Escape" &&
+                        refreshedMenu.classList.contains("show")
+                    ) {
                         refreshedMenu.classList.remove("show");
                         refreshedBtn.setAttribute("aria-expanded", false);
                     }
                 });
 
                 const menuItems = refreshedMenu.querySelectorAll("a");
-                menuItems.forEach(item => {
+                menuItems.forEach((item) => {
                     item.addEventListener("click", function () {
                         refreshedMenu.classList.remove("show");
                         refreshedBtn.setAttribute("aria-expanded", false);
                     });
                 });
 
-                refreshedBtn.style.cursor = 'pointer';
+                refreshedBtn.style.cursor = "pointer";
             }
         }
 
         // Translation dictionary for announcements page
         const translations = {
-            'en': {
+            en: {
                 // PAGE-SPECIFIC translations only:
-                'announcements_page_title': 'Announcements - AlliTrack',
-                'announcements_title': 'Announcements',
-                'search_announcements': 'Search announcements...',
-                'filter_all': 'All',
-                'filter_notice': 'Notices',
-                'filter_maintenance': 'Maintenance',
-                'filter_feature': 'Features',
-                'filter_unread': 'Unread',
-                'total_announcements': 'Total Announcements',
-                'unread_announcements': 'Unread Announcements',
-                'new_features': 'New Features',
-                'footer_text': 'AlliTrack User Dashboard',
+                announcements_page_title: "Announcements - AlliTrack",
+                announcements_title: "Announcements",
+                search_announcements: "Search announcements...",
+                filter_all: "All",
+                filter_notice: "Notices",
+                filter_maintenance: "Maintenance",
+                filter_feature: "Features",
+                filter_unread: "Unread",
+                total_announcements: "Total Announcements",
+                unread_announcements: "Unread Announcements",
+                new_features: "New Features",
+                footer_text: "AlliTrack User Dashboard",
 
                 // Dynamic content translations
-                'just_now': 'Just now',
-                'min_ago': 'min ago',
-                'hr_ago': 'hr ago',
-                'yesterday': 'Yesterday',
-                'days_ago': 'days ago',
+                just_now: "Just now",
+                min_ago: "min ago",
+                hr_ago: "hr ago",
+                yesterday: "Yesterday",
+                days_ago: "days ago",
 
                 // Empty state
-                'empty_state_title': 'No announcements found',
-                'empty_state_description': 'Try adjusting your filters or check back later for updates',
+                empty_state_title: "No announcements found",
+                empty_state_description:
+                    "Try adjusting your filters or check back later for updates",
 
                 // Button text
-                'mark_as_read': 'Mark as Read',
-                'view_details': 'View Details',
-                'share': 'Share',
+                mark_as_read: "Mark as Read",
+                view_details: "View Details",
+                share: "Share",
 
                 // Priority labels
-                'high_priority': 'High Priority',
-                'medium_priority': 'Medium Priority',
-                'low_priority': 'Low Priority',
+                high_priority: "High Priority",
+                medium_priority: "Medium Priority",
+                low_priority: "Low Priority",
 
                 // Announcement types
-                'company_notice': 'Company Notice',
-                'maintenance_alert': 'Maintenance Alert',
-                'maintenance_update': 'Maintenance Update',
-                'new_feature': 'New Feature',
-                'urgent': 'Urgent'
+                company_notice: "Company Notice",
+                maintenance_alert: "Maintenance Alert",
+                maintenance_update: "Maintenance Update",
+                new_feature: "New Feature",
+                urgent: "Urgent",
             },
-            'fil': {
+            fil: {
                 // PAGE-SPECIFIC translations only:
-                'announcements_page_title': 'Mga Anunsyo - AlliTrack',
-                'announcements_title': 'Mga Anunsyo',
-                'search_announcements': 'Maghanap ng mga anunsyo...',
-                'filter_all': 'Lahat',
-                'filter_notice': 'Mga Abiso',
-                'filter_maintenance': 'Paggawa',
-                'filter_feature': 'Mga Tampok',
-                'filter_unread': 'Hindi Nabasa',
-                'total_announcements': 'Kabuuang Mga Anunsyo',
-                'unread_announcements': 'Hindi pa Nababasang Mga Anunsyo',
-                'new_features': 'Mga Bagong Feature',
-                'footer_text': 'Dashboard ng User ng AlliTrack',
+                announcements_page_title: "Mga Anunsyo - AlliTrack",
+                announcements_title: "Mga Anunsyo",
+                search_announcements: "Maghanap ng mga anunsyo...",
+                filter_all: "Lahat",
+                filter_notice: "Mga Abiso",
+                filter_maintenance: "Paggawa",
+                filter_feature: "Mga Tampok",
+                filter_unread: "Hindi Nabasa",
+                total_announcements: "Kabuuang Mga Anunsyo",
+                unread_announcements: "Hindi pa Nababasang Mga Anunsyo",
+                new_features: "Mga Bagong Feature",
+                footer_text: "Dashboard ng User ng AlliTrack",
 
                 // Dynamic content translations
-                'just_now': 'Ngayon lang',
-                'min_ago': 'min ang nakalipas',
-                'hr_ago': 'oras ang nakalipas',
-                'yesterday': 'Kahapon',
-                'days_ago': 'araw ang nakalipas',
+                just_now: "Ngayon lang",
+                min_ago: "min ang nakalipas",
+                hr_ago: "oras ang nakalipas",
+                yesterday: "Kahapon",
+                days_ago: "araw ang nakalipas",
 
                 // Empty state
-                'empty_state_title': 'Walang nakitang mga anunsyo',
-                'empty_state_description': 'Subukang ayusin ang iyong mga filter o bumalik mamaya para sa mga update',
+                empty_state_title: "Walang nakitang mga anunsyo",
+                empty_state_description:
+                    "Subukang ayusin ang iyong mga filter o bumalik mamaya para sa mga update",
 
                 // Button text
-                'mark_as_read': 'Markahan bilang Nabasa',
-                'view_details': 'Tingnan ang mga Detalye',
-                'share': 'I-share',
+                mark_as_read: "Markahan bilang Nabasa",
+                view_details: "Tingnan ang mga Detalye",
+                share: "I-share",
 
                 // Priority labels
-                'high_priority': 'Mataas na Priority',
-                'medium_priority': 'Katamtamang Priority',
-                'low_priority': 'Mababang Priority',
+                high_priority: "Mataas na Priority",
+                medium_priority: "Katamtamang Priority",
+                low_priority: "Mababang Priority",
 
                 // Announcement types
-                'company_notice': 'Notice ng Kumpanya',
-                'maintenance_alert': 'Alert sa Maintenance',
-                'maintenance_update': 'Update sa Maintenance',
-                'new_feature': 'Bagong Feature',
-                'urgent': 'Urgent'
-            }
+                company_notice: "Notice ng Kumpanya",
+                maintenance_alert: "Alert sa Maintenance",
+                maintenance_update: "Update sa Maintenance",
+                new_feature: "Bagong Feature",
+                urgent: "Urgent",
+            },
         };
 
+        function getApiBaseUrl() {
+            const configuredBase = String(window.API_BASE_URL || "").trim();
+            if (configuredBase) {
+                return configuredBase.endsWith("/api")
+                    ? configuredBase
+                    : `${configuredBase}/api`;
+            }
+
+            const isLocal =
+                window.location.hostname === "127.0.0.1" ||
+                window.location.hostname === "localhost";
+            return isLocal
+                ? "http://127.0.0.1:5000/api"
+                : "https://group6-bizally.onrender.com/api";
+        }
+
+        function getSocketServerUrl() {
+            const isLocal =
+                window.location.hostname === "127.0.0.1" ||
+                window.location.hostname === "localhost";
+            return isLocal
+                ? "http://127.0.0.1:5000"
+                : "https://group6-bizally.onrender.com";
+        }
+
+        function showToast(message, type = "info") {
+            let toast = document.getElementById("announcementToast");
+            if (!toast) {
+                toast = document.createElement("div");
+                toast.id = "announcementToast";
+                toast.className = "toast";
+                toast.setAttribute("role", "status");
+                toast.setAttribute("aria-live", "polite");
+                document.body.appendChild(toast);
+            }
+
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            clearTimeout(window.announcementToastTimer);
+            window.announcementToastTimer = setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2600);
+        }
+
+        function updateAnnouncementRedDot() {
+            const redDot = document.getElementById("navRedDot");
+            if (!redDot) return;
+            redDot.style.display = announcements.some((a) => a.unread)
+                ? "inline-block"
+                : "none";
+        }
+
         // Initialize the page when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('Announcements: Starting initialization...');
+        document.addEventListener("DOMContentLoaded", function () {
+            console.log("Announcements: Starting initialization...");
 
             // Initialize user data manager FIRST
             if (window.userDataManager) {
-                console.log('User Data Manager found, initializing user display...');
+                console.log("User Data Manager found, initializing user display...");
                 window.userDataManager.initializeUserDisplay();
 
                 // Check what user data is available
                 const userData = window.userDataManager.getUserData();
-                console.log('User Data from manager:', userData);
-                console.log('Profile picture URL:', userData.photo);
+                console.log("User Data from manager:", userData);
+                console.log("Profile picture URL:", userData.photo);
             } else {
-                console.error('User Data Manager NOT FOUND! Check if user-data-manager.js is loaded.');
+                console.error(
+                    "User Data Manager NOT FOUND! Check if user-data-manager.js is loaded.",
+                );
             }
 
             // Initialize preferences manager
             if (window.preferencesManager) {
-                console.log('Announcements: Initializing Preferences Manager...');
+                console.log("Announcements: Initializing Preferences Manager...");
                 window.preferencesManager.initialize();
 
                 // Apply theme immediately
                 // Get current language from preferences manager
-                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
+                const currentLang =
+                    window.preferencesManager.getCurrentLanguage() || "en";
                 applyTranslations(currentLang);
             } else {
-                console.error('Announcements: preferencesManager not found!');
-                applyTranslations('en'); // Default to English
+                console.error("Announcements: preferencesManager not found!");
+                applyTranslations("en"); // Default to English
             }
 
             // Setup theme listener
@@ -394,62 +513,77 @@
             // Initialize announcements functionality
             initAnnouncements(); // first load
 
-            socket.on("announcement_updated", () => {
-                console.log("✏️ Announcement updated");
-                initAnnouncements();
-                showToast("Announcement updated");
-            });
+            if (window.socket) {
+                socket.on("announcement_created", () => {
+                    console.log("Announcement created");
+                    initAnnouncements();
+                    showToast("New announcement received", "success");
+                });
 
-            socket.on("announcement_deleted", () => {
-                console.log("🗑️ Announcement deleted");
-                initAnnouncements();
-                showToast("Announcement deleted");
-            });
+                socket.on("new_announcement", () => {
+                    console.log("New announcement received");
+                    initAnnouncements();
+                    showToast("New announcement received", "success");
+                });
+
+                socket.on("announcement_updated", () => {
+                    console.log("Announcement updated");
+                    initAnnouncements();
+                    showToast("Announcement updated", "info");
+                });
+
+                socket.on("announcement_deleted", () => {
+                    console.log("Announcement deleted");
+                    initAnnouncements();
+                    showToast("Announcement deleted", "info");
+                });
+            }
         });
 
         // Setup theme listener
 
-
         // Apply translations to the page
         function applyTranslations(language) {
-            const lang = translations[language] ? language : 'en';
+            const lang = translations[language] ? language : "en";
             const dict = translations[lang];
 
             // Translate all elements with data-translate attribute
-            document.querySelectorAll('[data-translate]').forEach(element => {
-                const key = element.getAttribute('data-translate');
+            document.querySelectorAll("[data-translate]").forEach((element) => {
+                const key = element.getAttribute("data-translate");
                 if (dict[key]) {
                     element.textContent = dict[key];
                 }
             });
 
             // Translate all placeholder texts
-            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
-                const key = element.getAttribute('data-translate-placeholder');
-                if (dict[key]) {
-                    element.placeholder = dict[key];
-                }
-            });
+            document
+                .querySelectorAll("[data-translate-placeholder]")
+                .forEach((element) => {
+                    const key = element.getAttribute("data-translate-placeholder");
+                    if (dict[key]) {
+                        element.placeholder = dict[key];
+                    }
+                });
 
             // Update page title
-            if (dict['announcements_page_title']) {
-                document.title = dict['announcements_page_title'];
+            if (dict["announcements_page_title"]) {
+                document.title = dict["announcements_page_title"];
             }
         }
 
         // Logout functionality
         function setupLogout() {
-            const logoutBtn = document.getElementById('logoutBtn');
+            const logoutBtn = document.getElementById("logoutBtn");
             if (logoutBtn) {
-                logoutBtn.addEventListener('click', function (e) {
+                logoutBtn.addEventListener("click", function (e) {
                     e.preventDefault();
 
                     // Clear user data from localStorage
-                    localStorage.removeItem('userData');
-                    localStorage.removeItem('userProfile');
+                    localStorage.removeItem("userData");
+                    localStorage.removeItem("userProfile");
 
                     // Redirect to login page
-                    window.location.href = '/';
+                    window.location.href = "/";
                 });
             }
         }
@@ -458,7 +592,7 @@
         let announcementListenersReady = false;
 
         async function initAnnouncements() {
-            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            const userData = JSON.parse(localStorage.getItem("userData") || "{}");
             const userId =
                 userData.user_id ||
                 userData.id ||
@@ -470,7 +604,9 @@
                 return;
             }
             try {
-                const response = await fetch(`${API_BASE_URL.includes('/api') ? API_BASE_URL : API_BASE_URL + '/api'}/user/announcements/all/${userId}`);
+                const response = await fetch(
+                    `${getApiBaseUrl()}/user/announcements/all/${encodeURIComponent(userId)}`,
+                );
 
                 if (!response.ok) {
                     throw new Error(`Server returned ${response.status}`);
@@ -479,11 +615,15 @@
                 const data = await response.json();
 
                 if (Array.isArray(data)) {
-                    announcements = data.map(ann => {
+                    announcements = data.map((ann) => {
                         const id = ann.announcement_id || ann.Announcement_ID;
                         const title = ann.title || ann.Title || "";
                         const message = ann.message || ann.Message || "";
-                        const priority = (ann.priority || ann.Priority || "normal").toLowerCase();
+                        const priority = (
+                            ann.priority ||
+                            ann.Priority ||
+                            "normal"
+                        ).toLowerCase();
 
                         return {
                             id,
@@ -493,11 +633,12 @@
                             priority,
                             unread: Number(ann.is_read || 0) === 0,
                             date: ann.created_at || ann.Created_At,
-                            author: ann.created_by || ann.Created_By || "System Admin"
+                            author: ann.created_by || ann.Created_By || "System Admin",
                         };
                     });
 
                     updateStats();
+                    updateAnnouncementRedDot();
                     filterAnnouncements("all");
                 }
             } catch (error) {
@@ -506,22 +647,22 @@
 
             // 4. KEEPING YOUR ORIGINAL LISTENERS (FIXED)
             if (!announcementListenersReady) {
-                const filterButtons = document.querySelectorAll('.filter-btn');
+                const filterButtons = document.querySelectorAll(".filter-btn");
 
                 if (filterButtons) {
-                    filterButtons.forEach(btn => {
-                        btn.addEventListener('click', function () {
-                            filterButtons.forEach(b => b.classList.remove('active'));
-                            this.classList.add('active');
-                            filterAnnouncements(this.getAttribute('data-filter'));
+                    filterButtons.forEach((btn) => {
+                        btn.addEventListener("click", function () {
+                            filterButtons.forEach((b) => b.classList.remove("active"));
+                            this.classList.add("active");
+                            filterAnnouncements(this.getAttribute("data-filter"));
                         });
                     });
                 }
 
-                const searchInput = document.getElementById('q');
+                const searchInput = document.getElementById("q");
                 if (searchInput) {
-                    searchInput.addEventListener('input', () =>
-                        filterAnnouncements(getActiveFilter())
+                    searchInput.addEventListener("input", () =>
+                        filterAnnouncements(getActiveFilter()),
                     );
                 }
 
@@ -536,7 +677,9 @@
             const value = String(dateString).trim();
 
             // Match: 2026-05-02 18:39:23
-            const match = value.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+            const match = value.match(
+                /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/,
+            );
 
             if (match) {
                 const [, year, month, day, hour, minute, second = "0"] = match;
@@ -548,7 +691,7 @@
                     Number(day),
                     Number(hour),
                     Number(minute),
-                    Number(second)
+                    Number(second),
                 );
             }
 
@@ -562,13 +705,13 @@
             const date = parseLocalDateTime(dateString);
             if (!date) return "—";
 
-            return date.toLocaleString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
+            return date.toLocaleString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
             });
         }
 
@@ -577,19 +720,23 @@
             if (!text) return "";
 
             return escapeHTML(text)
-                .replace(/\n\n/g, "<br><br>")   // paragraph spacing
-                .replace(/\n/g, "<br>")         // line breaks
-                .replace(/^- /gm, "• ");        // bullet points
+                .replace(/\n\n/g, "<br><br>") // paragraph spacing
+                .replace(/\n/g, "<br>") // line breaks
+                .replace(/^- /gm, "• "); // bullet points
         }
 
         function escapeHTML(value) {
-            return String(value || "").replace(/[&<>"']/g, char => ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#039;"
-            }[char]));
+            return String(value || "").replace(
+                /[&<>"']/g,
+                (char) =>
+                    ({
+                        "&": "&amp;",
+                        "<": "&lt;",
+                        ">": "&gt;",
+                        '"': "&quot;",
+                        "'": "&#039;",
+                    })[char],
+            );
         }
 
         /* 3. Format date as relative time (e.g. "Just now", "5 min ago", "Yesterday") */
@@ -607,14 +754,15 @@
             const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
             const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
-            const currentLang = window.preferencesManager?.getCurrentLanguage() || 'en';
-            const dict = translations[currentLang] || translations['en'];
+            const currentLang =
+                window.preferencesManager?.getCurrentLanguage() || "en";
+            const dict = translations[currentLang] || translations["en"];
 
-            if (diffInMinutes < 1) return dict['just_now'] || 'Just now';
-            if (diffInMinutes < 60) return `${diffInMinutes} ${dict['min_ago']}`;
-            if (diffInHours < 24) return `${diffInHours} ${dict['hr_ago']}`;
-            if (diffInDays === 1) return dict['yesterday'] || 'Yesterday';
-            if (diffInDays < 7) return `${diffInDays} ${dict['days_ago']}`;
+            if (diffInMinutes < 1) return dict["just_now"] || "Just now";
+            if (diffInMinutes < 60) return `${diffInMinutes} ${dict["min_ago"]}`;
+            if (diffInHours < 24) return `${diffInHours} ${dict["hr_ago"]}`;
+            if (diffInDays === 1) return dict["yesterday"] || "Yesterday";
+            if (diffInDays < 7) return `${diffInDays} ${dict["days_ago"]}`;
 
             return formatDate(dateString);
         }
@@ -622,81 +770,82 @@
         // Get icon class based on announcement type
         function getIconClass(type) {
             switch (type) {
-                case 'notice':
-                    return 'icon-notice';
-                case 'maintenance':
-                    return 'icon-maintenance';
-                case 'feature':
-                    return 'icon-feature';
-                case 'urgent':
-                    return 'icon-urgent';
+                case "notice":
+                    return "icon-notice";
+                case "maintenance":
+                    return "icon-maintenance";
+                case "feature":
+                    return "icon-feature";
+                case "urgent":
+                    return "icon-urgent";
                 default:
-                    return 'icon-notice';
+                    return "icon-notice";
             }
         }
 
         // Get icon based on announcement type
         function getIcon(type) {
             switch (type) {
-                case 'notice':
-                    return 'fas fa-building';
-                case 'maintenance':
-                    return 'fas fa-tools';
-                case 'feature':
-                    return 'fas fa-star';
-                case 'urgent':
-                    return 'fas fa-exclamation-triangle';
+                case "notice":
+                    return "fas fa-building";
+                case "maintenance":
+                    return "fas fa-tools";
+                case "feature":
+                    return "fas fa-star";
+                case "urgent":
+                    return "fas fa-exclamation-triangle";
                 default:
-                    return 'fas fa-bullhorn';
+                    return "fas fa-bullhorn";
             }
         }
 
         // Get category text based on type and language
         function getCategoryText(type, lang) {
-            const dict = translations[lang] || translations['en'];
+            const dict = translations[lang] || translations["en"];
 
             switch (type) {
-                case 'notice':
-                    return dict['company_notice'] || 'Company Notice';
-                case 'maintenance':
-                    return type === 'maintenance_alert' ?
-                        (dict['maintenance_alert'] || 'Maintenance Alert') :
-                        (dict['maintenance_update'] || 'Maintenance Update');
-                case 'feature':
-                    return dict['new_feature'] || 'New Feature';
-                case 'urgent':
-                    return dict['urgent'] || 'Urgent';
+                case "notice":
+                    return dict["company_notice"] || "Company Notice";
+                case "maintenance":
+                    return type === "maintenance_alert"
+                        ? dict["maintenance_alert"] || "Maintenance Alert"
+                        : dict["maintenance_update"] || "Maintenance Update";
+                case "feature":
+                    return dict["new_feature"] || "New Feature";
+                case "urgent":
+                    return dict["urgent"] || "Urgent";
                 default:
-                    return 'Notice';
+                    return "Notice";
             }
         }
 
         // Get category class based on type
         function getCategoryClass(type) {
             switch (type) {
-                case 'notice':
-                    return 'category-notice';
-                case 'maintenance':
-                    return 'category-maintenance';
-                case 'feature':
-                    return 'category-feature';
-                case 'urgent':
-                    return 'category-urgent';
+                case "notice":
+                    return "category-notice";
+                case "maintenance":
+                    return "category-maintenance";
+                case "feature":
+                    return "category-feature";
+                case "urgent":
+                    return "category-urgent";
                 default:
-                    return 'category-notice';
+                    return "category-notice";
             }
         }
 
         // Update statistics
         function updateStats() {
-            const totalAnnouncementsEl = document.getElementById('totalAnnouncements');
-            const unreadCountEl = document.getElementById('unreadCount');
+            const totalAnnouncementsEl =
+                document.getElementById("totalAnnouncements");
+            const unreadCountEl = document.getElementById("unreadCount");
 
             // Remove the featureCountEl line since we deleted that card!
             if (!totalAnnouncementsEl || !unreadCountEl) return;
 
             const total = announcements.length;
-            const unread = announcements.filter(a => a.unread).length;
+            const unread = announcements.filter((a) => a.unread).length;
 
             totalAnnouncementsEl.textContent = total;
             unreadCountEl.textContent = unread;
@@ -714,86 +863,140 @@
 
             if (announcementsToRender.length === 0) {
                 const dict = translations[window.preferencesManager ? window.preferencesManager.getCurrentLanguage() : 'en'] || translations['en'];
+
                 announcementsContainer.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-bullhorn"></i>
-                    <h3>${dict['empty_state_title'] || 'No announcements found'}</h3>
-                    <p>${dict['empty_state_description'] || 'Try adjusting your filters or check back later for updates'}</p>
-                </div>
-            `;
+            <div class="empty-state">
+                <i class="fas fa-bullhorn"></i>
+                <h3>${dict['empty_state_title'] || 'No announcements found'}</h3>
+                <p>${dict['empty_state_description'] || 'Try adjusting your filters or check back later for updates'}</p>
+            </div>
+        `;
                 return;
             }
 
-            const currentLang = window.preferencesManager ? window.preferencesManager.getCurrentLanguage() : 'en';
+            const currentLang = window.preferencesManager
+                ? window.preferencesManager.getCurrentLanguage()
+                : 'en';
+
             const dict = translations[currentLang] || translations['en'];
 
             announcementsToRender.forEach(announcement => {
                 const announcementElement = document.createElement('div');
-                announcementElement.className = `announcement-card ${announcement.unread ? 'unread' : ''}`;
 
-                let detailsHtml = '';
-                if (announcement.details && announcement.details.length > 0) {
-                    detailsHtml = `
-                    <div class="announcement-details">
-                        ${announcement.details.map(detail => `
-                            <div class="detail-item">
-                                <div class="detail-icon">
-                                    <i class="fas fa-circle"></i>
-                                </div>
-                                <div class="detail-content">${detail}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                }
+                const typeClass = announcement.type || 'notice';
+                const priorityClass = announcement.priority || 'normal';
+
+                announcementElement.className =
+                    `announcement-card status-${typeClass} ${announcement.unread ? 'unread' : ''}`;
+
+                // Make entire card clickable
+                announcementElement.setAttribute("role", "button");
+                announcementElement.setAttribute("tabindex", "0");
+                announcementElement.style.cursor = "pointer";
+
+                const announcementCode =
+                    announcement.id ? `ANN-${announcement.id}` : 'ANN-NEW';
 
                 announcementElement.innerHTML = `
-                    <div class="announcement-header">
-                        <div class="announcement-type">
-                            <div class="announcement-icon ${getIconClass(announcement.type)}">
-                                <i class="${getIcon(announcement.type)}"></i>
-                            </div>
-                            <div>
-                                <div class="announcement-title">${announcement.title}</div>
-                                <div class="announcement-meta">
-                                    <div class="announcement-date">
-                                        <i class="far fa-clock"></i>
-                                        ${formatDate(announcement.date)}
-                                    </div>
-                                    </div>
-                            </div>
-                        </div>
+            <div class="announcement-header">
+                <div class="announcement-title-group">
+                    <div class="announcement-title">
+                        ${escapeHTML(announcement.title || 'Untitled Announcement')}
                     </div>
-                    <div class="announcement-message">
-                        ${formatAnnouncementContent(announcement.message)}
+
+                    <div class="announcement-id">
+                        ${escapeHTML(announcementCode)}
                     </div>
-                    <div class="announcement-actions">
-                        ${announcement.unread ? `
-                            <button class="action-btn" data-id="${announcement.id}" data-action="mark-read">
-                                <i class="fas fa-check"></i> ${dict['mark_as_read'] || 'Mark as Read'}
-                            </button>
-                        ` : ''}
-                    <button class="action-btn" data-id="${announcement.id}" data-action="view">
-                        <i class="fas fa-eye"></i> ${dict['view_details'] || 'View Details'}
-                    </button>
                 </div>
-            `;
+            </div>
+
+            <div class="announcement-badges">
+                <span class="announcement-status category-${getCategoryClass(announcement.type).replace('category-', '')}">
+                    <i class="${getIcon(announcement.type)}"></i>
+                    ${getCategoryText(announcement.type, currentLang)}
+                </span>
+
+                ${announcement.unread
+                        ? `
+                        <span class="announcement-priority priority-high">
+                            <i class="fas fa-circle"></i> Unread
+                        </span>
+                    `
+                        : `
+                        <span class="announcement-priority priority-low">
+                            <i class="fas fa-check"></i> Read
+                        </span>
+                    `
+                    }
+            </div>
+
+            <div class="announcement-meta">
+                <div class="announcement-meta-item">
+                    <i class="far fa-calendar"></i>
+                    <span>${formatDate(announcement.date)}</span>
+                </div>
+
+                <div class="announcement-meta-item">
+                    <i class="far fa-clock"></i>
+                    <span>${formatRelativeTime(announcement.date)}</span>
+                </div>
+            </div>
+
+            <div class="announcement-message">
+                ${formatAnnouncementContent(announcement.message)}
+            </div>
+
+            <div class="announcement-footer">
+                <div class="announcement-actions">
+                    ${announcement.unread
+                        ? `
+                            <button
+                                class="action-btn"
+                                data-id="${escapeHTML(announcement.id)}"
+                                data-action="mark-read"
+                            >
+                                <i class="fas fa-check"></i>
+                                ${dict['mark_as_read'] || 'Mark as Read'}
+                            </button>
+                        `
+                        : ''
+                    }
+                </div>
+            </div>
+        `;
+
+                // CLICK ENTIRE CARD TO OPEN MODAL
+                announcementElement.addEventListener("click", () => {
+                    viewAnnouncement(announcement.id);
+                });
+
+                // KEYBOARD SUPPORT
+                announcementElement.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        viewAnnouncement(announcement.id);
+                    }
+                });
+
                 announcementsContainer.appendChild(announcementElement);
             });
 
-            // Add event listeners to action buttons
-            document.querySelectorAll('.action-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const announcementId = parseInt(this.getAttribute('data-id'));
-                    const action = this.getAttribute('data-action');
+            // MARK AS READ BUTTON
+            announcementsContainer
+                .querySelectorAll('.action-btn[data-action]')
+                .forEach(btn => {
+                    btn.addEventListener('click', function (e) {
+                        // Prevent card click
+                        e.stopPropagation();
 
-                    if (action === 'mark-read') {
-                        markAsRead(announcementId);
-                    } else if (action === 'view') {
-                        viewAnnouncement(announcementId);
-                    }
+                        const announcementId = this.getAttribute('data-id');
+                        const action = this.getAttribute('data-action');
+
+                        if (action === 'mark-read') {
+                            markAsRead(announcementId);
+                        }
+                    });
                 });
-            });
         }
 
         // Filter announcements
@@ -801,31 +1004,44 @@
             let filteredAnnouncements = [...announcements];
 
             switch (filter) {
-                case 'unread':
-                    filteredAnnouncements = filteredAnnouncements.filter(a => a.unread);
+                case "unread":
+                    filteredAnnouncements = filteredAnnouncements.filter(
+                        (a) => a.unread,
+                    );
                     break;
-                case 'notice':
-                    filteredAnnouncements = filteredAnnouncements.filter(a => a.type === 'notice');
+                case "notice":
+                    filteredAnnouncements = filteredAnnouncements.filter(
+                        (a) => a.type === "notice",
+                    );
                     break;
-                case 'maintenance':
-                    filteredAnnouncements = filteredAnnouncements.filter(a => a.type === 'maintenance');
+                case "maintenance":
+                    filteredAnnouncements = filteredAnnouncements.filter(
+                        (a) => a.type === "maintenance",
+                    );
                     break;
-                case 'feature':
-                    filteredAnnouncements = filteredAnnouncements.filter(a => a.type === 'feature');
+                case "feature":
+                    filteredAnnouncements = filteredAnnouncements.filter(
+                        (a) => a.type === "feature",
+                    );
                     break;
-                case 'all':
+                case "all":
                 default:
                     // No filtering needed
                     break;
             }
 
             // Apply search filter
-            const searchInput = document.getElementById('q');
-            if (searchInput && searchInput.value.trim() !== '') {
+            const searchInput = document.getElementById("q");
+            if (searchInput && searchInput.value.trim() !== "") {
                 const searchTerm = searchInput.value.toLowerCase();
-                filteredAnnouncements = filteredAnnouncements.filter(announcement =>
-                    announcement.title.toLowerCase().includes(searchTerm) ||
-                    announcement.message.toLowerCase().includes(searchTerm)
+                filteredAnnouncements = filteredAnnouncements.filter(
+                    (announcement) =>
+                        String(announcement.title || "")
+                            .toLowerCase()
+                            .includes(searchTerm) ||
+                        String(announcement.message || "")
+                            .toLowerCase()
+                            .includes(searchTerm),
                 );
             }
 
@@ -841,50 +1057,59 @@
 
         // Mark announcement as read
         async function markAsRead(id) {
-            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            const userData = JSON.parse(localStorage.getItem("userData") || "{}");
             const userId =
                 userData.user_id ||
                 userData.id ||
                 userData.User_ID ||
                 userData.Customer_ID;
 
-            try {
+            if (!userId) {
+                console.error("User ID not found.");
+                return;
+            }
 
-                const base = API_BASE_URL.endsWith('/api') ? API_BASE_URL : API_BASE_URL + '/api';
-                const response = await fetch(`${base}/user/announcements/read`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ user_id: userId, announcement_id: id })
-                });
+            try {
+                const response = await fetch(
+                    `${getApiBaseUrl()}/user/announcements/read`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ user_id: userId, announcement_id: id }),
+                    },
+                );
 
                 if (response.ok) {
                     // Update the local list status instead of deleting it
-                    const target = announcements.find(a => a.id === id);
+                    const target = announcements.find((a) => a.id === id);
                     if (target) target.unread = false;
 
                     updateStats();
+                    updateAnnouncementRedDot();
                     filterAnnouncements(getActiveFilter());
-
-                    // THE FIX: Only hide the dot if NO unread announcements remain
-                    const stillUnread = announcements.some(a => a.unread);
-                    if (!stillUnread) {
-                        const redDot = document.getElementById('navRedDot');
-                        if (redDot) redDot.style.display = 'none';
-                    }
                 }
-            } catch (error) { console.error("Error marking as read:", error); }
+            } catch (error) {
+                console.error("Error marking as read:", error);
+            }
         }
 
         // View announcement details
         function viewAnnouncement(id) {
-            const announcement = announcements.find(a => String(a.id) === String(id));
+            const announcement = announcements.find(
+                (a) => String(a.id) === String(id),
+            );
             if (!announcement) return;
 
             document.getElementById("detailTitle").textContent = announcement.title;
-            document.getElementById("detailDate").textContent = formatDate(announcement.date);
-            document.getElementById("detailMessage").textContent = announcement.message;
+            document.getElementById("detailDate").textContent = formatDate(
+                announcement.date,
+            );
+            document.getElementById("detailMessage").textContent =
+                announcement.message;
 
-            document.getElementById("announcementDetailModal").classList.add("show");
+            document
+                .getElementById("announcementDetailModal")
+                .classList.add("show");
 
             if (announcement.unread) {
                 markAsRead(id);
@@ -892,29 +1117,30 @@
         }
 
         function closeAnnouncementModal() {
-            document.getElementById("announcementDetailModal")?.classList.remove("show");
+            document
+                .getElementById("announcementDetailModal")
+                ?.classList.remove("show");
         }
 
         // Get active filter
         function getActiveFilter() {
-            const activeBtn = document.querySelector('.filter-btn.active');
-            return activeBtn ? activeBtn.getAttribute('data-filter') : 'all';
+            const activeBtn = document.querySelector(".filter-btn.active");
+            return activeBtn ? activeBtn.getAttribute("data-filter") : "all";
         }
 
         // Listen for language changes from preference-manager.js
-        document.addEventListener('languageChanged', function (e) {
-            console.log('Language changed to:', e.detail.language);
+        document.addEventListener("languageChanged", function (e) {
+            console.log("Language changed to:", e.detail.language);
             applyTranslations(e.detail.language);
             // Re-render announcements with new language
             filterAnnouncements(getActiveFilter());
         });
 
         // Listen for user data changes
-        document.addEventListener('userDataChanged', function (e) {
-            console.log('User data changed event received:', e.detail);
+        document.addEventListener("userDataChanged", function (e) {
+            console.log("User data changed event received:", e.detail);
             // The userDataManager will handle updating the avatar automatically
         });
-
     </script>
 </body>
 

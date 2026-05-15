@@ -1,380 +1,419 @@
-const API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-    ? 'http://127.0.0.1:5000' 
-    : 'https://group6-bizally.onrender.com';
-
-// This ensures other functions can use it
-window.API_BASE_URL = API_BASE_URL;
-
-const userDataStr = localStorage.getItem("userData");
-const currentPath = window.location.pathname.toLowerCase();
-
-(function () {
-
-    // If not logged in
-    if (!userDataStr) {
-
-        // allow login page only
-        if (
-            !currentPath.endsWith("index.html") &&
-            currentPath !== "/"
-        ) {
-            window.location.href = "/";
-        }
-
-        return;
-    }
-
-    const user = JSON.parse(userDataStr);
-
-    const role = (
-        user.User_Type ||
-        user.role ||
-        "client"
-    ).toLowerCase();
-
-    console.log("Current Role:", role);
-    console.log("Current Path:", currentPath);
-
-    // CLIENT cannot access ADMIN pages
-    if (currentPath.includes("/admin/") && role === "client") {
-        window.location.href = "/user/index-user.html";
-    }
-
-    // ADMIN cannot access USER pages
-    if (currentPath.includes("/user/") && role === "admin") {
-        window.location.href = "/admin/index-admin.html";
-    }
-
-})();
-
-class UserDataManager {
-    constructor() {
-        this.userDataKey = 'userData';
-        this.userProfileKey = 'userProfile';
-    }
-
-    // Get combined user data (from both userData and userProfile)
-    getUserData() {
-        const userData = JSON.parse(localStorage.getItem(this.userDataKey) || '{}');
-        const userProfile = JSON.parse(localStorage.getItem(this.userProfileKey) || '{}');
-        const firstName = userProfile.firstName || userData.firstName || userData.FirstName || '';
-        const lastName = userProfile.lastName || userData.lastName || userData.LastName || '';
-        const profileName = `${firstName} ${lastName}`.trim();
-        const displayName = userData.Name ||
-            userData.name ||
-            userData.Username ||
-            userData.username ||
-            userData.fullName ||
-            profileName ||
-            'User';
-        const displayEmail = userData.Email ||
-            userData.email ||
-            userData.userEmail ||
-            userData.emailAddress ||
-            userProfile.Email ||
-            userProfile.email ||
-            '';
-        
-        return {
-            ...userData,
-            ...userProfile,
-            fullName: displayName,
-            displayName,
-            email: displayEmail,
-            Email: displayEmail
-        };
-    }
-
-    // Update user data
-    updateUserData(updates) {
-        const userData = JSON.parse(localStorage.getItem(this.userDataKey) || '{}');
-        const updatedData = { ...userData, ...updates };
-        localStorage.setItem(this.userDataKey, JSON.stringify(updatedData));
-        
-        // Dispatch event for other pages to update
-        this.dispatchUserDataChanged();
-        return updatedData;
-    }
-
-    updateProfileDot() {
-    const profileDot = document.getElementById('profileRedDot'); // Change 'profileDot' to 'profileRedDot'
-    if (!profileDot) return;
-
-    const userData = JSON.parse(localStorage.getItem(this.userDataKey) || '{}');
-    
-    if (userData.is_profile_complete === true || userData.is_profile_complete === "true") {
-        profileDot.style.display = 'none';
-    } else {
-        profileDot.style.display = 'inline-block';
-    }
-}
-
-    // Update user profile
-    updateUserProfile(updates) {
-        const userProfile = JSON.parse(localStorage.getItem(this.userProfileKey) || '{}');
-        const updatedProfile = { ...userProfile, ...updates };
-        localStorage.setItem(this.userProfileKey, JSON.stringify(updatedProfile));
-        
-        // Dispatch event for other pages to update
-        this.dispatchUserDataChanged();
-        return updatedProfile;
-    }
-
-    getProfilePicture() {
-        const userProfile = JSON.parse(localStorage.getItem(this.userProfileKey) || '{}');
-        const userData = JSON.parse(localStorage.getItem(this.userDataKey) || '{}');
-        
-        // Look inside userProfile first; if empty, look inside your session token object
-        const photo = userProfile.photo || userData.profile_pic_url;
-
-        // If the photo is null, empty, or our "default" string, return null
-        if (!photo || photo === 'default-avatar.png' || photo === 'null') {
-            return null;
-        }
-        return photo;
-    }
-
-    // Get user initials
-    getUserInitials() {
-        const userData = this.getUserData();
-        const nameParts = (userData.displayName || userData.fullName || 'User').trim().split(/\s+/);
-        const firstName = userData.firstName || nameParts[0] || 'U';
-        const lastName = userData.lastName || nameParts[1] || '';
-        return (firstName.charAt(0) + (lastName.charAt(0) || '')).toUpperCase();
-    }
-
-    // Dispatch event when user data changes
-    dispatchUserDataChanged() {
-        const event = new CustomEvent('userDataChanged', {
-            detail: this.getUserData()
-        });
-        document.dispatchEvent(event);
-    }
-
-    // Initialize user data display on any page
-    initializeUserDisplay() {
-        this.updateHeaderAvatar();
-        this.updateUserInfo();
-        
-        // Listen for changes from other tabs/pages
-        window.addEventListener('storage', (event) => {
-            if (event.key === this.userDataKey || event.key === this.userProfileKey) {
-                this.updateHeaderAvatar();
-                this.updateUserInfo();
-            }
-        });
-        
-        // Listen for custom events
-        document.addEventListener('userDataChanged', () => {
-            this.updateHeaderAvatar();
-            this.updateUserInfo();
-        });
-    }
-
-    // Update header avatar across all pages
-    updateHeaderAvatar() {
-        const headerAvatar = document.getElementById('userAvatar');
-        if (!headerAvatar) return;
-
-        const profilePicture = this.getProfilePicture();
-        const initials = this.getUserInitials();
-        
-        if (profilePicture) {
-            // Check if it's already an img element
-            if (headerAvatar.querySelector('img')) {
-                headerAvatar.querySelector('img').src = profilePicture;
-            } else {
-                headerAvatar.innerHTML = '';
-                const img = document.createElement('img');
-                img.src = profilePicture;
-                img.alt = 'Profile Picture';
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.borderRadius = '50%';
-                img.style.objectFit = 'cover';
-                headerAvatar.appendChild(img);
-            }
-        } else {
-            headerAvatar.innerHTML = '';
-            headerAvatar.textContent = initials;
-        }
-    }
-
-    // Update user info in header
-    updateUserInfo() {
-        const userData = this.getUserData();
-        
-        // Update user name
-        const userNameElement = document.getElementById('userName') || document.getElementById('userNameDisplay');
-        if (userNameElement) {
-            userNameElement.textContent = userData.displayName || 'User';
-        }
-
-        // Update user email
-        const userEmailElement = document.getElementById('userEmail') || document.getElementById('userEmailDisplay');
-        if (userEmailElement) {
-            userEmailElement.textContent = userData.email || '';
-            userEmailElement.hidden = !userData.email;
-        }
-    }
-}
-
-// Create global instance
-window.userDataManager = new UserDataManager();
-
 // --- UNIFIED GLOBAL BACKGROUND TRACKERS (RUNS ONCE PER PAGE REFRESH) ---
-if (typeof window.globalHeartbeatFired === 'undefined') {
-    window.globalHeartbeatFired = true;
+if (typeof window.globalHeartbeatFired === "undefined") {
+  window.globalHeartbeatFired = true;
 
-    // 1. Dedicated profile completeness heartbeat check
-    // 1. Dedicated profile completeness heartbeat check
-    async function checkProfileCompleteness(profileDot) {
-        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-        const userId = userData.user_id;
+  // ==========================================
+  // GLOBAL STATE FOR RED-DOT SYSTEM
+  // ==========================================
+  window.redDotSystemState = {
+    // Announcement system state
+    announcementSocketListenersAttached: false,
+    announcementLastCheckTime: 0,
+    announcementCheckInProgress: false,
+    announcementRetryCount: 0,
+    announcementMaxRetries: 3,
+    
+    // Profile completeness state
+    profileCheckInProgress: false,
+    profileLastCheckTime: 0,
+    profileRetryCount: 0,
+    profileMaxRetries: 3,
+  };
 
-        if (!userId) return;
+  // ==========================================
+  // HELPER: Extract user ID from multiple possible fields
+  // ==========================================
+  function extractUserId() {
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    return userData.user_id || userData.id || userData.User_ID || userData.Customer_ID;
+  }
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/auth/user/profile/complete/${userId}`);
-            const result = await response.json();
+  // ==========================================
+  // HELPER: build API URL safely (avoids duplicate /api segments)
+  // ==========================================
+  function buildApiUrl(path) {
+    // path should start with '/'
+    const p = String(path || '');
+    const apiPath = p.startsWith('/') ? p : `/${p}`;
+    const base = (window.API_BASE_URL || '').replace(/\/$/, '');
 
-            if (response.ok && result.status === "success") {
-                const isComplete = result.is_profile_complete;
-                const normalized = (isComplete === true || isComplete === "true" || isComplete === 1);
-
-                // Update core completion value
-                userData.is_profile_complete = normalized;
-                
-                // 🌟 LIVE AVATAR SYNC: If backend has a photo, force it into current page session memory
-                if (result.profile_pic_url) {
-                    userData.profile_pic_url = result.profile_pic_url;
-                }
-                
-                localStorage.setItem('userData', JSON.stringify(userData));
-
-                // Toggle red alert dot visibility
-                profileDot.style.display = normalized ? 'none' : 'inline-block';
-                
-                // Refresh avatar layout on the active page instantly
-                if (window.userDataManager) {
-                    window.userDataManager.updateHeaderAvatar();
-                }
-            }
-        } catch (e) {
-            console.error("Global profile background check failed:", e);
-            profileDot.style.display = 'inline-block';
-        }
+    // If base already ends with '/api' and apiPath starts with '/api', avoid duplication
+    if (base.match(/\/api$/) && apiPath.startsWith('/api')) {
+      return `${base}${apiPath.slice(4)}`; // remove leading /api from path
     }
 
-    function waitForProfileDot(callback) {
-        const dot = document.getElementById('profileRedDot');
+    // If base empty, return apiPath
+    if (!base) return apiPath;
 
-        if (dot) {
-            callback(dot);
+    return `${base}${apiPath}`;
+  }
+
+  // ==========================================
+  // HELPER: Show red dot
+  // ==========================================
+  function showRedDot(dot) {
+    if (dot) {
+      dot.classList.remove("hidden");
+      dot.style.display = "inline-block";
+    }
+  }
+
+  // ==========================================
+  // HELPER: Hide red dot
+  // ==========================================
+  function hideRedDot(dot) {
+    if (dot) {
+      dot.classList.add("hidden");
+      dot.style.display = "none";
+    }
+  }
+
+  // ==========================================
+  // PROFILE COMPLETENESS CHECK (GLOBAL)
+  // ==========================================
+  async function checkProfileCompleteness() {
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const userId = extractUserId();
+
+    if (!userId) {
+      console.warn("[RedDot] No user ID found for profile check");
+      return;
+    }
+
+    // Prevent duplicate simultaneous checks
+    if (window.redDotSystemState.profileCheckInProgress) {
+      console.debug("[RedDot] Profile check already in progress, skipping");
+      return;
+    }
+
+    // Rate limit: don't check more than once per 3 seconds
+    const now = Date.now();
+    if (now - window.redDotSystemState.profileLastCheckTime < 3000) {
+      console.debug("[RedDot] Profile check rate limited, skipping");
+      return;
+    }
+
+    window.redDotSystemState.profileCheckInProgress = true;
+    window.redDotSystemState.profileLastCheckTime = now;
+
+    try {
+      const response = await fetch(buildApiUrl(`/api/auth/user/profile/complete/${userId}`));
+      const result = await response.json();
+
+      if (response.ok && result.status === "success") {
+        const isComplete = result.is_profile_complete;
+        const normalized = isComplete === true || isComplete === "true" || isComplete === 1;
+
+        // Update localStorage
+        userData.is_profile_complete = normalized;
+        if (result.profile_pic_url) {
+          userData.profile_pic_url = result.profile_pic_url;
+        }
+        localStorage.setItem("userData", JSON.stringify(userData));
+
+        // Update all profileRedDot instances on the page
+        const profileDots = document.querySelectorAll("#profileRedDot");
+        profileDots.forEach(dot => {
+          if (normalized) {
+            hideRedDot(dot);
+          } else {
+            showRedDot(dot);
+          }
+        });
+
+        console.log(`[RedDot] Profile completeness: ${normalized}, updated ${profileDots.length} dots`);
+
+        // Refresh avatar if available
+        if (window.userDataManager && typeof window.userDataManager.updateHeaderAvatar === "function") {
+          window.userDataManager.updateHeaderAvatar();
+        }
+
+        // Reset retry count on success
+        window.redDotSystemState.profileRetryCount = 0;
+      } else {
+        throw new Error(`API returned status: ${result.status}`);
+      }
+    } catch (e) {
+      console.error("[RedDot] Profile check failed:", e.message);
+
+      // Show profile dot on error (safer assumption)
+      const profileDots = document.querySelectorAll("#profileRedDot");
+      profileDots.forEach(dot => showRedDot(dot));
+
+      // Retry logic
+      if (window.redDotSystemState.profileRetryCount < window.redDotSystemState.profileMaxRetries) {
+        window.redDotSystemState.profileRetryCount++;
+        const backoffMs = Math.min(1000 * Math.pow(2, window.redDotSystemState.profileRetryCount), 10000);
+        console.log(`[RedDot] Retrying profile check in ${backoffMs}ms`);
+        setTimeout(checkProfileCompleteness, backoffMs);
+      }
+    } finally {
+      window.redDotSystemState.profileCheckInProgress = false;
+    }
+  }
+
+  // ==========================================
+  // WAIT FOR ELEMENT WITH RETRY
+  // ==========================================
+  function waitForElement(selector, callback, maxAttempts = 50) {
+    let attempts = 0;
+
+    function attempt() {
+      const element = document.querySelector(selector);
+
+      if (element) {
+        callback(element);
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        setTimeout(attempt, 100);
+      }
+    }
+
+    attempt();
+  }
+
+  // ==========================================
+  // ROBUST ANNOUNCEMENT RED DOT CHECKER (GLOBAL)
+  // ==========================================
+  async function checkNewAnnouncements(isRetry = false) {
+    const userId = extractUserId();
+
+    if (!userId) {
+      console.warn("[RedDot] No user ID found for announcement check");
+      return;
+    }
+
+    // Prevent duplicate simultaneous checks
+    if (window.redDotSystemState.announcementCheckInProgress) {
+      console.debug("[RedDot] Announcement check already in progress, skipping");
+      return;
+    }
+
+    // Rate limit: don't check more than once per 3 seconds (unless retry)
+    const now = Date.now();
+    if (!isRetry && now - window.redDotSystemState.announcementLastCheckTime < 3000) {
+      console.debug("[RedDot] Announcement check rate limited, skipping");
+      return;
+    }
+
+    window.redDotSystemState.announcementCheckInProgress = true;
+    window.redDotSystemState.announcementLastCheckTime = now;
+
+    try {
+      const response = await fetch(buildApiUrl(`/api/user/announcements/unread/${userId}`));
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const unread = await response.json();
+
+      // Update all navRedDot instances on the page
+      const announcementDots = document.querySelectorAll("#navRedDot");
+      const hasUnread = Array.isArray(unread) && unread.length > 0;
+
+      announcementDots.forEach(dot => {
+        if (hasUnread) {
+          showRedDot(dot);
         } else {
-            setTimeout(() => waitForProfileDot(callback), 100);
+          hideRedDot(dot);
         }
+      });
+
+      console.log(`[RedDot] Announcements check: ${hasUnread ? unread.length + " unread" : "none"}, updated ${announcementDots.length} dots`);
+
+      // Reset retry count on success
+      window.redDotSystemState.announcementRetryCount = 0;
+    } catch (e) {
+      console.error("[RedDot] Announcement check failed:", e.message);
+
+      // Retry logic
+      if (window.redDotSystemState.announcementRetryCount < window.redDotSystemState.announcementMaxRetries) {
+        window.redDotSystemState.announcementRetryCount++;
+        const backoffMs = Math.min(1000 * Math.pow(2, window.redDotSystemState.announcementRetryCount), 10000);
+        console.log(`[RedDot] Retrying announcement check in ${backoffMs}ms (attempt ${window.redDotSystemState.announcementRetryCount})`);
+        setTimeout(() => checkNewAnnouncements(true), backoffMs);
+      } else {
+        console.warn("[RedDot] Max retries exceeded for announcement check");
+        window.redDotSystemState.announcementRetryCount = 0;
+      }
+    } finally {
+      window.redDotSystemState.announcementCheckInProgress = false;
+    }
+  }
+
+  // ==========================================
+  // SETUP SOCKET.IO LISTENERS (ROBUST)
+  // ==========================================
+  function setupAnnouncementSocketListeners() {
+    // Prevent duplicate listener attachment
+    if (window.redDotSystemState.announcementSocketListenersAttached) {
+      console.debug("[RedDot] Socket listeners already attached");
+      return;
     }
 
-    const executeGlobalInitializations = () => {
-        if (window.userDataManager) {
-            window.userDataManager.initializeUserDisplay();
+    if (!window.socket) {
+      console.warn("[RedDot] Socket.IO not available yet");
+      return;
+    }
+
+    console.log("[RedDot] Attaching Socket.IO listeners for announcements...");
+
+    // Remove any old listeners first (safety)
+    window.socket.off("new_announcement");
+    window.socket.off("announcement_updated");
+    window.socket.off("announcement_deleted");
+    window.socket.off("connect");
+    window.socket.off("disconnect");
+
+    // NEW ANNOUNCEMENT
+    window.socket.on("new_announcement", () => {
+      console.log("[RedDot] Socket event: new_announcement");
+      checkNewAnnouncements();
+      if (typeof showToast === "function") {
+        showToast("New announcement received.", "success");
+      }
+    });
+
+    // ANNOUNCEMENT UPDATED
+    window.socket.on("announcement_updated", () => {
+      console.log("[RedDot] Socket event: announcement_updated");
+      checkNewAnnouncements();
+    });
+
+    // ANNOUNCEMENT DELETED
+    window.socket.on("announcement_deleted", () => {
+      console.log("[RedDot] Socket event: announcement_deleted");
+      checkNewAnnouncements();
+    });
+
+    // RECONNECTION HANDLER
+    window.socket.on("connect", () => {
+      console.log("[RedDot] Socket reconnected, re-checking announcements");
+      window.redDotSystemState.announcementRetryCount = 0;
+      checkNewAnnouncements();
+    });
+
+    window.socket.on("disconnect", () => {
+      console.log("[RedDot] Socket disconnected");
+    });
+
+    window.redDotSystemState.announcementSocketListenersAttached = true;
+    console.log("[RedDot] Socket listeners attached successfully");
+  }
+
+  // ==========================================
+  // MONITOR SOCKET.IO AVAILABILITY
+  // ==========================================
+  function monitorSocketIO() {
+    if (window.socket && !window.redDotSystemState.announcementSocketListenersAttached) {
+      console.log("[RedDot] Socket.IO detected, setting up listeners");
+      setupAnnouncementSocketListeners();
+    } else if (!window.socket) {
+      // Check again in 500ms
+      setTimeout(monitorSocketIO, 500);
+    }
+  }
+
+  // ==========================================
+  // SUBMIT TICKET GUARD (BLOCK IF PROFILE INCOMPLETE)
+  // ==========================================
+  function setupSubmitTicketGuard() {
+    const submitTicketLink = document.querySelector('a[data-section="submit-ticket"]');
+
+    if (!submitTicketLink) {
+      console.debug("[RedDot] Submit Ticket link not found on this page");
+      return;
+    }
+
+    submitTicketLink.addEventListener("click", function (e) {
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+      const isComplete = userData.is_profile_complete === true;
+
+      if (!isComplete) {
+        e.preventDefault();
+
+        if (typeof showToast === "function") {
+          showToast("Please complete your profile before submitting a ticket.", "error");
+        } else {
+          alert("Please complete your profile before submitting a ticket.");
         }
 
-        waitForProfileDot((profileDot) => {
-            checkProfileCompleteness(profileDot);
-        });
+        setTimeout(() => {
+          window.location.href = "/user/profile-settings.html";
+        }, 1200);
+      }
+    });
+  }
 
-        checkNewAnnouncements();
-        setupSubmitTicketGuard();
-    };
+  // ==========================================
+  // GLOBAL INITIALIZATION - RUNS ON EVERY PAGE LOAD
+  // ==========================================
+  const executeGlobalInitializations = () => {
+    console.log("[RedDot] Executing global red-dot initializations");
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', executeGlobalInitializations);
-    } else {
-        executeGlobalInitializations();
+    // Initialize user display
+    if (window.userDataManager && typeof window.userDataManager.initializeUserDisplay === "function") {
+      window.userDataManager.initializeUserDisplay();
     }
 
-    // 2. Dedicated announcement check function
-    async function checkNewAnnouncements() {
-        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-        const userId = userData.user_id;
-        const announcementDot = document.getElementById('navRedDot');
+    // Run profile completeness check immediately (works on all pages)
+    console.log("[RedDot] Starting profile completeness check");
+    checkProfileCompleteness();
 
-        if (!userId || !announcementDot) return;
+    // Run announcement checker immediately (works on all pages)
+    console.log("[RedDot] Starting announcement check");
+    checkNewAnnouncements();
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/user/announcements/unread/${userId}`);
-            const unread = await response.json();
+    // Start monitoring for Socket.IO availability
+    monitorSocketIO();
 
-            if (Array.isArray(unread) && unread.length > 0) {
-                announcementDot.style.display = 'inline-block';
-            } else {
-                announcementDot.style.display = 'none';
-            }
-        } catch (e) {
-            console.log("Announcements check failed, hiding dot.");
-            announcementDot.style.display = 'none';
-        }
-    }
+    // Try to setup listeners if Socket.IO is already available
+    setupAnnouncementSocketListeners();
 
-    // 3. Sidebar link safety interceptor
-    function setupSubmitTicketGuard() {
-        const newTicketLink = document.querySelector('a[data-section="submit-ticket"]');
-        if (!newTicketLink) return;
+    // Setup submit ticket guard on every page
+    setupSubmitTicketGuard();
 
-        newTicketLink.addEventListener('click', function (e) {
-            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-            
-            const isComplete = userData.is_profile_complete === true;
-            if (!isComplete) {
-                e.preventDefault(); // Halt active sidebar link redirection execution
+    console.log("[RedDot] Global initializations complete");
+  };
 
-                if (typeof showToast === 'function') {
-                    showToast("Please complete your profile before submitting a ticket.", "error");
-                } else {
-                    alert("Please complete your profile before submitting a ticket.");
-                }
+  // ==========================================
+  // DOM READY
+  // ==========================================
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", executeGlobalInitializations);
+  } else {
+    executeGlobalInitializations();
+  }
 
-                setTimeout(() => {
-                    window.location.href = "/user/profile-settings.html";
-                }, 1200);
-            }
-        });
-    }
+  // ==========================================
+  // GLOBAL CLEANUP ON PAGE UNLOAD
+  // ==========================================
+  window.addEventListener("beforeunload", () => {
+    // Reset state for next page load
+    window.redDotSystemState.announcementCheckInProgress = false;
+    window.redDotSystemState.profileCheckInProgress = false;
+  });
 }
 
-// --- GLOBAL TOAST CONTROLLER ---
-// --- GLOBAL TOAST SYSTEM ---
-window.showToast = function(message, type = 'success') {
-    // 1. Create the toast element if it doesn't exist on the current page
-    let toast = document.getElementById('globalToast');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'globalToast';
-        toast.className = 'toast';
-        toast.innerHTML = `
-            <i class="fas fa-info-circle"></i>
-            <span id="globalToastMessage"></span>
-        `;
-        document.body.appendChild(toast);
-    }
+// Expose helpers for debugging / test harness
+/* istanbul ignore next */
+if (typeof window !== 'undefined') {
+  window.__redDot_checkProfile = window.__redDot_checkProfile || function () {
+    try { return checkProfileCompleteness(); } catch (e) { console.warn('profile check unavailable', e); }
+  };
 
-    const messageEl = document.getElementById('globalToastMessage');
-    const iconEl = toast.querySelector('i');
+  window.__redDot_checkAnnouncements = window.__redDot_checkAnnouncements || function () {
+    try { return checkNewAnnouncements(); } catch (e) { console.warn('announcement check unavailable', e); }
+  };
 
-    // 2. Set the icon based on the type
-    if (type === 'success') iconEl.className = 'fas fa-check-circle';
-    else if (type === 'error') iconEl.className = 'fas fa-exclamation-circle';
-    else iconEl.className = 'fas fa-info-circle';
+  window.__redDot_setupSocket = window.__redDot_setupSocket || function () {
+    try { return setupAnnouncementSocketListeners(); } catch (e) { console.warn('setup socket unavailable', e); }
+  };
 
-    // 3. Set content and show it
-    messageEl.textContent = message;
-    toast.className = `toast ${type} show`;
-
-    // 4. Auto-hide after 4 seconds
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 4000);
-};
-
+  window.__redDot_state = window.__redDot_state || window.redDotSystemState;
+  
+  window.__redDot_extractUserId = window.__redDot_extractUserId || function () {
+    try { return extractUserId(); } catch (e) { console.warn('extractUserId unavailable', e); }
+  };
+}

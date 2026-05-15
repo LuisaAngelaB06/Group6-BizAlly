@@ -1,290 +1,830 @@
-/* Submit Ticket Specific Styles */
+/* ============================================================
+   AlliTrack Submit Ticket - Enhanced Version
+   Fixed Layout + Review Modal + Equal Height Cards
+   ============================================================ */
+
 .submit-ticket-content {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.submit-ticket-header-container {
-    background: var(--surface);
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
-    padding: 20px;
-    margin-bottom: 10px;
+/* =========================
+   MAIN LAYOUT
+========================= */
+.ticket-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: stretch;
 }
 
-.submit-ticket-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* =========================
+   MAIN & SIDE CARDS
+========================= */
+.ticket-main-card,
+.ticket-side-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 28px;
+  animation: fadeUp 0.5s var(--ease) both;
+  height: 100%;
 }
 
-.submit-ticket-header h1 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    gap: 10px;
+/* MAIN CARD */
+.ticket-main-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100%;
 }
 
-.submit-ticket-header h1 i {
-    color: var(--accent);
+/* SIDE CARD */
+.ticket-side-card {
+  position: static;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
 }
 
+.ticket-side-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 110% -10%,
+    rgba(59, 123, 255, 0.08),
+    transparent 62%
+  );
+  pointer-events: none;
+}
+
+/* =========================
+   CARD HEADERS
+========================= */
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.card-head h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-family: var(--font-head);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.card-head h3 i {
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+
+/* =========================
+   FORM
+========================= */
 .ticket-form-container {
-    background: var(--surface);
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
-    padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .form-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
 }
 
 .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .form-label {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    gap: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 700;
 }
 
 .form-label .required {
-    color: #EF4444;
+  color: var(--red);
 }
 
+/* =========================
+   INPUTS
+========================= */
 .form-input,
 .form-textarea {
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    transition: all 0.2s var(--ease);
-    font-family: inherit;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  outline: none;
+  background: var(--bg-2);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
-.form-input:focus,
-.form-textarea:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--text-3);
 }
 
 .form-input:hover,
 .form-textarea:hover {
-    border-color: var(--border-accent);
+  border-color: var(--border-bright);
 }
 
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px rgba(59, 123, 255, 0.1);
+}
+
+/* =========================
+   SELECT DROPDOWN
+========================= */
+select.form-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  cursor: pointer;
+
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-2) 50%),
+    linear-gradient(135deg, var(--text-2) 50%, transparent 50%);
+
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 12px) calc(50% - 3px);
+
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+
+  padding-right: 42px;
+}
+
+select.form-input option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* =========================
+   TEXTAREA
+========================= */
 .form-textarea {
-    resize: vertical;
-    min-height: 200px;
-    line-height: 1.5;
+  resize: vertical;
+  min-height: 180px;
+  line-height: 1.6;
 }
 
+/* =========================
+   FORM STATES
+========================= */
 .form-input.error,
 .form-textarea.error {
-    border-color: #EF4444;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  border-color: var(--red);
+  box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.1);
 }
 
 .form-hint {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    margin-top: 4px;
+  color: var(--text-3);
+  font-size: 0.78rem;
+  line-height: 1.5;
 }
 
 .form-error {
-    font-size: 0.8rem;
-    color: #EF4444;
-    margin-top: 4px;
-    display: none;
+  display: none;
+  color: var(--red);
+  font-size: 0.8rem;
 }
 
 .form-error.show {
-    display: block;
+  display: block;
 }
 
+/* =========================
+   BUTTONS
+========================= */
 .form-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-    margin-top: 24px;
-    padding-top: 20px;
-    border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
 }
 
-.btn {
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s var(--ease);
-    border: 1px solid transparent;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.form-actions-right {
+  display: flex;
+  gap: 12px;
 }
 
-.btn-primary {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-}
-
-.btn-primary:hover {
-    background: var(--accent-2);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
-}
-
-.btn-secondary {
-    background: transparent;
-    color: var(--text-secondary);
-    border-color: var(--border);
-}
-
-.btn-secondary:hover {
-    background: var(--hover-bg);
-    color: var(--text-primary);
-}
-
+/* =========================
+   SUCCESS MESSAGE
+========================= */
 .success-message {
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.2);
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
-    display: none;
+  display: none;
+  padding: 32px;
+  border: 1px solid rgba(16, 232, 154, 0.2);
+  border-radius: 24px;
+  background: rgba(16, 232, 154, 0.08);
+  text-align: center;
 }
 
 .success-message.show {
-    display: block;
+  display: block;
 }
 
 .success-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: #10B981;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    margin: 0 auto 16px;
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 18px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--green), #047857);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
 }
 
 .success-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #10B981;
-    margin-bottom: 8px;
+  margin: 0 0 10px;
+  color: var(--green);
+  font-size: 1.3rem;
+  font-weight: 700;
 }
 
 .success-details {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    margin-bottom: 16px;
+  color: var(--text-2);
+  line-height: 1.6;
 }
 
-.success-details strong {
-    color: var(--text-primary);
-    font-weight: 700;
+/* =========================
+   SIDE CARD CONTENT
+========================= */
+.side-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.25rem;
+  margin-bottom: 20px;
 }
 
-/* Optional: Add more contrast for disabled state */
-.form-input:disabled,
-.form-textarea:disabled {
-    background-color: var(--hover-bg);
-    border-color: var(--border);
-    cursor: not-allowed;
-    opacity: 0.7;
+.ticket-side-card h3 {
+  margin: 0 0 10px;
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 700;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .submit-ticket-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-    }
-    
-    .form-actions {
-        flex-direction: column;
-    }
-    
-    .btn {
-        width: 100%;
-        justify-content: center;
-    }
+.ticket-side-card p {
+  margin: 0 0 22px;
+  color: var(--text-2);
+  font-size: 0.9rem;
+  line-height: 1.7;
 }
 
-@media (max-width: 480px) {
-    .submit-ticket-header h1 {
-        font-size: 1.3rem;
-    }
-    
-    .ticket-form-container {
-        padding: 16px;
-    }
-    
-    .form-grid {
-        gap: 16px;
-    }
+.side-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-/* Unified Toast Styles (Admin Style) */
+.side-list div {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--text-2);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.side-list i {
+  color: var(--accent);
+  margin-top: 3px;
+}
+
+/* =========================
+   MODAL
+========================= */
+.ticket-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 9999;
+  padding: 20px;
+}
+
+.ticket-modal-overlay.show {
+  display: flex;
+}
+
+.ticket-modal {
+  width: 100%;
+  max-width: 760px;
+
+  background: var(--surface);
+  border-radius: 28px;
+
+  border: 1px solid var(--border);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+
+  overflow: hidden;
+
+  animation: modalFade 0.25s ease;
+}
+
+.ticket-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ticket-modal-header h2 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.ticket-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.4rem;
+  cursor: pointer;
+  color: var(--text-2);
+}
+
+.ticket-modal-body {
+  padding: 28px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 18px;
+}
+
+.summary-label {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.summary-value {
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.ticket-modal-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 24px 28px;
+  border-top: 1px solid var(--border);
+}
+
+/* =========================
+   TOAST
+========================= */
 .toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 16px 24px;
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--text-primary);
-    font-weight: 500;
-    z-index: 9999;
-    opacity: 0;
-    transform: translateY(-20px); /* Slide down starting point */
-    transition: all 0.3s var(--ease);
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+
+  min-width: 220px !important;
+
+  padding: 16px 22px !important;
+
+  border-radius: 14px !important;
+
+  background: var(--surface) !important;
+  color: var(--text) !important;
+
+  border: 1px solid var(--border-bright) !important;
+
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.18) !important;
+
+  z-index: 9999 !important;
+
+  opacity: 0 !important;
+  pointer-events: none !important;
+
+  transform: translateY(-16px) !important;
+
+  transition: all 0.3s ease !important;
 }
 
 .toast.show {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
     opacity: 1;
     transform: translateY(0);
+  }
 }
 
-/* Success Checkmark Icon */
-.toast.success::before {
-    content: "✓";
-    color: #10b981;
-    font-weight: bold;
+@keyframes modalFade {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-/* Error X Icon */
-.toast.error::before {
-    content: "✗";
-    color: #ef4444;
-    font-weight: bold;
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 1100px) {
+  .ticket-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-side-card {
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .form-actions,
+  .ticket-modal-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-actions .btn,
+  .ticket-modal-footer .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-main-card,
+  .ticket-side-card {
+    padding: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-textarea {
+    min-height: 160px;
+  }
+
+  .ticket-modal {
+    border-radius: 22px;
+  }
+}
+
+
+/* ============================================================
+   FINAL FIXES: Side Card + Review Modal Overlay
+   Add these at the end so they override earlier modal styles.
+   ============================================================ */
+
+/* Prevent modal background page scroll */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Keep the information card aligned with the form card without awkward spacing */
+.ticket-shell {
+  align-items: stretch;
+}
+
+.ticket-main-card,
+.ticket-side-card {
+  height: auto;
+}
+
+.ticket-side-card {
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 22px;
+  overflow: hidden;
+}
+
+.ticket-side-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.side-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.side-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  color: var(--text-2);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.side-tip .tip-icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border-radius: 12px;
+  background: rgba(59, 123, 255, 0.10);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.side-tip strong {
+  display: block;
+  color: var(--text);
+  font-size: 0.92rem;
+  margin-bottom: 3px;
+}
+
+.side-tip span:not(.tip-icon) {
+  display: block;
+  color: var(--text-2);
+}
+
+.secure-note {
+  margin-top: auto;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(59, 123, 255, 0.10);
+  color: var(--text);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.secure-note i {
+  color: var(--accent);
+  margin-top: 2px;
+}
+
+/* Review modal must use the actual HTML classes:
+   .review-modal-overlay, .review-modal, .modal-close, etc. */
+.review-modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.56);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  z-index: 99999;
+}
+
+.review-modal-overlay.show {
+  display: flex;
+}
+
+.review-modal {
+  position: relative;
+  width: min(760px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 26px;
+  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.34);
+  padding: 28px;
+  animation: modalFade 0.24s ease both;
+}
+
+.modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--bg-2);
+  color: var(--text-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.modal-close:hover {
+  background: rgba(59, 123, 255, 0.12);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.review-modal h2 {
+  margin: 0 48px 6px 0;
+  color: var(--text);
+  font-family: var(--font-head);
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.modal-subtitle {
+  margin: 0 48px 22px 0;
+  color: var(--text-2);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.review-summary {
+  display: grid;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--bg-2);
+  overflow: hidden;
+}
+
+.summary-row {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 20px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.summary-row:last-child {
+  border-bottom: 0;
+}
+
+.summary-row > span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.summary-row > span i {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(59, 123, 255, 0.10);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 32px;
+}
+
+.summary-row strong {
+  color: var(--text-2);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.summary-description {
+  align-items: start;
+}
+
+.review-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 15px 16px;
+  border: 1px solid rgba(245, 158, 11, 0.34);
+  border-radius: 16px;
+  background: rgba(245, 158, 11, 0.09);
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.review-warning i {
+  color: #f59e0b;
+  margin-top: 2px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+
+/* Keep old modal selectors harmless if they still exist elsewhere */
+.ticket-modal-overlay:not(.show) {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .ticket-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-side-card {
+    min-height: auto;
+  }
+
+  .secure-note {
+    margin-top: 4px;
+  }
+}
+
+@media (max-width: 768px) {
+  .review-modal-overlay {
+    padding: 16px;
+  }
+
+  .review-modal {
+    border-radius: 22px;
+    padding: 22px;
+  }
+
+  .review-modal h2,
+  .modal-subtitle {
+    margin-right: 44px;
+  }
+
+  .summary-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
 }

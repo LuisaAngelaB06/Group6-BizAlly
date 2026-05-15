@@ -1,681 +1,1159 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title data-translate="submit_ticket_page_title">Submit Ticket - AlliTrack</title>
-    <script src="../../scripts/theme.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
-    <link rel="stylesheet" href="../../styles/user page/submit-ticket.css" />
-    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
-    <script src="../../scripts/mobile-restriction.js"></script>
-    <script src="../../scripts/user-preference-manager.js"></script>
-    <script src="../../scripts/user-data-manager.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title data-translate="submit_ticket_page_title">
+    Submit Ticket - AlliTrack
+  </title>
+  <script src="../../scripts/theme.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../../styles/shared/user-side-head.css" />
+  <link rel="stylesheet" href="../../styles/user page/submit-ticket.css" />
+  <script src="../../scripts/mobile-restriction.js" defer></script>
+  <script src="../../scripts/user-preference-manager.js" defer></script>
+  <script src="../../scripts/user-data-manager.js" defer></script>
 </head>
 
 <body>
-    <!-- Mobile Access Denied Modal -->
-    <div class="mobile-block-overlay">
-        <div class="mobile-block-card">
-            <i class="fas fa-laptop"></i>
-            <h2 data-translate="mobile_restricted">Desktop only</h2>
-            <p data-translate="mobile_block_message">User dashboard is optimized for larger screens. Please open on a
-                desktop or tablet in landscape mode.</p>
-            <button class="btn" onclick="window.location.href='/'" data-translate="go_back">Back to
-                Home</button>
-        </div>
+  <div class="mobile-block-overlay" id="mobileBlockOverlay">
+    <div class="mobile-block-card">
+      <i class="fas fa-laptop"></i>
+      <h2 data-translate="mobile_restricted">Desktop only</h2>
+      <p data-translate="mobile_block_message">
+        User dashboard is optimized for larger screens. Please open on a
+        desktop or tablet in landscape mode.
+      </p>
+      <button class="btn btn-primary" onclick="window.location.href = '/'" data-translate="go_back">
+        Back to Home
+      </button>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main Sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" onerror="
+              this.style.display = 'none';
+              this.parentElement.innerHTML = '<i class=\'fas fa-bolt\'></i>';
+            " />
+      </div>
+      <div class="brand-text">
+        <div class="name">AlliTrack</div>
+        <div class="sub" data-translate="user_dashboard">User Console</div>
+      </div>
     </div>
 
-    <div class="app">
-        <div class="shell">
-            <!-- Sidebar -->
-            <aside class="sidebar" role="navigation" aria-label="Main Sidebar">
-                <div class="brand">
-                    <div class="logo">
-                        <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" class="logo-img"
-                            style="width: 32px; height: 32px;">
-                    </div>
-                    <div>
-                        <div class="title">AlliTrack</div>
-                        <div class="subtitle" data-translate="user_dashboard">User Dashboard</div>
-                    </div>
-                </div>
-                <nav class="nav">
-                    <a href="/user/index-user.html" data-section="dashboard">
-                        <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
-                    </a>
+    <nav class="sidebar-nav">
+      <div class="nav-group-label" data-translate="overview">OVERVIEW</div>
+      <a href="/user/index-user.html" class="nav-item" data-section="dashboard"><i class="fas fa-chart-line"></i>
+        <span data-translate="dashboard">Dashboard</span></a>
 
-                    <div class="nav-section" data-translate="support">Support</div>
-                    <a href="/user/my-tickets.html" data-section="tickets">
-                        <i class="fas fa-ticket-alt"></i> <span data-translate="my_tickets">Ticket</span>
-                    </a>
-                    <a href="/user/notifications.html" data-section="notifications">
-                        <i class="fas fa-bell"></i> <span data-translate="notifications">Alert</span>
-                    </a>
-                    <a href="/user/submit-ticket.html" class="active" data-section="submit-ticket">
-                        <i class="fas fa-plus-circle"></i> <span data-translate="submit_ticket">New</span>
-                    </a>
+      <div class="nav-group-label" data-translate="support">SUPPORT</div>
+      <a href="/user/my-tickets.html" class="nav-item" data-section="tickets"><i class="fas fa-ticket-alt"></i>
+        <span data-translate="my_tickets">My Tickets</span></a>
+      <a href="/user/notifications.html" class="nav-item" data-section="notifications"><i class="fas fa-bell"></i>
+        <span data-translate="notifications">Notifications</span></a>
+      <a href="/user/submit-ticket.html" class="nav-item active" data-section="submit-ticket"><i
+          class="fas fa-plus-circle"></i>
+        <span data-translate="submit_ticket">Submit a Ticket</span></a>
 
-                    <div class="nav-section" data-translate="management">Manage</div>
-                    <a href="/user/preferences.html" data-section="preferences">
-                        <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Settings</span>
-                    </a>
-                    <a href="/user/profile-settings.html">
-                        <i class="fas fa-user-cog"></i> Profile Settings
-                        <span id="profileRedDot" class="red-dot" style="display:none;"></span>
-                    </a>
-                    <a href="/user/announcements.html" id="announcementLink">
-                        <i class="fas fa-bullhorn"></i> Announcements
-                        <span id="navRedDot" class="red-dot" style="display: none;"></span>
-                    </a>
+      <div class="nav-group-label" data-translate="management">
+        MANAGEMENT
+      </div>
+      <a href="/user/preferences.html" class="nav-item" data-section="preferences"><i class="fas fa-sliders-h"></i>
+        <span data-translate="preferences">Preferences</span></a>
+      <a href="/user/profile-settings.html" class="nav-item"><i class="fas fa-user-cog"></i>
+        <span data-translate="profile_settings">Profile Settings</span>
+        <span id="profileRedDot" class="red-dot" style="display: none"></span></a>
+      <a href="/user/announcements.html" class="nav-item" id="announcementLink"><i class="fas fa-bullhorn"></i>
+        <span data-translate="announcements">Announcements</span>
+        <span id="navRedDot" class="red-dot" style="display: none"></span></a>
 
-                    <div class="nav-section" data-translate="system">System</div>
-                    <a href="/user/account-security.html" data-section="account-security">
-                        <i class="fas fa-shield-alt"></i> <span data-translate="account_security">Security</span>
-                    </a>
-                    <a href="/user/system-information.html" data-section="system-information">
-                        <i class="fas fa-info-circle"></i> <span data-translate="system_information">Info</span>
-                    </a>
-                </nav>
-                <div class="sidebar-footer">
-                    <div class="version">v1.2.0</div>
-                    <div>Business Alliance Inc.</div>
-                </div>
-            </aside>
+      <div class="nav-group-label" data-translate="system">SYSTEM</div>
+      <a href="/user/account-security.html" class="nav-item" data-section="account-security"><i
+          class="fas fa-shield-alt"></i>
+        <span data-translate="account_security">Account Security</span></a>
+      <a href="/user/system-information.html" class="nav-item" data-section="system-information"><i
+          class="fas fa-scale-balanced"></i> <span data-translate="system_information">Legal Center</span></a>
+    </nav>
 
-            <!-- Main Content Area -->
-            <main class="main">
-                <!-- Header -->
-                <header class="header">
-                    <div class="search" role="search" aria-label="Search Tickets">
-                        <i class="fas fa-search" style="opacity:.6"></i>
-                        <input id="q" placeholder="Search tickets, users, IDs..."
-                            data-translate-placeholder="search_tickets" aria-label="Search tickets, users, IDs" />
-                    </div>
-                    <div class="header-actions">
-                        <div class="user-info">
-                            <div class="user-name" id="userNameDisplay"></div>
-                            <div class="user-email" id="userEmailDisplay"></div>
-                        </div>
-                        <div class="account" id="accountBtn" aria-haspopup="true" aria-expanded="false">
-                            <div id="userAvatar" class="avatar">U</div>
-                            <i class="fas fa-chevron-down" style="opacity:.85"></i>
-                        </div>
-                        <div class="account-menu" id="accountMenu">
-                            <div class="arrow"></div>
-                            <a href="/user/profile-settings.html" data-translate="profile">Profile</a>
-                            <a href="/user/preferences.html" data-translate="settings">Settings</a>
-                            <a href="/" id="logoutBtn" data-translate="logout">Logout</a>
-                        </div>
-                    </div>
-                </header>
+    <div class="sidebar-footer">
+      <div>v1.2.0 &mdash; Business Alliance Inc.</div>
+    </div>
+  </aside>
 
-                <!-- Submit Ticket Content -->
-                <div class="content">
-                    <div class="submit-ticket-content">
-                        <!-- Header with Container -->
-                        <div class="submit-ticket-header-container">
-                            <div class="submit-ticket-header">
-                                <h1><i class="fas fa-plus-circle"></i> <span data-translate="submit_ticket_title">Submit
-                                        a New Ticket</span></h1>
-                            </div>
-                        </div>
-
-                        <!-- Success Message -->
-                        <div class="success-message" id="successMessage">
-                            <div class="success-icon">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <h2 class="success-title" data-translate="ticket_submitted">Ticket Submitted Successfully!
-                            </h2>
-                            <div class="success-details">
-                                <div>
-                                    <span data-translate="ticket_id_generated">Ticket ID: </span>
-                                    <strong id="generatedTicketId">TKT-0000</strong>
-                                </div>
-                                <div data-translate="ticket_under_review">Your ticket has been submitted and is under
-                                    review. We'll notify you of updates.</div>
-                            </div>
-                            <div class="form-actions">
-                                <button class="btn btn-secondary" onclick="resetForm()"
-                                    data-translate="submit_another">Submit Another Ticket</button>
-                                <button class="btn btn-primary" onclick="viewTicket()" data-translate="view_ticket">View
-                                    Ticket</button>
-                            </div>
-                        </div>
-
-                        <!-- Ticket Form -->
-                        <form class="ticket-form-container" id="ticketForm">
-                            <div class="form-grid">
-                                <!-- Subject -->
-                                <div class="form-group">
-                                    <label class="form-label" for="ticketSubject">
-                                        <span data-translate="subject">Subject</span> <span class="required">*</span>
-                                    </label>
-                                    <input type="text" id="ticketSubject" class="form-input"
-                                        placeholder="Brief description of your issue" required />
-                                    <div class="form-error" id="subjectError" data-translate="subject_required">Please
-                                        enter a subject for your ticket</div>
-                                </div>
-
-                                <!-- Description -->
-                                <div class="form-group">
-                                    <label class="form-label" for="ticketDescription">
-                                        <span data-translate="description">Description</span> <span
-                                            class="required">*</span>
-                                    </label>
-                                    <textarea id="ticketDescription" class="form-textarea"
-                                        placeholder="Please provide detailed information about your issue..."
-                                        required></textarea>
-                                    <div class="form-hint" data-translate="description_hint">Include steps to reproduce,
-                                        error messages, and what you've tried</div>
-                                    <div class="form-error" id="descriptionError" data-translate="description_required">
-                                        Please provide a description of your issue</div>
-                                </div>
-                            </div>
-
-                            <!-- Form Actions -->
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" onclick="resetForm()">
-                                    <i class="fas fa-times"></i> <span data-translate="cancel">Cancel</span>
-                                </button>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-paper-plane"></i> <span data-translate="submit_ticket">Submit
-                                        Ticket</span>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Footer -->
-                <footer class="site-footer">
-                    <div>&copy; 2025 Business Alliance Inc.</div>
-                    <div data-translate="dashboard_template">AlliTrack User Dashboard</div>
-                </footer>
-            </main>
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle" aria-label="Open sidebar" aria-expanded="false">
+          <i class="fas fa-bars"></i>
+        </button>
+        <span data-translate="user_dashboard">User</span>
+        <span class="crumb-sep"><i class="fas fa-chevron-right" style="font-size: 0.6rem"></i></span>
+        <span class="crumb-current" data-translate="submit_ticket_title">Submit Ticket</span>
+      </div>
+      <div class="topbar-right">
+        <div class="account-wrap">
+          <button class="account-btn" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+            <div class="avatar-btn avatar" id="userAvatar">U</div>
+            <div class="account-info user-info">
+              <div class="a-name user-name" id="userNameDisplay">User</div>
+              <div class="a-email user-email" id="userEmailDisplay"></div>
+            </div>
+            <i class="fas fa-chevron-down account-chevron"></i>
+          </button>
+          <div class="account-menu" id="accountMenu">
+            <div class="account-menu-header">
+              <div class="amh-name" id="menuUserName">User</div>
+              <div class="amh-email" id="menuUserEmail"></div>
+            </div>
+            <a href="/user/profile-settings.html" data-translate="profile"><i class="fas fa-user"></i> Profile</a>
+            <a href="/user/preferences.html" data-translate="settings"><i class="fas fa-cog"></i> Settings</a>
+            <a href="/" id="logoutBtn" class="logout" data-translate="logout"><i class="fas fa-sign-out-alt"></i>
+              Logout</a>
+          </div>
         </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="page-header">
+        <div class="page-title-group">
+          <div class="eyebrow">
+            <i class="fas fa-ticket-alt"></i>
+            <span data-translate="support">Support</span>
+          </div>
+          <h1 data-translate="submit_ticket_title">Submit a New Ticket</h1>
+          <p class="desc" data-translate="ticket_under_review">
+            Please provide the details below so we can better understand and
+            resolve your issue.
+          </p>
+        </div>
+      </div>
+
+      <div class="submit-ticket-content">
+        <div class="ticket-shell">
+          <div class="ticket-main-card">
+            <div class="card-head">
+              <h3>
+                <i class="fas fa-paper-plane"></i>
+                <span>Ticket Information</span>
+              </h3>
+            </div>
+
+            <div class="success-message" id="successMessage">
+              <div class="success-icon">
+                <i class="fas fa-check"></i>
+              </div>
+              <h2 class="success-title" data-translate="ticket_submitted">
+                Ticket Submitted Successfully!
+              </h2>
+              <div class="success-details">
+                <div>
+                  <span data-translate="ticket_id_generated">Ticket ID:
+                  </span>
+                  <strong id="generatedTicketId">TKT-0000</strong>
+                </div>
+                <div data-translate="ticket_under_review">
+                  Your ticket has been submitted and is under review. We'll
+                  notify you of updates.
+                </div>
+              </div>
+              <div class="form-actions success-actions">
+                <button class="btn btn-ghost" onclick="resetForm()" data-translate="submit_another">
+                  Submit Another Ticket
+                </button>
+                <button class="btn btn-primary" onclick="viewTicket()" data-translate="view_ticket">
+                  View Ticket
+                </button>
+              </div>
+            </div>
+
+            <form class="ticket-form-container" id="ticketForm">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label class="form-label" for="ticketCategory">
+                    <span>Product Category</span>
+                    <span class="required">*</span>
+                  </label>
+                  <select id="ticketCategory" class="form-input" required>
+                    <option value="">Select Category</option>
+                    <option value="Structured Cabling, Switches, and Access Ports">
+                      Structured Cabling, Switches, and Access Ports
+                    </option>
+                    <option value="IP Phones and Analog Phones">
+                      IP Phones and Analog Phones
+                    </option>
+                    <option value="Surveillance Systems">
+                      Surveillance Systems
+                    </option>
+                    <option value="Access Control with Biometrics and Paging System">
+                      Access Control with Biometrics and Paging System
+                    </option>
+                    <option value="GSM Alarm">GSM Alarm</option>
+                    <option value="Other Products">Other Products</option>
+                  </select>
+                  <div class="form-error" id="categoryError">
+                    Please select a product category
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="ticketBrand">
+                    <span>Product Brand</span> <span class="required">*</span>
+                  </label>
+                  <select id="ticketBrand" class="form-input" required disabled>
+                    <option value="">Select Product Brand</option>
+                  </select>
+                  <div class="form-error" id="brandError">
+                    Please select a product brand
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="ticketConcern">
+                    <span>Concern Type</span> <span class="required">*</span>
+                  </label>
+                  <select id="ticketConcern" class="form-input" required disabled>
+                    <option value="">Select Concern</option>
+                  </select>
+                  <div class="form-error" id="concernError">
+                    Please select a concern type
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="ticketSubject">
+                    <span data-translate="subject">Subject</span>
+                    <span class="required">*</span>
+                  </label>
+                  <input type="text" id="ticketSubject" class="form-input" placeholder="Brief description of your issue"
+                    required />
+                  <div class="form-error" id="subjectError" data-translate="subject_required">
+                    Please enter a subject for your ticket
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="ticketDescription">
+                    <span data-translate="description">Description</span>
+                    <span class="required">*</span>
+                  </label>
+                  <textarea id="ticketDescription" class="form-textarea"
+                    placeholder="Please provide detailed information about your issue..." required></textarea>
+                  <div class="form-hint" data-translate="description_hint">
+                    Include steps to reproduce, error messages, and what
+                    you've tried
+                  </div>
+                  <div class="form-error" id="descriptionError" data-translate="description_required">
+                    Please provide a description of your issue
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="button" class="btn btn-ghost" onclick="resetForm()">
+                  <i class="fas fa-times"></i>
+                  <span data-translate="cancel">Cancel</span>
+                </button>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-eye"></i> <span>Review Before Submit</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <aside class="ticket-side-card" aria-label="Submission reminders">
+            <div class="side-icon"><i class="fas fa-info-circle"></i></div>
+            <h3>Before You Submit</h3>
+            <p>
+              Please ensure you've provided accurate information to help us
+              resolve your concern faster.
+            </p>
+
+            <div class="side-tips">
+              <div class="side-tip">
+                <span class="tip-icon"><i class="fas fa-clipboard-list"></i></span>
+                <div>
+                  <strong>Complete Information</strong>
+                  <span>Fill in all required fields to avoid delays.</span>
+                </div>
+              </div>
+              <div class="side-tip">
+                <span class="tip-icon"><i class="fas fa-crosshairs"></i></span>
+                <div>
+                  <strong>Accurate Details</strong>
+                  <span>Provide specific details about your issue.</span>
+                </div>
+              </div>
+              <div class="side-tip">
+                <span class="tip-icon"><i class="fas fa-clock"></i></span>
+                <div>
+                  <strong>Timely Updates</strong>
+                  <span>We'll notify you of any updates on your ticket.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="secure-note">
+              <i class="fas fa-shield-alt"></i>
+              <span>Your information is secure and will only be used to resolve
+                your concern.</span>
+            </div>
+          </aside>
+        </div>
+      </div>
     </div>
 
-    <script>
-        if (typeof API_BASE_URL === 'undefined') {
-            window.API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-                ? 'http://127.0.0.1:5000'
-                : 'https://group6-bizally.onrender.com';
+    <div class="review-modal-overlay" id="reviewModal" aria-hidden="true">
+      <div class="review-modal" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
+        <button type="button" class="modal-close" onclick="closeReviewModal()" aria-label="Close review modal">
+          <i class="fas fa-times"></i>
+        </button>
+        <h2 id="reviewModalTitle">Review Your Ticket</h2>
+        <p class="modal-subtitle">
+          Please confirm that all information below is correct before
+          submitting.
+        </p>
+
+        <div class="review-summary">
+          <div class="summary-row">
+            <span><i class="fas fa-th-large"></i> Product Category</span>
+            <strong id="reviewCategory">-</strong>
+          </div>
+          <div class="summary-row">
+            <span><i class="fas fa-tag"></i> Product Brand</span>
+            <strong id="reviewBrand">-</strong>
+          </div>
+          <div class="summary-row">
+            <span><i class="fas fa-question-circle"></i> Concern Type</span>
+            <strong id="reviewConcern">-</strong>
+          </div>
+          <div class="summary-row">
+            <span><i class="fas fa-file-alt"></i> Subject</span>
+            <strong id="reviewSubject">-</strong>
+          </div>
+          <div class="summary-row summary-description">
+            <span><i class="fas fa-comment-dots"></i> Description</span>
+            <strong id="reviewDescription">-</strong>
+          </div>
+        </div>
+
+        <div class="review-warning">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span>Once submitted, a ticket number will be generated and you will
+            receive notifications on any updates.</span>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeReviewModal()">
+            <i class="fas fa-pen"></i> Edit Information
+          </button>
+          <button type="button" class="btn btn-primary" id="confirmSubmitBtn" onclick="submitReviewedTicket()">
+            <i class="fas fa-paper-plane"></i> Submit Ticket
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <div>&copy; 2025 Business Alliance Inc.</div>
+      <div data-translate="dashboard_template">AlliTrack User Dashboard</div>
+    </footer>
+  </div>
+
+  <script>
+    if (typeof API_BASE_URL === "undefined") {
+      window.API_BASE_URL =
+        window.location.hostname === "127.0.0.1" ||
+          window.location.hostname === "localhost"
+          ? "http://127.0.0.1:5000"
+          : "https://group6-bizally.onrender.com";
+    }
+    const ticketCategorizationData = {
+      "Structured Cabling, Switches, and Access Ports": {
+        brands: [
+          "ICSI",
+          "Belden",
+          "Ubiquiti",
+          "EnGenius",
+          "D-Link",
+          "TP-Link",
+          "Ryujie",
+          "Panduit",
+        ],
+        concerns: [
+          "Clients experience lag, buffering, or unstable connectivity.",
+          "Certain areas have weak or no Wi-Fi signal.",
+          "Cables are difficult to trace or maintain.",
+          "Installation may interrupt business operations.",
+          "Devices such as access points or CCTV cameras need reliable power.",
+        ],
+      },
+      "IP Phones and Analog Phones": {
+        brands: ["Yealink", "Fanvil", "Vtech", "Alcatel", "Panasonic"],
+        concerns: [
+          "IP Phones fail to connect to the PBX or SIP Server.",
+          "Employees cannot contact other departments internally.",
+          "Time and Date not synced to IP Phones.",
+          "No outbound calls.",
+        ],
+      },
+      "Surveillance Systems": {
+        brands: ["UNV", "Dahua", "HikVision", "Tiandy", "GeoVision"],
+        concerns: [
+          "CCTV camera has no feed or shows black screen.",
+          "Clients cannot access CCTV remotely from phones or computers.",
+          "No footage is saved even though cameras are active.",
+        ],
+      },
+      "Access Control with Biometrics and Paging System": {
+        brands: ["ZkTeco", "Anviz", "Alcon", "TOA", "Honeywell", "ITC"],
+        concerns: [
+          "Can employees cheat the attendance system?",
+          "What if the biometrics scanner doesn’t recognize the employee?",
+          "Can employees fake fingerprints and photos?",
+          "Will this integrate with payroll or HR?",
+          "How do I set up the GUI (Graphical User Interface)?",
+          "Can the sound for the paging system be too loud or disruptive?",
+          "Will everyone hear the announcements from the paging system clearly?",
+        ],
+      },
+      "GSM Alarm": {
+        brands: ["Chuango"],
+        concerns: [
+          "Alarm not triggering during intrusion.",
+          "Can the GSM alarm accidentally trigger a false alarm?",
+          "Unable to find SMS Alerts and Call Alerts.",
+          "Remote control not functioning.",
+          "SIM Card won’t get detected.",
+          "Alarm siren too loud or too low.",
+        ],
+      },
+      "Other Products": {
+        brands: [
+          "JBL",
+          "Jabra",
+          "Logitech",
+          "HP",
+          "Apple",
+          "ASUS",
+          "Lenovo",
+          "Epson",
+        ],
+        concerns: ["General inquiry or technical issue."],
+      },
+    };
+
+    function populateSelect(selectElement, placeholder, values) {
+      if (!selectElement) return;
+      selectElement.innerHTML = `<option value="">${placeholder}</option>`;
+      values.forEach((value) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        selectElement.appendChild(option);
+      });
+      selectElement.disabled = values.length === 0;
+    }
+
+    function setupTicketCategorization() {
+      const categorySelect = document.getElementById("ticketCategory");
+      const brandSelect = document.getElementById("ticketBrand");
+      const concernSelect = document.getElementById("ticketConcern");
+      const subjectInput = document.getElementById("ticketSubject");
+
+      if (!categorySelect || !brandSelect || !concernSelect) return;
+
+      categorySelect.addEventListener("change", function () {
+        const selectedCategory = this.value;
+        const categoryDetails = ticketCategorizationData[selectedCategory];
+
+        populateSelect(
+          brandSelect,
+          "Select Product Brand",
+          categoryDetails ? categoryDetails.brands : [],
+        );
+        populateSelect(
+          concernSelect,
+          "Select Concern",
+          categoryDetails ? categoryDetails.concerns : [],
+        );
+
+        brandSelect.classList.remove("error");
+        concernSelect.classList.remove("error");
+        const brandError = document.getElementById("brandError");
+        const concernError = document.getElementById("concernError");
+        if (brandError) brandError.classList.remove("show");
+        if (concernError) concernError.classList.remove("show");
+      });
+
+      concernSelect.addEventListener("change", function () {
+        const category = categorySelect.value;
+        const concern = this.value;
+
+        if (subjectInput && category && concern) {
+          subjectInput.value = `[${category}] ${concern}`;
         }
-        // Account Dropdown Functionality - FIXED
-        function setupAccountDropdown() {
-            console.log('🔧 Setting up account dropdown...');
-            const accountBtn = document.getElementById("accountBtn");
-            const accountMenu = document.getElementById("accountMenu");
+      });
+    }
 
-            if (!accountBtn || !accountMenu) {
-                console.error('❌ Account dropdown elements not found!');
-                return;
-            }
+    // Account Dropdown Functionality - FIXED
+    function setupAccountDropdown() {
+      console.log("🔧 Setting up account dropdown...");
+      const accountBtn = document.getElementById("accountBtn");
+      const accountMenu = document.getElementById("accountMenu");
 
-            console.log('✅ Elements found, setting up...');
+      if (!accountBtn || !accountMenu) {
+        console.error("❌ Account dropdown elements not found!");
+        return;
+      }
 
-            // Remove ALL existing event listeners by cloning
-            const newBtn = accountBtn.cloneNode(true);
-            accountBtn.parentNode.replaceChild(newBtn, accountBtn);
+      console.log("✅ Elements found, setting up...");
 
-            const newMenu = accountMenu.cloneNode(true);
-            accountMenu.parentNode.replaceChild(newMenu, accountMenu);
+      // Remove ALL existing event listeners by cloning
+      const newBtn = accountBtn.cloneNode(true);
+      accountBtn.parentNode.replaceChild(newBtn, accountBtn);
 
-            // Get fresh references
-            const freshBtn = document.getElementById("accountBtn");
-            const freshMenu = document.getElementById("accountMenu");
+      const newMenu = accountMenu.cloneNode(true);
+      accountMenu.parentNode.replaceChild(newMenu, accountMenu);
 
-            // Add click event to toggle dropdown
-            freshBtn.addEventListener("click", function (e) {
-                console.log('🎯 Account button clicked!');
-                e.stopPropagation();
-                e.preventDefault();
+      // Get fresh references
+      const freshBtn = document.getElementById("accountBtn");
+      const freshMenu = document.getElementById("accountMenu");
 
-                const isShowing = freshMenu.classList.contains("show");
-                freshMenu.classList.toggle("show");
-                freshBtn.setAttribute("aria-expanded", freshMenu.classList.contains("show"));
-            });
+      // Add click event to toggle dropdown
+      freshBtn.addEventListener("click", function (e) {
+        console.log("🎯 Account button clicked!");
+        e.stopPropagation();
+        e.preventDefault();
 
-            // Close dropdown when clicking outside
-            document.addEventListener("click", function (e) {
-                if (freshMenu.classList.contains("show") &&
-                    !freshBtn.contains(e.target) &&
-                    !freshMenu.contains(e.target)) {
-                    console.log('🔒 Closing dropdown (clicked outside)');
-                    freshMenu.classList.remove("show");
-                    freshBtn.setAttribute("aria-expanded", false);
-                }
-            });
+        const isShowing = freshMenu.classList.contains("show");
+        freshMenu.classList.toggle("show");
+        freshBtn.setAttribute(
+          "aria-expanded",
+          freshMenu.classList.contains("show"),
+        );
+      });
 
-            // Close on Escape key
-            document.addEventListener("keydown", function (e) {
-                if (e.key === "Escape" && freshMenu.classList.contains("show")) {
-                    console.log('🔒 Closing dropdown (Escape key)');
-                    freshMenu.classList.remove("show");
-                    freshBtn.setAttribute("aria-expanded", false);
-                }
-            });
-
-            // Close when clicking menu items
-            const menuItems = freshMenu.querySelectorAll("a");
-            menuItems.forEach(item => {
-                item.addEventListener("click", function () {
-                    console.log('🔒 Closing dropdown (menu item clicked)');
-                    freshMenu.classList.remove("show");
-                    freshBtn.setAttribute("aria-expanded", false);
-                });
-            });
-
-            // Ensure button is clickable
-            freshBtn.style.cursor = 'pointer';
-
-            console.log('✅ Account dropdown setup complete');
+      // Close dropdown when clicking outside
+      document.addEventListener("click", function (e) {
+        if (
+          freshMenu.classList.contains("show") &&
+          !freshBtn.contains(e.target) &&
+          !freshMenu.contains(e.target)
+        ) {
+          console.log("🔒 Closing dropdown (clicked outside)");
+          freshMenu.classList.remove("show");
+          freshBtn.setAttribute("aria-expanded", false);
         }
+      });
 
-        // Translation dictionary for submit ticket page
-        const translations = {
-            'en': {
-                // PAGE-SPECIFIC translations only:
-                'submit_ticket_page_title': 'Submit Ticket - AlliTrack',
-                'submit_ticket_title': 'Submit a New Ticket',
-                'search_tickets': 'Search tickets, users, IDs...',
-                'ticket_submitted': 'Ticket Submitted Successfully!',
-                'ticket_id_generated': 'Ticket ID: ',
-                'ticket_under_review': 'Your ticket has been submitted and is under review. We\'ll notify you of updates.',
-                'submit_another': 'Submit Another Ticket',
-                'view_ticket': 'View Ticket',
-                'subject': 'Subject',
-                'subject_required': 'Please enter a subject for your ticket',
-                'description': 'Description',
-                'description_hint': 'Include steps to reproduce, error messages, and what you\'ve tried',
-                'description_required': 'Please provide a description of your issue',
-                'cancel': 'Cancel',
-                'submit_ticket': 'Submit Ticket',
+      // Close on Escape key
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && freshMenu.classList.contains("show")) {
+          console.log("🔒 Closing dropdown (Escape key)");
+          freshMenu.classList.remove("show");
+          freshBtn.setAttribute("aria-expanded", false);
+        }
+      });
 
-                // Navigation (shared with dashboard)
-                'user_dashboard': 'User Dashboard',
-                'dashboard': 'Dashboard',
-                'support': 'Support',
-                'my_tickets': 'Ticket',
-                'notifications': 'Alert',
-                'submit_ticket': 'New',
-                'management': 'Management',
-                'preferences': 'Settings',
-                'profile_settings': 'Profile',
-                'announcements': 'Anunsyo',
-                'system': 'System',
-                'account_security': 'Security',
-                'system_information': 'Info',
-                'profile': 'Profile',
-                'settings': 'Settings',
-                'logout': 'Logout',
-                'dashboard_template': 'AlliTrack User Dashboard'
-            },
-            'fil': {
-                'submit_ticket_page_title': 'Magsumite ng Ticket - AlliTrack',
-                'submit_ticket_title': 'Magsumite ng Bagong Ticket',
-                'search_tickets': 'Maghanap...',
-                'ticket_submitted': 'Na-submit ang Ticket!',
-                'ticket_id_generated': 'Ticket ID: ',
-                'ticket_under_review': 'Na-submit ang ticket. I-update ka namin.',
-                'submit_another': 'Magsumite ng Isa Pa',
-                'view_ticket': 'Tingnan ang Ticket',
-                'subject': 'Pamagat',
-                'subject_required': 'Ilagay ang subject ng ticket',
-                'description': 'Deskripsyon',
-                'description_hint': 'Isama ang steps, error messages, at sinubukan mo na',
-                'description_required': 'Magbigay ng deskripsyon',
-                'cancel': 'Kanselahin',
-                'submit_ticket': 'I-submit ang Ticket',
+      // Close when clicking menu items
+      const menuItems = freshMenu.querySelectorAll("a");
+      menuItems.forEach((item) => {
+        item.addEventListener("click", function () {
+          console.log("🔒 Closing dropdown (menu item clicked)");
+          freshMenu.classList.remove("show");
+          freshBtn.setAttribute("aria-expanded", false);
+        });
+      });
 
-                // Navigation (shared with dashboard)
-                'user_dashboard': 'Dashboard',
-                'dashboard': 'Dashboard',
-                'support': 'Suporta',
-                'my_tickets': 'Ticket',
-                'notifications': 'Alert',
-                'submit_ticket': 'New',
-                'management': 'Pamahalaan',
-                'preferences': 'Mga Setting',
-                'profile_settings': 'Profile',
-                'announcements': 'Mga Anunsyo',
-                'system': 'Sistema',
-                'account_security': 'Seguridad',
-                'system_information': 'Impormasyon',
-                'profile': 'Profile',
-                'settings': 'Mga Setting',
-                'logout': 'Logout',
-                'dashboard_template': 'Dashboard ng User ng AlliTrack'
-            }
-        };
+      // Ensure button is clickable
+      freshBtn.style.cursor = "pointer";
 
-        // Initialize the page when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('🚀 Submit Ticket: Starting initialization...');
+      console.log("✅ Account dropdown setup complete");
+    }
 
-            // 1. DYNAMIC TOAST CREATION (Ensures notification container is ready first)
-            if (!document.getElementById('toast')) {
-                const toast = document.createElement('div');
-                toast.id = 'toast';
-                toast.className = 'toast';
-                document.body.appendChild(toast);
-            }
+    function setupMenuToggle() {
+      const toggle = document.getElementById("menuToggle");
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("sidebarOverlay");
+      if (!toggle || !sidebar || !overlay) return;
 
-            // 2. INITIALIZE MANAGERS
-            if (window.userDataManager) {
-                window.userDataManager.initializeUserDisplay();
-            }
+      const open = () => {
+        sidebar.classList.add("open");
+        overlay.classList.add("active");
+        toggle.setAttribute("aria-expanded", "true");
+        toggle.innerHTML = '<i class="fas fa-times"></i>';
+      };
+      const close = () => {
+        sidebar.classList.remove("open");
+        overlay.classList.remove("active");
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.innerHTML = '<i class="fas fa-bars"></i>';
+      };
 
-            if (window.preferencesManager) {
-                window.preferencesManager.initialize();
-                const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
-                applyTranslations(currentLang);
-            } else {
-                applyTranslations('en');
-            }
+      toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        sidebar.classList.contains("open") ? close() : open();
+      });
+      overlay.addEventListener("click", close);
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && sidebar.classList.contains("open")) close();
+      });
+    }
 
-            // 3. UI SETUP
-            setupLogout();
-            setupAccountDropdown();
-            loadAndDisplayUserData();
+    function syncMobileOverlay() {
+      const overlay = document.getElementById("mobileBlockOverlay");
+      if (!overlay) return;
+      overlay.style.display = document.body.classList.contains(
+        "mobile-block-active",
+      )
+        ? "flex"
+        : "";
+    }
 
-            // 4. PROFILE COMPLETION CHECK
-            const newTicketButton = document.getElementById('submitTicketBtn') || document.querySelector('.btn-new-ticket');
-            if (newTicketButton) {
-                newTicketButton.addEventListener('click', function (event) {
-                    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-                    if (!userData.is_profile_complete) {
-                        event.preventDefault();
-                        showToast("⚠️ Please complete your profile first.", "error");
-                        setTimeout(() => {
-                            window.location.href = "/user/profile-settings.html";
-                        }, 2000);
-                    }
-                });
-            }
+    // Translation dictionary for submit ticket page
+    const translations = {
+      en: {
+        // PAGE-SPECIFIC translations only:
+        submit_ticket_page_title: "Submit Ticket - AlliTrack",
+        submit_ticket_title: "Submit a New Ticket",
+        search_tickets: "Search tickets, users, IDs...",
+        ticket_submitted: "Ticket Submitted Successfully!",
+        ticket_id_generated: "Ticket ID: ",
+        ticket_under_review:
+          "Your ticket has been submitted and is under review. We'll notify you of updates.",
+        submit_another: "Submit Another Ticket",
+        view_ticket: "View Ticket",
+        subject: "Subject",
+        subject_required: "Please enter a subject for your ticket",
+        description: "Description",
+        description_hint:
+          "Include steps to reproduce, error messages, and what you've tried",
+        description_required: "Please provide a description of your issue",
+        cancel: "Cancel",
+        submit_ticket: "Submit Ticket",
 
-            // 5. ASYNCHRONOUS FORM SUBMIT HANDLER
-            const form = document.getElementById("ticketForm");
-            if (form) {
-                form.addEventListener("submit", async function (e) {
-                    e.preventDefault();
+        // Navigation (shared with dashboard)
+        user_dashboard: "User Dashboard",
+        profile: "Profile",
+        settings: "Settings",
+        logout: "Logout",
+        dashboard_template: "AlliTrack User Dashboard",
+      },
+      fil: {
+        submit_ticket_page_title: "Magsumite ng Ticket - AlliTrack",
+        submit_ticket_title: "Magsumite ng Bagong Ticket",
+        search_tickets: "Maghanap...",
+        ticket_submitted: "Na-submit ang Ticket!",
+        ticket_id_generated: "Ticket ID: ",
+        ticket_under_review: "Na-submit ang ticket. I-update ka namin.",
+        submit_another: "Magsumite ng Isa Pa",
+        view_ticket: "Tingnan ang Ticket",
+        subject: "Pamagat",
+        subject_required: "Ilagay ang subject ng ticket",
+        description: "Deskripsyon",
+        description_hint:
+          "Isama ang steps, error messages, at sinubukan mo na",
+        description_required: "Magbigay ng deskripsyon",
+        cancel: "Kanselahin",
+        submit_ticket: "I-submit ang Ticket",
 
-                    if (!validateForm()) {
-                        console.warn("Form validation rejected.");
-                        return;
-                    }
+        // Navigation (shared with dashboard)
+        user_dashboard: "Dashboard",
+        profile: "Profile",
+        settings: "Mga Setting",
+        logout: "Logout",
+        dashboard_template: "Dashboard ng User ng AlliTrack",
+      },
+    };
 
-                    const subjectInput = document.getElementById("ticketSubject");
-                    const descriptionInput = document.getElementById("ticketDescription");
-                    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    // Initialize the page when DOM is loaded
+    document.addEventListener("DOMContentLoaded", function () {
+      console.log("🚀 Submit Ticket: Starting initialization...");
 
-                    if (!userData.user_id) {
-                        showToast("Session expired. Please log in again.", "error");
-                        window.location.href = "/";
-                        return;
-                    }
+      // 1. DYNAMIC TOAST CREATION (Ensures notification container is ready first)
+      if (!document.getElementById("toast")) {
+        const toast = document.createElement("div");
+        toast.id = "toast";
+        toast.className = "toast";
+        document.body.appendChild(toast);
+      }
 
-                    const ticketData = {
-                        Service_Type_ID: 1,
-                        user_id: userData.user_id,
-                        Status_ID: 1,
-                        Concern_Title: subjectInput.value.trim(),
-                        Description: descriptionInput.value.trim(),
-                        Priority: "Medium"
-                    };
+      // 2. INITIALIZE MANAGERS
+      if (window.userDataManager) {
+        window.userDataManager.initializeUserDisplay();
+      }
 
-                    const submitBtn = form.querySelector('button[type="submit"]');
-                    const originalBtnText = submitBtn ? submitBtn.innerHTML : "Submit Ticket";
-                    if (submitBtn) submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+      if (window.preferencesManager) {
+        window.preferencesManager.initialize();
+        const currentLang =
+          window.preferencesManager.getCurrentLanguage() || "en";
+        applyTranslations(currentLang);
+      } else {
+        applyTranslations("en");
+      }
 
-                    try {
-                        const response = await fetch(`${API_BASE_URL}/api/tickets`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify(ticketData)
-                        });
+      // 3. UI SETUP
+      setupLogout();
+      setupTicketCategorization();
+      setupAccountDropdown();
+      setupMenuToggle();
+      syncMobileOverlay();
+      window.addEventListener("resize", () =>
+        setTimeout(syncMobileOverlay, 20),
+      );
+      loadAndDisplayUserData();
 
-                        if (response.ok) {
-                            const result = await response.json();
-                            form.reset();
-                            form.style.display = 'none';
+      // 4. PROFILE COMPLETION CHECK
+      const newTicketButton =
+        document.getElementById("submitTicketBtn") ||
+        document.querySelector(".btn-new-ticket");
+      if (newTicketButton) {
+        newTicketButton.addEventListener("click", function (event) {
+          const userData = JSON.parse(
+            localStorage.getItem("userData") || "{}",
+          );
+          if (!userData.is_profile_complete) {
+            event.preventDefault();
+            showToast("⚠️ Please complete your profile first.", "error");
+            setTimeout(() => {
+              window.location.href = "/user/profile-settings.html";
+            }, 2000);
+          }
+        });
+      }
 
-                            const successMessage = document.getElementById('successMessage');
-                            if (successMessage) successMessage.classList.add('show');
+      // 5. REVIEW MODAL BEFORE FINAL SUBMIT
+      const form = document.getElementById("ticketForm");
+      if (form) {
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
 
-                            const idElement = document.getElementById('generatedTicketId');
-                            if (idElement) {
-                                const ticketId = result.ticket_id || result.Ticket_ID || result.data?.ticket_id || "TKT-GENERATED";
-                                idElement.textContent = ticketId;
-                            }
-                        } else {
-                            showToast("❌ Server error submitting ticket.", "error");
-                            if (submitBtn) submitBtn.innerHTML = originalBtnText;
-                        }
-                    } catch (error) {
-                        console.error("Network crash:", error);
-                        showToast("Connection failed. Please check your backend terminal.", "error");
-                        if (submitBtn) submitBtn.innerHTML = originalBtnText;
-                    }
-                });
-            }
+          if (!validateForm()) {
+            console.warn("Form validation rejected.");
+            return;
+          }
 
-            console.log('✅ Submit Ticket page fully loaded and merged');
+          openReviewModal();
+        });
+      }
+
+      console.log("✅ Submit Ticket page fully loaded and merged");
+    });
+
+    // Review modal and final submission helpers
+    function getTicketFormValues() {
+      const categoryInput = document.getElementById("ticketCategory");
+      const brandInput = document.getElementById("ticketBrand");
+      const concernInput = document.getElementById("ticketConcern");
+      const subjectInput = document.getElementById("ticketSubject");
+      const descriptionInput = document.getElementById("ticketDescription");
+
+      return {
+        category: categoryInput ? categoryInput.value.trim() : "",
+        brand: brandInput ? brandInput.value.trim() : "",
+        concern: concernInput ? concernInput.value.trim() : "",
+        subject: subjectInput ? subjectInput.value.trim() : "",
+        description: descriptionInput ? descriptionInput.value.trim() : "",
+      };
+    }
+
+    function setText(id, value) {
+      const element = document.getElementById(id);
+      if (element) element.textContent = value || "-";
+    }
+
+    function openReviewModal() {
+      const values = getTicketFormValues();
+      setText("reviewCategory", values.category);
+      setText("reviewBrand", values.brand);
+      setText("reviewConcern", values.concern);
+      setText("reviewSubject", values.subject);
+      setText("reviewDescription", values.description);
+
+      const modal = document.getElementById("reviewModal");
+      if (modal) {
+        modal.classList.add("show");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("modal-open");
+      }
+    }
+
+    function closeReviewModal() {
+      const modal = document.getElementById("reviewModal");
+      if (modal) {
+        modal.classList.remove("show");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("modal-open");
+      }
+    }
+
+    async function submitReviewedTicket() {
+      const form = document.getElementById("ticketForm");
+      const confirmBtn = document.getElementById("confirmSubmitBtn");
+      const values = getTicketFormValues();
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+
+      if (!userData.user_id) {
+        showToast("Session expired. Please log in again.", "error");
+        window.location.href = "/";
+        return;
+      }
+
+      const structuredDescription = [
+        `Category: ${values.category}`,
+        `Product Brand: ${values.brand}`,
+        `Concern Type: ${values.concern}`,
+        "",
+        "User Description:",
+        values.description,
+      ].join("\n");
+
+      const ticketData = {
+        Service_Type_ID: 1,
+        user_id: userData.user_id,
+        Status_ID: 1,
+        Category: values.category,
+        Product_Brand: values.brand,
+        Concern_Type: values.concern,
+        Concern_Title: values.subject,
+        Description: structuredDescription,
+        Priority: "Medium",
+      };
+
+      const originalBtnText = confirmBtn
+        ? confirmBtn.innerHTML
+        : "Submit Ticket";
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML =
+          '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/tickets`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(ticketData),
         });
 
-        // Setup theme listener
-        function loadAndDisplayUserData() {
-            const keys = [
-                'userData',
-                'userProfile',
-                'loggedInUser',
-                'currentUser',
-                'user',
-                'loginData',
-                'authData'
-            ];
+        if (response.ok) {
+          const result = await response.json();
+          closeReviewModal();
+          if (form) {
+            form.reset();
+            form.style.display = "none";
+          }
+          populateSelect(
+            document.getElementById("ticketBrand"),
+            "Select Product Brand",
+            [],
+          );
+          populateSelect(
+            document.getElementById("ticketConcern"),
+            "Select Concern",
+            [],
+          );
 
-            let userData = null;
+          const successMessage = document.getElementById("successMessage");
+          if (successMessage) successMessage.classList.add("show");
 
-            for (const key of keys) {
-                const data = localStorage.getItem(key);
-                if (!data) continue;
-
-                try {
-                    const parsed = JSON.parse(data);
-
-                    if (parsed && (
-                        parsed.Name || parsed.Email ||
-                        parsed.name || parsed.email ||
-                        parsed.fullName
-                    )) {
-                        userData = parsed;
-                        break;
-                    }
-                } catch { }
-            }
-
-            updateUserDisplay(userData || { Name: 'User' });
+          const idElement = document.getElementById("generatedTicketId");
+          if (idElement) {
+            const ticketId =
+              result.ticket_id ||
+              result.Ticket_ID ||
+              result.data?.ticket_id ||
+              "TKT-GENERATED";
+            idElement.textContent = ticketId;
+          }
+        } else {
+          showToast("❌ Server error submitting ticket.", "error");
         }
-
-        function updateUserDisplay(userData) {
-            const nameEl = document.getElementById('userNameDisplay');
-            const emailEl = document.getElementById('userEmailDisplay');
-            const avatar = document.getElementById('userAvatar');
-
-            const name = userData?.Name || userData?.fullName || userData?.name || 'User';
-            const email = userData?.Email || userData?.email || '';
-
-            if (nameEl) nameEl.textContent = name;
-            if (emailEl) {
-                emailEl.textContent = email;
-                emailEl.hidden = !email;
-            }
-
-            if (avatar) {
-                const photo = userData?.profile_pic_url || userData?.photo || userData?.avatar;
-
-                if (photo && photo !== 'default-avatar.png' && photo !== 'null') {
-                    avatar.innerHTML = `<img src="${photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;">`;
-                } else {
-                    avatar.innerHTML = '';
-                    avatar.textContent = name
-                        .split(' ')
-                        .map(n => n[0])
-                        .join('')
-                        .substring(0, 2)
-                        .toUpperCase();
-                }
-            }
+      } catch (error) {
+        console.error("Network crash:", error);
+        showToast(
+          "Connection failed. Please check your backend terminal.",
+          "error",
+        );
+      } finally {
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.innerHTML = originalBtnText;
         }
+      }
+    }
 
-        // Logout functionality
-        function setupLogout() {
-            const logoutBtn = document.getElementById('logoutBtn');
+    // Setup theme listener
+    function loadAndDisplayUserData() {
+      const keys = [
+        "userData",
+        "userProfile",
+        "loggedInUser",
+        "currentUser",
+        "user",
+        "loginData",
+        "authData",
+      ];
 
-            if (!logoutBtn) return;
+      let userData = null;
 
-            logoutBtn.addEventListener('click', function (e) {
-                e.preventDefault();
+      for (const key of keys) {
+        const data = localStorage.getItem(key);
+        if (!data) continue;
 
-                localStorage.removeItem('userData');
-                localStorage.removeItem('userProfile');
-                localStorage.removeItem('userTickets');
-                localStorage.removeItem('preferredLanguage');
-                localStorage.removeItem('dashboardLanguage');
-                localStorage.removeItem('notificationSettings');
+        try {
+          const parsed = JSON.parse(data);
 
-                sessionStorage.clear();
+          if (
+            parsed &&
+            (parsed.Name ||
+              parsed.Email ||
+              parsed.name ||
+              parsed.email ||
+              parsed.fullName)
+          ) {
+            userData = parsed;
+            break;
+          }
+        } catch { }
+      }
 
-                window.location.href = '/';
-            });
+      updateUserDisplay(userData || { Name: "User" });
+    }
+
+    function updateUserDisplay(userData) {
+      const nameEl = document.getElementById("userNameDisplay");
+      const emailEl = document.getElementById("userEmailDisplay");
+      const avatar = document.getElementById("userAvatar");
+
+      const name =
+        userData?.Name || userData?.fullName || userData?.name || "User";
+      const email = userData?.Email || userData?.email || "";
+
+      if (nameEl) nameEl.textContent = name;
+      const menuName = document.getElementById("menuUserName");
+      const menuEmail = document.getElementById("menuUserEmail");
+      if (menuName) menuName.textContent = name;
+      if (menuEmail) {
+        menuEmail.textContent = email;
+        menuEmail.hidden = !email;
+      }
+      if (emailEl) {
+        emailEl.textContent = email;
+        emailEl.hidden = !email;
+      }
+
+      if (avatar) {
+        const photo =
+          userData?.profile_pic_url || userData?.photo || userData?.avatar;
+
+        if (photo && photo !== "default-avatar.png" && photo !== "null") {
+          avatar.innerHTML = `<img src="${photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;">`;
+        } else {
+          avatar.innerHTML = "";
+          avatar.textContent = name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .substring(0, 2)
+            .toUpperCase();
         }
+      }
+    }
 
-        // Apply translations to the page
-        function applyTranslations(language) {
-            const lang = translations[language] ? language : 'en';
-            const dict = translations[lang];
+    // Logout functionality
+    function setupLogout() {
+      const logoutBtn = document.getElementById("logoutBtn");
 
-            document.querySelectorAll('[data-translate]').forEach(element => {
-                const key = element.getAttribute('data-translate');
-                if (dict[key]) {
-                    element.textContent = dict[key];
-                }
-            });
+      if (!logoutBtn) return;
 
-            document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
-                const key = element.getAttribute('data-translate-placeholder');
-                if (dict[key]) {
-                    element.placeholder = dict[key];
-                }
-            });
+      logoutBtn.addEventListener("click", function (e) {
+        e.preventDefault();
 
-            if (dict['submit_ticket_page_title']) {
-                document.title = dict['submit_ticket_page_title'];
-            }
+        localStorage.removeItem("userData");
+        localStorage.removeItem("userProfile");
+        localStorage.removeItem("userTickets");
+        localStorage.removeItem("preferredLanguage");
+        localStorage.removeItem("dashboardLanguage");
+        localStorage.removeItem("notificationSettings");
+
+        sessionStorage.clear();
+
+        window.location.href = "/";
+      });
+    }
+
+    // Apply translations to the page
+    function applyTranslations(language) {
+      const lang = translations[language] ? language : "en";
+      const dict = translations[lang];
+
+      document.querySelectorAll("[data-translate]").forEach((element) => {
+        const key = element.getAttribute("data-translate");
+        if (dict[key]) {
+          element.textContent = dict[key];
         }
+      });
 
-        // Listen for language changes from preference-manager.js
-        document.addEventListener('languageChanged', function (e) {
-            console.log('Language changed to:', e.detail.language);
-            applyTranslations(e.detail.language);
+      document
+        .querySelectorAll("[data-translate-placeholder]")
+        .forEach((element) => {
+          const key = element.getAttribute("data-translate-placeholder");
+          if (dict[key]) {
+            element.placeholder = dict[key];
+          }
         });
 
-        // Form validation
-        function validateForm() {
-            let isValid = true;
+      if (dict["submit_ticket_page_title"]) {
+        document.title = dict["submit_ticket_page_title"];
+      }
+    }
 
-            // Reset errors
-            document.querySelectorAll('.form-error').forEach(error => {
-                error.classList.remove('show');
-            });
-            document.querySelectorAll('.form-input, .form-textarea').forEach(input => {
-                input.classList.remove('error');
-            });
+    // Listen for language changes from preference-manager.js
+    document.addEventListener("languageChanged", function (e) {
+      console.log("Language changed to:", e.detail.language);
+      applyTranslations(e.detail.language);
+    });
 
-            // Validate required fields
-            const subject = document.getElementById('ticketSubject');
-            const description = document.getElementById('ticketDescription');
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeReviewModal();
+    });
 
-            if (!subject.value.trim()) {
-                const errorElement = document.getElementById('subjectError');
-                if (errorElement) errorElement.classList.add('show');
-                if (subject) subject.classList.add('error');
-                isValid = false;
-            }
+    document.addEventListener("click", function (e) {
+      const modal = document.getElementById("reviewModal");
+      if (modal && e.target === modal) closeReviewModal();
+    });
 
-            if (!description.value.trim()) {
-                const errorElement = document.getElementById('descriptionError');
-                if (errorElement) errorElement.classList.add('show');
-                if (description) description.classList.add('error');
-                isValid = false;
-            }
+    // Form validation
+    function validateForm() {
+      let isValid = true;
 
-            return isValid;
-        }
+      // Reset errors
+      document.querySelectorAll(".form-error").forEach((error) => {
+        error.classList.remove("show");
+      });
+      document
+        .querySelectorAll(".form-input, .form-textarea, select.form-input")
+        .forEach((input) => {
+          input.classList.remove("error");
+        });
 
-        function resetForm() {
-            // Hide success message
-            const successMessage = document.getElementById('successMessage');
-            const ticketForm = document.getElementById('ticketForm');
+      // Validate required fields
+      const category = document.getElementById("ticketCategory");
+      const brand = document.getElementById("ticketBrand");
+      const concern = document.getElementById("ticketConcern");
+      const subject = document.getElementById("ticketSubject");
+      const description = document.getElementById("ticketDescription");
 
-            if (successMessage) successMessage.classList.remove('show');
-            if (ticketForm) {
-                ticketForm.style.display = 'block';
-                ticketForm.reset();
-            }
+      if (!category.value) {
+        const errorElement = document.getElementById("categoryError");
+        if (errorElement) errorElement.classList.add("show");
+        if (category) category.classList.add("error");
+        isValid = false;
+      }
 
-            // 🌟 FIX: Reset the submit button text back to its default look
-            const submitBtn = document.querySelector('#ticketForm button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> <span data-translate="submit_ticket">Submit Ticket</span>';
-                submitBtn.disabled = false; // Add this to ensure the user can click it again
+      if (!brand.value) {
+        const errorElement = document.getElementById("brandError");
+        if (errorElement) errorElement.classList.add("show");
+        if (brand) brand.classList.add("error");
+        isValid = false;
+      }
 
-                // Instantly re-translate the label text so it matches your active language selection
-                if (window.preferencesManager) {
-                    const currentLang = window.preferencesManager.getCurrentLanguage() || 'en';
-                    const dict = translations[currentLang] || translations['en'];
-                    const span = submitBtn.querySelector('span');
-                    if (span && dict['submit_ticket']) {
-                        span.textContent = dict['submit_ticket'];
-                    }
-                }
-            }
+      if (!concern.value) {
+        const errorElement = document.getElementById("concernError");
+        if (errorElement) errorElement.classList.add("show");
+        if (concern) concern.classList.add("error");
+        isValid = false;
+      }
 
-            // Reset errors
-            document.querySelectorAll('.form-error').forEach(error => {
-                error.classList.remove('show');
-            });
-            document.querySelectorAll('.form-input, .form-textarea').forEach(input => {
-                input.classList.remove('error');
-            });
-        }
+      if (!subject.value.trim()) {
+        const errorElement = document.getElementById("subjectError");
+        if (errorElement) errorElement.classList.add("show");
+        if (subject) subject.classList.add("error");
+        isValid = false;
+      }
 
-        function viewTicket() {
-            showToast("Redirecting to your tickets...", "info"); // Replaced alert
-            setTimeout(() => {
-                window.location.href = '/user/my-tickets.html';
-            }, 1000);
-        }
+      if (!description.value.trim()) {
+        const errorElement = document.getElementById("descriptionError");
+        if (errorElement) errorElement.classList.add("show");
+        if (description) description.classList.add("error");
+        isValid = false;
+      }
 
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            if (!toast) return;
+      return isValid;
+    }
 
-            toast.textContent = message;
-            toast.className = `toast ${type}`;
-            toast.classList.add('show');
+    function resetForm() {
+      closeReviewModal();
+      // Hide success message
+      const successMessage = document.getElementById("successMessage");
+      const ticketForm = document.getElementById("ticketForm");
 
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-    </script>
+      if (successMessage) successMessage.classList.remove("show");
+      if (ticketForm) {
+        ticketForm.style.display = "block";
+        ticketForm.reset();
+        const brandSelect = document.getElementById("ticketBrand");
+        const concernSelect = document.getElementById("ticketConcern");
+        populateSelect(brandSelect, "Select Product Brand", []);
+        populateSelect(concernSelect, "Select Concern", []);
+      }
 
+      // 🌟 FIX: Reset the submit button text back to its default look
+      const submitBtn = document.querySelector(
+        '#ticketForm button[type="submit"]',
+      );
+      if (submitBtn) {
+        submitBtn.innerHTML =
+          '<i class="fas fa-eye"></i> <span>Review Before Submit</span>';
+        submitBtn.disabled = false; // Add this to ensure the user can click it again
+
+        // Keep review button label fixed because final submit happens in the modal.
+      }
+
+      // Reset errors
+      document.querySelectorAll(".form-error").forEach((error) => {
+        error.classList.remove("show");
+      });
+      document
+        .querySelectorAll(".form-input, .form-textarea, select.form-input")
+        .forEach((input) => {
+          input.classList.remove("error");
+        });
+    }
+
+    function viewTicket() {
+      showToast("Redirecting to your tickets...", "info"); // Replaced alert
+      setTimeout(() => {
+        window.location.href = "/user/my-tickets.html";
+      }, 1000);
+    }
+
+    function showToast(message, type = "success") {
+      const toast = document.getElementById("toast");
+      if (!toast) return;
+
+      toast.textContent = message;
+      toast.className = `toast ${type}`;
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3000);
+    }
+  </script>
 </body>
 
 </html>

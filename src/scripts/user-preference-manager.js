@@ -7,137 +7,177 @@ class PreferencesManager {
                 pageTitle: "Preferences - AlliTrack",
                 pageHeader: "Preferences",
                 successMessage: "Preferences saved successfully!",
-                
-                // Navigation - EXACT keys that match data-section attributes
+
+                // Sidebar nav group labels (data-translate on .nav-group-label)
+                overview: "OVERVIEW",
+                support: "SUPPORT",
+                management: "MANAGEMENT",
+                system: "SYSTEM",
+
+                // Sidebar nav item labels (data-section on .nav-item)
                 dashboard: "Dashboard",
                 myTickets: "My Tickets",
                 notifications: "Notifications",
-                submitTicket: "Submit a Ticket",  // Matches data-section="submit-ticket"
+                submitTicket: "Submit a Ticket",
                 preferences: "Preferences",
-                profileSettings: "Profile Settings",  // Matches data-section="profile-settings"
+                profileSettings: "Profile Settings",
                 announcements: "Announcements",
-                accountSecurity: "Account Security",  // Matches data-section="account-security"
-                systemInformation: "System Information",  // Matches data-section="system-information"
-                support: "Support",
-                management: "Management",
-                system: "System",
-                
+                accountSecurity: "Account Security",
+                systemInformation: "Legal Center",
+
+                // Sidebar brand sub-label
+                userConsole: "User Console",
+
+                // Topbar breadcrumb
+                userLabel: "User",
+
+                // Accessibility labels
+                sidebarAriaLabel: "Main Sidebar",
+                searchAriaLabel: "Search Tickets",
+
                 // Header
                 searchPlaceholder: "Search tickets, users, IDs...",
-                
+
                 // Account Menu
                 profile: "Profile",
                 settings: "Settings",
                 logout: "Logout",
-                
+
                 // Sections (for preferences page)
                 notificationSettings: "Notification Settings",
-                notificationDescription: "Manage how and when you receive notifications",
+                notificationDescription:
+                    "Manage how and when you receive notifications",
                 languageSettings: "Language Settings",
-                languageDescription: "Set your preferred language for the entire dashboard",
+                languageDescription:
+                    "Set your preferred language for the entire dashboard",
                 themeSettings: "Theme Settings",
                 themeDescription: "Customize your dashboard appearance",
-                
+
                 // Setting items (for preferences page)
                 emailNotifications: "Email Notifications",
-                emailDescription: "Receive email alerts for ticket updates and system announcements",
+                emailDescription:
+                    "Receive email alerts for ticket updates and system announcements",
                 pushNotifications: "Push Notifications",
                 pushDescription: "Show browser notifications for urgent updates",
                 ticketUpdates: "Ticket Updates",
                 ticketDescription: "Notify me when my tickets are updated or resolved",
                 announcementNotifications: "New Announcements",
-                announcementDescription: "Notify me about new system announcements and features",
+                announcementDescription:
+                    "Notify me about new system announcements and features",
                 weeklyDigest: "Weekly Digest",
                 weeklyDescription: "Send weekly summary of all ticket activities",
                 dashboardLanguage: "Dashboard Language",
-                languageDropdown: "This will change the language across all pages of your dashboard",
+                languageDropdown:
+                    "This will change the language across all pages of your dashboard",
                 themeMode: "Theme Mode",
                 themeModeDescription: "Switch between light and dark theme",
-                
+
                 // Theme options
                 auto: "Auto",
                 light: "Light",
                 dark: "Dark",
-                
+
                 // Buttons
                 resetDefaults: "Reset to Defaults",
                 savePreferences: "Save Preferences",
-                
+
                 // Footer
-                footerText: "AlliTrack User Dashboard"
+                footerText: "AlliTrack User Dashboard",
             },
             fil: {
                 // Page titles and headers
                 pageTitle: "Mga Kagustuhan - AlliTrack",
                 pageHeader: "Mga Kagustuhan",
                 successMessage: "Matagumpay na na-save ang mga kagustuhan!",
-                
-                // Navigation - EXACT keys that match data-section attributes
+
+                // Sidebar nav group labels (data-translate on .nav-group-label)
+                overview: "PANGKALAHATANG-IDEYA",
+                support: "SUPORTA",
+                management: "PAMAMAHALA",
+                system: "SISTEMA",
+
+                // Sidebar nav item labels (data-section on .nav-item)
                 dashboard: "Dashboard",
                 myTickets: "Aking Ticket",
                 notifications: "Notipikasyon",
-                submitTicket: "Sumite Ticket",  // Matches data-section="submit-ticket"
+                submitTicket: "Sumite ng Ticket",
                 preferences: "Kagustuhan",
-                profileSettings: "Settings ng Profile",  // Matches data-section="profile-settings"
+                profileSettings: "Settings ng Profile",
                 announcements: "Anunsyo",
-                accountSecurity: "Seguridad",  // Matches data-section="account-security"
-                systemInformation: "Impormasyon",  // Matches data-section="system-information"
-                support: "Suporta",
-                management: "Pamahalaan",
-                system: "Sistema",
-                
+                accountSecurity: "Seguridad ng Account",
+                systemInformation: "Sentrong Legal",
+
+                // Sidebar brand sub-label
+                userConsole: "Console ng User",
+
+                // Topbar breadcrumb
+                userLabel: "User",
+
+                // Accessibility labels
+                sidebarAriaLabel: "Pangunahing Sidebar",
+                searchAriaLabel: "Maghanap ng Ticket",
+
                 // Header
                 searchPlaceholder: "Maghanap ng ticket, user, ID...",
-                
+
                 // Account Menu
                 profile: "Profile",
                 settings: "Settings",
                 logout: "Logout",
-                
+
                 // Sections (for preferences page)
                 notificationSettings: "Mga Setting ng Notipikasyon",
-                notificationDescription: "Pamahalaan kung paano at kailan ka makakatanggap ng mga notipikasyon",
+                notificationDescription:
+                    "Pamahalaan kung paano at kailan ka makakatanggap ng mga notipikasyon",
                 languageSettings: "Mga Setting ng Wika",
-                languageDescription: "Itakda ang iyong gustong wika para sa buong dashboard",
+                languageDescription:
+                    "Itakda ang iyong gustong wika para sa buong dashboard",
                 themeSettings: "Mga Setting ng Tema",
                 themeDescription: "Ipasadya ang hitsura ng iyong dashboard",
-                
+
                 // Setting items (for preferences page)
                 emailNotifications: "Notipikasyon sa Email",
-                emailDescription: "Tumanggap ng email alerts para sa mga update ng ticket at mga anunsyo sa sistema",
+                emailDescription:
+                    "Tumanggap ng email alerts para sa mga update ng ticket at mga anunsyo sa sistema",
                 pushNotifications: "Notipikasyon sa Browser",
-                pushDescription: "Magpakita ng browser notifications para sa mga urgent na update",
+                pushDescription:
+                    "Magpakita ng browser notifications para sa mga urgent na update",
                 ticketUpdates: "Update ng Ticket",
-                ticketDescription: "Ipaalam sa akin kapag ang aking mga ticket ay na-update o na-resolve",
+                ticketDescription:
+                    "Ipaalam sa akin kapag ang aking mga ticket ay na-update o na-resolve",
                 announcementNotifications: "Mga Bagong Anunsyo",
-                announcementDescription: "Ipaalam sa akin ang tungkol sa mga bagong anunsyo at feature ng sistema",
+                announcementDescription:
+                    "Ipaalam sa akin ang tungkol sa mga bagong anunsyo at feature ng sistema",
                 weeklyDigest: "Weekly Digest",
-                weeklyDescription: "Magpadala ng lingguhang buod ng lahat ng aktibidad sa ticket",
+                weeklyDescription:
+                    "Magpadala ng lingguhang buod ng lahat ng aktibidad sa ticket",
                 dashboardLanguage: "Wika ng Dashboard",
-                languageDropdown: "Ibabago nito ang wika sa lahat ng pahina ng iyong dashboard",
+                languageDropdown:
+                    "Ibabago nito ang wika sa lahat ng pahina ng iyong dashboard",
                 themeMode: "Mode ng Tema",
-                themeModeDescription: "Pagpalit-palitin sa pagitan ng light at dark theme",
-                
+                themeModeDescription:
+                    "Pagpalit-palitin sa pagitan ng light at dark theme",
+
                 // Theme options
                 auto: "Awtomatiko",
                 light: "Maliwanag",
                 dark: "Madilim",
-                
+
                 // Buttons
                 resetDefaults: "I-reset sa Default",
                 savePreferences: "I-save ang Kagustuhan",
-                
+
                 // Footer
-                footerText: "Dashboard ng User ng AlliTrack"
-            }
+                footerText: "Dashboard ng User ng AlliTrack",
+            },
         };
-        
+
         this.initialized = false;
-        
+
         // Force language refresh when storage changes
-        window.addEventListener('storage', (event) => {
-            if (event.key === 'dashboardLanguage') {
-                console.log('Language changed in storage, forcing refresh...');
+        window.addEventListener("storage", (event) => {
+            if (event.key === "dashboardLanguage") {
+                console.log("Language changed in storage, forcing refresh...");
                 setTimeout(() => this.applyLanguage(), 100);
             }
         });
@@ -145,75 +185,75 @@ class PreferencesManager {
 
     async initialize() {
         if (this.initialized) return;
-        
-        console.log('=== INITIALIZING PREFERENCES MANAGER ===');
-        
+
+        console.log("=== INITIALIZING PREFERENCES MANAGER ===");
+
         // Wait for DOM to be ready
-        if (document.readyState === 'loading') {
-            await new Promise(resolve => {
-                document.addEventListener('DOMContentLoaded', resolve);
+        if (document.readyState === "loading") {
+            await new Promise((resolve) => {
+                document.addEventListener("DOMContentLoaded", resolve);
             });
         }
-        
-        console.log('DOM ready, applying preferences...');
+
+        console.log("DOM ready, applying preferences...");
         // Apply saved preferences
         this.applyLanguage();
-        
+
         // Setup preferences page if needed
-        if (document.querySelector('.preferences-content')) {
+        if (document.querySelector(".preferences-content")) {
             this.setupPreferencesPage();
         } else {
             // For other pages, just set up account dropdown
             this.setupAccountDropdown();
             this.setupLogout();
         }
-        
+
         // Listen for preference changes from other tabs/windows
         this.setupStorageListener();
-        
+
         this.initialized = true;
-        console.log('Preferences Manager initialized successfully');
+        console.log("Preferences Manager initialized successfully");
     }
 
     setupPreferencesPage() {
-        console.log('Setting up preferences page...');
-        
+        console.log("Setting up preferences page...");
+
         // Load user data using userDataManager if available
         if (window.userDataManager) {
-            console.log('Using userDataManager for user display');
+            console.log("Using userDataManager for user display");
             window.userDataManager.initializeUserDisplay();
         }
-        
+
         // Setup preferences form
         this.setupPreferencesForm();
-        
+
         // Setup logout
         this.setupLogout();
-        
+
         // Setup account dropdown
         this.setupAccountDropdown();
     }
 
     setupPreferencesForm() {
-        console.log('Setting up preferences form...');
-        
-        const preferencesForm = document.getElementById('preferencesForm');
+        console.log("Setting up preferences form...");
+
+        const preferencesForm = document.getElementById("preferencesForm");
         if (preferencesForm) {
-            preferencesForm.addEventListener('submit', (e) => {
+            preferencesForm.addEventListener("submit", (e) => {
                 e.preventDefault();
                 this.savePreferences();
             });
         }
-        
+
         // Load saved preferences
         this.loadPreferencesIntoForm();
         // Setup language selector
         this.setupLanguageSelector();
-        
+
         // Setup reset button
-        const resetBtn = document.querySelector('.btn-secondary');
+        const resetBtn = document.querySelector(".btn-secondary");
         if (resetBtn) {
-            resetBtn.addEventListener('click', (e) => {
+            resetBtn.addEventListener("click", (e) => {
                 e.preventDefault();
                 this.resetPreferences();
             });
@@ -222,36 +262,46 @@ class PreferencesManager {
 
     loadPreferencesIntoForm() {
         const savedLanguage = this.getCurrentLanguage();
-        const languageSelect = document.getElementById('language');
+        const languageSelect = document.getElementById("language");
         if (languageSelect) {
             languageSelect.value = savedLanguage;
         }
-        
+
         // Load notification settings
-        const savedNotifications = JSON.parse(localStorage.getItem('notificationSettings') || '{}');
-        const emailNotifications = document.getElementById('emailNotifications');
-        const pushNotifications = document.getElementById('pushNotifications');
-        const ticketUpdates = document.getElementById('ticketUpdates');
-        const announcementNotifications = document.getElementById('announcementNotifications');
-        const weeklyDigest = document.getElementById('weeklyDigest');
-        
-        if (emailNotifications) emailNotifications.checked = savedNotifications.email !== false;
-        if (pushNotifications) pushNotifications.checked = savedNotifications.push !== false;
-        if (ticketUpdates) ticketUpdates.checked = savedNotifications.ticketUpdates !== false;
-        if (announcementNotifications) announcementNotifications.checked = savedNotifications.announcements !== false;
-        if (weeklyDigest) weeklyDigest.checked = savedNotifications.weeklyDigest || false;
+        const savedNotifications = JSON.parse(
+            localStorage.getItem("notificationSettings") || "{}",
+        );
+        const emailNotifications = document.getElementById("emailNotifications");
+        const pushNotifications = document.getElementById("pushNotifications");
+        const ticketUpdates = document.getElementById("ticketUpdates");
+        const announcementNotifications = document.getElementById(
+            "announcementNotifications",
+        );
+        const weeklyDigest = document.getElementById("weeklyDigest");
+
+        if (emailNotifications)
+            emailNotifications.checked = savedNotifications.email !== false;
+        if (pushNotifications)
+            pushNotifications.checked = savedNotifications.push !== false;
+        if (ticketUpdates)
+            ticketUpdates.checked = savedNotifications.ticketUpdates !== false;
+        if (announcementNotifications)
+            announcementNotifications.checked =
+                savedNotifications.announcements !== false;
+        if (weeklyDigest)
+            weeklyDigest.checked = savedNotifications.weeklyDigest || false;
     }
 
     setupLanguageSelector() {
-        const languageSelect = document.getElementById('language');
+        const languageSelect = document.getElementById("language");
         if (languageSelect) {
-            languageSelect.addEventListener('change', (e) => {
+            languageSelect.addEventListener("change", (e) => {
                 const language = e.target.value;
-                console.log('Language changed to:', language);
+                console.log("Language changed to:", language);
                 this.setLanguage(language);
-                
+
                 // Auto-save when language is changed
-                if (document.querySelector('.preferences-content')) {
+                if (document.querySelector(".preferences-content")) {
                     this.savePreferences();
                 }
             });
@@ -260,124 +310,162 @@ class PreferencesManager {
 
     // Language Management
     getCurrentLanguage() {
-        const lang = localStorage.getItem('dashboardLanguage') || 'en';
-        console.log('Getting current language:', lang);
+        const lang = localStorage.getItem("dashboardLanguage") || "en";
+        console.log("Getting current language:", lang);
         return lang;
     }
 
     setLanguage(language) {
-        if (!['en', 'fil'].includes(language)) {
-            console.error('Invalid language:', language);
+        if (!["en", "fil"].includes(language)) {
+            console.error("Invalid language:", language);
             return;
         }
-        
-        console.log('Setting language to:', language);
-        localStorage.setItem('dashboardLanguage', language);
+
+        console.log("Setting language to:", language);
+        localStorage.setItem("dashboardLanguage", language);
         this.applyLanguage();
-        
+
         // Broadcast language change to all pages
-        this.broadcastPreferenceChange('language', language);
+        this.broadcastPreferenceChange("language", language);
     }
 
     applyLanguage() {
         const language = this.getCurrentLanguage();
-        console.log('=== APPLYING LANGUAGE ===');
-        console.log('Language:', language);
-        console.log('Available languages:', Object.keys(this.translations));
-        
+        console.log("=== APPLYING LANGUAGE ===");
+        console.log("Language:", language);
+        console.log("Available languages:", Object.keys(this.translations));
+
         const lang = this.translations[language] || this.translations.en;
-        console.log('Translation object found:', lang ? 'YES' : 'NO');
-        
+        console.log("Translation object found:", lang ? "YES" : "NO");
+
         try {
             this.applyCommonTranslations(lang, language);
-            
+
             // Apply preferences page specific translations
-            if (document.querySelector('.preferences-content')) {
-                console.log('Applying preferences page translations...');
+            if (document.querySelector(".preferences-content")) {
+                console.log("Applying preferences page translations...");
                 this.applyPreferencesTranslations(lang, language);
             }
-            
+
             // Dispatch language changed event for other pages to listen to
-            document.dispatchEvent(new CustomEvent('languageChanged', {
-                detail: { language: language }
-            }));
-            console.log('Dispatched languageChanged event for:', language);
-            
-            console.log('Language applied successfully!');
+            document.dispatchEvent(
+                new CustomEvent("languageChanged", {
+                    detail: { language: language },
+                }),
+            );
+            console.log("Dispatched languageChanged event for:", language);
+
+            console.log("Language applied successfully!");
         } catch (error) {
-            console.error('Error applying language:', error);
+            console.error("Error applying language:", error);
         }
     }
 
     applyCommonTranslations(lang, language) {
-        console.log('=== APPLYING COMMON TRANSLATIONS ===');
-        
-        const translationMap = {
-            'dashboard': 'dashboard',
-            'tickets': 'myTickets',
-            'notifications': 'notifications',
-            'submit-ticket': 'submitTicket',  // Map dash to camelCase
-            'preferences': 'preferences',
-            'profile-settings': 'profileSettings',  // Map dash to camelCase
-            'announcements': 'announcements',
-            'account-security': 'accountSecurity',  // Map dash to camelCase
-            'system-information': 'systemInformation'  // Map dash to camelCase
+        console.log("=== APPLYING COMMON TRANSLATIONS ===");
+
+        // ── Sidebar nav item labels ──────────────────────────────────────────
+        // Maps data-section attribute values → translation keys
+        const navItemMap = {
+            dashboard: "dashboard",
+            tickets: "myTickets",
+            notifications: "notifications",
+            "submit-ticket": "submitTicket",
+            preferences: "preferences",
+            "profile-settings": "profileSettings",
+            announcements: "announcements",
+            "account-security": "accountSecurity",
+            "system-information": "systemInformation",
         };
 
-        // Update ALL navigation links
-        const navLinks = document.querySelectorAll('.nav a[data-section]');
-        console.log(`Found ${navLinks.length} navigation links`);
-        
-        navLinks.forEach(element => {
-            const section = element.getAttribute('data-section');
-            const translationKey = translationMap[section];
-            
-            console.log(`Processing: ${section} -> key: ${translationKey}`);
-            
+        // Target .nav-item elements (the actual sidebar links used across all pages)
+        const navItems = document.querySelectorAll(".nav-item[data-section]");
+        console.log(`Found ${navItems.length} sidebar nav items`);
+
+        navItems.forEach((element) => {
+            const section = element.getAttribute("data-section");
+            const translationKey = navItemMap[section];
+
+            console.log(`Processing nav-item: ${section} -> key: ${translationKey}`);
+
             if (translationKey && lang[translationKey]) {
-                const icon = element.querySelector('i')?.outerHTML || '';
-                element.innerHTML = `${icon} ${lang[translationKey]}`;
-                console.log(`✓ Updated ${section} to: ${lang[translationKey]}`);
+                // Preserve the <i> icon and any badge/dot spans; only replace the text span
+                const icon = element.querySelector("i")?.outerHTML || "";
+                const badges = Array.from(element.querySelectorAll(".red-dot, .badge"))
+                    .map((el) => el.outerHTML)
+                    .join("");
+                element.innerHTML = `${icon} <span>${lang[translationKey]}</span>${badges}`;
+                console.log(
+                    `✓ Updated nav-item "${section}" to: ${lang[translationKey]}`,
+                );
             } else {
-                console.log(`✗ No translation for ${section} (key: ${translationKey})`);
+                console.log(
+                    `✗ No translation for nav-item "${section}" (key: ${translationKey})`,
+                );
             }
         });
 
-        // Update section headers
-        const navSections = document.querySelectorAll('.nav-section');
-        console.log(`Found ${navSections.length} section headers`);
-        
-        if (navSections[0] && lang.support) {
-            navSections[0].textContent = lang.support;
-            console.log(`✓ Updated Support to: ${lang.support}`);
-        }
-        if (navSections[1] && lang.management) {
-            navSections[1].textContent = lang.management;
-            console.log(`✓ Updated Management to: ${lang.management}`);
-        }
-        if (navSections[2] && lang.system) {
-            navSections[2].textContent = lang.system;
-            console.log(`✓ Updated System to: ${lang.system}`);
+        // ── Sidebar group labels (OVERVIEW / SUPPORT / MANAGEMENT / SYSTEM) ─
+        // Maps data-translate attribute values → translation keys
+        const groupLabelMap = {
+            overview: "overview",
+            support: "support",
+            management: "management",
+            system: "system",
+        };
+
+        const groupLabels = document.querySelectorAll(
+            ".nav-group-label[data-translate]",
+        );
+        console.log(`Found ${groupLabels.length} sidebar group labels`);
+
+        groupLabels.forEach((element) => {
+            const key = element.getAttribute("data-translate");
+            const translationKey = groupLabelMap[key];
+
+            if (translationKey && lang[translationKey]) {
+                element.textContent = lang[translationKey];
+                console.log(
+                    `✓ Updated group label "${key}" to: ${lang[translationKey]}`,
+                );
+            } else {
+                console.log(`✗ No translation for group label "${key}"`);
+            }
+        });
+
+        // ── Sidebar brand sub-label ("User Console") ─────────────────────────
+        const brandSub = document.querySelector(
+            '.sidebar-brand .sub[data-translate="user_console"]',
+        );
+        if (brandSub && lang.userConsole) {
+            brandSub.textContent = lang.userConsole;
+            console.log(`✓ Updated brand sub to: ${lang.userConsole}`);
         }
 
-        // Update header search placeholder
-        const searchInput = document.getElementById('q');
+        // ── Topbar breadcrumb ─────────────────────────────────────────────────
+        const breadcrumbUser = document.querySelector(
+            '.topbar-left span[data-translate="user"]',
+        );
+        if (breadcrumbUser && lang.userLabel) {
+            breadcrumbUser.textContent = lang.userLabel;
+            console.log(`✓ Updated breadcrumb "User" to: ${lang.userLabel}`);
+        }
+
+        // ── Header search placeholder ─────────────────────────────────────────
+        const searchInput =
+            document.getElementById("q") ||
+            document.querySelector(
+                '.topbar input[type="search"], .topbar input[type="text"]',
+            );
         if (searchInput && lang.searchPlaceholder) {
             searchInput.placeholder = lang.searchPlaceholder;
             console.log(`✓ Updated search placeholder to: ${lang.searchPlaceholder}`);
         }
 
-        // Update footer
-        const footerText = document.querySelector('.site-footer div:last-child');
-        if (footerText && lang.footerText) {
-            footerText.textContent = lang.footerText;
-            console.log(`✓ Updated footer to: ${lang.footerText}`);
-        }
-
-        // Update account menu
-        const accountMenuLinks = document.querySelectorAll('.account-menu a');
+        // ── Account dropdown menu ─────────────────────────────────────────────
+        const accountMenuLinks = document.querySelectorAll(".account-menu a");
         console.log(`Found ${accountMenuLinks.length} account menu links`);
-        
+
         if (accountMenuLinks[0] && lang.profile) {
             accountMenuLinks[0].textContent = lang.profile;
             console.log(`✓ Updated Profile to: ${lang.profile}`);
@@ -391,63 +479,82 @@ class PreferencesManager {
             console.log(`✓ Updated Logout to: ${lang.logout}`);
         }
 
-        // Update accessibility labels
-        const sidebar = document.querySelector('.sidebar');
+        // ── Footer ────────────────────────────────────────────────────────────
+        const footerText = document.querySelector(".site-footer div:last-child");
+        if (footerText && lang.footerText) {
+            footerText.textContent = lang.footerText;
+            console.log(`✓ Updated footer to: ${lang.footerText}`);
+        }
+
+        // ── Accessibility labels ──────────────────────────────────────────────
+        const sidebar = document.querySelector(".sidebar");
         if (sidebar) {
-            sidebar.setAttribute('aria-label', language === 'fil' ? 'Pangunahing Sidebar' : 'Main Sidebar');
+            sidebar.setAttribute(
+                "aria-label",
+                lang.sidebarAriaLabel || "Main Sidebar",
+            );
         }
 
-        const search = document.querySelector('.search');
+        const search = document.querySelector(".search");
         if (search) {
-            search.setAttribute('aria-label', language === 'fil' ? 'Maghanap ng Ticket' : 'Search Tickets');
+            search.setAttribute(
+                "aria-label",
+                lang.searchAriaLabel || "Search Tickets",
+            );
         }
 
-        console.log('=== COMMON TRANSLATIONS COMPLETE ===');
+        console.log("=== COMMON TRANSLATIONS COMPLETE ===");
     }
 
     applyPreferencesTranslations(lang, language) {
-        console.log('=== APPLYING PREFERENCES TRANSLATIONS ===');
-        
+        console.log("=== APPLYING PREFERENCES TRANSLATIONS ===");
+
         // Update page title
         document.title = lang.pageTitle || "Preferences - AlliTrack";
         console.log(`✓ Updated page title to: ${document.title}`);
-        
+
         // Update preferences page header
-        const preferencesHeader = document.querySelector('.preferences-header h1');
+        const preferencesHeader = document.querySelector(".preferences-header h1");
         if (preferencesHeader && lang.pageHeader) {
             preferencesHeader.innerHTML = `<i class="fas fa-sliders-h"></i> ${lang.pageHeader}`;
             console.log(`✓ Updated header to: ${lang.pageHeader}`);
         }
-        
+
         // Update success message
-        const successText = document.querySelector('.success-text');
+        const successText = document.querySelector(".success-text");
         if (successText && lang.successMessage) {
             successText.textContent = lang.successMessage;
             console.log(`✓ Updated success message to: ${lang.successMessage}`);
         }
-        
+
         // Update section titles and descriptions
-        const sectionTitles = document.querySelectorAll('.section-title');
-        const sectionDescriptions = document.querySelectorAll('.section-description');
-        
+        const sectionTitles = document.querySelectorAll(".section-title");
+        const sectionDescriptions = document.querySelectorAll(
+            ".section-description",
+        );
+
         if (sectionTitles[0] && lang.notificationSettings) {
             sectionTitles[0].textContent = lang.notificationSettings;
-            console.log(`✓ Updated notification settings title to: ${lang.notificationSettings}`);
+            console.log(
+                `✓ Updated notification settings title to: ${lang.notificationSettings}`,
+            );
         }
         if (sectionDescriptions[0] && lang.notificationDescription) {
             sectionDescriptions[0].textContent = lang.notificationDescription;
             console.log(`✓ Updated notification description`);
         }
-        
+
         if (sectionTitles[1] && lang.languageSettings) {
             sectionTitles[1].textContent = lang.languageSettings;
-            console.log(`✓ Updated language settings title to: ${lang.languageSettings}`);
+            console.log(
+                `✓ Updated language settings title to: ${lang.languageSettings}`,
+            );
         }
         if (sectionDescriptions[1] && lang.languageDescription) {
             sectionDescriptions[1].textContent = lang.languageDescription;
             console.log(`✓ Updated language description`);
         }
-        
+
         if (sectionTitles[2] && lang.themeSettings) {
             sectionTitles[2].textContent = lang.themeSettings;
             console.log(`✓ Updated theme settings title to: ${lang.themeSettings}`);
@@ -456,24 +563,38 @@ class PreferencesManager {
             sectionDescriptions[2].textContent = lang.themeDescription;
             console.log(`✓ Updated theme description`);
         }
-        
+
         // Update setting titles and descriptions
-        const settingTitles = document.querySelectorAll('.setting-title');
-        const settingDescriptions = document.querySelectorAll('.setting-description');
-        
-        console.log(`Found ${settingTitles.length} setting titles and ${settingDescriptions.length} descriptions`);
-        
+        const settingTitles = document.querySelectorAll(".setting-title");
+        const settingDescriptions = document.querySelectorAll(
+            ".setting-description",
+        );
+
+        console.log(
+            `Found ${settingTitles.length} setting titles and ${settingDescriptions.length} descriptions`,
+        );
+
         // Update each setting based on index
         const settingKeys = [
-            'emailNotifications', 'pushNotifications', 'ticketUpdates', 
-            'announcementNotifications', 'weeklyDigest', 'dashboardLanguage', 'themeMode'
+            "emailNotifications",
+            "pushNotifications",
+            "ticketUpdates",
+            "announcementNotifications",
+            "weeklyDigest",
+            "dashboardLanguage",
+            "themeMode",
         ];
-        
+
         const descKeys = [
-            'emailDescription', 'pushDescription', 'ticketDescription',
-            'announcementDescription', 'weeklyDescription', 'languageDropdown', 'themeModeDescription'
+            "emailDescription",
+            "pushDescription",
+            "ticketDescription",
+            "announcementDescription",
+            "weeklyDescription",
+            "languageDropdown",
+            "themeModeDescription",
         ];
-        
+
         for (let i = 0; i < settingTitles.length; i++) {
             if (settingTitles[i] && lang[settingKeys[i]]) {
                 settingTitles[i].textContent = lang[settingKeys[i]];
@@ -484,9 +605,9 @@ class PreferencesManager {
                 console.log(`✓ Updated setting ${i} description`);
             }
         }
-        
+
         // Update theme options
-        const themeOptions = document.querySelectorAll('.theme-option');
+        const themeOptions = document.querySelectorAll(".theme-option");
         if (themeOptions[0] && lang.auto) {
             themeOptions[0].innerHTML = `<i class="fas fa-desktop"></i> ${lang.auto}`;
             console.log(`✓ Updated auto theme to: ${lang.auto}`);
@@ -499,10 +620,10 @@ class PreferencesManager {
             themeOptions[2].innerHTML = `<i class="fas fa-moon"></i> ${lang.dark}`;
             console.log(`✓ Updated dark theme to: ${lang.dark}`);
         }
-        
+
         // Update button texts
-        const resetButton = document.querySelector('.btn-secondary');
-        const saveButton = document.querySelector('.btn-primary');
+        const resetButton = document.querySelector(".btn-secondary");
+        const saveButton = document.querySelector(".btn-primary");
         if (resetButton && lang.resetDefaults) {
             resetButton.innerHTML = `<i class="fas fa-undo"></i> ${lang.resetDefaults}`;
             console.log(`✓ Updated reset button to: ${lang.resetDefaults}`);
@@ -511,17 +632,17 @@ class PreferencesManager {
             saveButton.innerHTML = `<i class="fas fa-save"></i> ${lang.savePreferences}`;
             console.log(`✓ Updated save button to: ${lang.savePreferences}`);
         }
-        
-        console.log('=== PREFERENCES TRANSLATIONS COMPLETE ===');
+
+        console.log("=== PREFERENCES TRANSLATIONS COMPLETE ===");
     }
 
     // Cross-tab synchronization
     setupStorageListener() {
-        window.addEventListener('storage', (event) => {
-            console.log('Storage event:', event.key, '=', event.newValue);
-            
-            if (event.key === 'dashboardLanguage') {
-                console.log('Language changed in another tab:', event.newValue);
+        window.addEventListener("storage", (event) => {
+            console.log("Storage event:", event.key, "=", event.newValue);
+
+            if (event.key === "dashboardLanguage") {
+                console.log("Language changed in another tab:", event.newValue);
                 this.applyLanguage();
             }
         });
@@ -535,85 +656,94 @@ class PreferencesManager {
     // Save preferences
     savePreferences() {
         try {
-            console.log('Saving preferences...');
-            
+            console.log("Saving preferences...");
+
             // Collect all preference values
             const preferences = {
                 notifications: {
-                    email: document.getElementById('emailNotifications')?.checked || true,
-                    push: document.getElementById('pushNotifications')?.checked || true,
-                    ticketUpdates: document.getElementById('ticketUpdates')?.checked || true,
-                    announcements: document.getElementById('announcementNotifications')?.checked || true,
-                    weeklyDigest: document.getElementById('weeklyDigest')?.checked || false
+                    email: document.getElementById("emailNotifications")?.checked || true,
+                    push: document.getElementById("pushNotifications")?.checked || true,
+                    ticketUpdates:
+                        document.getElementById("ticketUpdates")?.checked || true,
+                    announcements:
+                        document.getElementById("announcementNotifications")?.checked ||
+                        true,
+                    weeklyDigest:
+                        document.getElementById("weeklyDigest")?.checked || false,
                 },
-                language: document.getElementById('language')?.value || 'en',
+                language: document.getElementById("language")?.value || "en",
             };
-            
-            console.log('Preferences to save:', preferences);
-            
+
+            console.log("Preferences to save:", preferences);
+
             // Save to localStorage
-            localStorage.setItem('dashboardLanguage', preferences.language);
-            localStorage.setItem('notificationSettings', JSON.stringify(preferences.notifications));
+            localStorage.setItem("dashboardLanguage", preferences.language);
+            localStorage.setItem(
+                "notificationSettings",
+                JSON.stringify(preferences.notifications),
+            );
             // Show success message
-            const successMessage = document.getElementById('successMessage');
+            const successMessage = document.getElementById("successMessage");
             if (successMessage) {
-                successMessage.classList.add('show');
-                
+                successMessage.classList.add("show");
+
                 // Hide success message after 3 seconds
                 setTimeout(() => {
-                    successMessage.classList.remove('show');
+                    successMessage.classList.remove("show");
                 }, 3000);
             }
-            
-            console.log('Preferences saved successfully!');
+
+            console.log("Preferences saved successfully!");
         } catch (error) {
-            console.error('Error saving preferences:', error);
+            console.error("Error saving preferences:", error);
         }
     }
 
     // Reset preferences
     resetPreferences() {
         try {
-            console.log('Resetting preferences to defaults...');
-            
+            console.log("Resetting preferences to defaults...");
+
             // Reset toggles to default
-            const emailNotifications = document.getElementById('emailNotifications');
-            const pushNotifications = document.getElementById('pushNotifications');
-            const ticketUpdates = document.getElementById('ticketUpdates');
-            const announcementNotifications = document.getElementById('announcementNotifications');
-            const weeklyDigest = document.getElementById('weeklyDigest');
-            const languageSelect = document.getElementById('language');
-            
+            const emailNotifications = document.getElementById("emailNotifications");
+            const pushNotifications = document.getElementById("pushNotifications");
+            const ticketUpdates = document.getElementById("ticketUpdates");
+            const announcementNotifications = document.getElementById(
+                "announcementNotifications",
+            );
+            const weeklyDigest = document.getElementById("weeklyDigest");
+            const languageSelect = document.getElementById("language");
+
             if (emailNotifications) emailNotifications.checked = true;
             if (pushNotifications) pushNotifications.checked = true;
             if (ticketUpdates) ticketUpdates.checked = true;
             if (announcementNotifications) announcementNotifications.checked = true;
             if (weeklyDigest) weeklyDigest.checked = false;
-            if (languageSelect) languageSelect.value = 'en';
-            
+            if (languageSelect) languageSelect.value = "en";
+
             // Save and apply defaults
             this.savePreferences();
-            
-            console.log('Preferences reset to defaults');
+
+            console.log("Preferences reset to defaults");
         } catch (error) {
-            console.error('Error resetting preferences:', error);
+            console.error("Error resetting preferences:", error);
         }
     }
 
     setupLogout() {
-        const logoutBtn = document.getElementById('logoutBtn');
+        const logoutBtn = document.getElementById("logoutBtn");
         if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
+            logoutBtn.addEventListener("click", function (e) {
                 e.preventDefault();
-                console.log('Logout clicked');
-                
+                console.log("Logout clicked");
+
                 // Clear user data from localStorage
-                localStorage.removeItem('userData');
-                localStorage.removeItem('dashboardLanguage');
-                localStorage.removeItem('notificationSettings');
-                
+                localStorage.removeItem("userData");
+                localStorage.removeItem("dashboardLanguage");
+                localStorage.removeItem("notificationSettings");
+
                 // Redirect to login page
-                window.location.href = '../../landing page/pages/index.html';
+                window.location.href = "../../landing page/pages/index.html";
             });
         }
     }
