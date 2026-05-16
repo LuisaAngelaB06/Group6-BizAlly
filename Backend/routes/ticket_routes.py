@@ -51,6 +51,9 @@ def _format_ticket(row):
         "Concern_Title": ticket.get("concern_title") or "",
         "Description": ticket.get("description") or "",
         "Priority": ticket.get("priority") or DEFAULT_PRIORITY,
+        "Product_Category": ticket.get("product_category") or "",
+        "Product_Brand": ticket.get("product_brand") or "",
+        "Concern_Type": ticket.get("concern_type") or "",
         "Date_Created": ticket.get("date_created"),
         "Last_Updated": ticket.get("last_updated"),
         "Resolution_Details": ticket.get("resolution_details") or "",
@@ -80,6 +83,9 @@ def _ticket_select_clause(where_clause="", order_clause="ORDER BY t.date_created
             t.date_created,
             t.last_updated,
             t.priority,
+            t.product_category,
+            t.product_brand,
+            t.concern_type,
             t.resolution_details,
             req_user.first_name AS requestor_first_name,
             req_user.last_name AS requestor_last_name,
@@ -162,6 +168,9 @@ def create_ticket():
     data = request.get_json(silent=True) or {}
     concern_title = (data.get("Concern_Title") or data.get("title") or "").strip()
     description = (data.get("Description") or data.get("description") or "").strip()
+    product_category = (data.get("Category") or data.get("Product_Category") or data.get("product_category") or "").strip()
+    product_brand = (data.get("Product_Brand") or data.get("product_brand") or "").strip()
+    concern_type = (data.get("Concern_Type") or data.get("concern_type") or "").strip()
     user_id = _coerce_int(data.get("user_id"))
 
     if not user_id:
@@ -180,8 +189,10 @@ def create_ticket():
             """
             INSERT INTO ticket
                 (service_type_id, user_id, technician_id, status_id,
-                 concern_title, description, date_created, last_updated, priority)
-            VALUES (%s, %s, NULL, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, %s)
+                 concern_title, description, date_created, last_updated, priority,
+                 product_category, product_brand, concern_type)
+            VALUES (%s, %s, NULL, %s, %s, %s, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, %s,
+                    %s, %s, %s)
             RETURNING ticket_id
             """,
             (
@@ -191,6 +202,9 @@ def create_ticket():
                 concern_title,
                 description,
                 _clean_priority(data.get("Priority")),
+                product_category or None,
+                product_brand or None,
+                concern_type or None,
             ),
         )
         ticket_id = cursor.fetchone()["ticket_id"]
@@ -304,11 +318,23 @@ def update_ticket(ticket_id):
                 priority = %s,
                 technician_id = %s,
                 resolution_details = %s,
+                product_category = COALESCE(%s, product_category),
+                product_brand = COALESCE(%s, product_brand),
+                concern_type = COALESCE(%s, concern_type),
                 last_updated = CURRENT_TIMESTAMP
             WHERE ticket_id = %s
             RETURNING ticket_id
             """,
-            (status_id, priority, technician_id, resolution_details, ticket_id),
+            (
+                status_id,
+                priority,
+                technician_id,
+                resolution_details,
+                (data.get("Category") or data.get("Product_Category") or data.get("product_category") or None),
+                (data.get("Product_Brand") or data.get("product_brand") or None),
+                (data.get("Concern_Type") or data.get("concern_type") or None),
+                ticket_id,
+            ),
         )
         updated = cursor.fetchone()
         conn.commit()
@@ -362,6 +388,33 @@ def get_analytics():
         """)
         statuses = cursor.fetchall()
 
+        cursor.execute("""
+            SELECT COALESCE(NULLIF(product_category, ''), 'Uncategorized') AS category,
+                   COUNT(*) AS count
+            FROM ticket
+            GROUP BY COALESCE(NULLIF(product_category, ''), 'Uncategorized')
+            ORDER BY count DESC, category
+        """)
+        product_categories = cursor.fetchall()
+
+        cursor.execute("""
+            SELECT COALESCE(NULLIF(product_brand, ''), 'Unknown') AS brand,
+                   COUNT(*) AS count
+            FROM ticket
+            GROUP BY COALESCE(NULLIF(product_brand, ''), 'Unknown')
+            ORDER BY count DESC, brand
+        """)
+        product_brands = cursor.fetchall()
+
+        cursor.execute("""
+            SELECT COALESCE(NULLIF(concern_type, ''), 'Other') AS concern,
+                   COUNT(*) AS count
+            FROM ticket
+            GROUP BY COALESCE(NULLIF(concern_type, ''), 'Other')
+            ORDER BY count DESC, concern
+        """)
+        concern_types = cursor.fetchall()
+
         return jsonify({
             "total": total_tickets,
             "resolved": resolved_tickets,
@@ -370,6 +423,15 @@ def get_analytics():
             "closed": sum(row["count"] for row in statuses if row["status_id"] == 4),
             "categories": {row["category"]: row["count"] for row in categories},
             "priorities": {row["priority"]: row["count"] for row in priorities},
+            "product_categories": {
+                row["category"]: row["count"] for row in product_categories
+            },
+            "product_brands": {
+                row["brand"]: row["count"] for row in product_brands
+            },
+            "concern_types": {
+                row["concern"]: row["count"] for row in concern_types
+            },
             "statuses": {
                 STATUS_LABELS.get(row["status_id"], "Unknown"): row["count"]
                 for row in statuses

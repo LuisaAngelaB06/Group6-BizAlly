@@ -414,6 +414,16 @@
                 : 'https://group6-bizally.onrender.com';
         }
 
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[char]));
+        }
+
         /* ── TRANSLATIONS ─────────────────────────────── */
         const translations = {
             en: {
@@ -903,20 +913,23 @@
 
             const statusLabels = { open: 'Open', in_progress: 'In Progress', resolved: 'Resolved', closed: 'Closed' };
             const priorityIcons = { low: 'fa-arrow-down', medium: 'fa-minus', high: 'fa-arrow-up', urgent: 'fa-exclamation' };
+            const priority = ['low', 'medium', 'high', 'urgent'].includes(t.priority) ? t.priority : 'medium';
+            const status = ['open', 'in_progress', 'resolved', 'closed'].includes(t.status) ? t.status : 'open';
+            const priorityLabel = priority.charAt(0).toUpperCase() + priority.slice(1);
 
             document.getElementById('modalTicketHeader').innerHTML = `
                 <div class="ticket-meta">
-                    <span class="ticket-id">${t.id}</span>
-                    <span class="ticket-date">${date}</span>
+                    <span class="ticket-id">${escapeHTML(t.id)}</span>
+                    <span class="ticket-date">${escapeHTML(date)}</span>
                 </div>
-                <div class="ticket-subject">${t.subject}</div>
+                <div class="ticket-subject">${escapeHTML(t.subject)}</div>
                 <div class="ticket-tags">
-                    <span class="badge badge-${t.priority}">
-                        <i class="fas ${priorityIcons[t.priority] || 'fa-minus'}"></i>
-                        ${t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}
+                    <span class="badge badge-${priority}">
+                        <i class="fas ${priorityIcons[priority] || 'fa-minus'}"></i>
+                        ${escapeHTML(priorityLabel)}
                     </span>
-                    <span class="badge badge-${t.status === 'in_progress' ? 'progress' : t.status}">
-                        ${statusLabels[t.status] || t.status}
+                    <span class="badge badge-${status === 'in_progress' ? 'progress' : status}">
+                        ${escapeHTML(statusLabels[status] || status)}
                     </span>
                 </div>`;
 
@@ -927,7 +940,7 @@
                             <i class="fas fa-align-left"></i>
                             <h3>Description</h3>
                         </div>
-                        <div class="description-box">${t.description || 'No description provided.'}</div>
+                        <div class="description-box">${escapeHTML(t.description || 'No description provided.')}</div>
                     </div>
                     <div class="ticket-section">
                         <div class="section-header">
@@ -940,14 +953,14 @@
                                     <div class="info-label">Requester</div>
                                     <div class="info-value">
                                         <i class="fas fa-user"></i>
-                                        <span><strong>${t.firstName || 'N/A'}</strong></span>
+                                        <span><strong>${escapeHTML(t.firstName || 'N/A')}</strong></span>
                                     </div>
                                 </div>
                                 <div class="detail-group">
                                     <div class="info-label">Email</div>
                                     <div class="info-value">
                                         <i class="fas fa-envelope"></i>
-                                        <span>${t.requester || 'N/A'}</span>
+                                        <span>${escapeHTML(t.requester || 'N/A')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -956,14 +969,14 @@
                                     <div class="info-label">Phone</div>
                                     <div class="info-value">
                                         <i class="fas fa-phone"></i>
-                                        <span>${t.contactPhone || 'N/A'}</span>
+                                        <span>${escapeHTML(t.contactPhone || 'N/A')}</span>
                                     </div>
                                 </div>
                                 <div class="detail-group">
                                     <div class="info-label">Category</div>
                                     <div class="info-value">
                                         <i class="fas fa-tag"></i>
-                                        <span>${t.category || 'Support'}</span>
+                                        <span>${escapeHTML(t.category || 'Support')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -972,14 +985,14 @@
                                     <div class="info-label">Assigned To</div>
                                     <div class="info-value">
                                         <i class="fas fa-user-tie"></i>
-                                        <span>${t.assignedTo || 'Unassigned'}</span>
+                                        <span>${escapeHTML(t.assignedTo || 'Unassigned')}</span>
                                     </div>
                                 </div>
                                 <div class="detail-group">
                                     <div class="info-label">Address</div>
                                     <div class="info-value">
                                         <i class="fas fa-map-marker-alt"></i>
-                                        <span>${t.address || 'N/A'}</span>
+                                        <span>${escapeHTML(t.address || 'N/A')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -987,9 +1000,9 @@
                                 <div class="detail-group">
                                     <div class="info-label">Timeline</div>
                                     <div class="info-value timeline-value">
-                                        <span>Created: ${date}</span>
+                                        <span>Created: ${escapeHTML(date)}</span>
                                         <span class="separator">|</span>
-                                        <span>Updated: ${updated}</span>
+                                        <span>Updated: ${escapeHTML(updated)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -1001,7 +1014,7 @@
                             <i class="fas fa-check-circle"></i>
                             <h3>Resolution</h3>
                         </div>
-                        <div class="description-box">${t.resolution}</div>
+                        <div class="description-box">${escapeHTML(t.resolution)}</div>
                     </div>` : ''}
                 </div>`;
 

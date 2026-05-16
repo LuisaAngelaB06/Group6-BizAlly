@@ -939,6 +939,10 @@ body {
     animation: fadeUp 0.25s var(--ease);
 }
 
+#ticketDetailsModal .modal-content {
+    max-width: 850px;
+}
+
 .modal-header {
     padding: 20px 24px 16px;
     border-bottom: 1px solid var(--border);
@@ -996,7 +1000,9 @@ body {
 .modal-body {
     padding: 20px 24px;
     overflow-y: auto;
+    overflow-x: hidden;
     flex: 1;
+    min-height: 0;
 }
 
 .modal-footer {
@@ -1045,6 +1051,7 @@ body {
     color: var(--text);
     margin-bottom: 12px;
     line-height: 1.3;
+    overflow-wrap: anywhere;
 }
 
 .ticket-tags {
@@ -1096,6 +1103,8 @@ body {
     color: var(--text-2);
     line-height: 1.6;
     white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .details-single-block {
@@ -1118,6 +1127,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    min-width: 0;
 }
 
 .info-label {
@@ -1134,6 +1144,12 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
+    min-width: 0;
+}
+
+.info-value span {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .info-value i {
