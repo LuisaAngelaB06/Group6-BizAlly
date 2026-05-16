@@ -187,6 +187,10 @@
             </option>
           </select>
         </div>
+        <a class="new-ticket-btn" href="/user/submit-ticket.html">
+          <i class="fas fa-plus"></i>
+          <span data-translate="new_ticket">New Ticket</span>
+        </a>
       </div>
 
       <div class="section-label"></div>
@@ -200,6 +204,51 @@
       <div data-translate="dashboard_template">AlliTrack User Dashboard</div>
     </footer>
   </div>
+
+  <div class="ticket-modal" id="commentModal" aria-hidden="true">
+    <div class="ticket-modal-card" role="dialog" aria-modal="true" aria-labelledby="commentModalTitle">
+      <div class="ticket-modal-header">
+        <div>
+          <h2 id="commentModalTitle" data-translate="add_comment">Add Comment</h2>
+          <p id="commentModalTicketId"></p>
+        </div>
+        <button class="ticket-modal-close" type="button" data-modal-close="commentModal" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="ticket-modal-body">
+        <label class="ticket-modal-label" for="ticketCommentInput" data-translate="comment_label">Comment</label>
+        <textarea id="ticketCommentInput" class="ticket-comment-input" rows="5"
+          data-translate-placeholder="comment_placeholder" placeholder="Add an update or question for this ticket..."></textarea>
+      </div>
+      <div class="ticket-modal-actions">
+        <button class="ticket-action-btn" type="button" data-modal-close="commentModal" data-translate="cancel">Cancel</button>
+        <button class="ticket-action-btn ticket-action-primary" type="button" id="saveCommentBtn">
+          <i class="fas fa-paper-plane"></i>
+          <span data-translate="save_comment">Save Comment</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ticket-modal" id="updatesModal" aria-hidden="true">
+    <div class="ticket-modal-card" role="dialog" aria-modal="true" aria-labelledby="updatesModalTitle">
+      <div class="ticket-modal-header">
+        <div>
+          <h2 id="updatesModalTitle" data-translate="track_updates">Track Updates</h2>
+          <p id="updatesModalTicketId"></p>
+        </div>
+        <button class="ticket-modal-close" type="button" data-modal-close="updatesModal" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="ticket-modal-body">
+        <div class="ticket-timeline" id="ticketTimeline"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
 
   <script>
     if (typeof API_BASE_URL === "undefined") {
@@ -256,6 +305,45 @@
         resolved_desc: "Successfully completed",
         ticket_list: "Ticket List",
         dashboard_template: "AlliTrack User Dashboard",
+        product_category: "Product Category",
+        product_brand: "Product Brand",
+        concern_type: "Concern Type",
+        user_description: "User Description",
+        ticket_activity: "Ticket Activity",
+        no_category: "Not specified",
+        no_brand: "Not specified",
+        no_concern: "General Support",
+        new_ticket: "New Ticket",
+        sla: "SLA",
+        response_due: "Response due",
+        on_track: "On track",
+        monitor: "Monitor",
+        attention_needed: "Attention needed",
+        awaiting_assignment: "Awaiting assignment",
+        expand: "Expand",
+        collapse: "Collapse",
+        view_more: "View more",
+        view_less: "View less",
+        copy_id: "Copy ID",
+        copied: "Copied",
+        add_comment: "Add Comment",
+        track_updates: "Track Updates",
+        cancel_ticket: "Cancel Ticket",
+        cancel: "Cancel",
+        comment_label: "Comment",
+        comment_placeholder: "Add an update or question for this ticket...",
+        save_comment: "Save Comment",
+        comment_saved: "Comment saved",
+        comment_required: "Please enter a comment",
+        ticket_cancelled: "Ticket cancelled",
+        cancel_confirm: "Cancel this ticket? This will close it.",
+        action_coming_soon: "This workflow is ready for backend integration",
+        timeline_created: "Ticket created",
+        timeline_updated: "Last updated",
+        timeline_status: "Current status",
+        timeline_assignee: "Assigned technician",
+        timeline_comments: "Saved comments",
+        no_comments: "No comments yet",
       },
       fil: {
         my_tickets_page_title: "Aking Ticket — AlliTrack",
@@ -302,10 +390,50 @@
         resolved_desc: "Matagumpay na natapos",
         ticket_list: "Listahan ng Ticket",
         dashboard_template: "Dashboard ng User ng AlliTrack",
+        product_category: "Kategorya",
+        product_brand: "Brand",
+        concern_type: "Uri ng Concern",
+        user_description: "Deskripsyon ng User",
+        ticket_activity: "Aktibidad ng Ticket",
+        no_category: "Hindi tinukoy",
+        no_brand: "Hindi tinukoy",
+        no_concern: "General Support",
+        new_ticket: "Bagong Ticket",
+        sla: "SLA",
+        response_due: "Response due",
+        on_track: "On track",
+        monitor: "Bantayan",
+        attention_needed: "Kailangan ng pansin",
+        awaiting_assignment: "Naghihintay ng assignment",
+        expand: "Palawakin",
+        collapse: "I-collapse",
+        view_more: "Tingnan pa",
+        view_less: "Mas kaunti",
+        copy_id: "Kopyahin ID",
+        copied: "Nakopya",
+        add_comment: "Mag-comment",
+        track_updates: "Subaybayan Updates",
+        cancel_ticket: "I-cancel Ticket",
+        cancel: "Cancel",
+        comment_label: "Comment",
+        comment_placeholder: "Magdagdag ng update o tanong para sa ticket na ito...",
+        save_comment: "I-save Comment",
+        comment_saved: "Na-save ang comment",
+        comment_required: "Maglagay ng comment",
+        ticket_cancelled: "Na-cancel ang ticket",
+        cancel_confirm: "I-cancel ang ticket na ito? Isasara ito.",
+        action_coming_soon: "Handa na ito para sa backend integration",
+        timeline_created: "Nagawa ang ticket",
+        timeline_updated: "Huling update",
+        timeline_status: "Kasalukuyang status",
+        timeline_assignee: "Naka-assign na technician",
+        timeline_comments: "Saved comments",
+        no_comments: "Wala pang comment",
       },
     };
 
     let tickets = [];
+    let activeCommentTicketId = null;
 
     function getCurrentLanguage() {
       return (
@@ -318,6 +446,15 @@
     function t(key) {
       const dict = translations[getCurrentLanguage()] || translations.en;
       return dict[key] || translations.en[key] || key;
+    }
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[char]);
     }
     function applyTranslations(language = getCurrentLanguage()) {
       const dict = translations[language] || translations.en;
@@ -495,6 +632,11 @@
     }
 
     function getStatusText(statusId) {
+      const statusText = safeLower(statusId);
+      if (statusText === "open") return t("open_status");
+      if (statusText === "in progress" || statusText === "pending") return t("pending_status");
+      if (statusText === "resolved") return t("resolved_status");
+      if (statusText === "closed") return t("closed_status");
       if (statusId == 1) return t("open_status");
       if (statusId == 2) return t("pending_status");
       if (statusId == 3) return t("resolved_status");
@@ -502,6 +644,11 @@
       return "Unknown";
     }
     function getStatusClass(statusId) {
+      const statusText = safeLower(statusId);
+      if (statusText === "in progress" || statusText === "pending") return "pending";
+      if (statusText === "resolved") return "resolved";
+      if (statusText === "closed") return "closed";
+      if (statusText === "open") return "open";
       if (statusId == 2) return "pending";
       if (statusId == 3) return "resolved";
       if (statusId == 4) return "closed";
@@ -527,6 +674,76 @@
       if (diffInDays === 1) return t("yesterday");
       if (diffInDays < 7) return `${diffInDays} ${t("days_ago")}`;
       return formatDate(dateString);
+    }
+    function getTicketField(ticket, fields, fallback = "") {
+      for (const field of fields) {
+        const value = ticket[field];
+        if (value !== undefined && value !== null && String(value).trim()) {
+          return String(value).trim();
+        }
+      }
+      return fallback;
+    }
+    function getPriorityClass(priority) {
+      const normalized = safeLower(priority, "low");
+      if (["low", "medium", "high", "critical"].includes(normalized)) {
+        return normalized;
+      }
+      if (normalized === "urgent") return "critical";
+      return "low";
+    }
+    function getSlaInfo(ticket) {
+      const statusClass = getStatusClass(ticket.Status_ID || ticket.Status);
+      if (["resolved", "closed"].includes(statusClass)) {
+        return { className: "complete", label: t("resolved"), value: formatRelativeTime(ticket.Last_Updated || ticket.Date_Created) };
+      }
+
+      const created = new Date(ticket.Date_Created);
+      const ageHours = Number.isNaN(created.getTime())
+        ? 0
+        : Math.max(0, Math.floor((new Date() - created) / 3600000));
+      const priority = getPriorityClass(ticket.Priority);
+      const thresholds = { low: 72, medium: 48, high: 24, critical: 8 };
+      const limit = thresholds[priority] || 48;
+      const remaining = limit - ageHours;
+
+      if (remaining <= 0) {
+        return { className: "risk", label: t("attention_needed"), value: t("response_due") };
+      }
+      if (remaining <= Math.ceil(limit * 0.25)) {
+        return { className: "watch", label: t("monitor"), value: `${remaining}h` };
+      }
+      return { className: "good", label: t("on_track"), value: `${remaining}h` };
+    }
+    function getStructuredTicketParts(ticket) {
+      const rawDescription = String(ticket.Description || "").trim();
+      const parts = {
+        category: "",
+        brand: "",
+        concernType: "",
+        userDescription: rawDescription,
+      };
+      if (!rawDescription) return parts;
+
+      const lines = rawDescription.split(/\r?\n/);
+      const userMarkerIndex = lines.findIndex((line) =>
+        /^user description\s*:/i.test(line.trim()),
+      );
+
+      lines.forEach((line) => {
+        const trimmed = line.trim();
+        const match = trimmed.match(/^(Category|Product Brand|Concern Type)\s*:\s*(.+)$/i);
+        if (!match) return;
+        const key = match[1].toLowerCase();
+        if (key === "category") parts.category = match[2].trim();
+        if (key === "product brand") parts.brand = match[2].trim();
+        if (key === "concern type") parts.concernType = match[2].trim();
+      });
+
+      if (userMarkerIndex >= 0) {
+        parts.userDescription = lines.slice(userMarkerIndex + 1).join("\n").trim();
+      }
+      return parts;
     }
 
     async function fetchMyTicketsFromDatabase() {
@@ -558,15 +775,15 @@
       set("totalTickets", tickets.length);
       set(
         "openTickets",
-        tickets.filter((ticket) => ticket.Status_ID == 1).length,
+        tickets.filter((ticket) => getStatusClass(ticket.Status_ID || ticket.Status) === "open").length,
       );
       set(
         "pendingTickets",
-        tickets.filter((ticket) => ticket.Status_ID == 2).length,
+        tickets.filter((ticket) => getStatusClass(ticket.Status_ID || ticket.Status) === "pending").length,
       );
       set(
         "resolvedTickets",
-        tickets.filter((ticket) => ticket.Status_ID == 3).length,
+        tickets.filter((ticket) => getStatusClass(ticket.Status_ID || ticket.Status) === "resolved").length,
       );
     }
 
@@ -582,21 +799,20 @@
 
       if (statusFilter !== "all")
         filtered = filtered.filter((ticket) => {
-          if (statusFilter === "open") return ticket.Status_ID == 1;
-          if (statusFilter === "pending") return ticket.Status_ID == 2;
-          if (statusFilter === "resolved") return ticket.Status_ID == 3;
-          if (statusFilter === "closed") return ticket.Status_ID == 4;
-          return true;
+          return getStatusClass(ticket.Status_ID || ticket.Status) === statusFilter;
         });
       if (priorityFilter !== "all")
         filtered = filtered.filter(
-          (ticket) => safeLower(ticket.Priority, "low") === priorityFilter,
+          (ticket) => getPriorityClass(ticket.Priority) === priorityFilter,
         );
       if (searchText)
         filtered = filtered.filter(
           (ticket) =>
             safeLower(ticket.Concern_Title).includes(searchText) ||
             safeLower(ticket.Description).includes(searchText) ||
+            safeLower(ticket.Product_Category).includes(searchText) ||
+            safeLower(ticket.Product_Brand).includes(searchText) ||
+            safeLower(ticket.Concern_Type).includes(searchText) ||
             `tkt-${ticket.Ticket_ID}`.toLowerCase().includes(searchText),
         );
 
@@ -629,12 +845,21 @@
       ticketList.forEach((ticket) => {
         const card = document.createElement("div");
         card.className = "ticket-card";
-        const statusClass = getStatusClass(ticket.Status_ID);
-        const priorityClass = safeLower(ticket.Priority, "low");
+        const statusClass = getStatusClass(ticket.Status_ID || ticket.Status);
+        const priorityClass = getPriorityClass(ticket.Priority);
         const ticketId = ticket.Ticket_ID
           ? `TKT-${ticket.Ticket_ID}`
           : "TKT-NEW";
         const technician = ticket.Technician_Name || t("waiting_assignment");
+        const createdDate = formatDate(ticket.Date_Created);
+        const updatedDate = formatRelativeTime(ticket.Last_Updated || ticket.Date_Created);
+        const structuredParts = getStructuredTicketParts(ticket);
+        const category = getTicketField(ticket, ["Product_Category", "Category"], "") || structuredParts.category || getTicketField(ticket, ["Service_Type"], t("no_category"));
+        const brand = getTicketField(ticket, ["Product_Brand", "Brand", "ProductBrand"], structuredParts.brand || t("no_brand"));
+        const concernType = getTicketField(ticket, ["Concern_Type", "Issue_Type"], structuredParts.concernType || t("no_concern"));
+        const description = structuredParts.userDescription || "No description provided.";
+        const sla = getSlaInfo(ticket);
+        const isAssigned = Boolean(ticket.Technician_Name);
         const initials =
           technician
             .split(/\s+/)
@@ -644,34 +869,78 @@
             .substring(0, 2)
             .toUpperCase() || "TA";
         card.classList.add(`status-${statusClass}`);
+        card.setAttribute("aria-label", `${ticketId}: ${ticket.Concern_Title || "Untitled Ticket"}`);
         card.innerHTML = `
-                    <div class="ticket-header">
-                        <div class="ticket-title-group">
-                            <div class="ticket-title">${ticket.Concern_Title || "Untitled Ticket"}</div>
-                            <div class="ticket-id">${ticketId}</div>
+                    <div class="ticket-card-header">
+                        <div class="ticket-heading">
+                            <h2 class="ticket-title">${escapeHTML(ticket.Concern_Title || "Untitled Ticket")}</h2>
+                            <div class="ticket-header-meta">
+                                <span class="ticket-id">${escapeHTML(ticketId)}</span>
+                                <span><i class="fas fa-calendar"></i> ${escapeHTML(t("created"))}: ${escapeHTML(createdDate)}</span>
+                                <span><i class="fas fa-clock-rotate-left"></i> ${escapeHTML(t("updated"))}: ${escapeHTML(updatedDate)}</span>
+                            </div>
+                        </div>
+                        <div class="ticket-header-actions" aria-label="Ticket status, priority, and menu">
+                            <span class="ticket-status status-${statusClass}">${escapeHTML(getStatusText(ticket.Status_ID || ticket.Status))}</span>
+                            <span class="ticket-priority priority-${priorityClass}"><i class="fas fa-flag"></i> ${escapeHTML(ticket.Priority || "Low")}</span>
                         </div>
                     </div>
-                    <div class="ticket-badges">
-                        <span class="ticket-status status-${statusClass}">${getStatusText(ticket.Status_ID)}</span>
-                        <span class="ticket-priority priority-${priorityClass}"><i class="fas fa-flag"></i> ${ticket.Priority || "Low"}</span>
+                    <div class="ticket-classification-row" aria-label="Ticket classification">
+                        <div class="ticket-chip">
+                            <i class="fas fa-layer-group"></i>
+                            <span>${escapeHTML(t("product_category"))}</span>
+                            <strong>${escapeHTML(category)}</strong>
+                        </div>
+                        <div class="ticket-chip">
+                            <i class="fas fa-copyright"></i>
+                            <span>${escapeHTML(t("product_brand"))}</span>
+                            <strong>${escapeHTML(brand)}</strong>
+                        </div>
+                        <div class="ticket-chip">
+                            <i class="fas fa-circle-question"></i>
+                            <span>${escapeHTML(t("concern_type"))}</span>
+                            <strong>${escapeHTML(concernType)}</strong>
+                        </div>
                     </div>
-                    <div class="ticket-meta">
-                        <div class="ticket-meta-item"><i class="fas fa-calendar"></i><span>${t("created")}: ${formatDate(ticket.Date_Created)}</span></div>
-                        <div class="ticket-meta-item"><i class="fas fa-sync-alt"></i><span>${t("updated")}: ${formatRelativeTime(ticket.Last_Updated || ticket.Date_Created)}</span></div>
+                    <div class="ticket-description-panel">
+                        <div class="description-head">
+                            <span><i class="fas fa-align-left"></i> ${escapeHTML(t("user_description"))}</span>
+                            <button class="description-toggle" type="button" data-action="toggle-description" aria-expanded="false">
+                                <span>${escapeHTML(t("view_more"))}</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        <p class="ticket-description">${escapeHTML(description)}</p>
                     </div>
-                    <div class="ticket-description">${ticket.Description || "No description provided."}</div>
-                    <div class="ticket-footer">
-                        <div class="ticket-assignee"><div class="assignee-avatar">${initials}</div><div class="assignee-name">${t("assigned_to")} ${technician}</div></div>
+                    <div class="ticket-assignment-row">
+                        <div class="ticket-assignee">
+                            <div class="assignee-avatar">${escapeHTML(initials)}</div>
+                            <div>
+                                <div class="assignee-label">${escapeHTML(t("assigned_to"))}</div>
+                                <div class="assignee-name">${escapeHTML(technician)}</div>
+                            </div>
+                        </div>
+                        <div class="ticket-sla-pill health-${sla.className}">
+                            <span>${escapeHTML(sla.label)}</span>
+                            <strong>${escapeHTML(t("sla"))}: ${escapeHTML(sla.value)}</strong>
+                        </div>
+                    </div>
+                    <div class="ticket-action-row">
+                            <button class="ticket-action-btn" type="button" data-action="add-comment" data-ticket-id="${escapeHTML(ticketId)}">
+                                <i class="fas fa-message"></i>
+                                <span>${escapeHTML(t("add_comment"))}</span>
+                            </button>
+                            <button class="ticket-action-btn" type="button" data-action="track-updates" data-ticket-id="${escapeHTML(ticketId)}">
+                                <i class="fas fa-timeline"></i>
+                                <span>${escapeHTML(t("track_updates"))}</span>
+                            </button>
+                            <button class="ticket-action-btn ticket-action-danger" type="button" data-action="cancel-ticket" data-ticket-id="${escapeHTML(ticketId)}">
+                                <i class="fas fa-ban"></i>
+                                <span>${escapeHTML(t("cancel_ticket"))}</span>
+                            </button>
                     </div>`;
         container.appendChild(card);
       });
-      document
-        .querySelectorAll(".ticket-action-btn")
-        .forEach((btn) =>
-          btn.addEventListener("click", () =>
-            alert(`Viewing ticket: ${btn.dataset.ticketId}`),
-          ),
-        );
     }
 
     async function loadTickets() {
@@ -687,6 +956,225 @@
         if (container)
           container.innerHTML = `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i><h3>Unable to load tickets</h3><p>Please check your database connection or backend server.</p></div>`;
       }
+    }
+
+    async function copyText(value) {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(value);
+        return;
+      }
+      const input = document.createElement("input");
+      input.value = value;
+      input.setAttribute("readonly", "");
+      input.style.position = "fixed";
+      input.style.opacity = "0";
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      input.remove();
+    }
+    function showToast(message, type = "info") {
+      const toast = document.getElementById("toast");
+      if (!toast) return;
+      toast.textContent = message;
+      toast.className = `toast ${type} show`;
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2400);
+    }
+    function normalizeTicketId(ticketId = "") {
+      return String(ticketId).replace(/^TKT-/i, "");
+    }
+    function findTicket(ticketId) {
+      const normalized = normalizeTicketId(ticketId);
+      return tickets.find((ticket) => String(ticket.Ticket_ID) === normalized);
+    }
+    function commentsKey(ticketId) {
+      return `alliticket-comments-${normalizeTicketId(ticketId)}`;
+    }
+    function getTicketComments(ticketId) {
+      try {
+        return JSON.parse(localStorage.getItem(commentsKey(ticketId)) || "[]");
+      } catch {
+        return [];
+      }
+    }
+    function saveTicketComments(ticketId, comments) {
+      localStorage.setItem(commentsKey(ticketId), JSON.stringify(comments));
+    }
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.add("show");
+      modal.setAttribute("aria-hidden", "false");
+    }
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+    }
+    function openCommentModal(ticketId) {
+      activeCommentTicketId = ticketId;
+      document.getElementById("commentModalTicketId").textContent = ticketId;
+      document.getElementById("ticketCommentInput").value = "";
+      openModal("commentModal");
+      setTimeout(() => document.getElementById("ticketCommentInput")?.focus(), 60);
+    }
+    function renderTimeline(ticketId) {
+      const ticket = findTicket(ticketId);
+      if (!ticket) return;
+
+      const comments = getTicketComments(ticketId);
+      const timeline = document.getElementById("ticketTimeline");
+      const technician = ticket.Technician_Name || t("waiting_assignment");
+      const items = [
+        { icon: "fa-plus", label: t("timeline_created"), value: formatDate(ticket.Date_Created) },
+        { icon: "fa-clock-rotate-left", label: t("timeline_updated"), value: formatRelativeTime(ticket.Last_Updated || ticket.Date_Created) },
+        { icon: "fa-circle-info", label: t("timeline_status"), value: getStatusText(ticket.Status_ID || ticket.Status) },
+        { icon: "fa-user-gear", label: t("timeline_assignee"), value: technician },
+      ];
+
+      timeline.innerHTML = `
+        ${items.map((item) => `
+          <div class="timeline-item">
+            <div class="timeline-icon"><i class="fas ${item.icon}"></i></div>
+            <div>
+              <div class="timeline-label">${escapeHTML(item.label)}</div>
+              <div class="timeline-value">${escapeHTML(item.value || "N/A")}</div>
+            </div>
+          </div>
+        `).join("")}
+        <div class="timeline-comments">
+          <div class="timeline-label">${escapeHTML(t("timeline_comments"))}</div>
+          ${comments.length
+          ? comments.map((comment) => `
+              <div class="timeline-comment">
+                <div>${escapeHTML(comment.text)}</div>
+                <span>${escapeHTML(formatRelativeTime(comment.createdAt))}</span>
+              </div>
+            `).join("")
+          : `<div class="timeline-empty">${escapeHTML(t("no_comments"))}</div>`}
+        </div>`;
+    }
+    function openUpdatesModal(ticketId) {
+      document.getElementById("updatesModalTicketId").textContent = ticketId;
+      renderTimeline(ticketId);
+      openModal("updatesModal");
+    }
+    async function cancelTicket(ticketId, button) {
+      const ticket = findTicket(ticketId);
+      if (!ticket || !confirm(t("cancel_confirm"))) return;
+
+      const previousHtml = button.innerHTML;
+      button.disabled = true;
+      button.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Closing...</span>';
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/tickets/${normalizeTicketId(ticketId)}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            Status_ID: 4,
+            Priority: ticket.Priority || "Medium",
+            Technician_ID: ticket.Technician_ID || null,
+            Resolution_Details: ticket.Resolution_Details || "",
+            Product_Category: ticket.Product_Category || null,
+            Product_Brand: ticket.Product_Brand || null,
+            Concern_Type: ticket.Concern_Type || null,
+          }),
+        });
+        if (!response.ok) throw new Error(`Cancel failed: ${response.status}`);
+        showToast(t("ticket_cancelled"), "success");
+        await loadTickets();
+      } catch (error) {
+        console.error(error);
+        showToast(error.message || "Unable to cancel ticket", "error");
+        button.disabled = false;
+        button.innerHTML = previousHtml;
+      }
+    }
+    function saveActiveComment() {
+      const input = document.getElementById("ticketCommentInput");
+      const text = input?.value.trim() || "";
+      if (!activeCommentTicketId || !text) {
+        showToast(t("comment_required"), "error");
+        return;
+      }
+      const comments = getTicketComments(activeCommentTicketId);
+      comments.unshift({
+        text,
+        createdAt: new Date().toISOString(),
+      });
+      saveTicketComments(activeCommentTicketId, comments);
+      closeModal("commentModal");
+      showToast(t("comment_saved"), "success");
+    }
+    function setupTicketActions() {
+      const container = document.getElementById("ticketsContainer");
+      if (!container) return;
+      container.addEventListener("click", async (event) => {
+        const button = event.target.closest("[data-action]");
+        if (!button) return;
+
+        const card = button.closest(".ticket-card");
+        if ((button.dataset.action === "toggle-description" || button.dataset.action === "view-details") && card) {
+          const expanded = card.classList.toggle("is-expanded");
+          button.setAttribute("aria-expanded", String(expanded));
+          if (button.dataset.action === "toggle-description") {
+            button.querySelector("span").textContent = expanded ? t("view_less") : t("view_more");
+            button.querySelector("i").className = expanded ? "fas fa-chevron-up" : "fas fa-chevron-down";
+          }
+          return;
+        }
+
+        if (button.dataset.action === "copy-id") {
+          const ticketId = button.dataset.ticketId || "";
+          await copyText(ticketId);
+          const label = button.querySelector("span");
+          if (label) {
+            const previous = label.textContent;
+            label.textContent = t("copied");
+            setTimeout(() => {
+              label.textContent = previous;
+            }, 1200);
+          }
+        }
+
+        if (button.dataset.action === "add-comment") {
+          openCommentModal(button.dataset.ticketId || "");
+          return;
+        }
+
+        if (button.dataset.action === "track-updates") {
+          openUpdatesModal(button.dataset.ticketId || "");
+          return;
+        }
+
+        if (button.dataset.action === "cancel-ticket") {
+          await cancelTicket(button.dataset.ticketId || "", button);
+        }
+      });
+    }
+    function setupTicketModals() {
+      document.querySelectorAll("[data-modal-close]").forEach((button) => {
+        button.addEventListener("click", () => closeModal(button.dataset.modalClose));
+      });
+      document.querySelectorAll(".ticket-modal").forEach((modal) => {
+        modal.addEventListener("click", (event) => {
+          if (event.target === modal) closeModal(modal.id);
+        });
+      });
+      document.getElementById("saveCommentBtn")?.addEventListener("click", saveActiveComment);
+      document.getElementById("ticketCommentInput")?.addEventListener("keydown", (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") saveActiveComment();
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          closeModal("commentModal");
+          closeModal("updatesModal");
+        }
+      });
     }
 
     function initTickets() {
@@ -748,6 +1236,8 @@
       setupAccountDropdown();
       setupMenuToggle();
       setupLogout();
+      setupTicketActions();
+      setupTicketModals();
       initTickets();
       syncMobileOverlay();
       window.addEventListener("resize", () =>
