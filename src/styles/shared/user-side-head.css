@@ -106,7 +106,7 @@ body {
     flex-direction: column;
     position: fixed;
     inset: 0 auto 0 0;
-    z-index: 100;
+    z-index: 1000;
     transition: transform 0.3s var(--ease);
 }
 
@@ -119,11 +119,15 @@ body {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 99;
+    z-index: 999;
 }
 
 .sidebar-overlay.active {
     display: block;
+}
+
+body.sidebar-open {
+    overflow: hidden;
 }
 
 .sidebar-brand {
@@ -728,6 +732,7 @@ body.mobile-block-active > .main-wrapper {
 @media (max-width: 900px) {
     .sidebar {
         transform: translateX(-100%);
+        max-width: min(82vw, var(--sidebar-w));
     }
 
     .main-wrapper {
@@ -744,6 +749,12 @@ body.mobile-block-active > .main-wrapper {
 
     .menu-toggle {
         display: flex;
+    }
+}
+
+@media (min-width: 901px) {
+    .sidebar-overlay.active {
+        display: none;
     }
 }
 

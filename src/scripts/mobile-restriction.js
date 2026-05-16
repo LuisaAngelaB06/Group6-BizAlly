@@ -8,6 +8,14 @@
             console.log('⏳ Body not ready yet, will retry...');
             return;
         }
+
+        const path = window.location.pathname.toLowerCase();
+        const isAdminPage = path.includes('/admin') || path.includes('admin%20page') || path.includes('admin page');
+
+        if (!isAdminPage) {
+            document.body.classList.remove('mobile-block-active');
+            return;
+        }
         
         const isMobile = window.innerWidth < 768; // match breakpoint
         console.log('📱 Mobile check:', { width: window.innerWidth, isMobile });

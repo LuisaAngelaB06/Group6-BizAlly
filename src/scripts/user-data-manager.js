@@ -392,16 +392,27 @@ if (typeof window.globalHeartbeatFired === "undefined") {
       return;
     }
 
+    const freshToggle = menuToggle.cloneNode(true);
+    const freshOverlay = overlay.cloneNode(true);
+    menuToggle.parentNode.replaceChild(freshToggle, menuToggle);
+    overlay.parentNode.replaceChild(freshOverlay, overlay);
+
     const openSidebar = () => {
       sidebar.classList.add("open");
-      overlay.classList.add("active");
-      menuToggle.setAttribute("aria-expanded", "true");
+      freshOverlay.classList.add("active");
+      freshToggle.setAttribute("aria-expanded", "true");
+      freshToggle.setAttribute("aria-label", "Close sidebar");
+      freshToggle.innerHTML = '<i class="fas fa-times" aria-hidden="true"></i>';
+      document.body.classList.add("sidebar-open");
     };
 
     const closeSidebar = () => {
       sidebar.classList.remove("open");
-      overlay.classList.remove("active");
-      menuToggle.setAttribute("aria-expanded", "false");
+      freshOverlay.classList.remove("active");
+      freshToggle.setAttribute("aria-expanded", "false");
+      freshToggle.setAttribute("aria-label", "Open sidebar");
+      freshToggle.innerHTML = '<i class="fas fa-bars" aria-hidden="true"></i>';
+      document.body.classList.remove("sidebar-open");
     };
 
     const toggleSidebar = () => {
@@ -412,12 +423,14 @@ if (typeof window.globalHeartbeatFired === "undefined") {
       }
     };
 
-    menuToggle.addEventListener("click", function (event) {
+    freshToggle.addEventListener("click", function (event) {
       event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
       toggleSidebar();
     });
 
-    overlay.addEventListener("click", closeSidebar);
+    freshOverlay.addEventListener("click", closeSidebar);
 
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && sidebar.classList.contains("open")) {
@@ -434,7 +447,7 @@ if (typeof window.globalHeartbeatFired === "undefined") {
     });
 
     window.addEventListener("resize", function () {
-      if (window.innerWidth > 900 && sidebar.classList.contains("open")) {
+      if (window.innerWidth > 900 || document.body.classList.contains("mobile-block-active")) {
         closeSidebar();
       }
     });
