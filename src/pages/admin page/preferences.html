@@ -91,7 +91,7 @@
             </div>
             <div class="topbar-right">
                 <div class="account-wrap">
-                    <button class="account-btn" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="account-btn" id="accountBtn" aria-haspopup="true" aria-expanded="false">
                         <div class="avatar-btn" id="userAvatar">AD</div>
                         <div class="account-info">
                             <div class="a-name" id="userNameDisplay">Admin</div>
@@ -319,119 +319,7 @@
     <div id="toast" class="toast"></div>
 
     <script>
-        // Simplified translation dictionary that works with preference-manager.js
-        const translationMap = {
-            'en': {
-                // Page titles
-                'preferences_page_title': 'Preferences - AlliTrack',
-                'preferences': 'Preferences',
-                'customize_experience': 'Customize your experience with AlliTrack',
-
-                // Tabs
-                'appearance': 'Appearance',
-                'language': 'Language',
-                'notifications': 'Notifications',
-
-                // Theme section
-                'theme_settings': 'Theme Settings',
-                'choose_appearance': 'Choose how AlliTrack looks and feels',
-                'auto_theme': 'Auto (System)',
-                'auto_theme_desc': 'Automatically switches between light and dark based on your system settings',
-                'light_theme': 'Light Mode',
-                'light_theme_desc': 'Clean and bright interface for daytime use',
-                'dark_theme': 'Dark Mode',
-                'dark_theme_desc': 'Easier on the eyes in low-light environments',
-
-                // Language section
-                'language_settings': 'Language Settings',
-                'choose_language': 'Select your preferred language for the entire dashboard',
-                'english': 'English',
-                'english_desc': 'United States English - Default language',
-                'filipino': 'Filipino',
-                'filipino_desc': 'Tagalog (Pilipinas) - Wikang Filipino',
-                'language_help': 'Language changes will apply immediately to the entire dashboard interface.',
-
-                // Notification section
-                'notification_settings': 'Notification Settings',
-                'notification_settings_desc': 'Manage how and when you receive notifications from AlliTrack',
-
-                'email_notifications': 'Email Notifications',
-                'new_ticket_emails': 'New Ticket Emails',
-                'new_ticket_emails_desc': 'Receive email when a new ticket is created',
-                'ticket_updates': 'Ticket Updates',
-                'ticket_updates_desc': 'Email notifications when tickets you\'re assigned to are updated',
-                'daily_digest': 'Daily Digest',
-                'daily_digest_desc': 'Daily summary of ticket activity and statistics',
-
-                'notification_frequency': 'Notification Frequency',
-                'realtime': 'Real-time',
-                'realtime_desc': 'Receive notifications immediately as they happen',
-                'hourly_digest_desc': 'Group notifications and receive them every hour',
-                'important_only': 'Important Only',
-                'important_only_desc': 'Only receive notifications for high priority items',
-
-                'notification_help': 'Notification settings are saved automatically. Changes take effect immediately.',
-
-                // Buttons (removed)
-                'reset_defaults': 'Reset to Defaults',
-                'save_changes': 'Save Changes'
-            },
-            'fil': {
-                // Page titles
-                'preferences_page_title': 'Mga Kagustuhan - AlliTrack',
-                'preferences': 'Mga Kagustuhan',
-                'customize_experience': 'Ipasadya ang iyong karanasan sa AlliTrack',
-
-                // Tabs
-                'appearance': 'Itsura',
-                'language': 'Wika',
-                'notifications': 'Mga Notipikasyon',
-
-                // Theme section
-                'theme_settings': 'Mga Setting ng Tema',
-                'choose_appearance': 'Piliin kung paano magmumukha at mararamdaman ang AlliTrack',
-                'auto_theme': 'Awtomatiko (Sistema)',
-                'auto_theme_desc': 'Awtomatikong nagpapalit sa pagitan ng light at dark base sa iyong system settings',
-                'light_theme': 'Light Mode',
-                'light_theme_desc': 'Malinis at maliwanag na interface para sa araw-araw na gamit',
-                'dark_theme': 'Dark Mode',
-                'dark_theme_desc': 'Mas madali sa mata sa mga low-light na kapaligiran',
-
-                // Language section
-                'language_settings': 'Mga Setting ng Wika',
-                'choose_language': 'Piliin ang iyong gustong wika para sa buong dashboard',
-                'english': 'Ingles',
-                'english_desc': 'United States English - Default na wika',
-                'filipino': 'Filipino',
-                'filipino_desc': 'Tagalog (Pilipinas) - Wikang Filipino',
-                'language_help': 'Ang mga pagbabago sa wika ay agad na maa-apply sa buong dashboard interface.',
-
-                // Notification section
-                'notification_settings': 'Mga Setting ng Notipikasyon',
-                'notification_settings_desc': 'Pamahalaan kung paano at kailan ka makakatanggap ng notipikasyon mula sa AlliTrack',
-
-                'email_notifications': 'Mga Notipikasyon sa Email',
-                'new_ticket_emails': 'Mga Email para sa Bagong Ticket',
-                'new_ticket_emails_desc': 'Tumanggap ng email kapag may bagong ticket na ginawa',
-                'ticket_updates': 'Mga Update sa Ticket',
-                'ticket_updates_desc': 'Mga notipikasyon sa email kapag na-update ang mga ticket na itinalaga sa iyo',
-                'daily_digest': 'Araw-araw na Buod',
-                'daily_digest_desc': 'Araw-araw na buod ng aktibidad at estadistika ng ticket',
-
-                'notification_frequency': 'Dalas ng Notipikasyon',
-                'realtime': 'Real-time',
-                'realtime_desc': 'Tumanggap ng mga notipikasyon kaagad habang nangyayari ang mga ito',
-                'hourly_digest_desc': 'Ipangkat ang mga notipikasyon at tanggapin ang mga ito bawat oras',
-                'important_only': 'Mahahalaga Lang',
-                'important_only_desc': 'Tumanggap lamang ng mga notipikasyon para sa mga high priority na item',
-
-                'notification_help': 'Ang mga setting ng notipikasyon ay awtomatikong nai-save. Ang mga pagbabago ay magkakabisa kaagad.',
-
-                // Buttons (removed)
-                'reset_defaults': 'I-reset sa Default',
-                'save_changes': 'I-save ang mga Pagbabago'
-            }
-        };
+        // Use centralized translations provided by `user-preference-manager.js` (window.preferencesManager)
 
         // Initialize the page when DOM is loaded
         document.addEventListener('DOMContentLoaded', function () {
@@ -454,8 +342,10 @@
                 const savedLang = window.preferencesManager.getCurrentLanguage();
                 console.log('Saved language:', savedLang);
 
-                // Apply translations
-                applyTranslations(savedLang);
+                // Apply centralized translations via preferencesManager
+                if (window.preferencesManager) {
+                    window.preferencesManager.applyLanguage();
+                }
 
                 // Load current preferences
                 loadCurrentPreferences();
@@ -488,7 +378,7 @@
             // Listen for language changes
             document.addEventListener('languageChanged', function (e) {
                 console.log('Language changed event received:', e.detail.language);
-                applyTranslations(e.detail.language);
+                if (window.preferencesManager) window.preferencesManager.applyLanguage();
             });
 
             console.log('Preferences page initialized');
@@ -761,31 +651,7 @@
             }
         }
 
-        // Load and apply translations
-        function applyTranslations(language) {
-            console.log('Applying translations for:', language);
-
-            const lang = translationMap[language] || translationMap['en'];
-
-            // Translate all elements with data-translate attribute
-            document.querySelectorAll('[data-translate]').forEach(element => {
-                const key = element.getAttribute('data-translate');
-                if (lang[key]) {
-                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                        element.placeholder = lang[key];
-                    } else {
-                        element.textContent = lang[key];
-                    }
-                }
-            });
-
-            // Update page title
-            if (lang['preferences_page_title']) {
-                document.title = lang['preferences_page_title'];
-            }
-
-            console.log('Translations applied successfully');
-        }
+        // Translations handled centrally by `user-preference-manager.js` (window.preferencesManager)
 
         // Load current preferences
         function loadCurrentPreferences() {
@@ -865,22 +731,33 @@
             const accountMenu = document.getElementById('accountMenu');
 
             if (accountBtn && accountMenu) {
-                accountBtn.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    const isVisible = accountMenu.classList.contains('show');
+                // Ensure button behaves like a non-form button
+                try { accountBtn.setAttribute('type', 'button'); } catch (e) { /* ignore */ }
 
-                    // Close any other open dropdowns
-                    document.querySelectorAll('.account-menu.show').forEach(menu => {
-                        if (menu !== accountMenu) {
-                            menu.classList.remove('show');
-                            menu.previousElementSibling?.setAttribute('aria-expanded', 'false');
-                        }
-                    });
+                const toggleDropdown = function (e) {
+                    try {
+                        e.stopPropagation();
+                        const isVisible = accountMenu.classList.contains('show');
 
-                    // Toggle current dropdown
-                    accountMenu.classList.toggle('show');
-                    this.setAttribute('aria-expanded', isVisible ? 'false' : 'true');
-                });
+                        // Close any other open dropdowns
+                        document.querySelectorAll('.account-menu.show').forEach(menu => {
+                            if (menu !== accountMenu) {
+                                menu.classList.remove('show');
+                                if (menu.previousElementSibling) menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                            }
+                        });
+
+                        // Toggle current dropdown
+                        accountMenu.classList.toggle('show');
+                        accountBtn.setAttribute('aria-expanded', isVisible ? 'false' : 'true');
+                    } catch (err) {
+                        console.error('Error toggling account dropdown:', err);
+                    }
+                };
+
+                // Listen for both click and pointerdown as a robust fallback
+                accountBtn.addEventListener('click', toggleDropdown);
+                accountBtn.addEventListener('pointerdown', function (e) { /* pointer events may trigger where click is blocked */ toggleDropdown(e); });
 
                 // Close menu when clicking elsewhere
                 document.addEventListener('click', function (e) {

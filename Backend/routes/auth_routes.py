@@ -11,9 +11,146 @@ import json
 import base64
 import sib_api_v3_sdk
 import random
+import requests
 
 from sib_api_v3_sdk.rest import ApiException
 from datetime import datetime, timedelta
+
+
+
+
+def _client_ip():
+    """Get the real client IP locally and behind Render/proxies."""
+    forwarded = request.headers.get("X-Forwarded-For", "")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.headers.get("X-Real-IP") or request.remote_addr or "Unknown IP"
+
+
+def _device_from_user_agent(user_agent):
+    """Turn the long User-Agent string into a readable device label."""
+    ua = (user_agent or "").lower()
+
+    browser = "Browser"
+    if "edg/" in ua:
+        browser = "Microsoft Edge"
+    elif "chrome/" in ua and "chromium" not in ua:
+        browser = "Chrome"
+    elif "firefox/" in ua:
+        browser = "Firefox"
+    elif "safari/" in ua and "chrome/" not in ua:
+        browser = "Safari"
+
+    os_name = "Unknown Device"
+    if "windows" in ua:
+        os_name = "Windows"
+    elif "mac os" in ua or "macintosh" in ua:
+        os_name = "macOS"
+    elif "android" in ua:
+        os_name = "Android"
+    elif "iphone" in ua or "ipad" in ua:
+        os_name = "iOS"
+    elif "linux" in ua:
+        os_name = "Linux"
+
+    return f"{browser} on {os_name}"
+
+
+def _location_from_ip(ip_address):
+    """Return approximate city/region/country from a public IP address."""
+    if not ip_address or ip_address in {"127.0.0.1", "localhost", "::1", "Unknown IP"}:
+        return "Localhost"
+
+    # Private/local network ranges cannot be geolocated.
+    if (
+        ip_address.startswith("10.") or
+        ip_address.startswith("192.168.") or
+        ip_address.startswith("172.16.") or
+        ip_address.startswith("172.17.") or
+        ip_address.startswith("172.18.") or
+        ip_address.startswith("172.19.") or
+        ip_address.startswith("172.20.") or
+        ip_address.startswith("172.21.") or
+        ip_address.startswith("172.22.") or
+        ip_address.startswith("172.23.") or
+        ip_address.startswith("172.24.") or
+        ip_address.startswith("172.25.") or
+        ip_address.startswith("172.26.") or
+        ip_address.startswith("172.27.") or
+        ip_address.startswith("172.28.") or
+        ip_address.startswith("172.29.") or
+        ip_address.startswith("172.30.") or
+        ip_address.startswith("172.31.")
+    ):
+        return "Local Network"
+
+    try:
+        response = requests.get(
+            f"http://ip-api.com/json/{ip_address}?fields=status,country,regionName,city",
+            timeout=3,
+        )
+        data = response.json()
+
+        if data.get("status") == "success":
+            parts = [data.get("city"), data.get("regionName"), data.get("country")]
+            location = ", ".join([part for part in parts if part])
+            return location or "Unknown Location"
+
+    except Exception as geo_error:
+        print(f"IP geolocation failed: {geo_error}")
+
+    return "Unknown Location"
+
+
+def _record_login_attempt(cursor, user_id=None, email=None, status="success"):
+    """Save a login attempt to login_history and prevent accidental duplicates."""
+    try:
+        ip_address = _client_ip()
+        device = _device_from_user_agent(request.headers.get("User-Agent", ""))
+        location = _location_from_ip(ip_address)
+        normalized_email = (email or "").strip().lower()
+
+        # Prevent duplicate rows when the frontend/browser sends the same login request twice.
+        # Applies to BOTH successful and failed login attempts.
+        if normalized_email:
+            cursor.execute(
+                """
+                SELECT login_id
+                FROM login_history
+                WHERE LOWER(email) = LOWER(%s)
+                  AND ip_address = %s
+                  AND device = %s
+                  AND status = %s
+                  AND login_time >= timezone('Asia/Manila', now()) - INTERVAL '5 seconds'
+                LIMIT 1
+                """,
+                (normalized_email, ip_address, device, status),
+            )
+
+            if cursor.fetchone():
+                print("Duplicate login history skipped")
+                return
+
+        cursor.execute(
+            """
+            INSERT INTO login_history
+                (user_id, email, ip_address, device, location, status, login_time)
+            VALUES (%s, %s, %s, %s, %s, %s, timezone('Asia/Manila', now()))
+            """,
+            (
+                user_id,
+                normalized_email or email,
+                ip_address,
+                device,
+                location,
+                status,
+            ),
+        )
+
+    except Exception as history_error:
+        print(f"Login history insert failed: {history_error}")
+        raise
+
 
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
 
@@ -62,13 +199,75 @@ def login():
                 if tech:
                     safe_user["Technician_ID"] = tech["technician_id"]
 
+            _record_login_attempt(cursor, user_id=user["user_id"], email=user["email"], status="success")
+            cursor.execute(
+                'UPDATE "system_user" SET last_login = CURRENT_TIMESTAMP WHERE user_id = %s',
+                (user["user_id"],),
+            )
+            conn.commit()
             return jsonify({"status": "success", "user": safe_user}), 200
 
+        _record_login_attempt(cursor, email=email, status="failed")
+        conn.commit()
         return jsonify({"status": "error", "message": "Invalid email or password"}), 401
 
     except Exception as e:
         print(f"Login error: {e}")
         return jsonify({"status": "error", "message": "Database error"}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+
+# ==========================================
+# LOGIN HISTORY
+# ==========================================
+@auth_bp.route("/login-history", methods=["GET"])
+def get_login_history():
+    user_id = request.args.get("user_id")
+    email = request.args.get("email")
+
+    if not user_id and not email:
+        return jsonify({"status": "success", "history": []}), 200
+
+    conn = get_connection()
+    if not conn:
+        return jsonify({"status": "error", "history": []}), 500
+
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    try:
+        cursor.execute(
+            """
+            SELECT
+                login_id AS id,
+                user_id,
+                email,
+                ip_address,
+                device,
+                location,
+                status,
+                TO_CHAR(login_time, 'YYYY-MM-DD HH24:MI:SS') AS login_time
+            FROM login_history
+            WHERE
+                (%s IS NOT NULL AND user_id = %s)
+                OR
+                (%s IS NOT NULL AND LOWER(email) = LOWER(%s))
+            ORDER BY login_time DESC
+            LIMIT 20
+            """,
+            (user_id, user_id, email, email),
+        )
+
+        return jsonify({
+            "status": "success",
+            "history": cursor.fetchall()
+        }), 200
+
+    except Exception as e:
+        print("Login history fetch error:", e)
+        return jsonify({"status": "error", "history": []}), 500
 
     finally:
         cursor.close()

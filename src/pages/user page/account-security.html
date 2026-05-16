@@ -529,9 +529,7 @@
             if (email) params.set('email', email);
             const query = params.toString();
             const endpoints = [
-                `/api/login-history${query ? `?${query}` : ''}`,
-                `/api/user-login-history${query ? `?${query}` : ''}`,
-                `/api/security/login-history${query ? `?${query}` : ''}`
+                `/api/auth/login-history${query ? `?${query}` : ''}`
             ];
 
             for (const endpoint of endpoints) {

@@ -2,50 +2,78 @@ console.log("login.js loaded");
 
 const form = document.getElementById("modalLoginForm");
 
+let isSubmitting = false;
+
 if (form) {
-    form.addEventListener("submit", async function (e) {
-        e.preventDefault();
+  form.addEventListener(
+    "submit",
+    async function (e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
 
-        // Prevent the HTML's inline simulated script from running
-        e.stopImmediatePropagation();
+      if (isSubmitting) {
+        console.log("Login already in progress...");
+        return;
+      }
 
-        const email = document.getElementById("modalEmail").value;
-        const password = document.getElementById("modalPassword").value;
-        const loginBtn = document.getElementById('modalLoginBtn');
-        const loadingText = document.getElementById('modalLoadingText');
-        const loadingOverlay = document.getElementById('modalLoadingOverlay');
+      isSubmitting = true;
 
-        // Show loading UI
-        if (loadingOverlay) loadingOverlay.style.display = 'flex';
-        if (loadingText) loadingText.textContent = 'Authenticating...';
-        loginBtn.disabled = true;
+      const emailInput = document.getElementById("modalEmail");
+      const passwordInput = document.getElementById("modalPassword");
+      const loginBtn = document.getElementById("modalLoginBtn");
+      const loadingText = document.getElementById("modalLoadingText");
+      const loadingOverlay = document.getElementById("modalLoadingOverlay");
 
-        try {
-            const result = await loginUser(email, password);
+      const email = emailInput ? emailInput.value.trim() : "";
+      const password = passwordInput ? passwordInput.value : "";
 
-            if (result.status === "success") {
-                // Save real database user data
-                localStorage.setItem("userData", JSON.stringify(result.user));
-                console.log("Login success:", result.user);
+      if (!email || !password) {
+        isSubmitting = false;
+        alert("Please enter your email and password.");
+        return;
+      }
 
-                // REDIRECT BASED ON ROLE
-                if (result.user.User_Type === 'admin' || result.user.User_Type === 'technician') {
-                    window.location.href = "/admin/dashboard";
-                } else {
-                    window.location.href = "/user/dashboard";
-                }
+      try {
+        if (loadingOverlay) loadingOverlay.style.display = "flex";
+        if (loadingText) loadingText.textContent = "Authenticating...";
+        if (loginBtn) loginBtn.disabled = true;
 
-            } else {
-                if (loadingOverlay) loadingOverlay.style.display = 'none';
-                loginBtn.disabled = false;
-                alert("Invalid email or password");
-            }
+        const result = await loginUser(email, password);
 
-        } catch (error) {
-            if (loadingOverlay) loadingOverlay.style.display = 'none';
-            loginBtn.disabled = false;
-            console.error("Login error:", error);
-            alert("Server connection failed. Please try again.");
+        if (result.status === "success") {
+          localStorage.setItem("userData", JSON.stringify(result.user));
+          console.log("Login success:", result.user);
+
+          const role = (
+            result.user.User_Type ||
+            result.user.user_type ||
+            result.user.role ||
+            ""
+          ).toLowerCase();
+
+          window.location.href =
+            role === "admin" || role === "technician"
+              ? "/admin/dashboard"
+              : "/user/dashboard";
+
+          return;
         }
-    });
+
+        if (loadingOverlay) loadingOverlay.style.display = "none";
+        if (loginBtn) loginBtn.disabled = false;
+        isSubmitting = false;
+
+        alert(result.message || "Invalid email or password");
+      } catch (error) {
+        console.error("Login error:", error);
+
+        if (loadingOverlay) loadingOverlay.style.display = "none";
+        if (loginBtn) loginBtn.disabled = false;
+        isSubmitting = false;
+
+        alert("Server connection failed. Please try again.");
+      }
+    },
+    true,
+  );
 }
