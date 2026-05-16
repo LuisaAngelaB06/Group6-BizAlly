@@ -637,18 +637,24 @@
 
         function showToast(message, type = 'info') {
             let toast = document.getElementById('preferencesToast');
+
             if (!toast) {
                 toast = document.createElement('div');
                 toast.id = 'preferencesToast';
                 toast.className = 'toast';
                 document.body.appendChild(toast);
             }
-            const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-triangle-exclamation' : 'fa-info-circle';
+
             toast.className = `toast ${type}`;
-            toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
+            toast.innerHTML = `<span>${message}</span>`;
+
             requestAnimationFrame(() => toast.classList.add('show'));
+
             clearTimeout(window.__preferencesToastTimer);
-            window.__preferencesToastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+
+            window.__preferencesToastTimer = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2800);
         }
 
         function setupAccountDropdown() {
