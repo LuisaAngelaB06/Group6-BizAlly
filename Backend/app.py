@@ -19,7 +19,8 @@ CORS(app, resources={r"/api/*": {
         "http://127.0.0.1:5500", 
         "http://localhost:5500", 
         "https://group6-bizally.onrender.com"
-    ]
+    ],
+    "allow_headers": ["Content-Type", "X-User-ID", "X-User-Role", "X-Technician-ID"]
 }})
 
 BASE_BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))

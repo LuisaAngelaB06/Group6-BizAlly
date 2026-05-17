@@ -19,6 +19,7 @@
     <script src="../../scripts/mobile-restriction.js" defer></script>
     <script src="../../scripts/admin-preference-manager.js" defer></script>
     <script src="../../scripts/admin-data-manager.js" defer></script>
+    <script src="../../scripts/admin-rbac.js" defer></script>
 </head>
 
 <body>
@@ -494,6 +495,7 @@
             }
 
             container.innerHTML = filtered.map(getAnnouncementHTML).join("");
+            window.AdminRBAC?.applyAnnouncementPermissions?.();
         }
 
         function getFilteredAnnouncements(filterText = "") {
@@ -601,6 +603,7 @@
 
         /* Populate form with announcement data for editing */
         window.editAnnouncement = function (id) {
+            if (window.AdminRBAC?.getRole?.() === "technician") return;
             const announcement = announcements.find(item => String(item.id) === String(id));
             if (!announcement) return;
 
@@ -619,6 +622,7 @@
 
         /* Show confirmation modal before deleting an announcement */
         window.deleteAnnouncement = async function (id) {
+            if (window.AdminRBAC?.getRole?.() === "technician") return;
             if (!confirm(getTranslation("delete_announcement_confirm"))) return;
 
             try {
@@ -644,6 +648,7 @@
 
         /* Show delete confirmation modal with dynamic message and list of selected announcements */
         window.showDeleteConfirmation = function (ids) {
+            if (window.AdminRBAC?.getRole?.() === "technician") return;
             const modal = document.getElementById("deleteConfirmationModal");
             const deleteMessage = document.getElementById("deleteMessage");
             const listContainer = document.getElementById("selectedAnnouncementsList");
@@ -674,6 +679,7 @@
 
         /* Toggle selection when clicking on announcement card (but not on buttons) */
         window.toggleAnnouncementSelection = function (id) {
+            if (window.AdminRBAC?.getRole?.() === "technician") return;
             id = String(id);
 
             if (selectedAnnouncements.has(id)) {
@@ -687,6 +693,7 @@
         };
 
         async function confirmDeleteAnnouncements() {
+            if (window.AdminRBAC?.getRole?.() === "technician") return;
             const ids = Array.from(selectedAnnouncements);
             if (ids.length === 0) return;
 
@@ -783,6 +790,7 @@
 
         document.getElementById("announcementForm")?.addEventListener("submit", async function (event) {
             event.preventDefault();
+            if (window.AdminRBAC?.getRole?.() === "technician") return;
 
             const editingId = document.getElementById("announcementId")?.value || "";
             const submitBtn = document.getElementById("submitBtn");

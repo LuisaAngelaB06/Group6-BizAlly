@@ -18,6 +18,7 @@
     <script src="../../scripts/mobile-restriction.js" defer></script>
     <script src="../../scripts/admin-preference-manager.js" defer></script>
     <script src="../../scripts/admin-data-manager.js" defer></script>
+    <script src="../../scripts/admin-rbac.js" defer></script>
 </head>
 
 <body>
@@ -48,7 +49,7 @@
 
         <nav class="sidebar-nav">
             <div class="nav-group-label">OVERVIEW</div>
-            <a href="/admin/index-admin.html" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="/admin/index-admin.html" class="nav-item" data-section="dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
 
             <div class="nav-group-label">OPERATIONS</div>
             <a href="/admin/all-tickets.html" class="nav-item" data-section="tickets"><i class="fas fa-ticket-alt"></i>
@@ -178,7 +179,7 @@
                                         Technician ID</th>
                                     <th data-translate="name">Name</th>
                                     <th data-translate="email" style="width: 280px;">Email</th>
-                                    </th>
+                                    <th data-translate="role" style="width: 130px;">Role</th>
                                     <th data-translate="status" style="width: 110px;">Status</th>
                                     <th data-translate="actions" style="width: 160px; text-align: center;">
                                         Actions</th>
@@ -241,6 +242,13 @@
                     <div class="form-group">
                         <label for="email" data-translate="email">Email</label>
                         <input type="email" id="email" class="form-control" required placeholder="staff@allitrack.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="userType" data-translate="role">Role</label>
+                        <select id="userType" class="form-control" required>
+                            <option value="technician" data-translate="technician">Technician</option>
+                            <option value="admin" data-translate="admin">Admin</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="status" data-translate="status">Status</label>
@@ -368,11 +376,14 @@
                     delete_selected: 'Delete Selected',
                     refresh: 'Refresh',
                     clear_filters: 'Clear Filters',
-                    staff_id: 'Technician ID',
+                    staff_id: 'Staff ID',
                     name: 'Name',
                     email: 'Email',
                     status: 'Status',
                     admin_access: 'Admin',
+                    role: 'Role',
+                    admin: 'Admin',
+                    technician: 'Technician',
                     actions: 'Actions',
                     all_status: 'All Status',
                     active: 'Active',
@@ -414,11 +425,14 @@
                     delete_selected: 'I-delete ang Napili',
                     refresh: 'I-refresh',
                     clear_filters: 'Tanggalin ang Filters',
-                    staff_id: 'Technician ID',
+                    staff_id: 'Staff ID',
                     name: 'Pangalan',
                     email: 'Email',
                     status: 'Status',
                     admin_access: 'Admin',
+                    role: 'Tungkulin',
+                    admin: 'Admin',
+                    technician: 'Technician',
                     actions: 'Mga Aksyon',
                     all_status: 'Lahat ng Status',
                     active: 'Aktibo',
@@ -466,20 +480,28 @@
                     staffMembers = realUsers
                         .filter(user => {
                             const type = (user.User_Type || user.user_type || "").toLowerCase();
-                            return type === 'admin';
+                            return type === 'admin' || type === 'technician';
                         })
-                        // Replace the .map section inside fetchRealStaff with this:
-                        .map(user => ({
-                            id: user.technician_id
-                                ? `TECH-${String(user.technician_id).padStart(2, '0')}`
-                                : `TECH-??`,
-                            raw_technician_id: user.technician_id,
-                            raw_user_id: user.user_id,
-                            name: `${user.first_name || user.First_Name || ""} ${user.last_name || user.Last_Name || ""}`.trim() || user.Name || user.name || "Missing Name",
-                            email: user.email || user.Email || "Missing Email",
-                            status: (user.account_status || user.Account_Status || 'active').toLowerCase()
-                        }))
+                        .map(user => {
+                            const userType = (user.User_Type || user.user_type || "technician").toLowerCase();
+                            const technicianId = user.technician_id || user.Technician_ID || null;
+                            return {
+                                id: technicianId
+                                    ? `TECH-${String(technicianId).padStart(2, '0')}`
+                                    : `ADM-${String(user.user_id).padStart(2, '0')}`,
+                                raw_technician_id: technicianId,
+                                raw_user_id: user.user_id,
+                                user_type: userType,
+                                role_label: userType === 'admin' ? 'Admin' : 'Technician',
+                                name: `${user.first_name || user.First_Name || ""} ${user.last_name || user.Last_Name || ""}`.trim() || user.Name || user.name || "Missing Name",
+                                email: user.email || user.Email || "Missing Email",
+                                status: (user.account_status || user.Account_Status || 'active').toLowerCase()
+                            };
+                        })
                         .sort((a, b) => {
+                            const roleOrder = { admin: 1, technician: 2 };
+                            const roleDiff = (roleOrder[a.user_type] || 99) - (roleOrder[b.user_type] || 99);
+                            if (roleDiff !== 0) return roleDiff;
                             const numA = parseInt(a.id.replace(/\D/g, ''), 10);
                             const numB = parseInt(b.id.replace(/\D/g, ''), 10);
                             return numA - numB;
@@ -546,7 +568,7 @@
                 currentFilteredStaff = staffMembers.filter(staff => {
                     if (statusFilter !== 'all' && staff.status !== statusFilter) return false;
                     if (searchTerm) {
-                        const haystack = `${staff.id} ${staff.name} ${staff.email}`.toLowerCase();
+                        const haystack = `${staff.id} ${staff.name} ${staff.email} ${staff.role_label}`.toLowerCase();
                         if (!haystack.includes(searchTerm)) return false;
                     }
                     return true;
@@ -568,6 +590,11 @@
                         <td style="padding-left: 35px;"><strong>${staff.id}</strong></td>
                         <td>${staff.name}</td>
                         <td><span style="font-size:0.75rem; color:var(--text-secondary);">${staff.email}</span></td>
+                        <td>
+                            <span class="badge ${staff.user_type === 'admin' ? 'badge-active' : 'badge-inactive'}">
+                                ${staff.role_label}
+                            </span>
+                        </td>
                         <td>
                             <span class="badge ${staff.status === 'active' ? 'badge-active' :
                             staff.status === 'suspended' ? 'badge-suspended' : 'badge-inactive'
@@ -649,6 +676,7 @@
                 document.getElementById('staffId').value = '';
                 document.getElementById('fullName').value = '';
                 document.getElementById('email').value = '';
+                document.getElementById('userType').value = 'technician';
                 document.getElementById('status').value = 'active';
 
                 document.getElementById('staffFormModal').classList.add('show');
@@ -673,10 +701,12 @@
                 const nameField = document.getElementById('fullName');
                 const emailField = document.getElementById('email');
                 const statusField = document.getElementById('status');
+                const userTypeField = document.getElementById('userType');
 
                 if (idField) idField.value = staff.id;
                 if (nameField) nameField.value = staff.name;
                 if (emailField) emailField.value = staff.email;
+                if (userTypeField) userTypeField.value = staff.user_type || 'technician';
                 if (statusField) statusField.value = staff.status;
 
                 // Open the pop-up
@@ -703,12 +733,14 @@
                 const nameField = document.getElementById('fullName');
                 const emailField = document.getElementById('email');
                 const statusField = document.getElementById('status');
+                const userTypeField = document.getElementById('userType');
 
-                if (!nameField || !emailField) return;
+                if (!nameField || !emailField || !userTypeField) return;
 
                 const name = nameField.value.trim();
                 const email = emailField.value.trim();
                 const status = statusField.value;
+                const user_type = userTypeField.value;
 
                 if (!name || !email) {
                     showToast('Name and email are required', 'error');
@@ -735,7 +767,7 @@
                                 user_id: editingStaff.raw_user_id,
                                 first_name: firstName,
                                 last_name: lastName,
-                                email, status
+                                email, status, user_type
                             })
                         });
                     } else {
@@ -743,7 +775,7 @@
                         response = await fetch(`${API_BASE_URL}/api/auth/admin/create-user`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ name, email, status })
+                            body: JSON.stringify({ name, email, status, user_type })
                         });
                     }
 
@@ -1133,12 +1165,16 @@
         let _pendingResetUserId = null;
 
         function openResetPwdModal(rawId) {
-            const numericId = String(rawId).replace("TECH-", "");
-            _pendingResetUserId = numericId;
-
-            // Look up staff details for display
             const staffArr = window._staffMembers || [];
-            const staff = staffArr.find(s => String(s.id).replace("STF-", "") === numericId || s.id === rawId);
+            const staff = staffArr.find(s => s.id === rawId);
+
+            _pendingResetUserId = staff?.raw_user_id || null;
+
+            if (!_pendingResetUserId) {
+                if (typeof showToast === 'function') showToast('Could not identify staff user ID', 'error');
+                else alert('Could not identify staff user ID');
+                return;
+            }
 
             document.getElementById('resetPwdName').textContent = staff ? staff.name : '—';
             document.getElementById('resetPwdEmail').textContent = staff ? staff.email : '—';

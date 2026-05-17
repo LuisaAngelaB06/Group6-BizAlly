@@ -407,7 +407,10 @@
         }
 
         async function fetchMyTickets() {
-            const res = await fetch(`${API_BASE_URL}/api/tickets`);
+            const { id } = getUserIdentity();
+            if (!id) return [];
+
+            const res = await fetch(`${API_BASE_URL}/api/tickets/user/${id}`);
             const tickets = await res.json();
             if (!Array.isArray(tickets)) return [];
             return tickets.filter(belongsToCurrentUser);

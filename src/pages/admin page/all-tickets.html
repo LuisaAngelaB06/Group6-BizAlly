@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-translate="all_tickets_page_title">All Tickets — AlliTrack</title>
     <script src="../../scripts/theme.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="../../styles/admin page/all-tickets.css" />
     <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
@@ -15,6 +16,7 @@
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
         rel="stylesheet" />
     <script src="../../scripts/admin-data-manager.js" defer></script>
+    <script src="../../scripts/admin-rbac.js" defer></script>
     <script src="../../scripts/admin-preference-manager.js" defer></script>
     <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
     <script src="../../scripts/mobile-restriction.js" defer></script>
@@ -424,6 +426,18 @@
             }[char]));
         }
 
+        function getAdminRole() {
+            return window.AdminRBAC?.getRole?.() || 'admin';
+        }
+
+        function isTechnicianRole() {
+            return getAdminRole() === 'technician';
+        }
+
+        function getAdminAuthHeaders(extraHeaders = {}) {
+            return window.AdminRBAC?.authHeaders?.(extraHeaders) || extraHeaders;
+        }
+
         /* ── TRANSLATIONS ─────────────────────────────── */
         const translations = {
             en: {
@@ -705,8 +719,16 @@
 
         /* ── API: FETCH TICKETS ───────────────────────── */
         async function fetchTechniciansFromAPI() {
+            if (isTechnicianRole()) {
+                technicians = [];
+                populateTechnicianSelect();
+                return;
+            }
+
             try {
-                const res = await fetch(`${API_BASE_URL}/api/technicians`);
+                const res = await fetch(`${API_BASE_URL}/api/technicians`, {
+                    headers: getAdminAuthHeaders()
+                });
                 if (!res.ok) throw new Error(`Technicians failed with status ${res.status}`);
                 technicians = await res.json();
                 populateTechnicianSelect();
@@ -740,7 +762,9 @@
 
         async function fetchTicketsFromAPI() {
             try {
-                const res = await fetch(`${API_BASE_URL}/api/tickets`);
+                const res = await fetch(`${API_BASE_URL}/api/tickets`, {
+                    headers: getAdminAuthHeaders()
+                });
                 const data = await res.json();
                 sampleTickets = data.map(ticket => {
                     const fullName = (ticket.Requestor_Name || '').trim();
@@ -869,10 +893,13 @@
                         </td>
                     </tr>`;
             }).join('');
+
+            window.AdminRBAC?.applyTicketPermissions?.();
         }
 
         /* ── TICKET SELECTION ─────────────────────────── */
         function toggleTicketSelection(id, checked) {
+            if (isTechnicianRole()) return;
             checked ? selectedTickets.add(id) : selectedTickets.delete(id);
             updateDeleteButtonVisibility();
             updateSelectAllCheckbox();
@@ -880,7 +907,7 @@
 
         function updateDeleteButtonVisibility() {
             const btn = document.getElementById('deleteTicketsBtn');
-            if (btn) btn.style.display = selectedTickets.size > 0 ? 'inline-flex' : 'none';
+            if (btn) btn.style.display = !isTechnicianRole() && selectedTickets.size > 0 ? 'inline-flex' : 'none';
         }
 
         function getCurrentPageTicketIds() {
@@ -1047,6 +1074,7 @@
             document.getElementById('editPriority').value = t.priority;
             populateTechnicianSelect(t.Technician_ID || '');
             document.getElementById('editResolution').value = t.resolution || '';
+            window.AdminRBAC?.applyTicketPermissions?.();
 
             modal.classList.add('show');
         }
@@ -1068,27 +1096,34 @@
             const newResolution = document.getElementById('editResolution').value;
 
             try {
-                const payload = {
-                    Status_ID: statusMap[newStatus] || 1,
-                    Priority: newPriority,
-                    Technician_ID: newAssignedTo || null,
-                    Resolution_Details: newResolution
-                };
+                const payload = isTechnicianRole()
+                    ? {
+                        Status_ID: statusMap[newStatus] || 1,
+                        Resolution_Details: newResolution
+                    }
+                    : {
+                        Status_ID: statusMap[newStatus] || 1,
+                        Priority: newPriority,
+                        Technician_ID: newAssignedTo || null,
+                        Resolution_Details: newResolution
+                    };
                 const response = await fetch(`${API_BASE_URL}/api/tickets/${t.id.replace('TKT-', '')}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAdminAuthHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify(payload)
                 });
                 if (!response.ok) throw new Error(`Save failed with status ${response.status}`);
 
                 t.status = newStatus;
-                t.priority = newPriority;
                 t.resolution = newResolution;
-                t.Technician_ID = newAssignedTo || null;
-                const assignedTech = technicians.find(tech => String(tech.Technician_ID ?? tech.technician_id) === String(newAssignedTo));
-                t.assignedTo = assignedTech
-                    ? (assignedTech.Name || assignedTech.name || assignedTech.Email || assignedTech.email)
-                    : 'Unassigned';
+                if (!isTechnicianRole()) {
+                    t.priority = newPriority;
+                    t.Technician_ID = newAssignedTo || null;
+                    const assignedTech = technicians.find(tech => String(tech.Technician_ID ?? tech.technician_id) === String(newAssignedTo));
+                    t.assignedTo = assignedTech
+                        ? (assignedTech.Name || assignedTech.name || assignedTech.Email || assignedTech.email)
+                        : 'Unassigned';
+                }
 
                 closeEditModal();
                 loadTickets();
@@ -1101,6 +1136,7 @@
 
         /* ── DELETE TICKETS ───────────────────────────── */
         function deleteSelectedTickets() {
+            if (isTechnicianRole()) return;
             const ids = Array.from(selectedTickets);
             if (ids.length === 0) {
                 showToast(getDict().no_tickets_selected || 'No tickets selected', 'error');
@@ -1138,11 +1174,13 @@
         }
 
         async function confirmDeleteTickets() {
+            if (isTechnicianRole()) return;
             const ids = Array.from(selectedTickets);
             try {
                 for (const id of ids) {
                     await fetch(`${API_BASE_URL}/api/tickets/${id.replace('TKT-', '')}`, {
-                        method: 'DELETE'
+                        method: 'DELETE',
+                        headers: getAdminAuthHeaders()
                     });
                 }
                 fetchTicketsFromAPI();
@@ -1171,6 +1209,7 @@
             document.getElementById('lastPageBtn').addEventListener('click', () => goToPage(totalPages));
 
             document.getElementById('selectAllTickets').addEventListener('change', function () {
+                if (isTechnicianRole()) return;
                 const ids = getCurrentPageTicketIds();
                 this.checked
                     ? ids.forEach(id => selectedTickets.add(id))
@@ -1297,12 +1336,21 @@
         }
 
         /* ── INIT ─────────────────────────────────────── */
+        function setupTicketSocketListeners() {
+            if (typeof io !== 'function') return;
+
+            const socket = io(API_BASE_URL);
+            socket.on('ticket_updated', fetchTicketsFromAPI);
+            socket.on('ticket_assigned', fetchTicketsFromAPI);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             console.log('🚀 All Tickets: init start');
             applyTranslations(
                 window.preferencesManager?.getCurrentLanguage?.() ||
                 localStorage.getItem('dashboardLanguage') || 'en'
             );
+            window.AdminRBAC?.applyTicketPermissions?.();
             if (window.preferencesManager) window.preferencesManager.applySavedPreferences?.();
             if (window.ThemeManager) window.ThemeManager.applySavedTheme();
             syncMobileOverlay();
@@ -1313,13 +1361,18 @@
             setupPagination();
             fetchTechniciansFromAPI();
             fetchTicketsFromAPI();
+            setupTicketSocketListeners();
             console.log('✅ All Tickets: init complete');
         });
 
-        document.addEventListener('languageChanged', e =>
-            applyTranslations(e.detail?.language || 'en'));
-        document.addEventListener('languageReloaded', () =>
-            applyTranslations(window.preferencesManager?.getCurrentLanguage?.() || 'en'));
+        document.addEventListener('languageChanged', e => {
+            applyTranslations(e.detail?.language || 'en');
+            window.AdminRBAC?.applyTicketPermissions?.();
+        });
+        document.addEventListener('languageReloaded', () => {
+            applyTranslations(window.preferencesManager?.getCurrentLanguage?.() || 'en');
+            window.AdminRBAC?.applyTicketPermissions?.();
+        });
         window.addEventListener('storage', e => {
             if (e.key === 'dashboardLanguage' || e.key === 'langReloadTimestamp') {
                 setTimeout(() => applyTranslations(localStorage.getItem('dashboardLanguage') || 'en'), 100);

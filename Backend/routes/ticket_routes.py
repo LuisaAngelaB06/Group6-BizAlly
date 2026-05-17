@@ -2,6 +2,8 @@ from flask import Blueprint, jsonify, request
 from psycopg2.extras import RealDictCursor
 
 from Backend.database import get_connection
+from Backend.routes.rbac import get_current_user, is_admin, is_technician, role_required
+from Backend.socketio_instance import socketio
 
 ticket_bp = Blueprint("tickets", __name__)
 
@@ -127,13 +129,23 @@ def _clean_priority(value):
 
 
 @ticket_bp.route("/tickets", methods=["GET"])
+@role_required("admin", "technician")
 def get_tickets():
+    current_user = get_current_user()
     conn, cursor = _get_cursor()
     if not conn:
         return _json_error("Database connection failed")
 
     try:
-        cursor.execute(_ticket_select_clause())
+        if is_technician(current_user):
+            if not current_user.get("technician_id"):
+                return jsonify([]), 200
+            cursor.execute(
+                _ticket_select_clause("WHERE t.technician_id = %s"),
+                (current_user["technician_id"],),
+            )
+        else:
+            cursor.execute(_ticket_select_clause())
         return jsonify([_format_ticket(row) for row in cursor.fetchall()]), 200
     except Exception as e:
         print(f"Get Tickets Error: {e}")
@@ -144,13 +156,21 @@ def get_tickets():
 
 
 @ticket_bp.route("/tickets/<int:ticket_id>", methods=["GET"])
+@role_required("admin", "technician")
 def get_ticket(ticket_id):
+    current_user = get_current_user()
     conn, cursor = _get_cursor()
     if not conn:
         return _json_error("Database connection failed")
 
     try:
-        cursor.execute(_ticket_select_clause("WHERE t.ticket_id = %s", ""), (ticket_id,))
+        if is_technician(current_user):
+            cursor.execute(
+                _ticket_select_clause("WHERE t.ticket_id = %s AND t.technician_id = %s", ""),
+                (ticket_id, current_user.get("technician_id")),
+            )
+        else:
+            cursor.execute(_ticket_select_clause("WHERE t.ticket_id = %s", ""), (ticket_id,))
         ticket = cursor.fetchone()
         if not ticket:
             return _json_error("Ticket not found", 404)
@@ -224,6 +244,7 @@ def create_ticket():
 
 
 @ticket_bp.route("/tickets/<int:ticket_id>", methods=["DELETE"])
+@role_required("admin")
 def delete_ticket(ticket_id):
     conn, cursor = _get_cursor()
     if not conn:
@@ -263,6 +284,7 @@ def get_user_tickets(user_id):
 
 
 @ticket_bp.route("/technicians", methods=["GET"])
+@role_required("admin")
 def get_technicians():
     conn, cursor = _get_cursor()
     if not conn:
@@ -296,8 +318,10 @@ def get_technicians():
 
 
 @ticket_bp.route("/tickets/<int:ticket_id>", methods=["PUT", "PATCH"])
+@role_required("admin", "technician")
 def update_ticket(ticket_id):
     data = request.get_json(silent=True) or {}
+    current_user = get_current_user()
     status_id = _coerce_int(data.get("Status_ID"))
     technician_id = _coerce_int(data.get("Technician_ID"))
     priority = _clean_priority(data.get("Priority"))
@@ -306,40 +330,68 @@ def update_ticket(ticket_id):
     if status_id not in STATUS_LABELS:
         return _json_error("Invalid ticket status", 400)
 
+    if is_technician(current_user) and not current_user.get("technician_id"):
+        return _json_error("Technician profile not found", 403)
+
     conn, cursor = _get_cursor()
     if not conn:
         return _json_error("Database connection failed")
 
     try:
-        cursor.execute(
-            """
-            UPDATE ticket
-            SET status_id = %s,
-                priority = %s,
-                technician_id = %s,
-                resolution_details = %s,
-                product_category = COALESCE(%s, product_category),
-                product_brand = COALESCE(%s, product_brand),
-                concern_type = COALESCE(%s, concern_type),
-                last_updated = CURRENT_TIMESTAMP
-            WHERE ticket_id = %s
-            RETURNING ticket_id
-            """,
-            (
-                status_id,
-                priority,
-                technician_id,
-                resolution_details,
-                (data.get("Category") or data.get("Product_Category") or data.get("product_category") or None),
-                (data.get("Product_Brand") or data.get("product_brand") or None),
-                (data.get("Concern_Type") or data.get("concern_type") or None),
-                ticket_id,
-            ),
-        )
+        if is_technician(current_user):
+            cursor.execute(
+                """
+                UPDATE ticket
+                SET status_id = %s,
+                    resolution_details = %s,
+                    last_updated = CURRENT_TIMESTAMP
+                WHERE ticket_id = %s
+                  AND technician_id = %s
+                RETURNING ticket_id, technician_id
+                """,
+                (
+                    status_id,
+                    resolution_details,
+                    ticket_id,
+                    current_user["technician_id"],
+                ),
+            )
+        else:
+            cursor.execute(
+                """
+                UPDATE ticket
+                SET status_id = %s,
+                    priority = %s,
+                    technician_id = %s,
+                    resolution_details = %s,
+                    product_category = COALESCE(%s, product_category),
+                    product_brand = COALESCE(%s, product_brand),
+                    concern_type = COALESCE(%s, concern_type),
+                    last_updated = CURRENT_TIMESTAMP
+                WHERE ticket_id = %s
+                RETURNING ticket_id, technician_id
+                """,
+                (
+                    status_id,
+                    priority,
+                    technician_id,
+                    resolution_details,
+                    (data.get("Category") or data.get("Product_Category") or data.get("product_category") or None),
+                    (data.get("Product_Brand") or data.get("product_brand") or None),
+                    (data.get("Concern_Type") or data.get("concern_type") or None),
+                    ticket_id,
+                ),
+            )
         updated = cursor.fetchone()
         conn.commit()
         if not updated:
             return _json_error("Ticket not found", 404)
+        socketio.emit("ticket_updated", {"ticket_id": updated["ticket_id"]})
+        if is_admin(current_user) and "Technician_ID" in data:
+            socketio.emit("ticket_assigned", {
+                "ticket_id": updated["ticket_id"],
+                "technician_id": updated.get("technician_id"),
+            })
         return jsonify({"status": "success", "message": "Ticket updated successfully"}), 200
     except Exception as e:
         conn.rollback()
@@ -351,6 +403,7 @@ def update_ticket(ticket_id):
 
 
 @ticket_bp.route("/tickets/analytics", methods=["GET"])
+@role_required("admin")
 def get_analytics():
     conn, cursor = _get_cursor()
     if not conn:

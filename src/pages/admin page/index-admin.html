@@ -16,6 +16,7 @@
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap"
         rel="stylesheet" />
     <script src="../../scripts/admin-data-manager.js" defer></script>
+    <script src="../../scripts/admin-rbac.js" defer></script>
     <script src="../../scripts/admin-preference-manager.js" defer></script>
     <script src="../../scripts/mobile-restriction.js" defer></script>
 </head>
@@ -49,7 +50,7 @@
 
         <nav class="sidebar-nav">
             <div class="nav-group-label">OVERVIEW</div>
-            <a href="/admin/index-admin.html" class="nav-item active"><i class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="/admin/index-admin.html" class="nav-item active" data-section="dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
 
             <div class="nav-group-label">OPERATIONS</div>
             <a href="/admin/all-tickets.html" class="nav-item" data-section="tickets"><i class="fas fa-ticket-alt"></i>

@@ -15,6 +15,7 @@ import requests
 
 from sib_api_v3_sdk.rest import ApiException
 from datetime import datetime, timedelta
+from Backend.routes.rbac import role_required
 
 
 
@@ -335,6 +336,7 @@ def signup():
 # 3. ADMIN RESET PASSWORD
 # ==========================================
 @auth_bp.route("/admin/reset-password", methods=["POST"])
+@role_required("admin")
 def admin_reset_password():
     data = request.json
     target_user_id = data.get("target_user_id")
@@ -427,6 +429,7 @@ def change_password():
 # 5. GET USERS (FORMATTED)
 # ==========================================
 @auth_bp.route("/admin/users", methods=["GET"])
+@role_required("admin")
 def get_all_staff():
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -437,7 +440,8 @@ def get_all_staff():
                su.account_status, t.technician_id
         FROM "system_user" AS su
         LEFT JOIN "technician" AS t ON t.user_id = su.user_id
-        WHERE LOWER(su.user_type) = \'admin\'
+        WHERE LOWER(su.user_type) IN ('admin', 'technician')
+        ORDER BY su.user_id ASC
         ''')
         users = cursor.fetchall()
 
@@ -469,6 +473,7 @@ def get_all_staff():
 # 6. DELETE USERS
 # ==========================================
 @auth_bp.route("/admin/delete-users", methods=["POST"])
+@role_required("admin")
 def admin_delete_users():
     data = request.json
     user_ids = data.get("user_ids", [])
@@ -499,32 +504,99 @@ def admin_delete_users():
 # 7. ADMIN UPDATE USER
 # ==========================================
 @auth_bp.route("/admin/update-user", methods=["POST"])
+@role_required("admin")
 def admin_update_user():
-    data = request.json
+    data = request.json or {}
+
+    target_user_id = data.get("user_id")
+    user_type = (data.get("user_type") or data.get("User_Type") or "").strip().lower()
+
+    if not target_user_id:
+        return jsonify({"status": "error", "message": "Missing User ID"}), 400
+
+    if user_type and user_type not in ["admin", "technician"]:
+        return jsonify({"status": "error", "message": "Invalid role"}), 400
 
     conn = get_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
-        query = '''
-        UPDATE "system_user"
-        SET first_name = %s, last_name = %s, Email = %s, Account_Status = %s
-        WHERE user_id = %s
-        '''
-        cursor.execute(query, (
-            data.get("first_name"),
-            data.get("last_name"),
-            data.get("email"),
-            data.get("status"),
-            data.get("user_id")
-        ))
+        if user_type:
+            query = """
+            UPDATE "system_user"
+            SET first_name = %s,
+                last_name = %s,
+                Email = %s,
+                Account_Status = %s,
+                User_Type = %s
+            WHERE user_id = %s
+            RETURNING user_id, user_type
+            """
+            cursor.execute(query, (
+                data.get("first_name"),
+                data.get("last_name"),
+                data.get("email"),
+                data.get("status"),
+                user_type,
+                target_user_id
+            ))
+        else:
+            query = """
+            UPDATE "system_user"
+            SET first_name = %s,
+                last_name = %s,
+                Email = %s,
+                Account_Status = %s
+            WHERE user_id = %s
+            RETURNING user_id, user_type
+            """
+            cursor.execute(query, (
+                data.get("first_name"),
+                data.get("last_name"),
+                data.get("email"),
+                data.get("status"),
+                target_user_id
+            ))
+
+        updated_user = cursor.fetchone()
+
+        if not updated_user:
+            conn.rollback()
+            return jsonify({"status": "error", "message": "User not found"}), 404
+
+        final_role = (updated_user.get("user_type") or user_type or "").lower()
+        technician_id = None
+
+        if final_role == "technician":
+            cursor.execute(
+                'SELECT technician_id FROM "technician" WHERE user_id = %s',
+                (target_user_id,)
+            )
+            existing_tech = cursor.fetchone()
+
+            if existing_tech:
+                technician_id = existing_tech["technician_id"]
+            else:
+                cursor.execute(
+                    'INSERT INTO "technician" (user_id) VALUES (%s) RETURNING technician_id',
+                    (target_user_id,)
+                )
+                technician_id = cursor.fetchone()["technician_id"]
+
         conn.commit()
 
-        return jsonify({"status": "success"}), 200
+        return jsonify({
+            "status": "success",
+            "message": "User updated",
+            "user_id": target_user_id,
+            "user_type": final_role,
+            "technician_id": technician_id
+        }), 200
 
     except Exception as e:
-        print(e)
-        return jsonify({"status": "error"}), 500
+        conn.rollback()
+        print(f"Update user error: {e}")
+        return jsonify({"status": "error", "message": "Database error"}), 500
 
     finally:
         cursor.close()
@@ -645,7 +717,9 @@ def google_callback():
                 ).toLowerCase();
 
                 window.location.replace(
-                    role === "admin" || role === "technician"
+                    role === "technician"
+                    ? "/admin/all-tickets.html"
+                    : role === "admin"
                     ? "/admin/dashboard"
                     : "/user/dashboard"
             );
@@ -993,14 +1067,19 @@ def resend_otp():
 # 13. CREATE STAFF (Admin)
 # ==========================================
 @auth_bp.route("/admin/create-user", methods=["POST"])
+@role_required("admin")
 def admin_create_user():
-    data = request.json
+    data = request.json or {}
     name = data.get("name", "").strip()
     email = data.get("email", "").strip()
     status = data.get("status", "active")
+    user_type = (data.get("user_type") or data.get("User_Type") or "technician").strip().lower()
 
     if not name or not email:
         return jsonify({"status": "error", "message": "Name and email are required"}), 400
+
+    if user_type not in ["admin", "technician"]:
+        return jsonify({"status": "error", "message": "Invalid role"}), 400
 
     name_parts = name.split(" ", 1)
     first_name = name_parts[0]
@@ -1020,27 +1099,32 @@ def admin_create_user():
             """
             INSERT INTO "system_user"
             (Username, first_name, last_name, Email, password_Hash, User_Type, Account_Status, Created_At)
-            VALUES (%s, %s, %s, %s, %s, 'admin', %s, CURRENT_TIMESTAMP)
-            RETURNING user_id
+            VALUES (%s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+            RETURNING user_id, user_type
             """,
-            (username, first_name, last_name, email, temp_password, status)
+            (username, first_name, last_name, email, temp_password, user_type, status)
         )
         new_user = cursor.fetchone()
 
-        # Auto-create technician record so they get a technician_id
-        cursor.execute(
-            'INSERT INTO "technician" (user_id) VALUES (%s) RETURNING technician_id',
-            (new_user["user_id"],)
-        )
-        tech = cursor.fetchone()
+        technician_id = None
+        if user_type == "technician":
+            cursor.execute(
+                'INSERT INTO "technician" (user_id) VALUES (%s) RETURNING technician_id',
+                (new_user["user_id"],)
+            )
+            tech = cursor.fetchone()
+            technician_id = tech["technician_id"]
+
         conn.commit()
 
         return jsonify({
-        "status": "success",
-        "message": "Staff created",
-        "user_id": new_user["user_id"],
-        "technician_id": tech["technician_id"]
-    }), 201
+            "status": "success",
+            "message": "Staff created",
+            "user_id": new_user["user_id"],
+            "user_type": new_user["user_type"],
+            "technician_id": technician_id,
+            "temporary_password": "Password2026!"
+        }), 201
 
     except Exception as e:
         conn.rollback()

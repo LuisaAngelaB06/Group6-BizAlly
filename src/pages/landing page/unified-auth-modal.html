@@ -422,9 +422,11 @@
                 ).toLowerCase();
 
                 // 3. FIXED: Use CLEAN routes to avoid 404s
-                const redirectPath = (role === 'admin' || role === 'technician')
-                    ? '/admin/dashboard'
-                    : '/user/dashboard';
+                const redirectPath = role === 'technician'
+                    ? '/admin/all-tickets.html'
+                    : role === 'admin'
+                        ? '/admin/dashboard'
+                        : '/user/dashboard';
 
                 console.log(`Login successful. Redirecting ${role} to: ${redirectPath}`);
                 window.location.href = redirectPath;
@@ -632,9 +634,11 @@
                         ).toLowerCase();
 
                         window.location.href =
-                            userType === "admin" || userType === "technician"
-                                ? "/admin/dashboard"
-                                : "/user/dashboard";
+                            userType === "technician"
+                                ? "/admin/all-tickets.html"
+                                : userType === "admin"
+                                    ? "/admin/dashboard"
+                                    : "/user/dashboard";
                     } else {
                         handleLoginFailure(result.message || "Invalid credentials");
                     }

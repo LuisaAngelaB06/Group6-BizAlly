@@ -52,9 +52,11 @@ if (form) {
           ).toLowerCase();
 
           window.location.href =
-            role === "admin" || role === "technician"
-              ? "/admin/dashboard"
-              : "/user/dashboard";
+            role === "technician"
+              ? "/admin/all-tickets.html"
+              : role === "admin"
+                ? "/admin/dashboard"
+                : "/user/dashboard";
 
           return;
         }

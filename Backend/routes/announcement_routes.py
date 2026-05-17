@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from Backend.database import get_connection
 from psycopg2.extras import RealDictCursor
 from Backend.socketio_instance import socketio
+from Backend.routes.rbac import role_required
 
 announcement_bp = Blueprint("announcements", __name__)
 
@@ -9,6 +10,7 @@ announcement_bp = Blueprint("announcements", __name__)
 # CREATE ANNOUNCEMENT
 # =========================
 @announcement_bp.route("/admin/announcements", methods=["POST"])
+@role_required("admin")
 def create_announcement():
     data = request.json
 
@@ -47,6 +49,7 @@ def create_announcement():
 # UPDATE ANNOUNCEMENT
 # =========================
 @announcement_bp.route("/admin/announcements/update", methods=["POST"])
+@role_required("admin")
 def update_announcement():
     data = request.json
     ann_id = data.get("announcement_id")
@@ -94,6 +97,7 @@ def update_announcement():
 # GET ALL (ADMIN)
 # =========================
 @announcement_bp.route("/admin/announcements/all", methods=["GET"])
+@role_required("admin", "technician")
 def get_all_announcements_admin():
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -223,6 +227,7 @@ def mark_as_read():
 # DELETE ANNOUNCEMENT
 # =========================
 @announcement_bp.route("/admin/announcements/delete", methods=["POST"])
+@role_required("admin")
 def delete_announcement():
     data = request.json
     ann_id = data.get("announcement_id")
