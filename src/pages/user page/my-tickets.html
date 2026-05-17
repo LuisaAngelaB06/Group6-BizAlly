@@ -205,32 +205,6 @@
     </footer>
   </div>
 
-  <div class="ticket-modal" id="commentModal" aria-hidden="true">
-    <div class="ticket-modal-card" role="dialog" aria-modal="true" aria-labelledby="commentModalTitle">
-      <div class="ticket-modal-header">
-        <div>
-          <h2 id="commentModalTitle" data-translate="add_comment">Add Comment</h2>
-          <p id="commentModalTicketId"></p>
-        </div>
-        <button class="ticket-modal-close" type="button" data-modal-close="commentModal" aria-label="Close">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <div class="ticket-modal-body">
-        <label class="ticket-modal-label" for="ticketCommentInput" data-translate="comment_label">Comment</label>
-        <textarea id="ticketCommentInput" class="ticket-comment-input" rows="5"
-          data-translate-placeholder="comment_placeholder" placeholder="Add an update or question for this ticket..."></textarea>
-      </div>
-      <div class="ticket-modal-actions">
-        <button class="ticket-action-btn" type="button" data-modal-close="commentModal" data-translate="cancel">Cancel</button>
-        <button class="ticket-action-btn ticket-action-primary" type="button" id="saveCommentBtn">
-          <i class="fas fa-paper-plane"></i>
-          <span data-translate="save_comment">Save Comment</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
   <div class="ticket-modal" id="updatesModal" aria-hidden="true">
     <div class="ticket-modal-card" role="dialog" aria-modal="true" aria-labelledby="updatesModalTitle">
       <div class="ticket-modal-header">
@@ -326,15 +300,8 @@
         view_less: "View less",
         copy_id: "Copy ID",
         copied: "Copied",
-        add_comment: "Add Comment",
         track_updates: "Track Updates",
         cancel_ticket: "Cancel Ticket",
-        cancel: "Cancel",
-        comment_label: "Comment",
-        comment_placeholder: "Add an update or question for this ticket...",
-        save_comment: "Save Comment",
-        comment_saved: "Comment saved",
-        comment_required: "Please enter a comment",
         ticket_cancelled: "Ticket cancelled",
         cancel_confirm: "Cancel this ticket? This will close it.",
         action_coming_soon: "This workflow is ready for backend integration",
@@ -342,8 +309,6 @@
         timeline_updated: "Last updated",
         timeline_status: "Current status",
         timeline_assignee: "Assigned technician",
-        timeline_comments: "Saved comments",
-        no_comments: "No comments yet",
       },
       fil: {
         my_tickets_page_title: "Aking Ticket — AlliTrack",
@@ -411,15 +376,8 @@
         view_less: "Mas kaunti",
         copy_id: "Kopyahin ID",
         copied: "Nakopya",
-        add_comment: "Mag-comment",
         track_updates: "Subaybayan Updates",
         cancel_ticket: "I-cancel Ticket",
-        cancel: "Cancel",
-        comment_label: "Comment",
-        comment_placeholder: "Magdagdag ng update o tanong para sa ticket na ito...",
-        save_comment: "I-save Comment",
-        comment_saved: "Na-save ang comment",
-        comment_required: "Maglagay ng comment",
         ticket_cancelled: "Na-cancel ang ticket",
         cancel_confirm: "I-cancel ang ticket na ito? Isasara ito.",
         action_coming_soon: "Handa na ito para sa backend integration",
@@ -427,13 +385,10 @@
         timeline_updated: "Huling update",
         timeline_status: "Kasalukuyang status",
         timeline_assignee: "Naka-assign na technician",
-        timeline_comments: "Saved comments",
-        no_comments: "Wala pang comment",
       },
     };
 
     let tickets = [];
-    let activeCommentTicketId = null;
 
     function getCurrentLanguage() {
       return (
@@ -926,10 +881,6 @@
                         </div>
                     </div>
                     <div class="ticket-action-row">
-                            <button class="ticket-action-btn" type="button" data-action="add-comment" data-ticket-id="${escapeHTML(ticketId)}">
-                                <i class="fas fa-message"></i>
-                                <span>${escapeHTML(t("add_comment"))}</span>
-                            </button>
                             <button class="ticket-action-btn" type="button" data-action="track-updates" data-ticket-id="${escapeHTML(ticketId)}">
                                 <i class="fas fa-timeline"></i>
                                 <span>${escapeHTML(t("track_updates"))}</span>
@@ -990,19 +941,6 @@
       const normalized = normalizeTicketId(ticketId);
       return tickets.find((ticket) => String(ticket.Ticket_ID) === normalized);
     }
-    function commentsKey(ticketId) {
-      return `alliticket-comments-${normalizeTicketId(ticketId)}`;
-    }
-    function getTicketComments(ticketId) {
-      try {
-        return JSON.parse(localStorage.getItem(commentsKey(ticketId)) || "[]");
-      } catch {
-        return [];
-      }
-    }
-    function saveTicketComments(ticketId, comments) {
-      localStorage.setItem(commentsKey(ticketId), JSON.stringify(comments));
-    }
     function openModal(id) {
       const modal = document.getElementById(id);
       if (!modal) return;
@@ -1015,18 +953,10 @@
       modal.classList.remove("show");
       modal.setAttribute("aria-hidden", "true");
     }
-    function openCommentModal(ticketId) {
-      activeCommentTicketId = ticketId;
-      document.getElementById("commentModalTicketId").textContent = ticketId;
-      document.getElementById("ticketCommentInput").value = "";
-      openModal("commentModal");
-      setTimeout(() => document.getElementById("ticketCommentInput")?.focus(), 60);
-    }
     function renderTimeline(ticketId) {
       const ticket = findTicket(ticketId);
       if (!ticket) return;
 
-      const comments = getTicketComments(ticketId);
       const timeline = document.getElementById("ticketTimeline");
       const technician = ticket.Technician_Name || t("waiting_assignment");
       const items = [
@@ -1045,18 +975,7 @@
               <div class="timeline-value">${escapeHTML(item.value || "N/A")}</div>
             </div>
           </div>
-        `).join("")}
-        <div class="timeline-comments">
-          <div class="timeline-label">${escapeHTML(t("timeline_comments"))}</div>
-          ${comments.length
-          ? comments.map((comment) => `
-              <div class="timeline-comment">
-                <div>${escapeHTML(comment.text)}</div>
-                <span>${escapeHTML(formatRelativeTime(comment.createdAt))}</span>
-              </div>
-            `).join("")
-          : `<div class="timeline-empty">${escapeHTML(t("no_comments"))}</div>`}
-        </div>`;
+        `).join("")}`;
     }
     function openUpdatesModal(ticketId) {
       document.getElementById("updatesModalTicketId").textContent = ticketId;
@@ -1094,22 +1013,6 @@
         button.innerHTML = previousHtml;
       }
     }
-    function saveActiveComment() {
-      const input = document.getElementById("ticketCommentInput");
-      const text = input?.value.trim() || "";
-      if (!activeCommentTicketId || !text) {
-        showToast(t("comment_required"), "error");
-        return;
-      }
-      const comments = getTicketComments(activeCommentTicketId);
-      comments.unshift({
-        text,
-        createdAt: new Date().toISOString(),
-      });
-      saveTicketComments(activeCommentTicketId, comments);
-      closeModal("commentModal");
-      showToast(t("comment_saved"), "success");
-    }
     function setupTicketActions() {
       const container = document.getElementById("ticketsContainer");
       if (!container) return;
@@ -1141,11 +1044,6 @@
           }
         }
 
-        if (button.dataset.action === "add-comment") {
-          openCommentModal(button.dataset.ticketId || "");
-          return;
-        }
-
         if (button.dataset.action === "track-updates") {
           openUpdatesModal(button.dataset.ticketId || "");
           return;
@@ -1165,13 +1063,8 @@
           if (event.target === modal) closeModal(modal.id);
         });
       });
-      document.getElementById("saveCommentBtn")?.addEventListener("click", saveActiveComment);
-      document.getElementById("ticketCommentInput")?.addEventListener("keydown", (event) => {
-        if ((event.ctrlKey || event.metaKey) && event.key === "Enter") saveActiveComment();
-      });
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
-          closeModal("commentModal");
           closeModal("updatesModal");
         }
       });
