@@ -222,6 +222,29 @@
     </div>
   </div>
 
+  <div class="ticket-modal cancel-modal" id="cancelTicketModal" aria-hidden="true">
+    <div class="ticket-modal-card cancel-modal-card" role="dialog" aria-modal="true"
+      aria-labelledby="cancelTicketModalTitle" aria-describedby="cancelTicketModalMessage">
+      <div class="cancel-modal-icon">
+        <i class="fas fa-ban"></i>
+      </div>
+      <div class="cancel-modal-content">
+        <h2 id="cancelTicketModalTitle" data-translate="cancel_ticket">Cancel Ticket</h2>
+        <p id="cancelTicketModalMessage" data-translate="cancel_confirm">Cancel this ticket? This will close it.</p>
+        <div class="cancel-ticket-id" id="cancelTicketModalId"></div>
+      </div>
+      <div class="cancel-modal-actions">
+        <button class="ticket-action-btn ticket-action-muted" type="button" id="cancelTicketDismiss">
+          <span>Keep Ticket</span>
+        </button>
+        <button class="ticket-action-btn ticket-action-danger" type="button" id="cancelTicketConfirm">
+          <i class="fas fa-ban"></i>
+          <span data-translate="cancel_ticket">Cancel Ticket</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
@@ -288,11 +311,6 @@
         no_brand: "Not specified",
         no_concern: "General Support",
         new_ticket: "New Ticket",
-        sla: "SLA",
-        response_due: "Response due",
-        on_track: "On track",
-        monitor: "Monitor",
-        attention_needed: "Attention needed",
         awaiting_assignment: "Awaiting assignment",
         expand: "Expand",
         collapse: "Collapse",
@@ -364,11 +382,6 @@
         no_brand: "Hindi tinukoy",
         no_concern: "General Support",
         new_ticket: "Bagong Ticket",
-        sla: "SLA",
-        response_due: "Response due",
-        on_track: "On track",
-        monitor: "Bantayan",
-        attention_needed: "Kailangan ng pansin",
         awaiting_assignment: "Naghihintay ng assignment",
         expand: "Palawakin",
         collapse: "I-collapse",
@@ -647,29 +660,6 @@
       if (normalized === "urgent") return "critical";
       return "low";
     }
-    function getSlaInfo(ticket) {
-      const statusClass = getStatusClass(ticket.Status_ID || ticket.Status);
-      if (["resolved", "closed"].includes(statusClass)) {
-        return { className: "complete", label: t("resolved"), value: formatRelativeTime(ticket.Last_Updated || ticket.Date_Created) };
-      }
-
-      const created = new Date(ticket.Date_Created);
-      const ageHours = Number.isNaN(created.getTime())
-        ? 0
-        : Math.max(0, Math.floor((new Date() - created) / 3600000));
-      const priority = getPriorityClass(ticket.Priority);
-      const thresholds = { low: 72, medium: 48, high: 24, critical: 8 };
-      const limit = thresholds[priority] || 48;
-      const remaining = limit - ageHours;
-
-      if (remaining <= 0) {
-        return { className: "risk", label: t("attention_needed"), value: t("response_due") };
-      }
-      if (remaining <= Math.ceil(limit * 0.25)) {
-        return { className: "watch", label: t("monitor"), value: `${remaining}h` };
-      }
-      return { className: "good", label: t("on_track"), value: `${remaining}h` };
-    }
     function getStructuredTicketParts(ticket) {
       const rawDescription = String(ticket.Description || "").trim();
       const parts = {
@@ -813,8 +803,6 @@
         const brand = getTicketField(ticket, ["Product_Brand", "Brand", "ProductBrand"], structuredParts.brand || t("no_brand"));
         const concernType = getTicketField(ticket, ["Concern_Type", "Issue_Type"], structuredParts.concernType || t("no_concern"));
         const description = structuredParts.userDescription || "No description provided.";
-        const sla = getSlaInfo(ticket);
-        const isAssigned = Boolean(ticket.Technician_Name);
         const initials =
           technician
             .split(/\s+/)
@@ -828,44 +816,49 @@
         card.innerHTML = `
                     <div class="ticket-card-header">
                         <div class="ticket-heading">
-                            <h2 class="ticket-title">${escapeHTML(ticket.Concern_Title || "Untitled Ticket")}</h2>
                             <div class="ticket-header-meta">
-                                <span class="ticket-id">${escapeHTML(ticketId)}</span>
+                                <button class="ticket-id ticket-id-button" type="button" data-action="copy-id" data-ticket-id="${escapeHTML(ticketId)}">
+                                  <i class="fas fa-hashtag"></i>
+                                  <span>${escapeHTML(ticketId)}</span>
+                                </button>
                                 <span><i class="fas fa-calendar"></i> ${escapeHTML(t("created"))}: ${escapeHTML(createdDate)}</span>
-                                <span><i class="fas fa-clock-rotate-left"></i> ${escapeHTML(t("updated"))}: ${escapeHTML(updatedDate)}</span>
                             </div>
+                            <h2 class="ticket-title">${escapeHTML(ticket.Concern_Title || "Untitled Ticket")}</h2>
                         </div>
                         <div class="ticket-header-actions" aria-label="Ticket status, priority, and menu">
                             <span class="ticket-status status-${statusClass}">${escapeHTML(getStatusText(ticket.Status_ID || ticket.Status))}</span>
                             <span class="ticket-priority priority-${priorityClass}"><i class="fas fa-flag"></i> ${escapeHTML(ticket.Priority || "Low")}</span>
                         </div>
                     </div>
-                    <div class="ticket-classification-row" aria-label="Ticket classification">
-                        <div class="ticket-chip">
-                            <i class="fas fa-layer-group"></i>
-                            <span>${escapeHTML(t("product_category"))}</span>
-                            <strong>${escapeHTML(category)}</strong>
-                        </div>
-                        <div class="ticket-chip">
-                            <i class="fas fa-copyright"></i>
-                            <span>${escapeHTML(t("product_brand"))}</span>
-                            <strong>${escapeHTML(brand)}</strong>
-                        </div>
-                        <div class="ticket-chip">
-                            <i class="fas fa-circle-question"></i>
-                            <span>${escapeHTML(t("concern_type"))}</span>
-                            <strong>${escapeHTML(concernType)}</strong>
-                        </div>
+                    <div class="ticket-meta-strip" aria-label="Ticket summary">
+                        <span><i class="fas fa-clock-rotate-left"></i> ${escapeHTML(t("updated"))}: ${escapeHTML(updatedDate)}</span>
+                        <span><i class="fas fa-user-gear"></i> ${escapeHTML(t("assigned_to"))}: ${escapeHTML(technician)}</span>
                     </div>
-                    <div class="ticket-description-panel">
-                        <div class="description-head">
-                            <span><i class="fas fa-align-left"></i> ${escapeHTML(t("user_description"))}</span>
-                            <button class="description-toggle" type="button" data-action="toggle-description" aria-expanded="false">
-                                <span>${escapeHTML(t("view_more"))}</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
+                    <div class="ticket-summary">
+                        <div class="ticket-description-panel">
+                            <div class="description-head">
+                                <span><i class="fas fa-align-left"></i> ${escapeHTML(t("user_description"))}</span>
+                                <button class="description-toggle" type="button" data-action="toggle-description" aria-expanded="false">
+                                    <span>${escapeHTML(t("view_more"))}</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <p class="ticket-description">${escapeHTML(description)}</p>
                         </div>
-                        <p class="ticket-description">${escapeHTML(description)}</p>
+                        <div class="ticket-secondary" aria-label="Ticket classification">
+                            <div>
+                                <span>${escapeHTML(t("product_category"))}</span>
+                                <strong>${escapeHTML(category)}</strong>
+                            </div>
+                            <div>
+                                <span>${escapeHTML(t("product_brand"))}</span>
+                                <strong>${escapeHTML(brand)}</strong>
+                            </div>
+                            <div>
+                                <span>${escapeHTML(t("concern_type"))}</span>
+                                <strong>${escapeHTML(concernType)}</strong>
+                            </div>
+                        </div>
                     </div>
                     <div class="ticket-assignment-row">
                         <div class="ticket-assignee">
@@ -875,12 +868,7 @@
                                 <div class="assignee-name">${escapeHTML(technician)}</div>
                             </div>
                         </div>
-                        <div class="ticket-sla-pill health-${sla.className}">
-                            <span>${escapeHTML(sla.label)}</span>
-                            <strong>${escapeHTML(t("sla"))}: ${escapeHTML(sla.value)}</strong>
-                        </div>
-                    </div>
-                    <div class="ticket-action-row">
+                        <div class="ticket-action-row">
                             <button class="ticket-action-btn" type="button" data-action="track-updates" data-ticket-id="${escapeHTML(ticketId)}">
                                 <i class="fas fa-timeline"></i>
                                 <span>${escapeHTML(t("track_updates"))}</span>
@@ -889,6 +877,7 @@
                                 <i class="fas fa-ban"></i>
                                 <span>${escapeHTML(t("cancel_ticket"))}</span>
                             </button>
+                        </div>
                     </div>`;
         container.appendChild(card);
       });
@@ -953,6 +942,41 @@
       modal.classList.remove("show");
       modal.setAttribute("aria-hidden", "true");
     }
+    function confirmCancelTicket(ticketId) {
+      const modal = document.getElementById("cancelTicketModal");
+      const ticketLabel = document.getElementById("cancelTicketModalId");
+      const confirmBtn = document.getElementById("cancelTicketConfirm");
+      const dismissBtn = document.getElementById("cancelTicketDismiss");
+      if (!modal || !confirmBtn || !dismissBtn) return Promise.resolve(false);
+
+      if (ticketLabel) ticketLabel.textContent = ticketId;
+      openModal("cancelTicketModal");
+      confirmBtn.focus();
+
+      return new Promise((resolve) => {
+        const finish = (confirmed) => {
+          closeModal("cancelTicketModal");
+          confirmBtn.removeEventListener("click", onConfirm);
+          dismissBtn.removeEventListener("click", onDismiss);
+          modal.removeEventListener("click", onBackdrop);
+          document.removeEventListener("keydown", onKeydown);
+          resolve(confirmed);
+        };
+        const onConfirm = () => finish(true);
+        const onDismiss = () => finish(false);
+        const onBackdrop = (event) => {
+          if (event.target === modal) finish(false);
+        };
+        const onKeydown = (event) => {
+          if (event.key === "Escape") finish(false);
+        };
+
+        confirmBtn.addEventListener("click", onConfirm);
+        dismissBtn.addEventListener("click", onDismiss);
+        modal.addEventListener("click", onBackdrop);
+        document.addEventListener("keydown", onKeydown);
+      });
+    }
     function renderTimeline(ticketId) {
       const ticket = findTicket(ticketId);
       if (!ticket) return;
@@ -984,7 +1008,7 @@
     }
     async function cancelTicket(ticketId, button) {
       const ticket = findTicket(ticketId);
-      if (!ticket || !confirm(t("cancel_confirm"))) return;
+      if (!ticket || !(await confirmCancelTicket(ticketId))) return;
 
       const previousHtml = button.innerHTML;
       button.disabled = true;
@@ -1066,6 +1090,7 @@
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
           closeModal("updatesModal");
+          closeModal("cancelTicketModal");
         }
       });
     }
