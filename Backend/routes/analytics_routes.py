@@ -330,6 +330,7 @@ def technician_analytics():
             row["performance_score"] = round((resolved * 0.55) + (row["sla_compliance"] * 0.35) + max(0, 10 - assigned) * 0.1, 1)
             leaderboard.append(row)
             heatmap.append({"label": row["name"], "value": assigned})
+        performance_ranking = [{"label": r["name"], "value": r.get("performance_score") or 0} for r in leaderboard]
         return jsonify({
             "status": "success",
             "summary": {
@@ -339,7 +340,11 @@ def technician_analytics():
                 "pending": sum(int(r.get("pending") or 0) for r in rows),
             },
             "leaderboard": leaderboard,
-            "charts": {"workload": heatmap, "common_concerns": [{"label": r["name"], "value": r.get("common_concern") or "Other"} for r in leaderboard]},
+            "charts": {
+                "workload": heatmap,
+                "performance_ranking": performance_ranking,
+                "common_concerns": [{"label": r["name"], "value": r.get("common_concern") or "Other"} for r in leaderboard],
+            },
             "table": leaderboard,
         }), 200
     except Exception as e:
@@ -606,14 +611,19 @@ def _rows_for_report(category):
             return rows
         if category == "technicians":
             where, params = _filters("t", role_column="su.user_type")
-            return [dict(row) for row in _fetchall(cursor, f"""
+            rows = [dict(row) for row in _fetchall(cursor, f"""
                 SELECT
                     COALESCE(NULLIF(CONCAT_WS(' ', su.first_name, su.last_name), ''), su.email, 'Technician') AS technician,
                     COUNT(t.ticket_id)::int AS tickets_assigned,
                     COUNT(t.ticket_id) FILTER (WHERE t.status_id IN (3, 4))::int AS tickets_resolved,
                     COUNT(t.ticket_id) FILTER (WHERE t.status_id NOT IN (3, 4))::int AS pending_tickets,
                     ROUND(AVG(EXTRACT(EPOCH FROM (t.last_updated - t.date_created)) / 3600.0)
-                        FILTER (WHERE t.status_id IN (3, 4)), 2) AS avg_resolution_hours
+                        FILTER (WHERE t.status_id IN (3, 4)), 2) AS avg_resolution_hours,
+                    COUNT(t.ticket_id) FILTER (
+                        WHERE t.status_id IN (3, 4)
+                          AND t.last_updated <= t.date_created + INTERVAL '72 hours'
+                    )::int AS within_sla,
+                    COALESCE(MODE() WITHIN GROUP (ORDER BY NULLIF(t.concern_type, '')), 'Other') AS common_concern
                 FROM technician tech
                 JOIN "system_user" su ON su.user_id = tech.user_id
                 LEFT JOIN ticket t ON t.technician_id = tech.technician_id
@@ -621,6 +631,14 @@ def _rows_for_report(category):
                 GROUP BY tech.technician_id, su.first_name, su.last_name, su.email
                 ORDER BY tickets_resolved DESC
             """, params)]
+            for row in rows:
+                assigned = int(row.get("tickets_assigned") or 0)
+                resolved = int(row.get("tickets_resolved") or 0)
+                within_sla = int(row.get("within_sla") or 0)
+                row["sla_compliance"] = round((within_sla / resolved) * 100, 1) if resolved else 0
+                row["performance_score"] = round((resolved * 0.55) + (row["sla_compliance"] * 0.35) + max(0, 10 - assigned) * 0.1, 1)
+                row["workload_distribution"] = assigned
+            return rows
         if category == "customers":
             where, params = _filters("t", role_column="req_user.user_type")
             return [dict(row) for row in _fetchall(cursor, f"""

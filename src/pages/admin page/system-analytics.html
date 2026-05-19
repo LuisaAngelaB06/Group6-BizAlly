@@ -498,6 +498,16 @@
                 return;
             }
 
+            if (state.category === 'technicians') {
+                const workload = datasetFrom(charts.workload || []);
+                const ranking = charts.performance_ranking?.length
+                    ? datasetFrom(charts.performance_ranking)
+                    : datasetFrom(state.payload.leaderboard || state.payload.table || [], 'name', 'performance_score');
+                drawBar('primaryChart', workload.labels, workload.values);
+                drawBar('secondaryChart', ranking.labels, ranking.values, 'Performance Score');
+                return;
+            }
+
             const primarySource = charts.workload || charts.trends || charts.trend || charts.timeline || charts.engagement || [];
             const secondarySource = charts.efficiency || charts.company_distribution || charts.devices || charts.read_unread || [];
             primary = datasetFrom(primarySource);
@@ -550,11 +560,11 @@
             });
         }
 
-        function drawBar(id, labels, values) {
+        function drawBar(id, labels, values, label = 'Count') {
             destroyChart(id);
             state.charts[id] = new Chart(document.getElementById(id), {
                 type: 'bar',
-                data: { labels, datasets: [{ label: 'Count', data: values, backgroundColor: chartColors(), borderRadius: 6 }] },
+                data: { labels, datasets: [{ label, data: values, backgroundColor: chartColors(), borderRadius: 6 }] },
                 options: commonOptions()
             });
         }
@@ -677,7 +687,7 @@
         function preferredReportHeaders(category, rows) {
             const candidates = {
                 tickets: ['ticket_id', 'status', 'concern_title', 'priority', 'service_type', 'technician', 'customer', 'date_created'],
-                technicians: ['name', 'assigned', 'resolved', 'pending', 'avg_resolution_hours', 'sla_compliance', 'common_concern'],
+                technicians: ['name', 'assigned', 'resolved', 'pending', 'avg_resolution_hours', 'sla_compliance', 'performance_score', 'common_concern'],
                 customers: ['company', 'customer', 'tickets', 'active_tickets', 'frequent_issue'],
                 sla: ['service_type', 'resolved', 'within_sla', 'breaches', 'sla_compliance', 'avg_resolution_hours'],
                 'ticket-categories': ['type', 'name', 'count']
@@ -794,6 +804,50 @@
             return doc.lastAutoTable.finalY + 12;
         }
 
+        function drawTechnicianExportSections(doc, payload, startY) {
+            const charts = payload.charts || {};
+            const leaderboard = payload.leaderboard || payload.table || [];
+            const workloadRows = charts.workload?.length
+                ? charts.workload.map(item => [item.label || 'Technician', item.value || 0])
+                : leaderboard.map(row => [row.name || row.technician || 'Technician', row.assigned || row.tickets_assigned || 0]);
+            const rankingRows = charts.performance_ranking?.length
+                ? charts.performance_ranking.map(item => [item.label || 'Technician', item.value || 0])
+                : leaderboard.map(row => [row.name || row.technician || 'Technician', row.performance_score || 0]);
+
+            const sectionOptions = {
+                margin: { top: 48, left: 40, right: 40, bottom: 34 },
+                theme: 'striped',
+                styles: { font: 'helvetica', fontSize: 8, cellPadding: 5, textColor: [15, 23, 42] },
+                headStyles: { fillColor: [30, 64, 175], textColor: [255, 255, 255], fontStyle: 'bold' },
+                alternateRowStyles: { fillColor: [248, 250, 252] }
+            };
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.setTextColor(15, 23, 42);
+            doc.text('Workload Distribution', 40, startY);
+            doc.autoTable({
+                ...sectionOptions,
+                startY: startY + 8,
+                head: [['Technician', 'Assigned Tickets']],
+                body: workloadRows
+            });
+
+            let cursorY = doc.lastAutoTable.finalY + 18;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.setTextColor(15, 23, 42);
+            doc.text('Performance Ranking', 40, cursorY);
+            doc.autoTable({
+                ...sectionOptions,
+                startY: cursorY + 8,
+                head: [['Technician', 'Performance Score']],
+                body: rankingRows
+            });
+
+            return doc.lastAutoTable.finalY + 18;
+        }
+
         function addPdfHeaderFooter(doc, title, filters) {
             const totalPages = doc.internal.getNumberOfPages();
             const generatedAt = new Date().toLocaleString();
@@ -845,6 +899,9 @@
 
             let cursorY = drawSummaryCards(doc, buildReportSummary(category, payload, rows), 94);
             cursorY = drawFilterSummary(doc, filters, cursorY);
+            if (category === 'technicians') {
+                cursorY = drawTechnicianExportSections(doc, payload, cursorY);
+            }
 
             const groupedRows = groupReportRows(category, rows);
             if (!rows.length) {
