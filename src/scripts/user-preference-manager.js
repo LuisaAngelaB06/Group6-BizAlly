@@ -467,15 +467,15 @@ class PreferencesManager {
         console.log(`Found ${accountMenuLinks.length} account menu links`);
 
         if (accountMenuLinks[0] && lang.profile) {
-            accountMenuLinks[0].textContent = lang.profile;
+            this.setTranslatedText(accountMenuLinks[0], lang.profile, "fas fa-user");
             console.log(`✓ Updated Profile to: ${lang.profile}`);
         }
         if (accountMenuLinks[1] && lang.settings) {
-            accountMenuLinks[1].textContent = lang.settings;
+            this.setTranslatedText(accountMenuLinks[1], lang.settings, "fas fa-cog");
             console.log(`✓ Updated Settings to: ${lang.settings}`);
         }
         if (accountMenuLinks[2] && lang.logout) {
-            accountMenuLinks[2].textContent = lang.logout;
+            this.setTranslatedText(accountMenuLinks[2], lang.logout, "fas fa-sign-out-alt");
             console.log(`✓ Updated Logout to: ${lang.logout}`);
         }
 
@@ -504,6 +504,44 @@ class PreferencesManager {
         }
 
         console.log("=== COMMON TRANSLATIONS COMPLETE ===");
+    }
+
+    setTranslatedText(element, text, fallbackIconClass = "") {
+        if (!element) return;
+
+        if (element.tagName === "INPUT" || element.tagName === "TEXTAREA") {
+            element.placeholder = text;
+            return;
+        }
+
+        if (element.tagName === "OPTION") {
+            element.textContent = text;
+            return;
+        }
+
+        let icon = element.querySelector(":scope > i");
+        if (!icon && fallbackIconClass) {
+            icon = document.createElement("i");
+            icon.className = fallbackIconClass;
+            element.prepend(icon);
+        }
+
+        if (!icon) {
+            element.textContent = text;
+            return;
+        }
+
+        let label = element.querySelector(":scope > span");
+        if (!label) {
+            label = document.createElement("span");
+            Array.from(element.childNodes).forEach((node) => {
+                if (node !== icon) node.remove();
+            });
+            element.appendChild(document.createTextNode(" "));
+            element.appendChild(label);
+        }
+
+        label.textContent = text;
     }
 
     applyPreferencesTranslations(lang, language) {
@@ -753,6 +791,9 @@ class PreferencesManager {
         const accountMenu = document.getElementById("accountMenu");
 
         if (accountBtn && accountMenu) {
+            this.ensureAccountMenuIcons();
+            this.watchAccountMenuIcons(accountMenu);
+
             accountBtn.addEventListener("click", (e) => {
                 e.stopPropagation();
                 const isExpanded = accountMenu.classList.contains("show");
@@ -776,6 +817,40 @@ class PreferencesManager {
                 }
             });
         }
+    }
+
+    ensureAccountMenuIcons() {
+        const iconMap = [
+            "fas fa-user",
+            "fas fa-cog",
+            "fas fa-sign-out-alt"
+        ];
+
+        document.querySelectorAll(".account-menu a").forEach((link, index) => {
+            if (!iconMap[index] || link.querySelector(":scope > i")) return;
+
+            const icon = document.createElement("i");
+            icon.className = iconMap[index];
+            const label = link.textContent.trim();
+            link.textContent = "";
+            link.appendChild(icon);
+            link.appendChild(document.createTextNode(" "));
+            const span = document.createElement("span");
+            span.textContent = label;
+            link.appendChild(span);
+        });
+    }
+
+    watchAccountMenuIcons(accountMenu) {
+        if (this.accountMenuIconObserver || !accountMenu || !window.MutationObserver) return;
+
+        this.accountMenuIconObserver = new MutationObserver(() => {
+            this.ensureAccountMenuIcons();
+        });
+        this.accountMenuIconObserver.observe(accountMenu, {
+            childList: true,
+            subtree: true
+        });
     }
 }
 
