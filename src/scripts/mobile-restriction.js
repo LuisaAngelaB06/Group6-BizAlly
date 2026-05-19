@@ -1,7 +1,7 @@
 (function() {
     'use strict';
     
-    // MOBILE RESTRICTION: no modals, admin side blocked on small screen
+    // MOBILE RESTRICTION: admin and user consoles are blocked on small screens.
     function checkMobile() {
         // Make sure document.body exists
         if (!document.body) {
@@ -11,8 +11,9 @@
 
         const path = window.location.pathname.toLowerCase();
         const isAdminPage = path.includes('/admin') || path.includes('admin%20page') || path.includes('admin page');
+        const isUserConsolePage = path.includes('/user') || path.includes('user%20page') || path.includes('user page');
 
-        if (!isAdminPage) {
+        if (!isAdminPage && !isUserConsolePage) {
             document.body.classList.remove('mobile-block-active');
             return;
         }
