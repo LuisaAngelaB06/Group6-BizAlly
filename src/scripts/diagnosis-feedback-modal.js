@@ -30,7 +30,6 @@
             this.homePath = homePath;
             this.triggerSelector = triggerSelector;
             this.modalSelector = modalSelector;
-            this.step = 'feedback';
             this.feedback = '';
             this.nickname = '';
             this.isSubmitting = false;
@@ -74,8 +73,6 @@
                 const action = event.target.closest('[data-feedback-action]')?.dataset.feedbackAction;
                 if (!action) return;
 
-                if (action === 'next-nickname') this.goToNickname();
-                if (action === 'back-feedback') this.goToFeedback();
                 if (action === 'submit-feedback') this.submit(event);
                 if (action === 'submit-ticket') window.location.href = this.ticketPath;
                 if (action === 'back-home') window.location.href = this.homePath;
@@ -90,7 +87,8 @@
             this.modal.addEventListener('input', (event) => {
                 if (!event.target.matches('[data-feedback-nickname]')) return;
                 this.nickname = event.target.value.trim();
-                this.updateNicknameControls();
+                this.updateSubmitState();
+                this.clearNicknameError();
             });
 
             document.addEventListener('keydown', (event) => {
@@ -105,13 +103,13 @@
                 this.sessionId = this.generateSessionId();
             }
 
-            this.step = 'feedback';
             this.feedback = '';
             this.nickname = '';
             this.isSubmitting = false;
             this.render();
             this.modal.classList.add('active');
             this.isOpen = true;
+            window.setTimeout(() => this.card.querySelector('[data-feedback-nickname]')?.focus(), 120);
         }
 
         close() {
@@ -120,39 +118,12 @@
             if (typeof this.onClose === 'function') this.onClose();
         }
 
-        goToFeedback() {
-            this.step = 'feedback';
-            this.render();
-        }
-
-        goToNickname() {
-            if (!this.feedback) {
-                this.render('Please choose a diagnosis result.');
-                return;
-            }
-
-            this.step = 'nickname';
-            this.render();
-            window.setTimeout(() => this.card.querySelector('[data-feedback-nickname]')?.focus(), 120);
-        }
-
         async submit(event) {
             event.preventDefault();
 
-            if (!this.feedback) {
-                this.step = 'feedback';
-                this.render('Please choose a diagnosis result.');
-                return;
-            }
-
-            if (!this.nickname) {
-                this.step = 'nickname';
-                this.render('Please enter a nickname.');
-                window.setTimeout(() => this.card.querySelector('[data-feedback-nickname]')?.focus(), 120);
-                return;
-            }
-
+            if (!this.validate()) return;
             if (this.isSubmitting) return;
+
             this.isSubmitting = true;
             this.render();
 
@@ -175,8 +146,7 @@
                     await this.submitFeedback(payload);
                 }
 
-                this.step = 'success';
-                this.render();
+                this.renderSuccess();
             } catch (error) {
                 console.error('Feedback failed:', error);
                 this.isSubmitting = false;
@@ -204,37 +174,26 @@
         render(errorMessage = '') {
             if (!this.card) return;
 
-            if (this.step === 'success') {
-                this.card.innerHTML = this.renderSuccess();
-                return;
-            }
-
             this.card.innerHTML = `
                 ${this.renderCloseButton()}
                 ${this.renderIcon()}
-                ${this.step === 'feedback' ? this.renderFeedbackStep(errorMessage) : this.renderNicknameStep(errorMessage)}
-            `;
-        }
-
-        renderCloseButton() {
-            return '<button class="close-modal-x" data-feedback-close aria-label="Close modal">&times;</button>';
-        }
-
-        renderIcon() {
-            return '<div class="modal-icon"><i class="fas fa-headset"></i></div>';
-        }
-
-        renderFeedbackStep(errorMessage) {
-            return `
                 <div class="feedback-step-panel">
                     <h2>How was the system?</h2>
                     <p>Tell us if the ${this.escapeHtml(this.serviceModule)} Quick Fix identified or helped resolve your issue.</p>
+                    <div class="feedback-field">
+                        <label for="feedbackNickname">Nickname</label>
+                        <input type="text" id="feedbackNickname" data-feedback-nickname autocomplete="nickname"
+                            placeholder="Enter a nickname" value="${this.escapeHtml(this.nickname)}" required>
+                        <p class="feedback-error" data-nickname-error hidden></p>
+                    </div>
                     <div class="rating-group" role="radiogroup" aria-label="System feedback">
                         ${FEEDBACK_OPTIONS.map((option) => this.renderFeedbackOption(option)).join('')}
                     </div>
                     <p class="feedback-error" data-feedback-error ${errorMessage ? '' : 'hidden'}>${this.escapeHtml(errorMessage)}</p>
                     <div class="modal-actions">
-                        <button class="modal-btn modal-btn-primary" data-feedback-action="next-nickname" ${this.feedback ? '' : 'disabled'}>Next</button>
+                        <button class="modal-btn modal-btn-primary" data-feedback-action="submit-feedback" ${this.canSubmit() ? '' : 'disabled'}>
+                            ${this.isSubmitting ? '<i class="fas fa-spinner fa-spin"></i> Submitting...' : 'Submit & Continue'}
+                        </button>
                         <button class="modal-btn modal-btn-secondary" data-feedback-close>Cancel</button>
                     </div>
                 </div>
@@ -251,29 +210,8 @@
             `;
         }
 
-        renderNicknameStep(errorMessage) {
-            return `
-                <div class="feedback-step-panel">
-                    <h2>What should we call you?</h2>
-                    <p>We will attach this nickname to your ${this.escapeHtml(this.serviceModule)} diagnosis feedback.</p>
-                    <div class="feedback-field">
-                        <label for="feedbackNickname">Nickname</label>
-                        <input type="text" id="feedbackNickname" data-feedback-nickname autocomplete="nickname"
-                            placeholder="Enter a nickname" value="${this.escapeHtml(this.nickname)}" required>
-                        <p class="feedback-error" data-nickname-error ${errorMessage ? '' : 'hidden'}>${this.escapeHtml(errorMessage)}</p>
-                    </div>
-                    <div class="modal-actions">
-                        <button class="modal-btn modal-btn-secondary" data-feedback-action="back-feedback">Back</button>
-                        <button class="modal-btn modal-btn-primary" data-feedback-action="submit-feedback" ${this.nickname && !this.isSubmitting ? '' : 'disabled'}>
-                            ${this.isSubmitting ? '<i class="fas fa-spinner fa-spin"></i> Submitting...' : 'Submit & Continue'}
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
         renderSuccess() {
-            return `
+            this.card.innerHTML = `
                 ${this.renderCloseButton()}
                 ${this.renderIcon()}
                 <div class="feedback-step-panel">
@@ -287,14 +225,49 @@
             `;
         }
 
-        updateNicknameControls() {
-            const submitButton = this.card.querySelector('[data-feedback-action="submit-feedback"]');
-            const error = this.card.querySelector('[data-nickname-error]');
-            if (submitButton) submitButton.disabled = !this.nickname || this.isSubmitting;
-            if (error && this.nickname) {
-                error.hidden = true;
-                error.textContent = '';
+        renderCloseButton() {
+            return '<button class="close-modal-x" data-feedback-close aria-label="Close modal">&times;</button>';
+        }
+
+        renderIcon() {
+            return '<div class="modal-icon"><i class="fas fa-headset"></i></div>';
+        }
+
+        validate() {
+            let isValid = true;
+
+            if (!this.feedback) {
+                this.setError('[data-feedback-error]', 'Please choose a diagnosis result.');
+                isValid = false;
             }
+
+            if (!this.nickname) {
+                this.setError('[data-nickname-error]', 'Please enter a nickname.');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        canSubmit() {
+            return this.feedback && this.nickname && !this.isSubmitting;
+        }
+
+        updateSubmitState() {
+            const submitButton = this.card.querySelector('[data-feedback-action="submit-feedback"]');
+            if (submitButton) submitButton.disabled = !this.canSubmit();
+        }
+
+        clearNicknameError() {
+            if (!this.nickname) return;
+            this.setError('[data-nickname-error]', '');
+        }
+
+        setError(selector, message) {
+            const element = this.card.querySelector(selector);
+            if (!element) return;
+            element.textContent = message;
+            element.hidden = !message;
         }
 
         generateSessionId() {

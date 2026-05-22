@@ -605,6 +605,144 @@ li {
     padding: 4px;
 }
 
+/* Modern SaaS feedback modal */
+.modal-overlay {
+    background: rgba(15, 23, 42, 0.56);
+    backdrop-filter: blur(8px);
+}
+
+.modal-card {
+    max-width: 560px;
+    border-radius: 30px;
+    padding: 36px;
+    background: var(--bg-primary);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    box-shadow: 0 28px 80px rgba(15, 23, 42, 0.26);
+}
+
+.modal-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 20px;
+    border-radius: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(10, 102, 194, 0.12), rgba(10, 102, 194, 0.04));
+    border: 1px solid rgba(10, 102, 194, 0.14);
+}
+
+.modal-icon i {
+    font-size: 2.4rem;
+    color: var(--blue-500);
+}
+
+.feedback-step-panel h2 {
+    font-size: clamp(1.7rem, 3vw, 2.15rem);
+    letter-spacing: 0;
+    margin-bottom: 10px;
+}
+
+.feedback-step-panel > p {
+    max-width: 430px;
+    margin: 0 auto 24px;
+    line-height: 1.55;
+}
+
+.rating-group {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 0 auto 22px;
+    max-width: 430px;
+}
+
+.rating-btn {
+    width: 100%;
+    min-width: 0;
+    justify-content: flex-start;
+    border-radius: 18px;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border: 1px solid rgba(148, 163, 184, 0.26);
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
+}
+
+.rating-btn:hover {
+    background: var(--blue-50);
+    color: var(--text-primary);
+    border-color: rgba(10, 102, 194, 0.28);
+    transform: translateY(-1px);
+}
+
+.rating-btn:hover i {
+    color: var(--blue-500);
+}
+
+.rating-btn.active {
+    background: rgba(10, 102, 194, 0.1);
+    color: var(--text-primary);
+    border-color: var(--blue-500);
+    box-shadow: 0 0 0 4px rgba(10, 102, 194, 0.1);
+}
+
+.rating-btn.active i {
+    color: var(--blue-500);
+}
+
+.feedback-field {
+    max-width: 430px;
+    margin-bottom: 24px;
+}
+
+.feedback-field input {
+    min-height: 48px;
+    border-radius: 16px;
+    background: var(--bg-primary);
+    border-color: rgba(148, 163, 184, 0.34);
+}
+
+.feedback-field input::placeholder {
+    color: var(--gray-400);
+}
+
+.modal-actions {
+    max-width: 430px;
+    margin: 0 auto;
+}
+
+.modal-btn {
+    min-height: 48px;
+    border-radius: 16px;
+    padding: 12px 22px;
+}
+
+.modal-btn-primary {
+    background: var(--blue-500);
+    box-shadow: 0 12px 24px rgba(10, 102, 194, 0.22);
+}
+
+.modal-btn-primary:hover:not(:disabled) {
+    background: var(--blue-600);
+    transform: translateY(-1px);
+}
+
+.modal-btn-secondary {
+    background: var(--gray-50);
+    color: var(--gray-700);
+}
+
+.close-modal-x {
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+}
+
+.close-modal-x:hover {
+    background: var(--gray-100);
+    color: var(--text-primary);
+}
+
 /* responsive - quickfix specific overrides */
 @media (max-width: 720px) {
     .document-wrapper {
