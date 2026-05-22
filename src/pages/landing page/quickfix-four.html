@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Quick Fix – Door Access · AlliTrack</title>
+    <title>Quick Fix â€“ Door Access Â· AlliTrack</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -26,18 +26,18 @@
 
         <div class="doc-title">
             <i class="fas fa-door-open"></i>
-            <h1>Door Access · Quick Fix</h1>
+            <h1>Door Access Â· Quick Fix</h1>
         </div>
 
         <!-- meta info -->
         <div class="doc-meta">
             <span><i class="fas fa-id-card"></i> ACCESS CONTROL v2.4</span>
             <span><i class="fas fa-shield-alt"></i> AlliTrack physical security</span>
-            <span><i class="fas fa-clock"></i> 4‑minute entry diagnosis</span>
+            <span><i class="fas fa-clock"></i> 4â€‘minute entry diagnosis</span>
         </div>
 
         <p style="font-size:1.05rem; margin-bottom:28px; color: var(--text-secondary);">
-            Field‑proven fixes for magnetic locks, credential readers, controllers and exit devices.
+            Fieldâ€‘proven fixes for magnetic locks, credential readers, controllers and exit devices.
         </p>
 
         <!-- hardware & locking -->
@@ -51,14 +51,14 @@
                 <p style="margin-bottom: 10px;">Check REX button and power supply:</p>
                 <div
                     style="background: var(--gray-100); padding: 8px 12px; border-radius: 12px; font-family: monospace; font-size:0.8rem; overflow-x: auto;">
-                    DC voltage at lock: 12V/24V ±10%
+                    DC voltage at lock: 12V/24V Â±10%
                 </div>
                 <ul style="margin-top: 16px; list-style: none; padding-left: 0;">
                     <li style="display: flex; gap: 8px; margin-bottom: 6px;"><span
-                            style="color: var(--blue-500);">✓</span> <span>Test with separate 12V battery – lock
+                            style="color: var(--blue-500);">âœ“</span> <span>Test with separate 12V battery â€“ lock
                             clicks?</span></li>
                     <li style="display: flex; gap: 8px; margin-bottom: 6px;"><span
-                            style="color: var(--blue-500);">✓</span> <span>Reverse diode across lock terminals
+                            style="color: var(--blue-500);">âœ“</span> <span>Reverse diode across lock terminals
                             (1N4004)</span></li>
                 </ul>
             </div>
@@ -69,7 +69,7 @@
                 <div style="margin-top: 16px;">
                     <span class="badge"><i class="fas fa-bolt"></i> Quick fix</span>
                     <p style="margin-top: 10px;">Clean reader lens/pad with isopropyl. <br><span
-                            style="font-family: monospace;">Wiegand data lines: D0/D1 pull-up 2.2kΩ</span></p>
+                            style="font-family: monospace;">Wiegand data lines: D0/D1 pull-up 2.2kÎ©</span></p>
                 </div>
             </div>
         </div>
@@ -87,8 +87,8 @@
                 </tr>
                 <tr>
                     <td style="font-weight:600;">2.</td>
-                    <td style="font-weight:600;">RS‑485 communication</td>
-                    <td>Termination resistor 120Ω at last device; A/B polarity reversed</td>
+                    <td style="font-weight:600;">RSâ€‘485 communication</td>
+                    <td>Termination resistor 120Î© at last device; A/B polarity reversed</td>
                 </tr>
                 <tr>
                     <td style="font-weight:600;">3.</td>
@@ -97,14 +97,14 @@
                 </tr>
                 <tr>
                     <td style="font-weight:600;">4.</td>
-                    <td style="font-weight:600;">Time‑out / relay stuck</td>
-                    <td>Check strike rating: 1A max inductive – add snubber</td>
+                    <td style="font-weight:600;">Timeâ€‘out / relay stuck</td>
+                    <td>Check strike rating: 1A max inductive â€“ add snubber</td>
                 </tr>
             </table>
         </div>
         <div class="code-block">
             <i class="fas fa-terminal" style="margin-right: 8px; color: var(--blue-500);"></i>
-            Controller debug: serial console @ 38400 baud → "diag door1" shows last 10 events
+            Controller debug: serial console @ 38400 baud â†’ "diag door1" shows last 10 events
         </div>
 
         <!-- access rights & schedules -->
@@ -112,13 +112,13 @@
             <i class="fas fa-calendar-alt"></i> Credentials & schedules
         </div>
         <ul class="step-list">
-            <li><span class="step-num">1</span> <strong>Card not recognised</strong> – verify facility code matches
-                reader; re‑enroll card; check bit length (26/34/37 bit).</li>
-            <li><span class="step-num">2</span> <strong>Access denied – time zone</strong> – user not allowed at this
+            <li><span class="step-num">1</span> <strong>Card not recognised</strong> â€“ verify facility code matches
+                reader; reâ€‘enroll card; check bit length (26/34/37 bit).</li>
+            <li><span class="step-num">2</span> <strong>Access denied â€“ time zone</strong> â€“ user not allowed at this
                 hour. Override with "always" profile for testing.</li>
-            <li><span class="step-num">3</span> <strong>Anti‑passback violation</strong> – reset entry/exit state;
+            <li><span class="step-num">3</span> <strong>Antiâ€‘passback violation</strong> â€“ reset entry/exit state;
                 disable APB temporarily.</li>
-            <li><span class="step-num">4</span> <strong>PIN code not working</strong> – keypad mode: 4‑6 digits,
+            <li><span class="step-num">4</span> <strong>PIN code not working</strong> â€“ keypad mode: 4â€‘6 digits,
                 duplicate PINs not allowed. Factory reset keypad sequence.</li>
         </ul>
 
@@ -136,14 +136,14 @@
                 <i class="fas fa-battery-quarter"
                     style="color: var(--blue-500); font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
                 <h3 style="font-size: 1.2rem; margin-bottom: 8px;">Battery backup fails</h3>
-                <p style="font-size: 0.9rem; color: var(--text-secondary);">Sealed lead‑acid: charge voltage 13.7V.
+                <p style="font-size: 0.9rem; color: var(--text-secondary);">Sealed leadâ€‘acid: charge voltage 13.7V.
                     Replace if <12V after 24h charge. Check thermal fuse.</p>
             </div>
         </div>
 
         <!-- 30 sec resolution -->
         <div style="margin: 32px 0 16px;">
-            <span class="badge"><i class="fas fa-toolbox"></i> 30‑second resolution</span>
+            <span class="badge"><i class="fas fa-toolbox"></i> 30â€‘second resolution</span>
         </div>
         <div class="two-col-grid">
             <div class="tip-box">
@@ -154,7 +154,7 @@
             <div class="tip-box">
                 <h4><i class="fas fa-hand-point-up" style="color:var(--blue-500);"></i> REX (request to exit)</h4>
                 <p style="color: var(--text-secondary);">Motion sensor timeout: set retrigger 2 sec. PIR lens covered by
-                    dust – wipe gently.</p>
+                    dust â€“ wipe gently.</p>
             </div>
         </div>
 
@@ -162,7 +162,7 @@
         <hr style="border: none; border-top: 1px solid var(--border-color); margin: 32px 0 24px;">
         <div style="margin-top: 24px;">
             <h3 style="font-weight: 600; font-size: 1.1rem; display: flex; gap: 8px; margin-bottom: 16px;">
-                <i class="fas fa-table"></i> Error code matrix – door access
+                <i class="fas fa-table"></i> Error code matrix â€“ door access
             </h3>
             <div style="overflow-x: auto;">
                 <table class="error-matrix">
@@ -201,164 +201,61 @@
 
         <div class="open-ticket-section">
             <button class="btn-open-ticket" id="submitTicketBtn">
-                <i class="fas fa-ticket-alt"></i> Still having trouble? Submit a ticket
+                <i class="fas fa-comment-dots"></i> Share Diagnosis Feedback
             </button>
             <p style="font-size:0.8rem; color: var(--text-secondary); margin-top: 16px;">
-                Submit a support ticket — we’ll help you further.
+                Share feedback first. You can submit a ticket after your feedback is recorded.
             </p>
         </div>
 
         <div class="footnote-pdf">
-            <span><i class="fas fa-print"></i> print‑ready · AlliTrack intelligent ticketing · generated 2025</span>
+            <span><i class="fas fa-print"></i> printâ€‘ready Â· AlliTrack intelligent ticketing Â· generated 2025</span>
         </div>
     </div>
 
-    <div class="modal-overlay" id="feedbackModal">
+    <div class="modal-overlay" id="feedbackModal" data-diagnosis-feedback-modal data-service-name="Door Access"
+        data-ticket-path="/login" data-home-path="/" data-trigger-selector="#submitTicketBtn">
         <div class="modal-card">
-            <button class="close-modal-x" id="closeModalX" aria-label="Close modal">&times;</button>
+            <button class="close-modal-x" id="closeModalX" data-feedback-close aria-label="Close modal">&times;</button>
             <div class="modal-icon">
-                <i class="fas fa-headset"></i>
+                <i class="fas fa-headset" data-feedback-icon></i>
             </div>
-            <h2>How was the system?</h2>
-            <p>Your feedback helps us improve the<br>Door Access Quick Fix.</p>
+            <h2 data-feedback-title>Was the diagnosis helpful?</h2>
+            <p data-feedback-subtitle>Tell us if the Door Access Quick Fix identified or helped resolve your issue.</p>
+
+            <div class="feedback-field">
+                <label for="feedbackNickname">Nickname</label>
+                <input type="text" id="feedbackNickname" data-feedback-nickname autocomplete="nickname"
+                    placeholder="Enter a nickname" required>
+                <p class="feedback-error" data-nickname-error hidden></p>
+            </div>
 
             <div class="rating-group">
-                <button class="rating-btn" data-rating="good"><i class="fas fa-smile"></i> Good</button>
-                <button class="rating-btn" data-rating="neutral"><i class="fas fa-meh"></i> Neutral</button>
-                <button class="rating-btn" data-rating="bad"><i class="fas fa-frown"></i> Bad</button>
+                <label class="rating-btn">
+                    <input type="radio" name="diagnosisFeedback" value="resolved" data-feedback-label="Issue Resolved" data-diagnosis-feedback required>
+                    <i class="fas fa-circle-check"></i> Issue Resolved
+                </label>
+                <label class="rating-btn">
+                    <input type="radio" name="diagnosisFeedback" value="partially_resolved" data-feedback-label="Partially Resolved" data-diagnosis-feedback>
+                    <i class="fas fa-circle-half-stroke"></i> Partially Resolved
+                </label>
+                <label class="rating-btn">
+                    <input type="radio" name="diagnosisFeedback" value="unresolved" data-feedback-label="Still Not Resolved" data-diagnosis-feedback>
+                    <i class="fas fa-circle-xmark"></i> Still Not Resolved
+                </label>
             </div>
+            <p class="feedback-error" data-feedback-error hidden></p>
 
             <div class="modal-actions">
-                <button class="modal-btn modal-btn-primary" id="submitRating">Submit & continue</button>
-                <button class="modal-btn modal-btn-secondary" id="closeModalBtn">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="submitRating" data-feedback-submit disabled>Submit & continue</button>
+                <button class="modal-btn modal-btn-secondary" id="closeModalBtn" data-feedback-close>Cancel</button>
             </div>
             <p style="font-size:0.75rem; color: var(--text-secondary); margin-top: 20px;">
                 After submitting, you'll be redirected to login.
             </p>
         </div>
     </div>
-
-    <script>
-        (function () {
-            'use strict';
-
-            document.addEventListener('DOMContentLoaded', function () {
-
-                const modal = document.getElementById('feedbackModal');
-                const triggerBtn = document.getElementById('submitTicketBtn');
-                const closeModalBtn = document.getElementById('closeModalBtn');
-                const closeModalX = document.getElementById('closeModalX');
-                const submitRating = document.getElementById('submitRating');
-
-                function openModal() {
-                    if (modal) modal.classList.add('active');
-                }
-
-                function closeModal() {
-                    if (modal) modal.classList.remove('active');
-                }
-
-                // Open modal
-                if (triggerBtn) {
-                    triggerBtn.addEventListener('click', openModal);
-                }
-
-                // Close modal
-                if (closeModalBtn) {
-                    closeModalBtn.addEventListener('click', closeModal);
-                }
-
-                if (closeModalX) {
-                    closeModalX.addEventListener('click', closeModal);
-                }
-
-                // Close when clicking outside
-                if (modal) {
-                    modal.addEventListener('click', function (e) {
-                        if (e.target === modal) closeModal();
-                    });
-                }
-
-                // ESC key closes modal
-                document.addEventListener('keydown', function (e) {
-                    if (e.key === 'Escape') {
-                        if (modal && modal.classList.contains('active')) {
-                            modal.classList.remove('active');
-                        }
-                    }
-                });
-
-                // ✅ CLEAN RATING LOGIC
-                document.querySelectorAll('.rating-btn').forEach(btn => {
-                    btn.addEventListener('click', function () {
-                        document.querySelectorAll('.rating-btn').forEach(b => {
-                            b.classList.remove('active');
-                        });
-                        this.classList.add('active');
-                    });
-                });
-            });
-        })();
-
-        // 🌟 1. RESET BUTTON ON PAGE SHOW (Fixes the infinite spinning on 'Back')
-        window.onpageshow = function(event) {
-            const submitBtn = document.getElementById('submitRating');
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Submit & continue';
-            }
-        };
-
-        if (submitRating) {
-            // 🌟 2. PREVENT DOUBLE LISTENER ATTACHMENT
-            const newSubmitBtn = submitRating.cloneNode(true);
-            submitRating.parentNode.replaceChild(newSubmitBtn, submitRating);
-
-            newSubmitBtn.addEventListener('click', async function (e) {
-                e.preventDefault(); // Stop any default form behavior
-
-                const selectedBtn = document.querySelector('.rating-btn.active');
-                if (!selectedBtn) {
-                    alert("Please select a rating before continuing.");
-                    return;
-                }
-
-                // 🛑 STOP DOUBLE POST: Disable immediately and check state
-                if (newSubmitBtn.disabled) return;
-                newSubmitBtn.disabled = true;
-                newSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-
-                const ratingValue = selectedBtn.getAttribute('data-rating');
-                const base = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
-                        ? "http://127.0.0.1:5000"
-                        : "https://group6-bizally.onrender.com";
-
-                try {
-                    const response = await fetch(`${base}/api/feedback/submit`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            source: document.title,
-                            rating: ratingValue
-                        })
-                    });
-
-                    if (response.ok) {
-                        // Redirect immediately as requested
-                        window.location.href = `${base}/login`;
-                    } else {
-                        throw new Error("Submission failed");
-                    }
-                } catch (error) {
-                    console.error("Feedback failed:", error);
-                    // Re-enable only if there is an actual error
-                    newSubmitBtn.disabled = false;
-                    newSubmitBtn.innerHTML = 'Submit & continue';
-                    alert("Submission failed. Please try again.");
-                }
-            });
-        }
-    </script>
+    <script src="../../scripts/diagnosis-feedback-modal.js"></script>
 </body>
 
 </html>

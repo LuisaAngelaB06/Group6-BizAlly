@@ -504,11 +504,17 @@ def submit_anonymous_feedback():
     
     # 🌟 The Fix: Only require the rating. 
     # Don't use data['key'] because it throws a 400 if missing.
-    rating = data.get('rating') 
-    context = data.get('context', 'quickfix-two') # To know which fix they used
+    rating = data.get('feedback') or data.get('diagnosis_feedback') or data.get('rating')
+    context = data.get('service_module') or data.get('serviceModule') or data.get('context', 'quickfix-two') # To know which fix they used
+    nickname = data.get('nickname')
+    session_id = data.get('session_id')
 
     if not rating:
-        return jsonify({"error": "Rating is required"}), 400
+        return jsonify({"error": "feedback is required"}), 400
+    if not nickname:
+        return jsonify({"error": "nickname is required"}), 400
+    if not session_id:
+        return jsonify({"error": "session_id is required"}), 400
 
     # Save to your PostgreSQL table (ensure columns allow NULL for user_id/ticket_id)
     try:

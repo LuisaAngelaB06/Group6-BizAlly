@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Quick Fix – IP PBX (Yeastar) · AlliTrack</title>
+    <title>Quick Fix â€“ IP PBX (Yeastar) Â· AlliTrack</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
@@ -25,17 +25,17 @@
 
         <div class="doc-title">
             <i class="fas fa-phone-alt"></i>
-            <h1>IP PBX (Yeastar) · Quick Fix</h1>
+            <h1>IP PBX (Yeastar) Â· Quick Fix</h1>
         </div>
 
         <div class="doc-meta">
-            <span><i class="fas fa-file-pdf"></i> TROUBLESHOOTING GUIDE v2.1 · Yeastar</span>
+            <span><i class="fas fa-file-pdf"></i> TROUBLESHOOTING GUIDE v2.1 Â· Yeastar</span>
             <span><i class="fas fa-microchip"></i> AlliTrack voice support</span>
-            <span><i class="fas fa-clock"></i> 4‑minute diagnosis</span>
+            <span><i class="fas fa-clock"></i> 4â€‘minute diagnosis</span>
         </div>
 
         <p style="font-size:1.05rem; margin-bottom:28px; color: var(--text-secondary);">
-            Field‑tested resolutions for Yeastar S-Series, TA series, and cloud PBX. Includes SIP trunk issues,
+            Fieldâ€‘tested resolutions for Yeastar S-Series, TA series, and cloud PBX. Includes SIP trunk issues,
             extension registration, voicemail, and call quality.
         </p>
 
@@ -50,16 +50,16 @@
                 <p style="margin-bottom: 10px;">Yeastar extension shows red? Quick verify:</p>
                 <div class="pbx-code-snippet">
                     <i class="fas fa-terminal" style="margin-right: 6px; color:var(--blue-500);"></i>
-                    Extensions → status → check “Last Register”
+                    Extensions â†’ status â†’ check â€œLast Registerâ€
                 </div>
                 <ul style="margin-top: 16px; list-style: none; padding-left: 0;">
                     <li style="display: flex; gap: 8px; margin-bottom: 6px;"><span
-                            style="color: var(--blue-500);">✓</span> <span>Wrong SIP password / IP restriction</span>
+                            style="color: var(--blue-500);">âœ“</span> <span>Wrong SIP password / IP restriction</span>
                     </li>
                     <li style="display: flex; gap: 8px; margin-bottom: 6px;"><span
-                            style="color: var(--blue-500);">✓</span> <span>NAT keep‑alive: enable "friendly scan" or set
+                            style="color: var(--blue-500);">âœ“</span> <span>NAT keepâ€‘alive: enable "friendly scan" or set
                             registration interval to 120s</span></li>
-                    <li style="display: flex; gap: 8px;"><span style="color: var(--blue-500);">✓</span> <span>Use LAN or
+                    <li style="display: flex; gap: 8px;"><span style="color: var(--blue-500);">âœ“</span> <span>Use LAN or
                             VPN; PBX firewall whitelist phone MAC</span></li>
                 </ul>
             </div>
@@ -72,8 +72,8 @@
                     <span class="badge"><i class="fas fa-bolt"></i> immediate action</span>
                     <p style="margin-top: 12px; margin-bottom: 0;">
                         <i class="fas fa-sync" style="color:var(--blue-500);"></i>
-                        <strong>PBX » Trunk » Status »</strong> “Force Register”<br>
-                        <span style="font-size:0.85rem;">Check SIP message: 403, 401 – wrong secret or IP.</span>
+                        <strong>PBX Â» Trunk Â» Status Â»</strong> â€œForce Registerâ€<br>
+                        <span style="font-size:0.85rem;">Check SIP message: 403, 401 â€“ wrong secret or IP.</span>
                     </p>
                 </div>
                 <div style="margin-top: 14px; background:var(--blue-50); padding: 10px; border-radius: 12px;">
@@ -84,19 +84,19 @@
         </div>
 
         <div class="section-title">
-            <i class="fas fa-envelope"></i> Voicemail & auto‑attendant
+            <i class="fas fa-envelope"></i> Voicemail & autoâ€‘attendant
         </div>
         <div class="table-diag">
             <table>
                 <tr>
                     <td style="font-weight:600; width: 30px;">1.</td>
                     <td style="font-weight:600;">MWI not lighting</td>
-                    <td>Subscribe MWI on phone; Yeastar: check “Message Waiting” policy – RFC 3842.</td>
+                    <td>Subscribe MWI on phone; Yeastar: check â€œMessage Waitingâ€ policy â€“ RFC 3842.</td>
                 </tr>
                 <tr>
                     <td style="font-weight:600;">2.</td>
                     <td style="font-weight:600;">Voicemail to email fails</td>
-                    <td>SMTP settings: use app password; TLS/STARTTLS; port 587. Test in PBX » System » Email.</td>
+                    <td>SMTP settings: use app password; TLS/STARTTLS; port 587. Test in PBX Â» System Â» Email.</td>
                 </tr>
                 <tr>
                     <td style="font-weight:600;">3.</td>
@@ -106,7 +106,7 @@
                 <tr>
                     <td style="font-weight:600;">4.</td>
                     <td style="font-weight:600;">Voicemail password reset</td>
-                    <td>Dial *78 from extension or clear via PBX: extension → voicemail PIN.</td>
+                    <td>Dial *78 from extension or clear via PBX: extension â†’ voicemail PIN.</td>
                 </tr>
             </table>
         </div>
@@ -116,19 +116,19 @@
                 peers"</span> | grep UNREACHABLE
         </div>
 
-        <!-- ========== SECTION 3 – CALL QUALITY / ONE-WAY AUDIO ========= -->
+        <!-- ========== SECTION 3 â€“ CALL QUALITY / ONE-WAY AUDIO ========= -->
         <div class="section-title">
-            <i class="fas fa-waveform"></i> Call quality & one‑way audio
+            <i class="fas fa-waveform"></i> Call quality & oneâ€‘way audio
         </div>
         <ul class="step-list">
-            <li><span class="step-num">1</span> <strong>RTP ports blocked</strong> – ensure UDP 10000–20000 open
-                (Yeastar default). Symmetric NAT? Enable “STUN”.</li>
-            <li><span class="step-num">2</span> <strong>Codec mismatch</strong> – force G.711 (PCMA/PCMU). Disable G.722
+            <li><span class="step-num">1</span> <strong>RTP ports blocked</strong> â€“ ensure UDP 10000â€“20000 open
+                (Yeastar default). Symmetric NAT? Enable â€œSTUNâ€.</li>
+            <li><span class="step-num">2</span> <strong>Codec mismatch</strong> â€“ force G.711 (PCMA/PCMU). Disable G.722
                 if provider fails.</li>
             <li><span class="step-num">3</span> <strong>Jitter buffer</strong>: adaptive; set to 60/120 ms for choppy
-                audio. PBX: extension → advanced.</li>
-            <li><span class="step-num">4</span> <strong>one‑way audio (remote hold)</strong>: CANREINVITE=no; use
-                “update” instead of re‑INVITE.</li>
+                audio. PBX: extension â†’ advanced.</li>
+            <li><span class="step-num">4</span> <strong>oneâ€‘way audio (remote hold)</strong>: CANREINVITE=no; use
+                â€œupdateâ€ instead of reâ€‘INVITE.</li>
         </ul>
 
         <div class="two-col-grid">
@@ -152,25 +152,25 @@
         </div>
 
         <div style="margin: 32px 0 16px;">
-            <span class="badge"><i class="fas fa-toolbox"></i> 30‑second resolution – Yeastar</span>
+            <span class="badge"><i class="fas fa-toolbox"></i> 30â€‘second resolution â€“ Yeastar</span>
         </div>
         <div class="two-col-grid">
             <div class="tip-box">
                 <h4><i class="fas fa-ban" style="color:var(--blue-500);"></i> Blacklisted IPs</h4>
-                <p style="color: var(--text-secondary);">PBX automatically blocks failed auth. Go to Security » Attack
+                <p style="color: var(--text-secondary);">PBX automatically blocks failed auth. Go to Security Â» Attack
                     Defense, whitelist your office IP.</p>
             </div>
             <div class="tip-box">
                 <h4><i class="fas fa-database" style="color:var(--blue-500);"></i> SD card full</h4>
                 <p style="color: var(--text-secondary);">Yeastar internal SD for logs/recording. Format or archive
-                    recordings → PBX » System » Storage.</p>
+                    recordings â†’ PBX Â» System Â» Storage.</p>
             </div>
         </div>
 
         <hr style="border: none; border-top: 1px solid var(--border-color); margin: 32px 0 24px;">
         <div style="margin-top: 24px;">
             <h3 style="font-weight: 600; font-size: 1.1rem; display: flex; gap: 8px; margin-bottom: 16px;">
-                <i class="fas fa-table"></i> Error & status codes – Yeastar PBX
+                <i class="fas fa-table"></i> Error & status codes â€“ Yeastar PBX
             </h3>
             <div style="overflow-x: auto;">
                 <table class="error-matrix">
@@ -198,7 +198,7 @@
                             <td>Extension not registered; DND / forward check</td>
                         </tr>
                         <tr>
-                            <td style="font-weight: 600;">CFG‑014</td>
+                            <td style="font-weight: 600;">CFGâ€‘014</td>
                             <td>Voicemail storage failure</td>
                             <td>Repair SD card; remount via SSH: mount -o remount,rw /</td>
                         </tr>
@@ -224,7 +224,7 @@
                         <span style="display: block; font-weight: 600;">SIP endpoint</span>
                         <span style="font-family: monospace; font-size: 0.8rem;">transport: UDP/TLS</span>
                         <span style="display: block; margin-top: 12px;"><i class="fas fa-check-circle"
-                                style="color: green;"></i> NAT: yes (keep‑alive)</span>
+                                style="color: green;"></i> NAT: yes (keepâ€‘alive)</span>
                     </div>
                     <div>
                         <span style="display: block; font-weight: 600;">Codec order</span>
@@ -236,14 +236,14 @@
         </div>
 
         <div class="section-title" style="margin-top: 48px;">
-            <i class="fas fa-record-vinyl"></i> Call recording – missing or partial
+            <i class="fas fa-record-vinyl"></i> Call recording â€“ missing or partial
         </div>
         <div class="card-grid" style="margin-bottom: 8px;">
             <div class="fix-card" style="margin-bottom: 0;">
                 <i class="fas fa-microphone-slash"
                     style="color: var(--blue-500); font-size: 1.5rem; margin-bottom: 10px;"></i>
                 <h3>Recording not triggered</h3>
-                <p>Check extension » call recording mode: "always" or "on demand". For Yeastar TA: enable in trunk
+                <p>Check extension Â» call recording mode: "always" or "on demand". For Yeastar TA: enable in trunk
                     settings.</p>
                 <div class="badge" style="margin-top: 10px;"><i class="fas fa-hdd"></i> disk usage > 95%? overwrite
                     oldest</div>
@@ -252,171 +252,69 @@
                 <i class="fas fa-file-audio"
                     style="color: var(--blue-500); font-size: 1.5rem; margin-bottom: 10px;"></i>
                 <h3>Corrupted .wav</h3>
-                <p>Stop/start recording service: PBX » System » Recording. SSH: <span
+                <p>Stop/start recording service: PBX Â» System Â» Recording. SSH: <span
                         style="font-family: monospace;">rc.recording restart</span></p>
             </div>
         </div>
 
         <div class="open-ticket-section">
             <button class="btn-open-ticket" id="submitTicketBtn">
-                <i class="fas fa-ticket-alt"></i> Still having trouble? Submit a ticket
+                <i class="fas fa-comment-dots"></i> Share Diagnosis Feedback
             </button>
             <p style="font-size:0.8rem; color: var(--text-secondary); margin-top: 16px;">
-                Submit a support ticket — we’ll help you further.
+                Share feedback first. You can submit a ticket after your feedback is recorded.
             </p>
         </div>
 
         <div class="footnote-pdf">
-            <span><i class="fas fa-print"></i> print‑ready · AlliTrack intelligent ticketing · PBX diagnostics
+            <span><i class="fas fa-print"></i> printâ€‘ready Â· AlliTrack intelligent ticketing Â· PBX diagnostics
                 2025</span>
         </div>
     </div>
 
-    <div class="modal-overlay" id="feedbackModal">
+    <div class="modal-overlay" id="feedbackModal" data-diagnosis-feedback-modal data-service-name="IP PBX (Yeastar)"
+        data-ticket-path="/login" data-home-path="/" data-trigger-selector="#submitTicketBtn">
         <div class="modal-card">
-            <button class="close-modal-x" id="closeModalX" aria-label="Close modal">&times;</button>
+            <button class="close-modal-x" id="closeModalX" data-feedback-close aria-label="Close modal">&times;</button>
             <div class="modal-icon">
-                <i class="fas fa-headset"></i>
+                <i class="fas fa-headset" data-feedback-icon></i>
             </div>
-            <h2>How was the system?</h2>
-            <p>Your feedback helps us improve the<br>IP PBX (Yeastar) Quick Fix.</p>
+            <h2 data-feedback-title>Was the diagnosis helpful?</h2>
+            <p data-feedback-subtitle>Tell us if the IP PBX (Yeastar) Quick Fix identified or helped resolve your issue.</p>
+
+            <div class="feedback-field">
+                <label for="feedbackNickname">Nickname</label>
+                <input type="text" id="feedbackNickname" data-feedback-nickname autocomplete="nickname"
+                    placeholder="Enter a nickname" required>
+                <p class="feedback-error" data-nickname-error hidden></p>
+            </div>
 
             <div class="rating-group">
-                <button class="rating-btn" data-rating="good"><i class="fas fa-smile"></i> Good</button>
-                <button class="rating-btn" data-rating="neutral"><i class="fas fa-meh"></i> Neutral</button>
-                <button class="rating-btn" data-rating="bad"><i class="fas fa-frown"></i> Bad</button>
+                <label class="rating-btn">
+                    <input type="radio" name="diagnosisFeedback" value="resolved" data-feedback-label="Issue Resolved" data-diagnosis-feedback required>
+                    <i class="fas fa-circle-check"></i> Issue Resolved
+                </label>
+                <label class="rating-btn">
+                    <input type="radio" name="diagnosisFeedback" value="partially_resolved" data-feedback-label="Partially Resolved" data-diagnosis-feedback>
+                    <i class="fas fa-circle-half-stroke"></i> Partially Resolved
+                </label>
+                <label class="rating-btn">
+                    <input type="radio" name="diagnosisFeedback" value="unresolved" data-feedback-label="Still Not Resolved" data-diagnosis-feedback>
+                    <i class="fas fa-circle-xmark"></i> Still Not Resolved
+                </label>
             </div>
+            <p class="feedback-error" data-feedback-error hidden></p>
 
             <div class="modal-actions">
-                <button class="modal-btn modal-btn-primary" id="submitRating">Submit & continue</button>
-                <button class="modal-btn modal-btn-secondary" id="closeModalBtn">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="submitRating" data-feedback-submit disabled>Submit & continue</button>
+                <button class="modal-btn modal-btn-secondary" id="closeModalBtn" data-feedback-close>Cancel</button>
             </div>
             <p style="font-size:0.75rem; color: var(--text-secondary); margin-top: 20px;">
                 After submitting, you'll be redirected to login.
             </p>
         </div>
     </div>
-
-    <script>
-        (function () {
-            'use strict';
-
-            document.addEventListener('DOMContentLoaded', function () {
-
-                const modal = document.getElementById('feedbackModal');
-                const triggerBtn = document.getElementById('submitTicketBtn');
-                const closeModalBtn = document.getElementById('closeModalBtn');
-                const closeModalX = document.getElementById('closeModalX');
-                const submitRating = document.getElementById('submitRating');
-
-                function openModal() {
-                    if (modal) modal.classList.add('active');
-                }
-
-                function closeModal() {
-                    if (modal) modal.classList.remove('active');
-                }
-
-                // Open modal
-                if (triggerBtn) {
-                    triggerBtn.addEventListener('click', openModal);
-                }
-
-                // Close modal
-                if (closeModalBtn) {
-                    closeModalBtn.addEventListener('click', closeModal);
-                }
-
-                if (closeModalX) {
-                    closeModalX.addEventListener('click', closeModal);
-                }
-
-                // Close when clicking outside
-                if (modal) {
-                    modal.addEventListener('click', function (e) {
-                        if (e.target === modal) closeModal();
-                    });
-                }
-
-                // ESC key closes modal
-                document.addEventListener('keydown', function (e) {
-                    if (e.key === 'Escape') {
-                        if (modal && modal.classList.contains('active')) {
-                            modal.classList.remove('active');
-                        }
-                    }
-                });
-
-                // ✅ CLEAN RATING LOGIC
-                document.querySelectorAll('.rating-btn').forEach(btn => {
-                    btn.addEventListener('click', function () {
-                        document.querySelectorAll('.rating-btn').forEach(b => {
-                            b.classList.remove('active');
-                        });
-                        this.classList.add('active');
-                    });
-                });
-            });
-        })();
-
-                window.onpageshow = function(event) {
-            const submitBtn = document.getElementById('submitRating');
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Submit & continue';
-            }
-        };
-
-        if (submitRating) {
-            // 🌟 2. PREVENT DOUBLE LISTENER ATTACHMENT
-            const newSubmitBtn = submitRating.cloneNode(true);
-            submitRating.parentNode.replaceChild(newSubmitBtn, submitRating);
-
-            newSubmitBtn.addEventListener('click', async function (e) {
-                e.preventDefault(); // Stop any default form behavior
-
-                const selectedBtn = document.querySelector('.rating-btn.active');
-                if (!selectedBtn) {
-                    alert("Please select a rating before continuing.");
-                    return;
-                }
-
-                // 🛑 STOP DOUBLE POST: Disable immediately and check state
-                if (newSubmitBtn.disabled) return;
-                newSubmitBtn.disabled = true;
-                newSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-
-                const ratingValue = selectedBtn.getAttribute('data-rating');
-                const base = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
-                        ? "http://127.0.0.1:5000"
-                        : "https://group6-bizally.onrender.com";
-
-                try {
-                    const response = await fetch(`${base}/api/feedback/submit`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            source: document.title,
-                            rating: ratingValue
-                        })
-                    });
-
-                    if (response.ok) {
-                        // Redirect immediately as requested
-                        window.location.href = `${base}/login`;
-                    } else {
-                        throw new Error("Submission failed");
-                    }
-                } catch (error) {
-                    console.error("Feedback failed:", error);
-                    // Re-enable only if there is an actual error
-                    newSubmitBtn.disabled = false;
-                    newSubmitBtn.innerHTML = 'Submit & continue';
-                    alert("Submission failed. Please try again.");
-                }
-            });
-        }
-    </script>
+    <script src="../../scripts/diagnosis-feedback-modal.js"></script>
 </body>
 
 </html>

@@ -407,6 +407,12 @@ li {
     position: relative;
     border: 1px solid var(--border-color);
     text-align: center;
+    transform: translateY(12px) scale(0.98);
+    transition: transform 0.2s ease;
+}
+
+.modal-overlay.active .modal-card {
+    transform: translateY(0) scale(1);
 }
 
 .modal-icon {
@@ -429,8 +435,61 @@ li {
     font-size: 1.05rem;
 }
 
+.feedback-step-panel {
+    animation: feedbackStepIn 0.18s ease;
+}
+
+@keyframes feedbackStepIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feedback-field {
+    margin: 0 auto 22px;
+    max-width: 360px;
+    text-align: left;
+}
+
+.feedback-field label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.feedback-field input {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--gray-50);
+    color: var(--text-primary);
+    font: inherit;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.feedback-field input:focus {
+    border-color: var(--blue-500);
+    box-shadow: 0 0 0 4px rgba(10, 102, 194, 0.14);
+}
+
+.feedback-error {
+    color: #dc2626 !important;
+    font-size: 0.82rem !important;
+    margin: 8px 0 0 !important;
+}
+
 .rating-group {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
     margin-bottom: 28px;
@@ -454,10 +513,25 @@ li {
     color: var(--text-primary);
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
+    min-width: 180px;
+    text-align: center;
     transition: 0.15s;
     cursor: pointer;
     flex: 0 1 auto;
+    position: relative;
+}
+
+.rating-btn input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.rating-btn:has(input:focus-visible) {
+    outline: 3px solid rgba(10, 102, 194, 0.35);
+    outline-offset: 3px;
 }
 
 .rating-btn i {
@@ -482,6 +556,10 @@ li {
     margin-top: 8px;
 }
 
+.feedback-success-actions {
+    flex-wrap: wrap;
+}
+
 .modal-btn {
     padding: 12px 28px;
     border-radius: 60px;
@@ -500,6 +578,13 @@ li {
 .modal-btn-primary:hover {
     background: var(--blue-700);
     transform: scale(1.02);
+}
+
+.modal-btn-primary:disabled {
+    background: var(--gray-300);
+    color: var(--gray-600);
+    cursor: not-allowed;
+    transform: none;
 }
 
 .modal-btn-secondary {
@@ -567,6 +652,20 @@ li {
     .doc-title i {
         font-size: 2.2rem;
         padding: 10px;
+    }
+
+    .modal-card {
+        padding: 28px 18px;
+        width: calc(100% - 24px);
+    }
+
+    .rating-btn,
+    .modal-btn {
+        width: 100%;
+    }
+
+    .modal-actions {
+        flex-direction: column;
     }
 
     .section-title {
