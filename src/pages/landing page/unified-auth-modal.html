@@ -12,6 +12,26 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../../styles/landing page/unified-auth-modal.css">
+    <script>
+        // Local email-validator helper using the package's validation logic.
+        window.EmailValidator = {
+            validate: function (email) {
+                if (!email) return false;
+                if (email.length > 254) return false;
+
+                var tester = /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
+                if (!tester.test(email)) return false;
+
+                var parts = email.split('@');
+                if (parts[0].length > 64) return false;
+
+                var domainParts = parts[1].split('.');
+                if (domainParts.some(function (part) { return part.length > 63; })) return false;
+
+                return true;
+            }
+        };
+    </script>
     <script src="../../scripts/landing-accessibility.js"></script>
 </head>
 
@@ -369,8 +389,62 @@
             const reqNumber = document.getElementById('reqNumber');
 
             // ========== UTILITY FUNCTIONS ==========
+            const loginTouched = {
+                email: false,
+                password: false
+            };
+
+            const signupTouched = {
+                firstName: false,
+                lastName: false,
+                email: false,
+                password: false,
+                confirmPassword: false,
+                terms: false
+            };
+
+            const ALLOWED_EMAIL_DOMAINS = [
+                'gmail.com',
+                'yahoo.com',
+                'outlook.com',
+                'allitrack.com'
+            ];
+
+            function setFieldError(input, errorEl, message, show) {
+                if (!errorEl) return;
+                errorEl.textContent = show ? message : '';
+                if (input) {
+                    if (show && message) {
+                        input.classList.add('error-input');
+                    } else {
+                        input.classList.remove('error-input');
+                    }
+                }
+            }
+
+            function shouldShowFieldError(isTouched, forceShow) {
+                return isTouched || forceShow;
+            }
+
+            function getEmailValidationError(email) {
+                if (!email) return 'Email is required.';
+                if (typeof EmailValidator === 'undefined' || typeof EmailValidator.validate !== 'function') {
+                    return 'Email validation is unavailable.';
+                }
+                if (!EmailValidator.validate(email)) {
+                    return 'Enter a valid email address.';
+                }
+
+                const domain = (email.split('@')[1] || '').toLowerCase();
+                if (!ALLOWED_EMAIL_DOMAINS.includes(domain)) {
+                    return `Email domain must be one of: ${ALLOWED_EMAIL_DOMAINS.join(', ')}.`;
+                }
+
+                return '';
+            }
+
             function validateEmail(email) {
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                return getEmailValidationError(email) === '';
             }
 
             function isAdminUser(userEmail) {
@@ -440,31 +514,27 @@
             }
 
             // ========== LOGIN VALIDATION ==========
-            function validateLoginForm() {
+            function validateLoginForm(forceShowErrors = false) {
                 let valid = true;
                 const emailVal = loginEmail.value.trim();
                 const passVal = loginPass.value.trim();
+                const showEmailError = shouldShowFieldError(loginTouched.email, forceShowErrors);
+                const showPassError = shouldShowFieldError(loginTouched.password, forceShowErrors);
 
                 if (!emailVal) {
-                    loginEmailError.textContent = 'Email is required.';
-                    loginEmail.classList.add('error-input');
-                    valid = false;
-                } else if (!validateEmail(emailVal)) {
-                    loginEmailError.textContent = 'Valid email required.';
-                    loginEmail.classList.add('error-input');
+                    setFieldError(loginEmail, loginEmailError, 'Email is required.', showEmailError);
                     valid = false;
                 } else {
-                    loginEmailError.textContent = '';
-                    loginEmail.classList.remove('error-input');
+                    const emailError = getEmailValidationError(emailVal);
+                    setFieldError(loginEmail, loginEmailError, emailError, showEmailError && !!emailError);
+                    if (emailError) valid = false;
                 }
 
                 if (!passVal) {
-                    loginPassError.textContent = 'Password required.';
-                    loginPass.classList.add('error-input');
+                    setFieldError(loginPass, loginPassError, 'Password required.', showPassError);
                     valid = false;
                 } else {
-                    loginPassError.textContent = '';
-                    loginPass.classList.remove('error-input');
+                    setFieldError(loginPass, loginPassError, '', false);
                 }
 
                 modalLoginBtn.disabled = !valid;
@@ -498,83 +568,75 @@
                 return hasLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
             }
 
-            function validateSignup() {
+            function validateSignup(forceShowErrors = false) {
                 let isValid = true;
 
                 // Accepts single or compound names with spaces/hyphens: "Luisa Angela", "Delo Santos", "Anne-Marie"
                 const namePattern = /^[A-Za-zÀ-ɏ]+(?:[\s\-][A-Za-zÀ-ɏ]+)*$/;
-
                 const fnVal = firstName?.value.trim();
+                const lnVal = lastName?.value.trim();
+                const semail = signupEmail?.value.trim();
+                const pwd = signupPwdField?.value || '';
+                const confirmVal = confirmPwdField?.value || '';
+
+                const showFirstNameError = shouldShowFieldError(signupTouched.firstName, forceShowErrors);
+                const showLastNameError = shouldShowFieldError(signupTouched.lastName, forceShowErrors);
+                const showSignupEmailError = shouldShowFieldError(signupTouched.email, forceShowErrors);
+                const showSignupPwdError = shouldShowFieldError(signupTouched.password, forceShowErrors);
+                const showConfirmError = shouldShowFieldError(signupTouched.confirmPassword, forceShowErrors);
+                const showTermsError = shouldShowFieldError(signupTouched.terms, forceShowErrors);
+
                 if (!fnVal) {
-                    firstNameErr.textContent = 'First name required';
-                    firstName?.classList.add('error-input');
+                    setFieldError(firstName, firstNameErr, 'First name required', showFirstNameError);
                     isValid = false;
                 } else if (!namePattern.test(fnVal)) {
-                    firstNameErr.textContent = 'Letters, spaces, and hyphens only';
-                    firstName?.classList.add('error-input');
+                    setFieldError(firstName, firstNameErr, 'Letters, spaces, and hyphens only', showFirstNameError);
                     isValid = false;
                 } else {
-                    firstNameErr.textContent = '';
-                    firstName?.classList.remove('error-input');
+                    setFieldError(firstName, firstNameErr, '', false);
                 }
 
-                const lnVal = lastName?.value.trim();
                 if (!lnVal) {
-                    lastNameErr.textContent = 'Last name required';
-                    lastName?.classList.add('error-input');
+                    setFieldError(lastName, lastNameErr, 'Last name required', showLastNameError);
                     isValid = false;
                 } else if (!namePattern.test(lnVal)) {
-                    lastNameErr.textContent = 'Letters, spaces, and hyphens only';
-                    lastName?.classList.add('error-input');
+                    setFieldError(lastName, lastNameErr, 'Letters, spaces, and hyphens only', showLastNameError);
                     isValid = false;
                 } else {
-                    lastNameErr.textContent = '';
-                    lastName?.classList.remove('error-input');
+                    setFieldError(lastName, lastNameErr, '', false);
                 }
 
-                const semail = signupEmail?.value.trim();
                 if (!semail) {
-                    signupEmailErr.textContent = 'Email required';
-                    signupEmail?.classList.add('error-input');
-                    isValid = false;
-                } else if (!validateEmail(semail)) {
-                    signupEmailErr.textContent = 'Valid email required';
-                    signupEmail?.classList.add('error-input');
+                    setFieldError(signupEmail, signupEmailErr, 'Email required', showSignupEmailError);
                     isValid = false;
                 } else {
-                    signupEmailErr.textContent = '';
-                    signupEmail?.classList.remove('error-input');
+                    const emailError = getEmailValidationError(semail);
+                    setFieldError(signupEmail, signupEmailErr, emailError, showSignupEmailError && !!emailError);
+                    if (emailError) isValid = false;
                 }
 
-                const pwd = signupPwdField?.value || '';
                 if (!pwd) {
-                    signupPwdErr.textContent = 'Password required';
-                    signupPwdField?.classList.add('error-input');
+                    setFieldError(signupPwdField, signupPwdErr, 'Password required', showSignupPwdError);
                     isValid = false;
                 } else if (!checkPasswordRequirements(pwd)) {
-                    signupPwdErr.textContent = 'Requirements not met';
-                    signupPwdField?.classList.add('error-input');
+                    setFieldError(signupPwdField, signupPwdErr, 'Requirements not met', showSignupPwdError);
                     isValid = false;
                 } else {
-                    signupPwdErr.textContent = '';
-                    signupPwdField?.classList.remove('error-input');
+                    setFieldError(signupPwdField, signupPwdErr, '', false);
                 }
 
-                if (!confirmPwdField?.value) {
-                    confirmErr.textContent = 'Please confirm password';
-                    confirmPwdField?.classList.add('error-input');
+                if (!confirmVal) {
+                    setFieldError(confirmPwdField, confirmErr, 'Please confirm password', showConfirmError);
                     isValid = false;
-                } else if (confirmPwdField.value !== pwd) {
-                    confirmErr.textContent = 'Passwords do not match';
-                    confirmPwdField?.classList.add('error-input');
+                } else if (confirmVal !== pwd) {
+                    setFieldError(confirmPwdField, confirmErr, 'Passwords do not match', showConfirmError);
                     isValid = false;
                 } else {
-                    confirmErr.textContent = '';
-                    confirmPwdField?.classList.remove('error-input');
+                    setFieldError(confirmPwdField, confirmErr, '', false);
                 }
 
                 if (!termsCheck?.checked) {
-                    termsErr.textContent = 'You must accept the terms';
+                    termsErr.textContent = showTermsError ? 'You must accept the terms' : '';
                     isValid = false;
                 } else {
                     termsErr.textContent = '';
@@ -601,7 +663,9 @@
 
             async function handleEmailLogin(e) {
                 e.preventDefault();
-                if (!validateLoginForm()) return;
+                loginTouched.email = true;
+                loginTouched.password = true;
+                if (!validateLoginForm(true)) return;
 
                 const emailValue = loginEmail.value.trim();
                 const passwordValue = loginPass.value.trim();
@@ -683,7 +747,13 @@
 
             async function handleSignupSubmit(e) {
                 e.preventDefault();
-                if (!validateSignup()) return;
+                signupTouched.firstName = true;
+                signupTouched.lastName = true;
+                signupTouched.email = true;
+                signupTouched.password = true;
+                signupTouched.confirmPassword = true;
+                signupTouched.terms = true;
+                if (!validateSignup(true)) return;
 
                 showLoading('Sending verification code...');
                 signupBtn.disabled = true;
@@ -721,6 +791,12 @@
                         // 3. Reset the form ONLY after pendingSignup is safely stored,
                         //    then show the OTP panel. Order matters here.
                         document.getElementById('modalSignupForm').reset();
+                        signupTouched.firstName = false;
+                        signupTouched.lastName = false;
+                        signupTouched.email = false;
+                        signupTouched.password = false;
+                        signupTouched.confirmPassword = false;
+                        signupTouched.terms = false;
                         if (typeof window.showOtpPanel === 'function') {
                             window.showOtpPanel(email);
                         }
@@ -780,21 +856,66 @@
                 setupToggle('toggleModalConfirmPassword', 'modalConfirmPassword');
 
                 // Login validation
-                if (loginEmail) loginEmail.addEventListener('input', validateLoginForm);
-                if (loginPass) loginPass.addEventListener('input', validateLoginForm);
+                if (loginEmail) {
+                    loginEmail.addEventListener('input', validateLoginForm);
+                    loginEmail.addEventListener('blur', function () {
+                        loginTouched.email = true;
+                        validateLoginForm();
+                    });
+                }
+                if (loginPass) {
+                    loginPass.addEventListener('input', validateLoginForm);
+                    loginPass.addEventListener('blur', function () {
+                        loginTouched.password = true;
+                        validateLoginForm();
+                    });
+                }
 
                 // Signup validation
-                if (firstName) firstName.addEventListener('input', validateSignup);
-                if (lastName) lastName.addEventListener('input', validateSignup);
-                if (signupEmail) signupEmail.addEventListener('input', validateSignup);
+                if (firstName) {
+                    firstName.addEventListener('input', validateSignup);
+                    firstName.addEventListener('blur', function () {
+                        signupTouched.firstName = true;
+                        validateSignup();
+                    });
+                }
+                if (lastName) {
+                    lastName.addEventListener('input', validateSignup);
+                    lastName.addEventListener('blur', function () {
+                        signupTouched.lastName = true;
+                        validateSignup();
+                    });
+                }
+                if (signupEmail) {
+                    signupEmail.addEventListener('input', validateSignup);
+                    signupEmail.addEventListener('blur', function () {
+                        signupTouched.email = true;
+                        validateSignup();
+                    });
+                }
                 if (signupPwdField) {
                     signupPwdField.addEventListener('input', function () {
                         checkPasswordRequirements(this.value);
                         validateSignup();
                     });
+                    signupPwdField.addEventListener('blur', function () {
+                        signupTouched.password = true;
+                        validateSignup();
+                    });
                 }
-                if (confirmPwdField) confirmPwdField.addEventListener('input', validateSignup);
-                if (termsCheck) termsCheck.addEventListener('change', validateSignup);
+                if (confirmPwdField) {
+                    confirmPwdField.addEventListener('input', validateSignup);
+                    confirmPwdField.addEventListener('blur', function () {
+                        signupTouched.confirmPassword = true;
+                        validateSignup();
+                    });
+                }
+                if (termsCheck) {
+                    termsCheck.addEventListener('change', function () {
+                        signupTouched.terms = true;
+                        validateSignup();
+                    });
+                }
 
                 // Prevent spaces in inputs
                 // Name fields intentionally excluded — spaces allowed for double names (e.g. 'Luisa Angela', 'Delo Santos')
@@ -835,9 +956,10 @@
                 document.getElementById('modalGoogleLogin')?.addEventListener('click', continueWithGoogle);
                 document.getElementById('modalGoogleSignup')?.addEventListener('click', continueWithGoogle);
 
-                // Initial validation
-                validateLoginForm();
-                validateSignup();
+                // Initial validation (button state + requirement state only,
+                // errors remain hidden until the user interacts or submits)
+                validateLoginForm(false);
+                validateSignup(false);
 
                 console.log('Login page initialized with authentication support');
             }

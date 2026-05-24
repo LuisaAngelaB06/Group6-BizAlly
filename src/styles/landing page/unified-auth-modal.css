@@ -222,6 +222,22 @@ body {
     overflow-y: auto;
     position: relative;
     background: var(--bg-white);
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-2) transparent;
+}
+
+.panel-right::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+.panel-right::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.panel-right::-webkit-scrollbar-thumb {
+    background: var(--surface-2);
+    border-radius: 99px;
 }
 
 /* ─── FORM HEADER ─── */
