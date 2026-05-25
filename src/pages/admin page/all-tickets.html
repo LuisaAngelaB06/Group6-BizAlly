@@ -761,6 +761,7 @@
         }
 
         async function fetchTicketsFromAPI() {
+            renderTicketsTableState('Loading tickets', 'Please wait while tickets are retrieved.', 'fas fa-spinner fa-spin');
             try {
                 const res = await fetch(`${API_BASE_URL}/api/tickets`, {
                     headers: getAdminAuthHeaders()
@@ -799,6 +800,12 @@
                 loadTickets();
             } catch (err) {
                 console.error('Failed to fetch tickets:', err);
+                currentFilteredTickets = [];
+                sampleTickets = [];
+                currentPage = 1;
+                totalPages = 1;
+                renderTicketsTableState('Unable to load tickets', 'Refresh the table or try again in a moment.', 'fas fa-exclamation-circle');
+                updatePaginationDisplay();
                 showToast('Failed to load tickets', 'error');
             }
         }
@@ -826,6 +833,23 @@
             updatePaginationDisplay();
         }
 
+        function renderTicketsTableState(title, message, iconClass = 'fas fa-ticket-alt') {
+            const tbody = document.getElementById('ticketsTbody');
+            if (!tbody) return;
+
+            tbody.innerHTML = `
+                <tr class="table-state-row">
+                    <td colspan="8">
+                        <div class="empty-state table-state">
+                            <i class="${iconClass}"></i>
+                            <h3>${title}</h3>
+                            <p>${message}</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
         function renderTickets() {
             const tbody = document.getElementById('ticketsTbody');
             if (!tbody) return;
@@ -835,16 +859,11 @@
             const dict = getDict();
 
             if (pageTickets.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="8">
-                            <div class="empty-state">
-                                <i class="fas fa-ticket-alt"></i>
-                                <h3>${dict.no_tickets_found || 'No tickets found'}</h3>
-                                <p>${dict.no_tickets_description || 'No tickets match your current filters.'}</p>
-                            </div>
-                        </td>
-                    </tr>`;
+                renderTicketsTableState(
+                    dict.no_tickets_found || 'No tickets found',
+                    dict.no_tickets_description || 'No tickets match your current filters.',
+                    'fas fa-ticket-alt'
+                );
                 return;
             }
 

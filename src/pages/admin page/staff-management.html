@@ -471,11 +471,15 @@
             window._staffMembers = staffMembers;
 
             async function fetchRealStaff() {
+                renderStaffTableState('Loading staff', 'Please wait while staff accounts are retrieved.', 'fas fa-spinner fa-spin');
                 try {
                     const response = await fetch(`${API_BASE_URL}/api/auth/admin/users`);
                     const realUsers = await response.json();
 
-                    if (!Array.isArray(realUsers)) return;
+                    if (!Array.isArray(realUsers)) {
+                        renderStaffTableState('Unable to load staff', 'Refresh the table or try again in a moment.', 'fas fa-exclamation-circle');
+                        return;
+                    }
 
                     staffMembers = realUsers
                         .filter(user => {
@@ -511,6 +515,7 @@
                     loadStaff();
                 } catch (error) {
                     console.error("❌ THE FETCH FAILED:", error);
+                    renderStaffTableState('Unable to load staff', 'Refresh the table or try again in a moment.', 'fas fa-exclamation-circle');
                 }
             }
 
@@ -521,6 +526,23 @@
             let itemsPerPage = 10;
             let totalPages = 1;
             let editingStaffId = null;
+
+            function renderStaffTableState(title, message, iconClass = 'fas fa-users') {
+                const tbody = document.getElementById('staffTableBody');
+                if (!tbody) return;
+
+                tbody.innerHTML = `
+                    <tr class="table-state-row">
+                        <td colspan="7">
+                            <div class="table-state">
+                                <i class="${iconClass}"></i>
+                                <h3>${title}</h3>
+                                <p>${message}</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
 
             // ---------- UTILITIES ----------
             function getCurrentLanguage() {
@@ -578,6 +600,15 @@
                 if (currentPage > totalPages) currentPage = totalPages || 1;
                 const start = (currentPage - 1) * itemsPerPage;
                 const pageData = currentFilteredStaff.slice(start, start + itemsPerPage);
+
+                if (pageData.length === 0) {
+                    const dict = translations[getCurrentLanguage()];
+                    renderStaffTableState(dict.no_staff_found || 'No staff found', 'No staff match your current filters.', 'fas fa-users');
+                    updatePagination();
+                    updateDeleteButtonVisibility();
+                    updateSelectAllCheckbox();
+                    return;
+                }
 
                 pageData.forEach(staff => {
                     const row = document.createElement('tr');

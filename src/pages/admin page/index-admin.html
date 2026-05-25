@@ -508,7 +508,7 @@
             const list = document.getElementById("recentActivityList");
             if (!list) return;
 
-            list.innerHTML = `<div class="activity-meta">Loading recent activity...</div>`;
+            list.innerHTML = `<div class="activity-state activity-meta">Loading recent activity...</div>`;
 
             try {
                 const res = await fetch(`${API_BASE_URL}/api/tickets`);
@@ -523,7 +523,7 @@
 
                 if (!recent.length) {
                     list.innerHTML = `
-                <div class="activity-meta">
+                <div class="activity-state activity-meta">
                     No recent activity yet.
                 </div>
             `;
@@ -564,7 +564,7 @@
                 console.error("Recent activity failed:", err);
 
                 list.innerHTML = `
-            <div class="activity-meta">
+            <div class="activity-state activity-meta">
                 Unable to load recent activity.
             </div>
         `;

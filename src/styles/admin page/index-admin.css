@@ -592,7 +592,10 @@ body {
 }
 
 .activity-card {
-    overflow: visible;
+    height: clamp(420px, 48vh, 500px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .card-head {
@@ -620,11 +623,23 @@ body {
 
 /* Recent activity */
 .activity-list {
-    overflow: visible;
-    padding-right: 0;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+.activity-state {
+    flex: 1;
+    min-height: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
 }
 
 .activity-item {

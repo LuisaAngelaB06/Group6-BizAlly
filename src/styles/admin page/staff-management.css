@@ -1017,24 +1017,22 @@ body {
     table-layout: auto;
 }
 
-.staff-table thead {
-    background: rgba(59, 123, 255, 0.08);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 5;
-}
-
 .staff-table th,
 .staff-table td {
     padding: 14px 16px;
     color: var(--text);
     font-size: 0.85rem;
+    line-height: 1.25;
     vertical-align: middle;
     white-space: nowrap;
 }
 
 .staff-table th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--border);
     font-size: 0.72rem;
     letter-spacing: 0.8px;
     text-transform: uppercase;
@@ -1054,6 +1052,38 @@ body {
 
 .staff-table tbody tr:last-child {
     border-bottom: 0;
+}
+
+.table-state-row td {
+    height: 250px;
+}
+
+.table-state {
+    min-height: 230px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    color: var(--text-3);
+}
+
+.table-state i {
+    font-size: 2rem;
+    color: var(--surface-2);
+}
+
+.table-state h3 {
+    margin: 0;
+    font-family: var(--font-head);
+    font-size: 1rem;
+    color: var(--text-2);
+}
+
+.table-state p {
+    margin: 0;
+    font-size: 0.82rem;
 }
 
 .staff-table th:nth-child(1),
@@ -1088,8 +1118,10 @@ body {
 
 .staff-checkbox,
 #selectAllStaff {
+    display: block;
     width: 16px;
     height: 16px;
+    margin: 0 auto;
     accent-color: var(--accent);
     cursor: pointer;
 }

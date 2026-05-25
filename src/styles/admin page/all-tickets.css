@@ -628,6 +628,9 @@ body {
 }
 
 .tickets-table th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
     padding: 13px 16px;
     text-align: left;
     font-size: 0.72rem;
@@ -795,6 +798,19 @@ body {
     font-size: 0.875rem;
 }
 
+.table-state-row td {
+    height: 250px;
+}
+
+.table-state {
+    min-height: 230px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
 /* ─── PAGINATION ─────────────────────────────── */
 .pagination-container {
     display: flex;
@@ -804,7 +820,7 @@ body {
     gap: 12px;
     padding: 14px 20px;
     border-top: 1px solid var(--border);
-    background: var(--bg-2);
+    background: transparent;
 }
 
 .pagination-info {
