@@ -61,8 +61,8 @@
                         <i class="fas fa-info-circle" style="color: var(--blue-400);"></i>
                         You <strong>cannot create a support ticket here</strong>. Use this form to send a general
                         message, or reach us via phone/email.
-                        To open a ticket, please <a href="/#service-module"
-                            style="color: var(--blue-500); font-weight: 700;">log in to your account</a>.
+                        To open a ticket, please <a href="/src/pages/landing page/unified-auth-modal.html"
+                        style="color: var(--blue-500); font-weight: 700;">log in to your account</a>.
                     </p>
                 </div>
             </div>
@@ -122,7 +122,7 @@
                                     style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 600;">email</span>
                                 <div
                                     style="font-weight: 700; color: var(--text-primary); font-size: 1.1rem; word-break: break-all;">
-                                    sales.businessalliance@gmail.com</div>
+                                    contact.allitrack@gmail.com</div>
                                 <span style="color: var(--gray-500); font-size: 0.9rem;">response within 4h</span>
                             </div>
                         </div>
@@ -138,7 +138,7 @@
                                 style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: var(--gray-50); border-radius: 50%; color: var(--blue-500); transition: var(--transition);">
                                 <i class="fab fa-facebook-f" style="font-size: 1.3rem;"></i>
                             </a>
-                            <a href="mailto:sales.businessalliance@gmail.com"
+                            <a href="mailto:contact.allitrack@gmail.com"
                                 style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: var(--gray-50); border-radius: 50%; color: var(--blue-500); transition: var(--transition);">
                                 <i class="fas fa-envelope" style="font-size: 1.3rem;"></i>
                             </a>
@@ -150,9 +150,7 @@
                     <h3 style="font-size: 1.8rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
                         Send us a message
                     </h3>
-                    <form id="contactMessageForm"
-                        onsubmit="event.preventDefault(); alert('✅ Message sent (demo). In production this would connect to your CRM.'); this.reset();"
-                        style="display: flex; flex-direction: column; gap: 22px;">
+                    <form id="contactForm" style="display: flex; flex-direction: column; gap: 22px;">
                         <!-- name field -->
                         <div style="display: flex; flex-direction: column; gap: 8px;">
                             <label style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">Your name
@@ -160,7 +158,8 @@
                             <div style="position: relative;">
                                 <i class="fas fa-user"
                                     style="position: absolute; left: 18px; top: 15px; color: var(--gray-400); z-index: 2;"></i>
-                                <input type="text" placeholder="e.g. Maria Santos" required class="form-input" value="">
+                                <input type="text" id="contactName" placeholder="e.g. Maria Santos" required
+                                    class="form-input" value="">
                             </div>
                         </div>
                         <!-- email field -->
@@ -170,14 +169,26 @@
                             <div style="position: relative;">
                                 <i class="fas fa-envelope"
                                     style="position: absolute; left: 18px; top: 15px; color: var(--gray-400);"></i>
-                                <input type="email" placeholder="you@company.com" required class="form-input" value="">
+                                <input type="email" id="contactEmail" placeholder="you@company.com" required
+                                    class="form-input" value="">
+                            </div>
+                        </div>
+                        <!-- subject field -->
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">Subject
+                                *</label>
+                            <div style="position: relative;">
+                                <i class="fas fa-tag"
+                                    style="position: absolute; left: 18px; top: 15px; color: var(--gray-400);"></i>
+                                <input type="text" id="contactSubject" name="subject"
+                                    placeholder="e.g. Inquiry about services" required class="form-input" value="">
                             </div>
                         </div>
                         <!-- message field -->
                         <div style="display: flex; flex-direction: column; gap: 8px;">
                             <label style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">Message
                                 *</label>
-                            <textarea rows="4"
+                            <textarea rows="4" id="contactMessage"
                                 placeholder="How can we help you? (this is not a ticket – for technical issues please log in)"
                                 required class="form-input"
                                 style="border-radius: 24px; resize: vertical; padding: 16px 20px;"></textarea>
@@ -185,10 +196,12 @@
 
                         <!-- SUBMIT BUTTON – live, interactive, clearly labeled as message, not ticket -->
                         <div style="margin-top: 12px;">
-                            <button type="submit" class="btn-submit-message">
+                            <button type="submit" id="contactSubmitBtn" class="btn-submit-message">
                                 <i class="fas fa-paper-plane"></i> Submit message
                             </button>
                         </div>
+                        <p id="contactFormStatus" role="status" aria-live="polite"
+                            style="font-size: 0.9rem; font-weight: 600; margin: -4px 0 0; display: none;"></p>
                         <p
                             style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px; display: flex; align-items: center; gap: 6px;">
                             <i class="fas fa-info-circle"></i> This is a general contact form — not a ticket. Ticket
@@ -222,7 +235,7 @@
                 <div class="socials">
                     <a href="https://www.facebook.com/profile.php?id=61558917757365" aria-label="Facebook"><i
                             class="fab fa-facebook-f"></i></a>
-                    <a href="mailto:sales.businessalliance@gmail.com" aria-label="Email"><i
+                    <a href="mailto:contact.allitrack@gmail.com" aria-label="Email"><i
                             class="fas fa-envelope"></i></a>
                 </div>
             </div>
@@ -283,6 +296,60 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('contactForm');
+            const nameInput = document.getElementById('contactName');
+            const emailInput = document.getElementById('contactEmail');
+            const subjectInput = document.getElementById('contactSubject');
+            const messageInput = document.getElementById('contactMessage');
+            const submitButton = document.getElementById('contactSubmitBtn');
+            const statusMessage = document.getElementById('contactFormStatus');
+
+            if (!form || !nameInput || !emailInput || !subjectInput || !messageInput || !submitButton || !statusMessage) return;
+
+            const setStatus = (message, type) => {
+                statusMessage.textContent = message;
+                statusMessage.style.display = message ? 'block' : 'none';
+                statusMessage.style.color = type === 'success' ? 'var(--green-600, #15803d)' : 'var(--red-600, #dc2626)';
+            };
+
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                setStatus('', 'success');
+
+                const originalButtonText = submitButton.innerHTML;
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+                try {
+                    const response = await fetch('/api/contact-messages', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: nameInput.value.trim(),
+                            email: emailInput.value.trim(),
+                            subject: subjectInput.value.trim(),
+                            message: messageInput.value.trim()
+                        })
+                    });
+
+                    const result = await response.json().catch(() => ({}));
+                    if (!response.ok) {
+                        throw new Error(result.message || result.error || 'Failed to send message');
+                    }
+
+                    form.reset();
+                    setStatus(result.message || 'Message sent successfully', 'success');
+                } catch (error) {
+                    setStatus(error.message || 'Failed to send message', 'error');
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
