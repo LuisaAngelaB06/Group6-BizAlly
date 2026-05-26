@@ -264,6 +264,68 @@ def _ticket_charts(cursor):
     }
 
 
+def _add_sla_rates(rows):
+    rated = []
+    for row in rows:
+        row = dict(row)
+        resolved = int(row.get("resolved") or 0)
+        within_sla = int(row.get("within_sla") or 0)
+        breaches = int(row.get("breaches") or 0)
+        row["sla_compliance"] = round((within_sla / resolved) * 100, 1) if resolved else 0
+        row["breach_rate"] = round((breaches / resolved) * 100, 1) if resolved else 0
+        rated.append(row)
+    return rated
+
+
+def _sla_service_rows(cursor):
+    where, params = _filters("t", role_column="req_user.user_type")
+    rows = _fetchall(cursor, f"""
+        SELECT
+            COALESCE(st.name, 'Support') AS service_type,
+            COUNT(t.ticket_id) FILTER (WHERE t.status_id IN (3, 4))::int AS resolved,
+            COUNT(t.ticket_id) FILTER (
+                WHERE t.status_id IN (3, 4)
+                  AND t.last_updated <= t.date_created + INTERVAL '72 hours'
+            )::int AS within_sla,
+            COUNT(t.ticket_id) FILTER (
+                WHERE t.status_id IN (3, 4)
+                  AND t.last_updated > t.date_created + INTERVAL '72 hours'
+            )::int AS breaches,
+            ROUND(AVG(EXTRACT(EPOCH FROM (t.last_updated - t.date_created)) / 3600.0)
+                FILTER (WHERE t.status_id IN (3, 4)), 2) AS avg_resolution_hours,
+            ROUND(AVG(EXTRACT(EPOCH FROM (t.last_updated - t.date_created)) / 3600.0), 2) AS avg_response_hours
+        {_ticket_base()}
+        {where}
+        GROUP BY COALESCE(st.name, 'Support')
+        ORDER BY resolved DESC
+    """, params)
+    return _add_sla_rates(rows)
+
+
+def _sla_product_category_rows(cursor):
+    where, params = _filters("t", role_column="req_user.user_type")
+    rows = _fetchall(cursor, f"""
+        SELECT
+            COALESCE(NULLIF(t.product_category, ''), 'Uncategorized') AS product_category,
+            COUNT(t.ticket_id) FILTER (WHERE t.status_id IN (3, 4))::int AS resolved,
+            COUNT(t.ticket_id) FILTER (
+                WHERE t.status_id IN (3, 4)
+                  AND t.last_updated <= t.date_created + INTERVAL '72 hours'
+            )::int AS within_sla,
+            COUNT(t.ticket_id) FILTER (
+                WHERE t.status_id IN (3, 4)
+                  AND t.last_updated > t.date_created + INTERVAL '72 hours'
+            )::int AS breaches,
+            ROUND(AVG(EXTRACT(EPOCH FROM (t.last_updated - t.date_created)) / 3600.0)
+                FILTER (WHERE t.status_id IN (3, 4)), 2) AS avg_resolution_hours
+        {_ticket_base()}
+        {where}
+        GROUP BY COALESCE(NULLIF(t.product_category, ''), 'Uncategorized')
+        ORDER BY resolved DESC
+    """, params)
+    return _add_sla_rates(rows)
+
+
 HELPFUL_FEEDBACK = (
     'resolved', 'issue resolved', 'useful', 'helpful', 'yes', 'positive', 'satisfied'
 )
@@ -678,46 +740,25 @@ def sla_analytics():
     if not conn:
         return _json_error("Database connection failed")
     try:
-        where, params = _filters("t", role_column="req_user.user_type")
-        rows = _fetchall(cursor, f"""
-            SELECT
-                COALESCE(st.name, 'Support') AS service_type,
-                COUNT(t.ticket_id) FILTER (WHERE t.status_id IN (3, 4))::int AS resolved,
-                COUNT(t.ticket_id) FILTER (
-                    WHERE t.status_id IN (3, 4)
-                      AND t.last_updated <= t.date_created + INTERVAL '72 hours'
-                )::int AS within_sla,
-                COUNT(t.ticket_id) FILTER (
-                    WHERE t.status_id IN (3, 4)
-                      AND t.last_updated > t.date_created + INTERVAL '72 hours'
-                )::int AS breaches,
-                ROUND(AVG(EXTRACT(EPOCH FROM (t.last_updated - t.date_created)) / 3600.0)
-                    FILTER (WHERE t.status_id IN (3, 4)), 2) AS avg_resolution_hours,
-                ROUND(AVG(EXTRACT(EPOCH FROM (t.last_updated - t.date_created)) / 3600.0), 2) AS avg_response_hours
-            {_ticket_base()}
-            {where}
-            GROUP BY COALESCE(st.name, 'Support')
-            ORDER BY resolved DESC
-        """, params)
-        table = []
-        for row in rows:
-            row = dict(row)
-            resolved = int(row.get("resolved") or 0)
-            row["sla_compliance"] = round((int(row.get("within_sla") or 0) / resolved) * 100, 1) if resolved else 0
-            table.append(row)
+        service_table = _sla_service_rows(cursor)
+        product_category_table = _sla_product_category_rows(cursor)
         return jsonify({
             "status": "success",
             "summary": {
-                "resolved": sum(int(r.get("resolved") or 0) for r in table),
-                "within_sla": sum(int(r.get("within_sla") or 0) for r in table),
-                "breaches": sum(int(r.get("breaches") or 0) for r in table),
-                "sla_compliance": round((sum(int(r.get("within_sla") or 0) for r in table) / max(1, sum(int(r.get("resolved") or 0) for r in table))) * 100, 1),
+                "resolved": sum(int(r.get("resolved") or 0) for r in product_category_table),
+                "within_sla": sum(int(r.get("within_sla") or 0) for r in product_category_table),
+                "breaches": sum(int(r.get("breaches") or 0) for r in product_category_table),
+                "sla_compliance": round((sum(int(r.get("within_sla") or 0) for r in product_category_table) / max(1, sum(int(r.get("resolved") or 0) for r in product_category_table))) * 100, 1),
             },
             "charts": {
-                "trend": [{"label": r["service_type"], "value": r["sla_compliance"]} for r in table],
-                "efficiency": [{"label": r["service_type"], "value": float(r.get("avg_resolution_hours") or 0)} for r in table],
+                "service_sla": [{"label": r["service_type"], "value": r["sla_compliance"]} for r in service_table],
+                "product_category_sla": [{"label": r["product_category"], "value": r["sla_compliance"]} for r in product_category_table],
+                "resolution_efficiency": [{"label": r["product_category"], "value": float(r.get("avg_resolution_hours") or 0)} for r in product_category_table],
+                "trend": [{"label": r["product_category"], "value": r["sla_compliance"]} for r in product_category_table],
+                "efficiency": [{"label": r["product_category"], "value": float(r.get("avg_resolution_hours") or 0)} for r in product_category_table],
             },
-            "table": table,
+            "table": product_category_table,
+            "service_table": service_table,
         }), 200
     except Exception as e:
         print(f"SLA analytics error: {e}")
@@ -918,26 +959,17 @@ def _rows_for_report(category):
                 ORDER BY tickets DESC
             """, params)]
         if category == "sla":
-            where, params = _filters("t", role_column="req_user.user_type")
-            return [dict(row) for row in _fetchall(cursor, f"""
-                SELECT
-                    COALESCE(st.name, 'Support') AS service_type,
-                    COUNT(t.ticket_id) FILTER (WHERE t.status_id IN (3, 4))::int AS resolved,
-                    COUNT(t.ticket_id) FILTER (
-                        WHERE t.status_id IN (3, 4)
-                          AND t.last_updated <= t.date_created + INTERVAL '72 hours'
-                    )::int AS within_sla,
-                    COUNT(t.ticket_id) FILTER (
-                        WHERE t.status_id IN (3, 4)
-                          AND t.last_updated > t.date_created + INTERVAL '72 hours'
-                    )::int AS breaches,
-                    ROUND(AVG(EXTRACT(EPOCH FROM (t.last_updated - t.date_created)) / 3600.0)
-                        FILTER (WHERE t.status_id IN (3, 4)), 2) AS avg_resolution_hours
-                {_ticket_base()}
-                {where}
-                GROUP BY COALESCE(st.name, 'Support')
-                ORDER BY resolved DESC
-            """, params)]
+            return [
+                {
+                    "product_category": row.get("product_category") or "Uncategorized",
+                    "resolved_tickets": row.get("resolved") or 0,
+                    "within_sla": row.get("within_sla") or 0,
+                    "sla_breaches": row.get("breaches") or 0,
+                    "sla_compliance": row.get("sla_compliance") or 0,
+                    "average_resolution_hours": row.get("avg_resolution_hours") or 0,
+                }
+                for row in _sla_product_category_rows(cursor)
+            ]
         if category == "quickfix-feedback":
             return _quickfix_report_rows(cursor)
         return []

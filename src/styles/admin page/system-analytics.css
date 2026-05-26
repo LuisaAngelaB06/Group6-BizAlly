@@ -471,7 +471,7 @@ body {
 
 .filter-controls-row {
     display: grid;
-    grid-template-columns: minmax(260px, 1fr) minmax(260px, 1fr) auto;
+    grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr) auto auto;
     align-items: end;
     gap: 16px;
     width: 100%;
@@ -479,26 +479,24 @@ body {
 
 .filter-fields {
     display: contents;
+    margin: 0;
 }
 
-.filter-fields label {
+.filter-controls-row label {
     min-width: 0;
     width: 100%;
 }
 
-.filter-fields input {
+.filter-controls-row input {
     width: 100%;
 }
 
 .filter-actions {
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 0;
+    display: contents;
+    margin: 0;
 }
 
-.filter-actions .btn {
+.filter-controls-row .btn {
     height: 44px;
     white-space: nowrap;
 }
@@ -734,6 +732,21 @@ select:focus {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 18px;
+}
+
+.sla-service-panel {
+    margin-bottom: 18px;
+}
+
+.compact-table {
+    height: auto;
+    max-height: 260px;
+}
+
+.analytics-table td:first-child {
+    max-width: 360px;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .table-responsive {
@@ -993,10 +1006,11 @@ select:focus {
     }
 
     .filter-actions {
-        grid-column: 1 / -1;
-        flex-direction: row;
-        align-items: stretch;
-        justify-content: flex-end;
+        display: contents;
+    }
+
+    .filter-controls-row .btn {
+        width: 100%;
     }
 
     .report-form .btn {
@@ -1018,12 +1032,11 @@ select:focus {
     }
 
     .filter-actions {
-        flex-direction: column;
-        justify-content: stretch;
+        display: contents;
     }
 
-    .filter-actions .btn {
-        flex: 1;
+    .filter-controls-row .btn {
+        width: 100%;
     }
 
     .site-footer {

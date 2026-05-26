@@ -421,6 +421,21 @@
             }[char]));
         }
 
+        function extractStructuredTicketField(description, label) {
+            if (!description) return "";
+            const pattern = new RegExp(`^${label}:\\s*(.+)$`, "im");
+            const match = String(description).match(pattern);
+            return match ? match[1].trim() : "";
+        }
+
+        function getCleanUserDescription(description) {
+            if (!description) return "";
+            const marker = "User Description:";
+            const index = description.indexOf(marker);
+            if (index === -1) return description.trim();
+            return description.slice(index + marker.length).trim();
+        }
+
         function getAdminRole() {
             return window.AdminRBAC?.getRole?.() || 'admin';
         }
@@ -771,6 +786,11 @@
                             ? parts.slice(0, parts.length - 1).join(' ')
                             : parts[0];
                     }
+                    const serviceType = ticket.Service_Type || ticket.service_type || "";
+                    const productCategory = ticket.Product_Category || ticket.product_category || "";
+                    const productBrand = ticket.Product_Brand || ticket.product_brand || "";
+                    const concernType = ticket.Concern_Type || ticket.concern_type || "";
+
                     return {
                         id: 'TKT-' + (ticket.Ticket_ID || '0'),
                         subject: ticket.Concern_Title || 'No Subject',
@@ -785,7 +805,11 @@
                         status: convertStatus(ticket.Status_ID || 1),
                         created: ticket.Date_Created || new Date().toISOString(),
                         description: ticket.Description || '',
-                        category: ticket.Service_Type || 'Support',
+                        serviceType,
+                        productCategory,
+                        productBrand,
+                        concernType,
+                        category: productCategory,
                         department: 'IT',
                         lastUpdated: ticket.Last_Updated || ticket.Date_Created,
                         resolution: ticket.Resolution_Details || ticket.Resolution || ''
@@ -816,7 +840,8 @@
                 const matchPriority = priority === 'all' || t.priority === priority;
                 const matchSearch = !search || [
                     t.id, t.subject, t.requester, t.firstName,
-                    t.requesterFirstName, t.assignedTo, t.priority, t.status
+                    t.requesterFirstName, t.assignedTo, t.priority, t.status,
+                    t.serviceType, t.productCategory, t.productBrand, t.concernType
                 ].some(v => v?.toLowerCase().includes(search));
                 return matchStatus && matchPriority && matchSearch;
             });
@@ -1000,6 +1025,11 @@
             const priority = ['low', 'medium', 'high', 'urgent'].includes(t.priority) ? t.priority : 'medium';
             const status = ['open', 'in_progress', 'resolved', 'closed'].includes(t.status) ? t.status : 'open';
             const priorityLabel = priority.charAt(0).toUpperCase() + priority.slice(1);
+            const productCategory = t.productCategory || extractStructuredTicketField(t.description, "Category") || "Uncategorized";
+            const productBrand = t.productBrand || extractStructuredTicketField(t.description, "Product Brand") || "N/A";
+            const concernType = t.concernType || extractStructuredTicketField(t.description, "Concern Type") || "N/A";
+            const serviceType = t.serviceType || "Support";
+            const cleanDescription = getCleanUserDescription(t.description) || "No description provided.";
 
             document.getElementById('modalTicketHeader').innerHTML = `
                 <div class="ticket-meta">
@@ -1024,7 +1054,7 @@
                             <i class="fas fa-align-left"></i>
                             <h3>Description</h3>
                         </div>
-                        <div class="description-box">${escapeHTML(t.description || 'No description provided.')}</div>
+                        <div class="description-box">${escapeHTML(cleanDescription)}</div>
                     </div>
                     <div class="ticket-section">
                         <div class="section-header">
@@ -1057,26 +1087,51 @@
                                     </div>
                                 </div>
                                 <div class="detail-group">
-                                    <div class="info-label">Category</div>
+                                    <div class="info-label">Address</div>
                                     <div class="info-value">
-                                        <i class="fas fa-tag"></i>
-                                        <span>${escapeHTML(t.category || 'Support')}</span>
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>${escapeHTML(t.address || 'N/A')}</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="details-row">
                                 <div class="detail-group">
+                                    <div class="info-label">Service Type</div>
+                                    <div class="info-value">
+                                        <i class="fas fa-headset"></i>
+                                        <span>${escapeHTML(serviceType)}</span>
+                                    </div>
+                                </div>
+                                <div class="detail-group">
+                                    <div class="info-label">Product Category</div>
+                                    <div class="info-value">
+                                        <i class="fas fa-tag"></i>
+                                        <span>${escapeHTML(productCategory)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="details-row">
+                                <div class="detail-group">
+                                    <div class="info-label">Product Brand</div>
+                                    <div class="info-value">
+                                        <i class="fas fa-box"></i>
+                                        <span>${escapeHTML(productBrand)}</span>
+                                    </div>
+                                </div>
+                                <div class="detail-group">
+                                    <div class="info-label">Concern Type</div>
+                                    <div class="info-value">
+                                        <i class="fas fa-circle-question"></i>
+                                        <span>${escapeHTML(concernType)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="details-row">
+                                <div class="detail-group full-width">
                                     <div class="info-label">Assigned To</div>
                                     <div class="info-value">
                                         <i class="fas fa-user-tie"></i>
                                         <span>${escapeHTML(t.assignedTo || 'Unassigned')}</span>
-                                    </div>
-                                </div>
-                                <div class="detail-group">
-                                    <div class="info-label">Address</div>
-                                    <div class="info-value">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        <span>${escapeHTML(t.address || 'N/A')}</span>
                                     </div>
                                 </div>
                             </div>

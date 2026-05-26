@@ -198,6 +198,19 @@
                 </div>
             </section>
 
+            <section class="card sla-service-panel" id="slaServicePanel" aria-label="SLA service type summary" hidden>
+                <div class="card-head">
+                    <h3><i class="fas fa-headset"></i> Service Type Summary</h3>
+                    <span class="taxonomy-note">Broad routing classification preserved separately</span>
+                </div>
+                <div class="table-responsive compact-table">
+                    <table class="analytics-table" id="slaServiceTable">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
             <section class="detail-grid">
                 <article class="card table-card">
                     <div class="card-head">
@@ -313,7 +326,7 @@
             sla: {
                 endpoint: '/api/analytics/sla',
                 title: 'SLA & Service Performance',
-                primaryTitle: 'SLA Compliance by Service',
+                primaryTitle: 'SLA Compliance by Product Category',
                 secondaryTitle: 'Resolution Efficiency',
                 kpis: [
                     ['resolved', 'Resolved Tickets', 'fas fa-circle-check'],
@@ -421,6 +434,7 @@
             renderKpis(config, state.payload.summary || {});
             renderCharts();
             renderTicketTaxonomy();
+            renderSlaServiceSummary();
             renderTable(state.payload.table || state.payload.leaderboard || []);
         }
 
@@ -496,6 +510,14 @@
                 return;
             }
 
+            if (state.category === 'sla') {
+                primary = datasetFrom(charts.product_category_sla || []);
+                secondary = datasetFrom(charts.resolution_efficiency || []);
+                drawBar('primaryChart', primary.labels, primary.values, 'SLA Compliance %');
+                drawDoughnut('secondaryChart', secondary.labels, secondary.values);
+                return;
+            }
+
             const primarySource = charts.workload || charts.trends || charts.trend || charts.timeline || charts.engagement || [];
             const secondarySource = charts.efficiency || charts.company_distribution || charts.devices || charts.read_unread || [];
             primary = datasetFrom(primarySource);
@@ -521,6 +543,36 @@
             drawDoughnut('concernTypeChart', concern.labels, concern.values);
         }
 
+        function renderSlaServiceSummary() {
+            const panel = document.getElementById('slaServicePanel');
+            const table = document.getElementById('slaServiceTable');
+            if (!panel || !table) return;
+
+            panel.hidden = state.category !== 'sla';
+            if (state.category !== 'sla') return;
+
+            const rows = state.payload?.service_table || [];
+            const thead = table.querySelector('thead');
+            const tbody = table.querySelector('tbody');
+            const headers = ['Service Type', 'Resolved', 'Within SLA', 'Breaches', 'SLA Compliance'];
+
+            thead.innerHTML = `<tr>${headers.map(header => `<th>${header}</th>`).join('')}</tr>`;
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td class="empty-state" colspan="5">No service type SLA records match the current filters.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = rows.map(row => `
+                <tr>
+                    <td>${formatCell(row.service_type || 'Support')}</td>
+                    <td>${formatCell(row.resolved)}</td>
+                    <td>${formatCell(row.within_sla)}</td>
+                    <td>${formatCell(row.breaches)}</td>
+                    <td>${formatCell(`${row.sla_compliance ?? 0}%`)}</td>
+                </tr>
+            `).join('');
+        }
+
         function destroyChart(id) {
             if (state.charts[id]) state.charts[id].destroy();
         }
@@ -533,7 +585,17 @@
                     legend: { labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text') || '#e8edf8' } }
                 },
                 scales: {
-                    x: { ticks: { color: '#8fa0c0' }, grid: { color: 'rgba(99,130,200,.12)' } },
+                    x: {
+                        ticks: {
+                            color: '#8fa0c0',
+                            maxRotation: 0,
+                            callback: function (value) {
+                                const label = String(this.getLabelForValue(value) || '');
+                                return label.length > 24 ? `${label.slice(0, 24)}...` : label;
+                            }
+                        },
+                        grid: { color: 'rgba(99,130,200,.12)' }
+                    },
                     y: { ticks: { color: '#8fa0c0' }, grid: { color: 'rgba(99,130,200,.12)' }, beginAtZero: true }
                 }
             };
@@ -580,6 +642,16 @@
                     rating: prettyFeedbackLabel(row.rating),
                     nickname: row.nickname,
                     linked_user: row.user_id ? 'Linked User' : 'Anonymous'
+                }));
+            }
+            if (state.category === 'sla') {
+                safeRows = (rows || []).map(row => ({
+                    product_category: row.product_category || 'Uncategorized',
+                    resolved_tickets: row.resolved || 0,
+                    within_sla: row.within_sla || 0,
+                    sla_breaches: row.breaches || 0,
+                    sla_compliance: `${row.sla_compliance ?? 0}%`,
+                    average_resolution_hours: row.avg_resolution_hours ?? 0
                 }));
             }
             document.getElementById('rowCount').textContent = `${safeRows.length} rows`;
@@ -637,7 +709,9 @@
             };
             return Object.entries(filterLabels).map(([id, label]) => {
                 const element = document.getElementById(id);
-                const value = element?.value || '';
+                const value = element?.tagName === 'SELECT'
+                    ? (element.selectedOptions[0]?.textContent || element.value || '')
+                    : (element?.value || '');
                 return { label, value: value || 'All' };
             });
         }
@@ -682,6 +756,16 @@
                 if (category === 'tickets' && normalized.status_id) {
                     normalized.status = ({ 1: 'Open', 2: 'In Progress', 3: 'Resolved', 4: 'Closed' })[normalized.status_id] || normalized.status_id;
                 }
+                if (category === 'sla') {
+                    return {
+                        product_category: normalized.product_category || 'Uncategorized',
+                        resolved_tickets: normalized.resolved || 0,
+                        within_sla: normalized.within_sla || 0,
+                        sla_breaches: normalized.breaches || 0,
+                        sla_compliance: normalized.sla_compliance ?? 0,
+                        average_resolution_hours: normalized.avg_resolution_hours ?? 0
+                    };
+                }
                 return normalized;
             });
         }
@@ -691,7 +775,7 @@
                 tickets: ['ticket_id', 'status', 'concern_title', 'priority', 'service_type', 'technician', 'customer', 'date_created'],
                 technicians: ['name', 'assigned', 'resolved', 'pending', 'avg_resolution_hours', 'sla_compliance', 'performance_score', 'common_concern'],
                 customers: ['company', 'customer', 'tickets', 'active_tickets', 'frequent_issue'],
-                sla: ['service_type', 'resolved', 'within_sla', 'breaches', 'sla_compliance', 'avg_resolution_hours'],
+                sla: ['product_category', 'resolved_tickets', 'within_sla', 'sla_breaches', 'sla_compliance', 'average_resolution_hours'],
                 'ticket-categories': ['type', 'name', 'count'],
                 'quickfix-feedback': ['date', 'module', 'rating', 'nickname', 'linked_user']
             };
@@ -706,7 +790,7 @@
                 'ticket-categories': 'type',
                 technicians: 'common_concern',
                 customers: 'company',
-                sla: 'service_type',
+                sla: 'product_category',
                 'quickfix-feedback': 'module'
             }[category];
             if (!groupKey) return [{ label: 'All Records', rows }];
