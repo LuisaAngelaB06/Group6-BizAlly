@@ -548,7 +548,7 @@
         async function loadRecentActivity() {
             const list = document.getElementById('recentActivityList');
             if (!list) return;
-            list.innerHTML = `<div class="activity-meta loading">${t('loading_recent_activity')}</div>`;
+            list.innerHTML = `<div class="activity-state activity-meta loading">${t('loading_recent_activity')}</div>`;
 
             try {
                 const tickets = await fetchMyTickets();
@@ -557,7 +557,7 @@
                     .slice(0, 5); // limit to latest 5 entries for compact recent activity
 
                 if (!recent.length) {
-                    list.innerHTML = `<div class="activity-meta empty">${t('no_recent_activity')}</div>`;
+                    list.innerHTML = `<div class="activity-state activity-meta empty">${t('no_recent_activity')}</div>`;
                     return;
                 }
 
@@ -576,7 +576,7 @@
                 `).join('');
             } catch (err) {
                 console.error('User recent activity failed:', err);
-                list.innerHTML = `<div class="activity-meta empty">${t('unable_recent_activity')}</div>`;
+                list.innerHTML = `<div class="activity-state activity-meta empty">${t('unable_recent_activity')}</div>`;
             }
         }
 
