@@ -516,19 +516,22 @@
             initAnnouncements(); // first load
 
             if (window.socket) {
-                socket.on("announcement_created", () => {
+                socket.on("announcement_created", event => {
+                    if (!shouldHandleRealtimeAnnouncement(event)) return;
                     console.log("Announcement created");
                     initAnnouncements();
                     showToast("New announcement received", "success");
                 });
 
-                socket.on("new_announcement", () => {
+                socket.on("new_announcement", event => {
+                    if (!shouldHandleRealtimeAnnouncement(event)) return;
                     console.log("New announcement received");
                     initAnnouncements();
                     showToast("New announcement received", "success");
                 });
 
-                socket.on("announcement_updated", () => {
+                socket.on("announcement_updated", event => {
+                    if (!shouldHandleRealtimeAnnouncement(event)) return;
                     console.log("Announcement updated");
                     initAnnouncements();
                     showToast("Announcement updated", "info");
@@ -541,6 +544,11 @@
                 });
             }
         });
+
+        function shouldHandleRealtimeAnnouncement(event = {}) {
+            const audience = event.target_audience || "all";
+            return audience === "all" || audience === "user";
+        }
 
         // Setup theme listener
 

@@ -983,6 +983,24 @@ body {
     gap: 14px;
 }
 
+.announcement-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    align-items: end;
+}
+
+.announcement-form-grid .form-group {
+    min-width: 0;
+}
+
+.announcement-form-grid input,
+.announcement-form-grid select,
+.announcement-form-grid .filter-select {
+    width: 100%;
+    min-height: 48px;
+}
+
 .form-actions {
     display: flex;
     align-items: center;
@@ -1328,6 +1346,10 @@ body {
         grid-template-columns: 1fr auto;
     }
 
+    .announcement-form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
     .announcement-toolbar .filter-select {
         grid-column: 1 / -1;
     }
@@ -1336,6 +1358,7 @@ body {
 @media (max-width: 640px) {
 
     .form-row,
+    .announcement-form-grid,
     .announcement-toolbar {
         grid-template-columns: 1fr;
     }

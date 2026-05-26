@@ -444,6 +444,15 @@
             return getAdminRole() === 'technician';
         }
 
+        function requireAdminVerification(callback) {
+            if (isTechnicianRole()) {
+                if (typeof callback === 'function') callback();
+                return;
+            }
+
+            openAdminVerifyModal(callback);
+        }
+
         function getAdminAuthHeaders(extraHeaders = {}) {
             return window.AdminRBAC?.authHeaders?.(extraHeaders) || extraHeaders;
         }
@@ -1168,7 +1177,7 @@
 
         /* ── EDIT TICKET MODAL ────────────────────────── */
         function editTicket(id) {
-            openAdminVerifyModal(() => openEditTicketModal(id));
+            requireAdminVerification(() => openEditTicketModal(id));
         }
 
         function openEditTicketModal(id) {

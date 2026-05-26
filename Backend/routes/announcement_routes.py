@@ -2,9 +2,23 @@ from flask import Blueprint, request, jsonify
 from Backend.database import get_connection
 from psycopg2.extras import RealDictCursor
 from Backend.socketio_instance import socketio
-from Backend.routes.rbac import role_required
+from Backend.routes.rbac import get_current_user, role_required
 
 announcement_bp = Blueprint("announcements", __name__)
+
+VALID_TARGET_AUDIENCES = {"user", "technician", "all"}
+
+
+def _normalize_target_audience(value):
+    audience = str(value or "all").strip().lower()
+    return audience if audience in VALID_TARGET_AUDIENCES else "all"
+
+
+def _ensure_target_audience_column(cursor):
+    cursor.execute("""
+        ALTER TABLE announcements
+        ADD COLUMN IF NOT EXISTS target_audience VARCHAR(20) NOT NULL DEFAULT 'all'
+    """)
 
 # =========================
 # CREATE ANNOUNCEMENT
@@ -13,15 +27,17 @@ announcement_bp = Blueprint("announcements", __name__)
 @role_required("admin")
 def create_announcement():
     data = request.json
+    target_audience = _normalize_target_audience(data.get("target_audience"))
 
     conn = get_connection()
     cursor = conn.cursor()
 
     try:
+        _ensure_target_audience_column(cursor)
         query = """
             INSERT INTO announcements
-            (title, message, priority, expiry_date, created_by, created_at)
-            VALUES (%s, %s, %s, %s, %s, timezone('Asia/Manila', now()))
+            (title, message, priority, expiry_date, created_by, target_audience, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, timezone('Asia/Manila', now()))
         """
 
         cursor.execute(query, (
@@ -29,11 +45,15 @@ def create_announcement():
             data.get("message"),
             data.get("priority", "normal"),
             data.get("expiry_date"),
-            data.get("admin_id")
+            data.get("admin_id"),
+            target_audience
         ))
 
         conn.commit()
-        socketio.emit("new_announcement", {"status": "created"})
+        socketio.emit("new_announcement", {
+            "status": "created",
+            "target_audience": target_audience
+        })
         return jsonify({"status": "success"}), 201
     
 
@@ -53,11 +73,13 @@ def create_announcement():
 def update_announcement():
     data = request.json
     ann_id = data.get("announcement_id")
+    target_audience = _normalize_target_audience(data.get("target_audience"))
 
     conn = get_connection()
     cursor = conn.cursor()
 
     try:
+        _ensure_target_audience_column(cursor)
         # Reset read status
         cursor.execute(
             "DELETE FROM announcement_reads WHERE announcement_id = %s",
@@ -69,7 +91,8 @@ def update_announcement():
             SET title = %s,
                 message = %s,
                 priority = %s,
-                expiry_date = %s
+                expiry_date = %s,
+                target_audience = %s
             WHERE announcement_id = %s
         """
 
@@ -78,11 +101,15 @@ def update_announcement():
             data.get("message"),
             data.get("priority", "normal"),
             data.get("expiry_date"),
+            target_audience,
             ann_id
         ))
 
         conn.commit()
-        socketio.emit("announcement_updated", {"status": "updated"})
+        socketio.emit("announcement_updated", {
+            "status": "updated",
+            "target_audience": target_audience
+        })
         return jsonify({"status": "success"}), 200
 
     except Exception as e:
@@ -103,6 +130,14 @@ def get_all_announcements_admin():
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
+        _ensure_target_audience_column(cursor)
+        conn.commit()
+        current_user = get_current_user()
+        where_clause = ""
+        params = ()
+        if current_user and current_user.get("user_type") == "technician":
+            where_clause = "WHERE COALESCE(target_audience, 'all') IN ('technician', 'all')"
+
         cursor.execute("""
             SELECT
                 announcement_id,
@@ -111,10 +146,12 @@ def get_all_announcements_admin():
                 priority,
                 expiry_date,
                 created_by,
+                COALESCE(target_audience, 'all') AS target_audience,
                 TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at
             FROM announcements
+            {where_clause}
             ORDER BY created_at DESC
-        """)
+        """.format(where_clause=where_clause), params)
 
         return jsonify(cursor.fetchall()), 200
 
@@ -135,6 +172,8 @@ def get_unread_announcements(user_id):
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
+        _ensure_target_audience_column(cursor)
+        conn.commit()
         cursor.execute("""
             SELECT a.announcement_id
             FROM announcements a
@@ -143,6 +182,7 @@ def get_unread_announcements(user_id):
                 AND r.user_id = %s
             WHERE r.user_id IS NULL
             AND (a.expiry_date IS NULL OR a.expiry_date >= CURRENT_DATE)
+            AND COALESCE(a.target_audience, 'all') IN ('user', 'all')
         """, (user_id,))
 
         return jsonify(cursor.fetchall()), 200
@@ -164,6 +204,8 @@ def get_all_announcements_user(user_id):
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
+        _ensure_target_audience_column(cursor)
+        conn.commit()
         cursor.execute("""
             SELECT
                 a.announcement_id,
@@ -172,6 +214,7 @@ def get_all_announcements_user(user_id):
                 a.created_by,
                 TO_CHAR(a.created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at,
                 a.priority,
+                COALESCE(a.target_audience, 'all') AS target_audience,
                 TO_CHAR(a.expiry_date, 'YYYY-MM-DD') AS expiry_date,
                 CASE WHEN r.user_id IS NOT NULL THEN 1 ELSE 0 END AS is_read
             FROM announcements a
@@ -179,6 +222,7 @@ def get_all_announcements_user(user_id):
                 ON a.announcement_id = r.announcement_id
                 AND r.user_id = %s
             WHERE (a.expiry_date IS NULL OR a.expiry_date >= CURRENT_DATE)
+            AND COALESCE(a.target_audience, 'all') IN ('user', 'all')
             ORDER BY a.created_at DESC
         """, (user_id,))
 

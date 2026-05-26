@@ -142,7 +142,7 @@
                                 data-translate-placeholder="announcement_title_placeholder" required>
                         </div>
 
-                        <div class="form-row">
+                        <div class="announcement-form-grid">
                             <div class="form-group">
                                 <label><i class="fas fa-flag"></i> <span
                                         data-translate="priority">Priority</span></label>
@@ -156,6 +156,15 @@
                                 <label><i class="fas fa-calendar"></i> <span data-translate="expires_on">Expires
                                         on</span></label>
                                 <input type="date" id="expiryDate" class="filter-select">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-users-viewfinder"></i> <span
+                                        data-translate="target_audience">Publish to</span></label>
+                                <select id="targetAudience" class="filter-select">
+                                    <option value="user" data-translate="user_only">User Only</option>
+                                    <option value="technician" data-translate="technician_only">Technician Only</option>
+                                    <option value="all" selected data-translate="user_and_technician">User and Technician</option>
+                                </select>
                             </div>
                         </div>
 
@@ -282,6 +291,10 @@
                 no_expiry: "No expiry",
                 created: "Created",
                 expires: "Expires",
+                target_audience: "Publish to",
+                user_only: "User Only",
+                technician_only: "Technician Only",
+                user_and_technician: "User and Technician",
                 announcement_title_placeholder: "e.g. Server maintenance, feature update...",
                 announcement_content_placeholder: "Write the full announcement message...",
 
@@ -335,6 +348,10 @@
                 no_expiry: "Walang expiration",
                 created: "Nilikha",
                 expires: "Nag-e-expire",
+                target_audience: "I-publish sa",
+                user_only: "User Lamang",
+                technician_only: "Technician Lamang",
+                user_and_technician: "User at Technician",
                 announcement_title_placeholder: "Hal: Server maintenance, feature update...",
                 announcement_content_placeholder: "Isulat ang buong mensahe ng anunsyo...",
 
@@ -390,12 +407,14 @@
         }
 
         function setupRealtimeAnnouncements() {
-            socket.on("new_announcement", () => {
+            socket.on("new_announcement", event => {
+                if (!shouldHandleRealtimeAnnouncement(event)) return;
                 console.log("🔔 New announcement");
                 safeFetchAnnouncements();
             });
 
-            socket.on("announcement_updated", () => {
+            socket.on("announcement_updated", event => {
+                if (!shouldHandleRealtimeAnnouncement(event)) return;
                 console.log("✏️ Announcement updated");
                 safeFetchAnnouncements();
             });
@@ -404,6 +423,14 @@
                 console.log("🗑️ Announcement deleted");
                 safeFetchAnnouncements();
             });
+        }
+
+        function shouldHandleRealtimeAnnouncement(event = {}) {
+            const role = window.AdminRBAC?.getRole?.() || "admin";
+            if (role === "admin") return true;
+
+            const audience = event.target_audience || "all";
+            return audience === "all" || audience === role;
         }
 
         function setupExpiryDateRestriction() {
@@ -473,6 +500,7 @@
                 title: ann.title || "",
                 content: ann.message || "",
                 priority: (ann.priority || "normal").toLowerCase(),
+                targetAudience: ann.target_audience || ann.Target_Audience || "all",
                 createdAt: ann.created_at,
                 expiryDate: ann.expiry_date,
                 author: ann.created_by
@@ -521,6 +549,9 @@
         function getAnnouncementHTML(item) {
             const priorityClass = getPriorityClass(item.priority);
             const priorityLabel = capitalize(item.priority || "normal");
+            const audienceBadge = window.AdminRBAC?.getRole?.() === "technician"
+                ? ""
+                : `<span class="badge badge-normal"><i class="fas fa-users"></i> ${getAudienceLabel(item.targetAudience)}</span>`;
             const isSelected = selectedAnnouncements.has(String(item.id));
             const editingId = document.getElementById("announcementId")?.value || "";
             const activeClass = String(editingId) === String(item.id) ? "active-edit" : "";
@@ -537,6 +568,7 @@
         <div class="announcement-card-body">
             <div class="announcement-card-top">
                 <span class="badge ${priorityClass}">${priorityLabel}</span>
+                ${audienceBadge}
             </div>
 
             <div class="item-title">${escapeHTML(item.title)}</div>
@@ -610,6 +642,7 @@
             setValue("announcementId", announcement.id);
             setValue("title", announcement.title);
             setValue("priority", announcement.priority || "normal");
+            setValue("targetAudience", announcement.targetAudience || "all");
             setValue("content", announcement.content);
             setValue("expiryDate", announcement.expiryDate ? formatDateOnly(announcement.expiryDate) : "");
 
@@ -800,6 +833,7 @@
                 title: document.getElementById("title")?.value.trim() || "",
                 message: document.getElementById("content")?.value.trim() || "",
                 priority: document.getElementById("priority")?.value || "normal",
+                target_audience: document.getElementById("targetAudience")?.value || "all",
                 expiry_date: document.getElementById("expiryDate")?.value || null,
                 admin_id: getCurrentAdminIdentifier()
             };
@@ -968,6 +1002,16 @@
             if (priority === "high") return "badge-high";
             if (priority === "low") return "badge-low";
             return "badge-normal";
+        }
+
+        function getAudienceLabel(audience) {
+            const key = {
+                user: "user_only",
+                technician: "technician_only",
+                all: "user_and_technician"
+            }[audience || "all"] || "user_and_technician";
+
+            return getTranslation(key);
         }
 
         function getExcerpt(text, maxLength = 140) {

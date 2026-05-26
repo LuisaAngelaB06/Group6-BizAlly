@@ -158,9 +158,37 @@
     hideEmptyGroups(nav);
   }
 
+  // Rename shared admin shell labels when the same pages are used as the technician console
+  function applyConsoleLabels() {
+    if (getRole() !== "technician") return;
+
+    document.querySelectorAll(".sidebar-brand .sub").forEach((el) => {
+      el.textContent = "Technician Console";
+    });
+
+    document
+      .querySelectorAll('[data-translate="admin_dashboard_template"]')
+      .forEach((el) => {
+        el.textContent = "AlliTrack Technician Console";
+      });
+
+    document
+      .querySelectorAll('[data-translate="mobile_block_message"]')
+      .forEach((el) => {
+        el.textContent =
+          "Technician console is optimized for larger screens. Please open on a desktop or tablet in landscape mode.";
+      });
+
+    if (document.title.toLowerCase().includes("admin")) {
+      document.title = document.title.replace(/admin/gi, "Technician");
+    }
+  }
+
   // For technicians, relabel "All Tickets" to "Assigned Tickets" and update descriptions
   function relabelAssignedTickets() {
     if (getRole() !== "technician") return;
+
+    applyConsoleLabels();
 
     document
       .querySelectorAll(
@@ -230,6 +258,8 @@
   function applyAnnouncementPermissions() {
     if (getRole() !== "technician") return;
 
+    applyConsoleLabels();
+
     [
       ".announcement-form-card",
       "#bulkActionBar",
@@ -290,6 +320,7 @@
     authHeaders,
     protectPage,
     renderSidebar,
+    applyConsoleLabels,
     applyTicketPermissions,
     applyAnnouncementPermissions,
   };
@@ -299,8 +330,18 @@
   document.addEventListener("DOMContentLoaded", () => {
     if (!protectPage()) return;
     renderSidebar();
+    applyConsoleLabels();
     relabelAssignedTickets();
     applyTicketPermissions();
     applyAnnouncementPermissions();
+    setTimeout(applyConsoleLabels, 0);
+  });
+
+  document.addEventListener("languageChanged", () => {
+    setTimeout(applyConsoleLabels, 0);
+  });
+
+  document.addEventListener("languageReloaded", () => {
+    setTimeout(applyConsoleLabels, 0);
   });
 })();
