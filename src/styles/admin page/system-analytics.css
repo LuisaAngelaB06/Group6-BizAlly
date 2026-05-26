@@ -426,10 +426,11 @@ body {
     position: static;
     z-index: 30;
     display: block;
+    width: 100%;
     background: var(--filter-bg);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 16px;
+    padding: 16px 20px 18px;
     backdrop-filter: blur(12px);
     box-shadow: var(--soft-shadow);
     margin-bottom: 18px;
@@ -440,7 +441,7 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    padding-bottom: 14px;
+    padding-bottom: 12px;
     margin-bottom: 14px;
     border-bottom: 1px solid var(--border);
 }
@@ -468,18 +469,38 @@ body {
     text-align: right;
 }
 
-.filter-fields {
+.filter-controls-row {
     display: grid;
-    grid-template-columns: repeat(4, minmax(150px, 1fr));
-    gap: 12px;
+    grid-template-columns: minmax(260px, 1fr) minmax(260px, 1fr) auto;
+    align-items: end;
+    gap: 16px;
+    width: 100%;
+}
+
+.filter-fields {
+    display: contents;
+}
+
+.filter-fields label {
+    min-width: 0;
+    width: 100%;
+}
+
+.filter-fields input {
+    width: 100%;
 }
 
 .filter-actions {
     display: flex;
+    align-items: flex-end;
     justify-content: flex-end;
-    gap: 8px;
-    align-items: center;
-    margin-top: 14px;
+    gap: 10px;
+    margin-top: 0;
+}
+
+.filter-actions .btn {
+    height: 44px;
+    white-space: nowrap;
 }
 
 label {
@@ -590,6 +611,10 @@ select:focus {
     grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.8fr);
     gap: 18px;
     margin-bottom: 18px;
+}
+
+#sourceChartCard {
+    grid-column: 1 / -1;
 }
 
 .ticket-taxonomy-panel {
@@ -944,9 +969,12 @@ select:focus {
         flex-direction: column;
     }
 
-    .filter-fields,
     .kpi-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filter-controls-row {
+        grid-template-columns: 1fr 1fr;
     }
 
     .filter-summary {
@@ -965,24 +993,37 @@ select:focus {
     }
 
     .filter-actions {
-        flex-direction: column;
+        grid-column: 1 / -1;
+        flex-direction: row;
         align-items: stretch;
+        justify-content: flex-end;
     }
 
-    .filter-actions .btn,
     .report-form .btn {
         width: 100%;
     }
 }
 
-@media (max-width: 620px) {
-    .filter-fields,
+@media (max-width: 560px) {
     .kpi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-controls-row {
         grid-template-columns: 1fr;
     }
 
     .chart-wrapper {
         height: 260px;
+    }
+
+    .filter-actions {
+        flex-direction: column;
+        justify-content: stretch;
+    }
+
+    .filter-actions .btn {
+        flex: 1;
     }
 
     .site-footer {

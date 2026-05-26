@@ -264,6 +264,270 @@ def _ticket_charts(cursor):
     }
 
 
+HELPFUL_FEEDBACK = (
+    'resolved', 'issue resolved', 'useful', 'helpful', 'yes', 'positive', 'satisfied'
+)
+NOT_HELPFUL_FEEDBACK = (
+    'unresolved', 'still not resolved', 'not_helpful', 'not helpful', 'no', 'negative', 'unsatisfied'
+)
+NEUTRAL_FEEDBACK = (
+    'partially_resolved', 'partially resolved', 'neutral', 'other', 'unknown', 'maybe'
+)
+
+
+def _normalize_feedback_rating(value):
+    if not value:
+        return 'Neutral'
+    normalized = str(value).strip().lower()
+    if normalized in HELPFUL_FEEDBACK:
+        return 'Helpful'
+    if normalized in NOT_HELPFUL_FEEDBACK:
+        return 'Not Helpful'
+    return 'Neutral'
+
+
+def _quickfix_filter_clauses():
+    clauses = []
+    params = []
+    date_from = request.args.get('date_from') or request.args.get('start_date')
+    date_to = request.args.get('date_to') or request.args.get('end_date')
+    source = request.args.get('source') or request.args.get('module')
+    rating = request.args.get('rating')
+    helpfulness = request.args.get('helpfulness')
+
+    if date_from:
+        clauses.append("created_at::date >= %s")
+        params.append(date_from)
+    if date_to:
+        clauses.append("created_at::date <= %s")
+        params.append(date_to)
+    if source:
+        clauses.append("LOWER(source) = LOWER(%s)")
+        params.append(source)
+    if rating:
+        clauses.append("LOWER(rating) = LOWER(%s)")
+        params.append(rating)
+    if helpfulness:
+        normalized = _normalize_feedback_rating(helpfulness)
+        if normalized == 'Helpful':
+            clauses.append(f"LOWER(rating) = ANY(ARRAY[{', '.join(['%s'] * len(HELPFUL_FEEDBACK))}])")
+            params.extend(HELPFUL_FEEDBACK)
+        elif normalized == 'Not Helpful':
+            clauses.append(f"LOWER(rating) = ANY(ARRAY[{', '.join(['%s'] * len(NOT_HELPFUL_FEEDBACK))}])")
+            params.extend(NOT_HELPFUL_FEEDBACK)
+        else:
+            clauses.append(f"LOWER(rating) NOT IN ({', '.join(['%s'] * (len(HELPFUL_FEEDBACK) + len(NOT_HELPFUL_FEEDBACK)))})")
+            params.extend(HELPFUL_FEEDBACK + NOT_HELPFUL_FEEDBACK)
+
+    return (" WHERE " + " AND ".join(clauses)) if clauses else "", params
+
+
+def _mask_session_id(value):
+    if not value:
+        return None
+    session = str(value)
+    return '••••' + session[-4:] if len(session) > 4 else '••••'
+
+
+def _map_quickfix_row(row):
+    created_at = row.get('created_at')
+    if isinstance(created_at, datetime):
+        created_at = created_at.isoformat()
+    return {
+        'feedback_id': int(row.get('feedback_id') or 0),
+        'source': row.get('source') or 'Unknown',
+        'rating': row.get('rating') or 'Unknown',
+        'nickname': row.get('nickname') or 'Anonymous',
+        'user_id': int(row.get('user_id')) if row.get('user_id') is not None else None,
+        'session_id': _mask_session_id(row.get('session_id')),
+        'created_at': created_at,
+    }
+
+
+def _quickfix_summary(cursor):
+    where, params = _quickfix_filter_clauses()
+    rating_groups = list(HELPFUL_FEEDBACK) + list(NOT_HELPFUL_FEEDBACK)
+    summary_row = _fetchone(cursor, f"""
+        SELECT
+            COUNT(*)::int AS total,
+            COUNT(*) FILTER (WHERE LOWER(rating) = ANY(ARRAY[{', '.join(['%s'] * len(HELPFUL_FEEDBACK))}]))::int AS helpful,
+            COUNT(*) FILTER (WHERE LOWER(rating) = ANY(ARRAY[{', '.join(['%s'] * len(NOT_HELPFUL_FEEDBACK))}]))::int AS not_helpful,
+            COUNT(*) FILTER (WHERE LOWER(rating) NOT IN ({', '.join(['%s'] * len(rating_groups))}) )::int AS neutral
+        FROM system_feedback
+        {where}
+    """, params + list(HELPFUL_FEEDBACK) + list(NOT_HELPFUL_FEEDBACK) + rating_groups, {'total': 0, 'helpful': 0, 'not_helpful': 0, 'neutral': 0})
+
+    total = int(summary_row.get('total') or 0)
+    helpful = int(summary_row.get('helpful') or 0)
+    not_helpful = int(summary_row.get('not_helpful') or 0)
+    neutral = int(summary_row.get('neutral') or 0)
+    rate = round((helpful / total) * 100, 1) if total else 0
+
+    sources = [dict(row) for row in _fetchall(cursor, f"""
+        SELECT source AS label, COUNT(*)::int AS value
+        FROM system_feedback
+        {where}
+        GROUP BY source
+        ORDER BY value DESC
+        LIMIT 20
+    """, params)]
+
+    trend = [dict(row) for row in _fetchall(cursor, f"""
+        SELECT TO_CHAR(created_at::date, 'YYYY-MM-DD') AS label, COUNT(*)::int AS value
+        FROM system_feedback
+        {where}
+        GROUP BY created_at::date
+        ORDER BY created_at::date
+    """, params)]
+
+    latest_rows = [dict(row) for row in _fetchall(cursor, f"""
+        SELECT feedback_id, source, rating, nickname, user_id, session_id, created_at
+        FROM system_feedback
+        {where}
+        ORDER BY created_at DESC
+        LIMIT 20
+    """, params)]
+
+    return {
+        'status': 'success',
+        'summary': {
+            'total_feedback': total,
+            'helpful': helpful,
+            'not_helpful': not_helpful,
+            'neutral': neutral,
+            'helpfulness_rate': rate,
+        },
+        'charts': {
+            'helpfulness': [
+                {'label': 'Helpful', 'value': helpful},
+                {'label': 'Not Helpful', 'value': not_helpful},
+                {'label': 'Neutral', 'value': neutral}
+            ],
+            'sources': sources,
+            'trend': trend,
+        },
+        'table': [
+            {
+                **_map_quickfix_row(row),
+                'linked_user': 'Linked User' if row.get('user_id') else 'Anonymous'
+            } for row in latest_rows
+        ]
+    }
+
+
+def _quickfix_list(cursor, page=1, per_page=25):
+    where, params = _quickfix_filter_clauses()
+    offset = max((page - 1) * per_page, 0)
+    total = int(_fetchone(cursor, f"SELECT COUNT(*)::int AS total FROM system_feedback {where}", params, {'total': 0}).get('total') or 0)
+    rows = [dict(row) for row in _fetchall(cursor, f"""
+        SELECT feedback_id, source, rating, nickname, user_id, session_id, created_at
+        FROM system_feedback
+        {where}
+        ORDER BY created_at DESC
+        LIMIT %s OFFSET %s
+    """, params + [per_page, offset])]
+
+    return {
+        'status': 'success',
+        'summary': {
+            'total_feedback': total,
+        },
+        'table': [
+            {
+                **_map_quickfix_row(row),
+                'linked_user': 'Linked User' if row.get('user_id') else 'Anonymous'
+            } for row in rows
+        ],
+        'meta': {
+            'page': page,
+            'per_page': per_page,
+            'total': total,
+        }
+    }
+
+
+def _quickfix_report_rows(cursor):
+    where, params = _quickfix_filter_clauses()
+    rows = [dict(row) for row in _fetchall(cursor, f"""
+        SELECT feedback_id, source, rating, nickname, user_id,
+            CONCAT('••••', RIGHT(session_id, 4)) AS session_id, created_at
+        FROM system_feedback
+        {where}
+        ORDER BY created_at DESC
+        LIMIT 1000
+    """, params)]
+    return [
+        {
+            'feedback_id': int(row.get('feedback_id') or 0),
+            'source': row.get('source') or 'Unknown',
+            'rating': row.get('rating') or 'Unknown',
+            'nickname': row.get('nickname') or 'Anonymous',
+            'user_id': int(row.get('user_id')) if row.get('user_id') is not None else None,
+            'session_id': row.get('session_id'),
+            'created_at': row.get('created_at').isoformat() if isinstance(row.get('created_at'), datetime) else row.get('created_at')
+        }
+    for row in rows]
+
+
+@analytics_bp.route("/analytics/quickfix-feedback/summary", methods=["GET"])
+@role_required("admin")
+def quickfix_feedback_summary():
+    conn, cursor = _connection()
+    if not conn:
+        return _json_error("Database connection failed")
+    try:
+        payload = _quickfix_summary(cursor)
+        return jsonify(payload), 200
+    except Exception as e:
+        print(f"Quick Fix feedback analytics error: {e}")
+        return _json_error("Failed to fetch Quick Fix feedback analytics")
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@analytics_bp.route("/analytics/quickfix-feedback/list", methods=["GET"])
+@role_required("admin")
+def quickfix_feedback_list():
+    conn, cursor = _connection()
+    if not conn:
+        return _json_error("Database connection failed")
+    try:
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 25))
+        payload = _quickfix_list(cursor, page=page, per_page=per_page)
+        return jsonify(payload), 200
+    except Exception as e:
+        print(f"Quick Fix feedback list error: {e}")
+        return _json_error("Failed to fetch Quick Fix feedback list")
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@analytics_bp.route("/analytics/quickfix-feedback/export", methods=["GET"])
+@role_required("admin")
+def quickfix_feedback_export():
+    conn, cursor = _connection()
+    if not conn:
+        return _json_error("Database connection failed")
+    try:
+        fmt = (request.args.get('format') or 'csv').lower()
+        rows = _quickfix_report_rows(cursor)
+        filename = f"AlliTrack_QuickFixFeedback_{datetime.utcnow().strftime('%Y%m%d')}"
+        if fmt == 'xlsx':
+            return _xlsx_response(rows, filename)
+        if fmt == 'pdf':
+            return _pdf_response(rows, filename)
+        return _csv_response(rows, filename)
+    except Exception as e:
+        print(f"Quick Fix feedback export error: {e}")
+        return _json_error("Failed to export Quick Fix feedback analytics")
+    finally:
+        cursor.close()
+        conn.close()
+
+
 @analytics_bp.route("/analytics/tickets", methods=["GET"])
 @role_required("admin")
 def ticket_analytics():
@@ -674,6 +938,8 @@ def _rows_for_report(category):
                 GROUP BY COALESCE(st.name, 'Support')
                 ORDER BY resolved DESC
             """, params)]
+        if category == "quickfix-feedback":
+            return _quickfix_report_rows(cursor)
         return []
     finally:
         cursor.close()
@@ -822,7 +1088,7 @@ def _pdf_response(rows, filename):
 @analytics_bp.route("/reports/<category>/export", methods=["GET"])
 @role_required("admin")
 def export_report(category):
-    if category not in {"tickets", "ticket-categories", "technicians", "customers", "sla"}:
+    if category not in {"tickets", "ticket-categories", "technicians", "customers", "sla", "quickfix-feedback"}:
         return _json_error("Unsupported report category", 404)
     fmt = (request.args.get("format") or "csv").lower()
     rows = _rows_for_report(category)

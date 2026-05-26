@@ -125,61 +125,21 @@
                     <h2><i class="fas fa-filter"></i> Global Filters</h2>
                     <p>Applies to KPIs, charts, drill-down rows, and exported reports.</p>
                 </div>
-                <div class="filter-fields">
-                    <label>
-                        <span>Date From</span>
-                        <input type="date" id="filterStart">
-                    </label>
-                    <label>
-                        <span>Date To</span>
-                        <input type="date" id="filterEnd">
-                    </label>
-                    <label>
-                        <span>User Role</span>
-                        <select id="filterRole">
-                            <option value="">All roles</option>
-                            <option value="admin">Admin</option>
-                            <option value="technician">Technician</option>
-                            <option value="client">Client</option>
-                        </select>
-                    </label>
-                    <label>
-                        <span>Status</span>
-                        <select id="filterStatus">
-                            <option value="">All statuses</option>
-                            <option value="1">Open</option>
-                            <option value="2">In Progress</option>
-                            <option value="3">Resolved</option>
-                            <option value="4">Closed</option>
-                        </select>
-                    </label>
-                    <label>
-                        <span>Priority</span>
-                        <select id="filterPriority">
-                            <option value="">All priorities</option>
-                            <option>Low</option>
-                            <option>Medium</option>
-                            <option>High</option>
-                            <option>Urgent</option>
-                            <option>Critical</option>
-                        </select>
-                    </label>
-                    <label>
-                        <span>Service Type</span>
-                        <input type="number" min="1" id="filterServiceType" placeholder="Any">
-                    </label>
-                    <label>
-                        <span>Technician</span>
-                        <input type="number" min="1" id="filterTechnician" placeholder="Any">
-                    </label>
-                    <label>
-                        <span>Customer</span>
-                        <input type="number" min="1" id="filterCustomer" placeholder="Any">
-                    </label>
-                </div>
-                <div class="filter-actions">
-                    <button class="btn btn-primary" id="applyFilters"><i class="fas fa-filter"></i> Apply</button>
-                    <button class="btn btn-ghost" id="resetFilters"><i class="fas fa-eraser"></i> Reset</button>
+                <div class="filter-controls-row">
+                    <div class="filter-fields">
+                        <label>
+                            <span>Date From</span>
+                            <input type="date" id="filterStart">
+                        </label>
+                        <label>
+                            <span>Date To</span>
+                            <input type="date" id="filterEnd">
+                        </label>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-primary" id="applyFilters"><i class="fas fa-filter"></i> Apply</button>
+                        <button class="btn btn-ghost" id="resetFilters"><i class="fas fa-eraser"></i> Reset</button>
+                    </div>
                 </div>
             </section>
 
@@ -190,6 +150,7 @@
                 <button class="tab-btn" data-category="sla"><i class="fas fa-stopwatch"></i> SLA & Service</button>
                 <button class="tab-btn" data-category="system-usage"><i class="fas fa-shield-halved"></i> System Usage</button>
                 <button class="tab-btn" data-category="notifications"><i class="fas fa-bullhorn"></i> Communications</button>
+                <button class="tab-btn" data-category="quickfix-feedback"><i class="fas fa-bolt"></i> Quick Fix Feedback</button>
             </section>
 
             <section class="kpi-grid analytics-kpis" id="kpiGrid" aria-live="polite"></section>
@@ -207,6 +168,12 @@
                         <h3><i class="fas fa-chart-pie"></i> <span id="secondaryChartTitle">Status Breakdown</span></h3>
                     </div>
                     <div class="chart-wrapper"><canvas id="secondaryChart"></canvas></div>
+                </article>
+                <article class="card chart-card" id="sourceChartCard" hidden>
+                    <div class="card-head">
+                        <h3><i class="fas fa-network-wired"></i> Quick Fix Module Breakdown</h3>
+                    </div>
+                    <div class="chart-wrapper"><canvas id="sourceChart"></canvas></div>
                 </article>
             </section>
 
@@ -261,6 +228,7 @@
                                 <option value="technicians">Technician Performance</option>
                                 <option value="customers">Customer Support</option>
                                 <option value="sla">SLA Compliance</option>
+                                <option value="quickfix-feedback">Quick Fix Feedback</option>
                             </select>
                         </label>
                         <label>
@@ -315,7 +283,7 @@
                     ['closed', 'Closed Tickets', 'fas fa-circle-check'],
                     ['mttr_hours', 'MTTR Hours', 'fas fa-stopwatch'],
                     ['resolution_rate', 'Resolution Rate', 'fas fa-percent', '%'],
-                    ['sla_compliance', 'SLA Compliance', 'fas fa-shield-check', '%']
+                    ['sla_compliance', 'SLA Compliance', 'fas fa-shield-halved', '%']
                 ]
             },
             technicians: {
@@ -349,7 +317,7 @@
                 secondaryTitle: 'Resolution Efficiency',
                 kpis: [
                     ['resolved', 'Resolved Tickets', 'fas fa-circle-check'],
-                    ['within_sla', 'Within SLA', 'fas fa-shield-check'],
+                    ['within_sla', 'Within SLA', 'fas fa-shield-halved'],
                     ['breaches', 'SLA Breaches', 'fas fa-triangle-exclamation'],
                     ['sla_compliance', 'SLA Compliance', 'fas fa-percent', '%']
                 ]
@@ -376,6 +344,18 @@
                     ['engagement_rate', 'Engagement Rate', 'fas fa-percent', '%'],
                     ['unread_estimate', 'Unread Estimate', 'fas fa-envelope']
                 ]
+            },
+            'quickfix-feedback': {
+                endpoint: '/api/analytics/quickfix-feedback/summary',
+                title: 'Quick Fix Feedback Drill-down',
+                primaryTitle: 'Feedback Trend',
+                secondaryTitle: 'Helpfulness Distribution',
+                kpis: [
+                    ['total_feedback', 'Total Quick Fix Feedback', 'fas fa-comment-dots'],
+                    ['helpful', 'Helpful', 'fas fa-thumbs-up'],
+                    ['not_helpful', 'Not Helpful', 'fas fa-thumbs-down'],
+                    ['helpfulness_rate', 'Helpfulness Rate', 'fas fa-percent', '%']
+                ]
             }
         };
 
@@ -397,13 +377,7 @@
             const params = new URLSearchParams();
             const fields = {
                 start_date: 'filterStart',
-                end_date: 'filterEnd',
-                role: 'filterRole',
-                status: 'filterStatus',
-                priority: 'filterPriority',
-                service_type: 'filterServiceType',
-                technician: 'filterTechnician',
-                customer: 'filterCustomer'
+                end_date: 'filterEnd'
             };
             Object.entries(fields).forEach(([key, id]) => {
                 const value = document.getElementById(id)?.value;
@@ -443,6 +417,7 @@
             document.getElementById('primaryChartTitle').textContent = config.primaryTitle;
             document.getElementById('secondaryChartTitle').textContent = config.secondaryTitle;
             document.getElementById('tableTitle').textContent = config.title;
+            document.getElementById('sourceChartCard').hidden = state.category !== 'quickfix-feedback';
             renderKpis(config, state.payload.summary || {});
             renderCharts();
             renderTicketTaxonomy();
@@ -482,6 +457,19 @@
             const charts = state.payload.charts || {};
             let primary;
             let secondary;
+
+            if (state.category === 'quickfix-feedback') {
+                const trend = datasetFrom(charts.trend || []);
+                const helpfulness = datasetFrom(charts.helpfulness || []);
+                const sources = datasetFrom(charts.sources || []);
+
+                drawLine('primaryChart', trend.labels, [
+                    { label: 'Feedback', data: trend.values, borderColor: '#3b7bff', backgroundColor: 'rgba(59,123,255,.14)', fill: true }
+                ]);
+                drawDoughnut('secondaryChart', helpfulness.labels, helpfulness.values);
+                drawBar('sourceChart', sources.labels, sources.values, 'Module Feedback');
+                return;
+            }
 
             if (state.category === 'tickets') {
                 primary = {
@@ -584,7 +572,16 @@
             const table = document.getElementById('analyticsTable');
             const thead = table.querySelector('thead');
             const tbody = table.querySelector('tbody');
-            const safeRows = rows || [];
+            let safeRows = rows || [];
+            if (state.category === 'quickfix-feedback') {
+                safeRows = (rows || []).map(row => ({
+                    date: row.created_at ? row.created_at.split('T')[0] : '-',
+                    module: row.source,
+                    rating: prettyFeedbackLabel(row.rating),
+                    nickname: row.nickname,
+                    linked_user: row.user_id ? 'Linked User' : 'Anonymous'
+                }));
+            }
             document.getElementById('rowCount').textContent = `${safeRows.length} rows`;
             if (!safeRows.length) {
                 thead.innerHTML = '';
@@ -605,13 +602,25 @@
             return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
         }
 
+        function prettyFeedbackLabel(value) {
+            if (!value) return '-';
+            const normalized = String(value).replace(/_/g, ' ').trim().toLowerCase();
+            if (normalized === 'resolved' || normalized === 'issue resolved') return 'Issue Resolved';
+            if (normalized === 'partially resolved' || normalized === 'partially_resolved') return 'Partially Resolved';
+            if (normalized === 'unresolved' || normalized === 'still not resolved') return 'Still Not Resolved';
+            return normalized.replace(/\b\w/g, char => char.toUpperCase());
+        }
+
         function showEmptyState(message) {
-            document.getElementById('kpiGrid').innerHTML = `<div class="card empty-panel">${message}</div>`;
+            const emptyMessage = state.category === 'quickfix-feedback'
+                ? 'No Quick Fix feedback yet. Once users answer the feedback popup, results will appear here.'
+                : message;
+            document.getElementById('kpiGrid').innerHTML = `<div class="card empty-panel">${emptyMessage}</div>`;
             renderTable([]);
         }
 
         function reportCategoryForCurrent() {
-            return ['tickets', 'technicians', 'customers', 'sla'].includes(state.category) ? state.category : 'tickets';
+            return ['tickets', 'technicians', 'customers', 'sla', 'quickfix-feedback'].includes(state.category) ? state.category : 'tickets';
         }
 
         function syncReportCategoryWithActiveTab() {
@@ -624,19 +633,11 @@
         function getAppliedFilterSummary() {
             const filterLabels = {
                 filterStart: 'Date From',
-                filterEnd: 'Date To',
-                filterRole: 'User Role',
-                filterStatus: 'Ticket Status',
-                filterPriority: 'Priority',
-                filterServiceType: 'Service Type',
-                filterTechnician: 'Technician',
-                filterCustomer: 'Customer'
+                filterEnd: 'Date To'
             };
-            const statusLabels = { '1': 'Open', '2': 'In Progress', '3': 'Resolved', '4': 'Closed' };
             return Object.entries(filterLabels).map(([id, label]) => {
                 const element = document.getElementById(id);
-                let value = element?.value || '';
-                if (id === 'filterStatus' && value) value = statusLabels[value] || value;
+                const value = element?.value || '';
                 return { label, value: value || 'All' };
             });
         }
@@ -647,7 +648,8 @@
                 'ticket-categories': '/api/analytics/tickets',
                 technicians: '/api/analytics/technicians',
                 customers: '/api/analytics/customers',
-                sla: '/api/analytics/sla'
+                sla: '/api/analytics/sla',
+                'quickfix-feedback': '/api/analytics/quickfix-feedback/summary'
             };
             return reportConfig[category] || '/api/analytics/tickets';
         }
@@ -690,7 +692,8 @@
                 technicians: ['name', 'assigned', 'resolved', 'pending', 'avg_resolution_hours', 'sla_compliance', 'performance_score', 'common_concern'],
                 customers: ['company', 'customer', 'tickets', 'active_tickets', 'frequent_issue'],
                 sla: ['service_type', 'resolved', 'within_sla', 'breaches', 'sla_compliance', 'avg_resolution_hours'],
-                'ticket-categories': ['type', 'name', 'count']
+                'ticket-categories': ['type', 'name', 'count'],
+                'quickfix-feedback': ['date', 'module', 'rating', 'nickname', 'linked_user']
             };
             const available = rows[0] ? Object.keys(rows[0]) : [];
             const selected = (candidates[category] || available).filter(key => available.includes(key));
@@ -703,7 +706,8 @@
                 'ticket-categories': 'type',
                 technicians: 'common_concern',
                 customers: 'company',
-                sla: 'service_type'
+                sla: 'service_type',
+                'quickfix-feedback': 'module'
             }[category];
             if (!groupKey) return [{ label: 'All Records', rows }];
             const groups = new Map();
@@ -751,6 +755,14 @@
                     ['Ticket Volume', summary.ticket_volume ?? 0],
                     ['Active Customers', summary.active_customers ?? 0],
                     ['Inactive Customers', summary.inactive_customers ?? 0]
+                ];
+            }
+            if (category === 'quickfix-feedback') {
+                return [
+                    ['Total Feedback', summary.total_feedback ?? rows.length],
+                    ['Helpful', summary.helpful ?? 0],
+                    ['Not Helpful', summary.not_helpful ?? 0],
+                    ['Helpfulness Rate', `${summary.helpfulness_rate ?? 0}%`]
                 ];
             }
             return [
@@ -874,7 +886,10 @@
                 showToast('PDF library unavailable. Using server PDF export.', 'info');
                 const params = filterParams();
                 params.set('format', 'pdf');
-                window.location.href = `${API_BASE_URL}/api/reports/${category}/export?${params}`;
+                const endpoint = category === 'quickfix-feedback'
+                    ? '/api/analytics/quickfix-feedback/export'
+                    : `/api/reports/${category}/export`;
+                window.location.href = `${API_BASE_URL}${endpoint}?${params}`;
                 return;
             }
 
@@ -962,7 +977,10 @@
             }
             const params = filterParams();
             params.set('format', format);
-            const url = `${API_BASE_URL}/api/reports/${category}/export?${params}`;
+            const endpoint = category === 'quickfix-feedback'
+                ? '/api/analytics/quickfix-feedback/export'
+                : `/api/reports/${category}/export`;
+            const url = `${API_BASE_URL}${endpoint}?${params}`;
             fetch(url, { headers: authHeaders() })
                 .then(res => {
                     if (!res.ok) throw new Error('Report export failed');
