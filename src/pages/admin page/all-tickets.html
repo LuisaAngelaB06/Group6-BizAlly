@@ -108,10 +108,10 @@
             <div class="topbar-right">
                 <div class="topbar-search" role="search" aria-label="Search Tickets">
                     <i class="fas fa-search"></i>
-                    <input id="ticketSearch" class="autofill-pending" name="ticket_search_filter" type="search"
+                    <input id="ticketSearch" class="autofill-pending" type="search"
                         placeholder="Search tickets..." data-translate-placeholder="search_tickets"
-                        aria-label="Search tickets" autocomplete="new-password" autocapitalize="none" spellcheck="false"
-                        data-lpignore="true" data-form-type="other" readonly />
+                        aria-label="Search tickets" autocomplete="off" autocapitalize="none" spellcheck="false"
+                        readonly />
                 </div>
                 <div class="account-wrap">
                     <button class="account-btn" id="accountBtn" aria-haspopup="true" aria-expanded="false">
@@ -944,6 +944,7 @@
             const clearSearch = () => {
                 search.value = '';
                 search.setAttribute('value', '');
+                search.setAttribute('autocomplete', 'off');
             };
 
             const clearPendingSearch = () => {
@@ -959,15 +960,24 @@
             clearSearch();
             setTimeout(clearPendingSearch, 100);
             setTimeout(clearPendingSearch, 500);
+            setTimeout(clearPendingSearch, 1000);
+            setTimeout(clearPendingSearch, 1500);
             setTimeout(enableSearch, 650);
         }
 
         function activateTicketSearch() {
             const search = document.getElementById('ticketSearch');
             if (!search) return;
-            search.value = '';
+            const clearSearch = () => {
+                search.value = '';
+                search.setAttribute('value', '');
+            };
+            clearSearch();
             search.removeAttribute('readonly');
             search.classList.remove('autofill-pending');
+            setTimeout(clearSearch, 50);
+            setTimeout(clearSearch, 150);
+            setTimeout(clearSearch, 300);
         }
 
         /* ── VIEW TICKET MODAL ────────────────────────── */

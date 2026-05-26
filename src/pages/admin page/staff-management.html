@@ -93,10 +93,10 @@
             <div class="topbar-right">
                 <div class="topbar-search" role="search" aria-label="Search Staff">
                     <i class="fas fa-search"></i>
-                    <input id="staffSearch" class="autofill-pending" name="staff_search_filter" type="search"
+                    <input id="staffSearch" class="autofill-pending" type="search"
                         placeholder="Search staff..." data-translate-placeholder="search_staff"
-                        aria-label="Search staff" autocomplete="new-password" autocapitalize="none" spellcheck="false"
-                        data-lpignore="true" data-form-type="other" readonly />
+                        aria-label="Search staff" autocomplete="off" autocapitalize="none" spellcheck="false"
+                        readonly />
                 </div>
 
                 <div class="account-wrap">
@@ -147,6 +147,14 @@
                                 <option value="active" data-translate="active">Active</option>
                                 <option value="inactive" data-translate="inactive">Inactive</option>
                                 <option value="suspended" data-translate="suspended">Suspended</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="roleFilter" class="filter-label" data-translate="role">Role</label>
+                            <select id="roleFilter" class="filter-select">
+                                <option value="all" data-translate="all_roles">All Roles</option>
+                                <option value="admin" data-translate="admin">Admin</option>
+                                <option value="technician" data-translate="technician">Technician</option>
                             </select>
                         </div>
                         <button class="btn btn-secondary" id="clearFiltersBtn">
@@ -379,6 +387,7 @@
                     role: 'Role',
                     admin: 'Admin',
                     technician: 'Technician',
+                    all_roles: 'All Roles',
                     actions: 'Actions',
                     all_status: 'All Status',
                     active: 'Active',
@@ -428,6 +437,7 @@
                     role: 'Tungkulin',
                     admin: 'Admin',
                     technician: 'Technician',
+                    all_roles: 'Lahat ng Tungkulin',
                     actions: 'Mga Aksyon',
                     all_status: 'Lahat ng Status',
                     active: 'Aktibo',
@@ -581,10 +591,12 @@
 
                 // FIXED: Removed the broken roleFilter!
                 const statusFilter = document.getElementById('statusFilter').value;
+                const roleFilter = document.getElementById('roleFilter').value;
                 const searchTerm = document.getElementById('staffSearch')?.value.toLowerCase() || '';
 
                 currentFilteredStaff = staffMembers.filter(staff => {
                     if (statusFilter !== 'all' && staff.status !== statusFilter) return false;
+                    if (roleFilter !== 'all' && staff.user_type !== roleFilter) return false;
                     if (searchTerm) {
                         const haystack = `${staff.id} ${staff.name} ${staff.email} ${staff.role_label}`.toLowerCase();
                         if (!haystack.includes(searchTerm)) return false;
@@ -964,6 +976,7 @@
                 const clearSearch = () => {
                     search.value = '';
                     search.setAttribute('value', '');
+                    search.setAttribute('autocomplete', 'off');
                 };
 
                 const clearPendingSearch = () => {
@@ -979,23 +992,35 @@
                 clearSearch();
                 setTimeout(clearPendingSearch, 100);
                 setTimeout(clearPendingSearch, 500);
+                setTimeout(clearPendingSearch, 1000);
+                setTimeout(clearPendingSearch, 1500);
                 setTimeout(enableSearch, 650);
             }
 
             function activateStaffSearch() {
                 const search = document.getElementById('staffSearch');
                 if (!search) return;
-                search.value = '';
+                const clearSearch = () => {
+                    search.value = '';
+                    search.setAttribute('value', '');
+                };
+                clearSearch();
                 search.removeAttribute('readonly');
                 search.classList.remove('autofill-pending');
+                setTimeout(clearSearch, 50);
+                setTimeout(clearSearch, 150);
+                setTimeout(clearSearch, 300);
             }
 
             // ---------- EVENT LISTENERS ----------
             function setupEventListeners() {
                 // Filters (FIXED: Removed roleFilter listeners)
                 document.getElementById('statusFilter').addEventListener('change', () => { currentPage = 1; loadStaff(); });
+                document.getElementById('roleFilter').addEventListener('change', () => { currentPage = 1; loadStaff(); });
                 document.getElementById('clearFiltersBtn').addEventListener('click', function () {
                     document.getElementById('statusFilter').value = 'all';
+                    document.getElementById('roleFilter').value = 'all';
+                    document.getElementById('roleFilter').value = 'all';
                     document.getElementById('staffSearch').value = '';
                     currentPage = 1;
                     loadStaff();
