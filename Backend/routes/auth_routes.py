@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, redirect, session
+from flask import Blueprint, request, jsonify, redirect, session, g
 from Backend.database import get_connection
 from werkzeug.security import generate_password_hash, check_password_hash
 from psycopg2.extras import RealDictCursor
@@ -12,6 +12,9 @@ import base64
 import sib_api_v3_sdk
 import random
 import requests
+import secrets
+import string
+from html import escape
 
 from sib_api_v3_sdk.rest import ApiException
 from datetime import datetime, timedelta
@@ -151,6 +154,76 @@ def _record_login_attempt(cursor, user_id=None, email=None, status="success"):
     except Exception as history_error:
         print(f"Login history insert failed: {history_error}")
         raise
+
+
+def _generate_temporary_password(length=14):
+    alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
+    while True:
+        password = "".join(secrets.choice(alphabet) for _ in range(length))
+        if (
+            any(char.islower() for char in password)
+            and any(char.isupper() for char in password)
+            and any(char.isdigit() for char in password)
+            and any(char in "!@#$%^&*" for char in password)
+        ):
+            return password
+
+
+STAFF_ROLES = {"admin", "technician"}
+IDENTITY_TYPE_KEYS = {"identity_type", "identityType", "profile_persona", "persona"}
+
+
+def _strip_staff_identity_type(data):
+    """Admin and Technician users intentionally do not store Identity Type."""
+    return {key: value for key, value in (data or {}).items() if key not in IDENTITY_TYPE_KEYS}
+
+
+def _send_staff_temporary_password_email(email, name, temporary_password, action="created"):
+    configuration = sib_api_v3_sdk.Configuration()
+    configuration.api_key['api-key'] = os.getenv("BREVO_API_KEY")
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+
+    display_name = (name or email or "there").strip()
+    safe_display_name = escape(display_name)
+    safe_temporary_password = escape(temporary_password)
+    action_text = "created" if action == "created" else "reset"
+    subject = "AlliTrack temporary password"
+
+    text_content = "\n".join([
+        f"Hello {display_name},",
+        "",
+        f"Your AlliTrack admin/technician account password was {action_text}.",
+        "",
+        f"Temporary password: {temporary_password}",
+        "",
+        "Please sign in and change this password immediately.",
+        "",
+        "If you did not expect this email, contact your system administrator.",
+    ])
+
+    html_content = f"""
+        <div style="font-family: Arial, Helvetica, sans-serif; padding: 24px; color: #172033;">
+            <h2 style="margin: 0 0 12px; color: #1d4ed8;">AlliTrack temporary password</h2>
+            <p>Hello {safe_display_name},</p>
+            <p>Your AlliTrack admin/technician account password was {action_text}.</p>
+            <div style="margin: 18px 0; padding: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;">
+                <div style="font-size: 13px; color: #64748b; margin-bottom: 6px;">Temporary password</div>
+                <div style="font-size: 20px; font-weight: 800; letter-spacing: 0.04em;">{safe_temporary_password}</div>
+            </div>
+            <p>Please sign in and change this password immediately.</p>
+            <p style="font-size: 13px; color: #64748b;">If you did not expect this email, contact your system administrator.</p>
+        </div>
+    """
+
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+        sender={"name": "AlliTrack", "email": "noreply.allitrack@gmail.com"},
+        to=[{"email": email, "name": display_name}],
+        subject=subject,
+        text_content=text_content,
+        html_content=html_content,
+    )
+
+    api_instance.send_transac_email(send_smtp_email)
 
 
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
@@ -335,6 +408,43 @@ def signup():
 # ==========================================
 # 3. ADMIN RESET PASSWORD
 # ==========================================
+@auth_bp.route("/admin/verify-password", methods=["POST"])
+@role_required("admin")
+def admin_verify_password():
+    data = request.json or {}
+    password = data.get("password")
+    current_user = getattr(g, "current_user", None)
+
+    if not password:
+        return jsonify({"status": "error", "message": "Password is required"}), 400
+
+    if not current_user:
+        return jsonify({"status": "error", "message": "Authentication required"}), 401
+
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+    try:
+        cursor.execute(
+            'SELECT password_hash FROM "system_user" WHERE user_id = %s',
+            (current_user["user_id"],)
+        )
+        user = cursor.fetchone()
+
+        if not user or not check_password_hash(user.get("password_hash"), password):
+            return jsonify({"status": "error", "message": "Invalid password", "valid": False}), 401
+
+        return jsonify({"status": "success", "valid": True}), 200
+
+    except Exception as e:
+        print(f"Admin verify password error: {e}")
+        return jsonify({"status": "error", "message": "Database error"}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+
 @auth_bp.route("/admin/reset-password", methods=["POST"])
 @role_required("admin")
 def admin_reset_password():
@@ -344,25 +454,50 @@ def admin_reset_password():
     if not target_user_id:
         return jsonify({"status": "error", "message": "Missing User ID"}), 400
 
-    temp_password = "Password2026!"
+    temp_password = _generate_temporary_password()
     hashed = generate_password_hash(temp_password)
 
     conn = get_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
         cursor.execute(
-            'UPDATE "system_user" SET password_Hash = %s WHERE user_id = %s',
+            """
+            UPDATE "system_user"
+            SET password_Hash = %s
+            WHERE user_id = %s
+            RETURNING email, first_name, last_name
+            """,
             (hashed, target_user_id)
+        )
+        target_user = cursor.fetchone()
+
+        if not target_user:
+            conn.rollback()
+            return jsonify({"status": "error", "message": "User not found"}), 404
+
+        target_name = f"{target_user.get('first_name') or ''} {target_user.get('last_name') or ''}".strip()
+        _send_staff_temporary_password_email(
+            target_user["email"],
+            target_name,
+            temp_password,
+            action="reset",
         )
         conn.commit()
 
         return jsonify({
             "status": "success",
-            "message": f"Password reset to: {temp_password}"
+            "message": f"Temporary password was sent to {target_user['email']}.",
+            "email_sent": True
         }), 200
 
+    except ApiException as e:
+        conn.rollback()
+        print(f"Reset password email error: {e}")
+        return jsonify({"status": "error", "message": "Password was not reset because the email could not be sent."}), 500
+
     except Exception as e:
+        conn.rollback()
         print(f"Reset error: {e}")
         return jsonify({"status": "error", "message": "Database error"}), 500
 
@@ -506,7 +641,7 @@ def admin_delete_users():
 @auth_bp.route("/admin/update-user", methods=["POST"])
 @role_required("admin")
 def admin_update_user():
-    data = request.json or {}
+    data = _strip_staff_identity_type(request.json or {})
 
     target_user_id = data.get("user_id")
     user_type = (data.get("user_type") or data.get("User_Type") or "").strip().lower()
@@ -521,6 +656,13 @@ def admin_update_user():
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     try:
+        # Identity Type is intentionally omitted for Admin and Technician users.
+        # If a legacy frontend submits it, clear it without touching other fields.
+        cursor.execute(
+            'UPDATE "system_user" SET profile_persona = NULL WHERE user_id = %s AND LOWER(user_type) = ANY(%s)',
+            (target_user_id, list(STAFF_ROLES))
+        )
+
         if user_type:
             query = """
             UPDATE "system_user"
@@ -741,7 +883,7 @@ def google_callback():
 
 @auth_bp.route("/user/update-profile", methods=["POST"])
 def update_profile():
-    data = request.json
+    data = request.json or {}
     user_id = data.get("user_id")
     
     # 1. Validation (Letters and dots only)
@@ -754,10 +896,32 @@ def update_profile():
     conn = get_connection()
     cursor = conn.cursor()
     try:
+        cursor.execute('SELECT user_type, customer_id FROM "system_user" WHERE user_id = %s', (user_id,))
+        user_row = cursor.fetchone()
+
+        if not user_row:
+            return jsonify({"status": "error", "message": "User not found"}), 404
+
+        user_role = str(user_row[0] or "").strip().lower()
+
+        if user_role in STAFF_ROLES:
+            # Identity Type is intentionally omitted for Admin and Technician users.
+            # Their profile updates ignore persona/customer identity data and keep other fields intact.
+            cursor.execute("""
+                UPDATE "system_user"
+                SET first_name = %s,
+                    last_name = %s,
+                    email = %s,
+                    profile_persona = NULL,
+                    profile_pic_url = COALESCE(%s, profile_pic_url),
+                    is_profile_complete = %s
+                WHERE user_id = %s
+            """, (f_name, l_name, data.get("email"), data.get("photo"), True, user_id))
+            conn.commit()
+            return jsonify({"status": "success"}), 200
+
         # 2. Check for existing link
-        cursor.execute('SELECT customer_id FROM "system_user" WHERE user_id = %s', (user_id,))
-        res = cursor.fetchone()
-        customer_id = res[0] if res else None
+        customer_id = user_row[1]
 
         # 3. Handle Missing Customer Record (Satisfying NOT NULL constraints)
         if customer_id is None:
@@ -1069,7 +1233,7 @@ def resend_otp():
 @auth_bp.route("/admin/create-user", methods=["POST"])
 @role_required("admin")
 def admin_create_user():
-    data = request.json or {}
+    data = _strip_staff_identity_type(request.json or {})
     name = data.get("name", "").strip()
     email = data.get("email", "").strip()
     status = data.get("status", "active")
@@ -1085,7 +1249,8 @@ def admin_create_user():
     first_name = name_parts[0]
     last_name = name_parts[1] if len(name_parts) > 1 else ""
     username = email.split("@")[0]
-    temp_password = generate_password_hash("Password2026!")
+    temporary_password = _generate_temporary_password()
+    temp_password = generate_password_hash(temporary_password)
 
     conn = get_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -1098,8 +1263,8 @@ def admin_create_user():
         cursor.execute(
             """
             INSERT INTO "system_user"
-            (Username, first_name, last_name, Email, password_Hash, User_Type, Account_Status, Created_At)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+            (Username, first_name, last_name, Email, password_Hash, User_Type, Account_Status, profile_persona, Created_At)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, NULL, CURRENT_TIMESTAMP)
             RETURNING user_id, user_type
             """,
             (username, first_name, last_name, email, temp_password, user_type, status)
@@ -1115,16 +1280,27 @@ def admin_create_user():
             tech = cursor.fetchone()
             technician_id = tech["technician_id"]
 
+        _send_staff_temporary_password_email(
+            email,
+            f"{first_name} {last_name}".strip(),
+            temporary_password,
+            action="created",
+        )
         conn.commit()
 
         return jsonify({
             "status": "success",
-            "message": "Staff created",
+            "message": f"Staff created. Temporary password was sent to {email}.",
             "user_id": new_user["user_id"],
             "user_type": new_user["user_type"],
             "technician_id": technician_id,
-            "temporary_password": "Password2026!"
+            "email_sent": True
         }), 201
+
+    except ApiException as e:
+        conn.rollback()
+        print(f"Create staff email error: {e}")
+        return jsonify({"status": "error", "message": "Staff was not created because the email could not be sent."}), 500
 
     except Exception as e:
         conn.rollback()

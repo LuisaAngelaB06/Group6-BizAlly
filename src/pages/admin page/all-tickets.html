@@ -108,8 +108,10 @@
             <div class="topbar-right">
                 <div class="topbar-search" role="search" aria-label="Search Tickets">
                     <i class="fas fa-search"></i>
-                    <input id="ticketSearch" placeholder="Search tickets by ID, name, or priority…"
-                        data-translate-placeholder="search_tickets" aria-label="Search tickets" />
+                    <input id="ticketSearch" class="autofill-pending" name="ticket_search_filter" type="search"
+                        placeholder="Search tickets..." data-translate-placeholder="search_tickets"
+                        aria-label="Search tickets" autocomplete="new-password" autocapitalize="none" spellcheck="false"
+                        data-lpignore="true" data-form-type="other" readonly />
                 </div>
                 <div class="account-wrap">
                     <button class="account-btn" id="accountBtn" aria-haspopup="true" aria-expanded="false">
@@ -368,27 +370,21 @@
 
     <!-- Admin Password Verification Modal -->
     <div class="modal" id="adminVerifyModal">
-        <div class="modal-content" style="max-width:420px;">
+        <div class="modal-content admin-verify-card">
             <div class="modal-header">
                 <div class="modal-header-top">
-                    <h3><i class="fas fa-lock" style="color:var(--accent);"></i> Admin Verification</h3>
+                    <h3><i class="fas fa-lock admin-verify-title-icon"></i> Confirm Admin Password</h3>
                     <button class="modal-close" id="closeAdminVerifyModal">&times;</button>
                 </div>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom:14px;font-size:0.9rem;color:var(--text-2);">Please enter your admin
-                    password to continue.</p>
-                <div class="form-group" style="position:relative;">
-                    <label for="adminVerifyPassword">Password</label>
-                    <div style="position:relative;">
-                        <input type="password" id="adminVerifyPassword" class="form-control" style="padding-right:42px;"
-                            autocomplete="new-password" />
-                        <button type="button" id="adminVerifyToggle" tabindex="-1"
-                            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:0;">
-                            <i class="fas fa-eye" id="adminVerifyToggleIcon"></i>
-                        </button>
-                    </div>
-                    <div id="adminVerifyError" style="display:none;margin-top:8px;color:#ef4444;font-size:0.82rem;">
+                <p class="admin-verify-copy">Please type your account password to continue.</p>
+                <div class="form-group admin-verify-group">
+                    <label class="form-label" for="adminVerifyPassword">Admin Password <span
+                            class="required">*</span></label>
+                    <input type="password" id="adminVerifyPassword" class="form-input"
+                        autocomplete="current-password" placeholder="Enter your account password" />
+                    <div id="adminVerifyError" class="admin-verify-error">
                         <i class="fas fa-exclamation-circle"></i> <span id="adminVerifyErrorText">Incorrect password.
                             Please try again.</span>
                     </div>
@@ -396,8 +392,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="cancelAdminVerifyBtn">Cancel</button>
-                <button class="btn btn-primary" id="confirmAdminVerifyBtn"><i class="fas fa-unlock"></i>
-                    Confirm</button>
+                <button class="btn btn-primary" id="confirmAdminVerifyBtn">Continue</button>
             </div>
         </div>
     </div>
@@ -444,7 +439,7 @@
                 all_tickets_page_title: 'All Tickets — AlliTrack',
                 all_tickets_title: 'All Tickets',
                 all_tickets_description: 'Manage and monitor all support tickets in the system',
-                search_tickets: 'Search tickets by ID, name, or priority…',
+                search_tickets: 'Search tickets...',
                 status: 'Status',
                 all_status: 'All Status',
                 open: 'Open',
@@ -516,7 +511,7 @@
                 all_tickets_page_title: 'Lahat ng Ticket — AlliTrack',
                 all_tickets_title: 'Lahat ng Ticket',
                 all_tickets_description: 'Pamahalaan ang lahat ng support ticket sa system',
-                search_tickets: 'Maghanap ng ticket sa pamamagitan ng ID, pangalan, o priority…',
+                search_tickets: 'Maghanap ng ticket...',
                 status: 'Status',
                 all_status: 'Lahat ng Status',
                 open: 'Bukas',
@@ -942,6 +937,39 @@
             cb.indeterminate = ids.some(id => selectedTickets.has(id)) && !cb.checked;
         }
 
+        function keepTicketSearchBarEmpty() {
+            const search = document.getElementById('ticketSearch');
+            if (!search) return;
+
+            const clearSearch = () => {
+                search.value = '';
+                search.setAttribute('value', '');
+            };
+
+            const clearPendingSearch = () => {
+                if (search.classList.contains('autofill-pending')) clearSearch();
+            };
+
+            const enableSearch = () => {
+                clearPendingSearch();
+                search.removeAttribute('readonly');
+                search.classList.remove('autofill-pending');
+            };
+
+            clearSearch();
+            setTimeout(clearPendingSearch, 100);
+            setTimeout(clearPendingSearch, 500);
+            setTimeout(enableSearch, 650);
+        }
+
+        function activateTicketSearch() {
+            const search = document.getElementById('ticketSearch');
+            if (!search) return;
+            search.value = '';
+            search.removeAttribute('readonly');
+            search.classList.remove('autofill-pending');
+        }
+
         /* ── VIEW TICKET MODAL ────────────────────────── */
         function viewTicket(id) {
             const t = sampleTickets.find(x => x.id === id);
@@ -1075,6 +1103,10 @@
 
         /* ── EDIT TICKET MODAL ────────────────────────── */
         function editTicket(id) {
+            openAdminVerifyModal(() => openEditTicketModal(id));
+        }
+
+        function openEditTicketModal(id) {
             const t = sampleTickets.find(x => x.id === id);
             if (!t) return;
             currentlyEditingTicketId = id;
@@ -1161,7 +1193,10 @@
                 showToast(getDict().no_tickets_selected || 'No tickets selected', 'error');
                 return;
             }
+            openAdminVerifyModal(() => openDeleteTicketsModal(ids));
+        }
 
+        function openDeleteTicketsModal(ids) {
             const dict = getDict();
             const modal = document.getElementById('deleteConfirmationModal');
             const msgEl = document.getElementById('deleteMessage');
@@ -1325,10 +1360,12 @@
             });
 
             let searchTimeout;
-            document.getElementById('ticketSearch').addEventListener('input', () => {
+            const ticketSearch = document.getElementById('ticketSearch');
+            ticketSearch.addEventListener('input', () => {
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => { currentPage = 1; loadTickets(); }, 300);
             });
+            ticketSearch.addEventListener('focus', activateTicketSearch);
 
             document.getElementById('closeModal').addEventListener('click', closeModal);
             document.getElementById('closeDetailsBtn').addEventListener('click', closeModal);
@@ -1376,6 +1413,7 @@
             window.addEventListener('resize', () => setTimeout(syncMobileOverlay, 20));
             setupAccountDropdown();
             setupMenuToggle();
+            keepTicketSearchBarEmpty();
             setupEventListeners();
             setupPagination();
             fetchTechniciansFromAPI();
@@ -1399,17 +1437,34 @@
         });
         /* ── ADMIN VERIFICATION MODAL ─────────────────── */
         let _adminVerifyCallback = null;
+        const ADMIN_REAUTH_STORAGE_KEY = 'adminVerifiedUntil';
+        const ADMIN_REAUTH_WINDOW_MS = 5 * 60 * 1000;
+
+        function isAdminVerificationFresh() {
+            const verifiedUntil = Number(sessionStorage.getItem(ADMIN_REAUTH_STORAGE_KEY) || 0);
+            return Number.isFinite(verifiedUntil) && verifiedUntil > Date.now();
+        }
+
+        function rememberAdminVerification() {
+            sessionStorage.setItem(ADMIN_REAUTH_STORAGE_KEY, String(Date.now() + ADMIN_REAUTH_WINDOW_MS));
+        }
 
         function openAdminVerifyModal(callback) {
+            if (isAdminVerificationFresh()) {
+                if (typeof callback === 'function') callback();
+                return;
+            }
+
             _adminVerifyCallback = callback;
             const modal = document.getElementById('adminVerifyModal');
             const input = document.getElementById('adminVerifyPassword');
             const err = document.getElementById('adminVerifyError');
             const btn = document.getElementById('confirmAdminVerifyBtn');
             input.value = '';
+            input.type = 'password';
             err.style.display = 'none';
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-unlock"></i> Confirm';
+            btn.textContent = 'Continue';
             modal.classList.add('show');
             setTimeout(() => input.focus(), 80);
         }
@@ -1426,40 +1481,40 @@
             const btn = document.getElementById('confirmAdminVerifyBtn');
 
             if (!password) {
-                err.style.display = 'block';
+                err.style.display = 'flex';
                 errText.textContent = 'Password is required.';
                 return;
             }
 
-            const email = document.getElementById('userEmailDisplay')?.textContent?.trim() || '';
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying…';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
             err.style.display = 'none';
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                const response = await fetch(`${API_BASE_URL}/api/auth/admin/verify-password`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ password })
                 });
 
                 if (response.ok) {
+                    rememberAdminVerification();
                     document.getElementById('adminVerifyModal').classList.remove('show');
                     const cb = _adminVerifyCallback;
                     _adminVerifyCallback = null;
                     if (typeof cb === 'function') cb();
                 } else {
-                    err.style.display = 'block';
+                    err.style.display = 'flex';
                     errText.textContent = 'Incorrect password. Please try again.';
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-unlock"></i> Confirm';
+                    btn.textContent = 'Continue';
                     document.getElementById('adminVerifyPassword').focus();
                 }
             } catch (error) {
-                err.style.display = 'block';
+                err.style.display = 'flex';
                 errText.textContent = 'Could not reach the server. Please try again.';
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-unlock"></i> Confirm';
+                btn.textContent = 'Continue';
                 console.error('Admin verify error:', error);
             }
         }
@@ -1471,17 +1526,6 @@
             document.getElementById('adminVerifyPassword')?.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') submitAdminVerify();
             });
-            document.getElementById('adminVerifyToggle')?.addEventListener('click', function () {
-                const input = document.getElementById('adminVerifyPassword');
-                const icon = document.getElementById('adminVerifyToggleIcon');
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.className = 'fas fa-eye-slash';
-                } else {
-                    input.type = 'password';
-                    icon.className = 'fas fa-eye';
-                }
-            });
             document.getElementById('adminVerifyModal')?.addEventListener('click', function (e) {
                 if (e.target === this) closeAdminVerifyModal();
             });
@@ -1490,3 +1534,4 @@
 </body>
 
 </html>
+

@@ -174,7 +174,7 @@
                 </div>
 
                 <!-- PERSONAL INFORMATION SECTION -->
-                <div class="profile-section">
+                <div class="profile-section" id="identityTypeSection">
                     <div class="section-header">
                         <div class="section-icon"><i class="fas fa-id-card"></i></div>
                         <div>
@@ -1004,6 +1004,7 @@
                 };
 
                 const personaEl = document.querySelector('input[name="profile_persona"]:checked');
+                const shouldOmitIdentityType = isStaffConsoleUser();
 
                 // 1. Generate current state snapshot string
                 const currentFormData = JSON.stringify({
@@ -1012,7 +1013,7 @@
                     email: getVal('email'),
                     phone: getVal('contactPhone'),
                     address: getVal('address'),
-                    persona: personaEl ? personaEl.value : 'Individual'
+                    persona: shouldOmitIdentityType ? null : (personaEl ? personaEl.value : 'Individual')
                 });
 
                 // 2. HAHAHA Here is your custom error toast!
@@ -1027,7 +1028,6 @@
                     first_name: getVal('firstName'),
                     last_name: getVal('lastName'),
                     email: getVal('email'),
-                    persona: personaEl ? personaEl.value : 'client',
                     photo: (photoEl && photoEl.style.display !== 'none') ? photoEl.src : null,
                     phone: getVal('contactPhone'),
                     address: getVal('address'),
@@ -1035,6 +1035,11 @@
                     contact_person: getVal('contactPerson'),
                     company_email: getVal('companyEmail')
                 };
+
+                // Identity Type is intentionally omitted for Admin and Technician users.
+                if (!shouldOmitIdentityType) {
+                    payload.persona = personaEl ? personaEl.value : 'client';
+                }
 
                 console.log("SENDING POST WITH PAYLOAD:", payload);
 
@@ -1196,7 +1201,22 @@
         });
 
         // 1. Handle the Persona Toggle
+        function isStaffConsoleUser() {
+            const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+            const role = String(userData.User_Type || userData.user_type || userData.role || "").toLowerCase();
+            return role === "admin" || role === "technician";
+        }
+
+        function hideStaffIdentityType() {
+            const section = document.getElementById("identityTypeSection");
+            if (section && isStaffConsoleUser()) {
+                section.hidden = true;
+                section.style.display = "none";
+            }
+        }
+
         function handlePersonaChange() {
+            if (isStaffConsoleUser()) return;
             const isCompany = document.querySelector('input[name="profile_persona"]:checked').value === "Company";
             const companyFields = document.querySelectorAll('.company-field');
             const infoTitle = document.getElementById('infoTitle');
@@ -1252,6 +1272,7 @@
             }
 
             // 1. Initial UI check
+            hideStaffIdentityType();
             handlePersonaChange();
             initAvatarInteraction(); // Set up the click on the circle
             initPasswordStrength();

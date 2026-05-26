@@ -93,8 +93,10 @@
             <div class="topbar-right">
                 <div class="topbar-search" role="search" aria-label="Search Staff">
                     <i class="fas fa-search"></i>
-                    <input id="staffSearch" placeholder="Search staff by name, email..."
-                        data-translate-placeholder="search_staff" aria-label="Search staff" autocomplete="off" />
+                    <input id="staffSearch" class="autofill-pending" name="staff_search_filter" type="search"
+                        placeholder="Search staff..." data-translate-placeholder="search_staff"
+                        aria-label="Search staff" autocomplete="new-password" autocapitalize="none" spellcheck="false"
+                        data-lpignore="true" data-form-type="other" readonly />
                 </div>
 
                 <div class="account-wrap">
@@ -321,25 +323,19 @@
 
     <!-- Admin Password Verification Modal -->
     <div class="modal" id="adminVerifyModal">
-        <div class="modal-content" style="max-width:420px;">
+        <div class="modal-content admin-verify-card">
             <div class="modal-header">
-                <h3><i class="fas fa-lock" style="color:var(--accent);"></i> Admin Verification</h3>
+                <h3><i class="fas fa-lock admin-verify-title-icon"></i> Confirm Admin Password</h3>
                 <button class="modal-close" id="closeAdminVerifyModal">&times;</button>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom:14px;font-size:0.9rem;color:var(--text-secondary);">Please enter your admin
-                    password to continue.</p>
-                <div class="form-group" style="position:relative;">
-                    <label for="adminVerifyPassword">Password</label>
-                    <div style="position:relative;">
-                        <input type="password" id="adminVerifyPassword" class="form-control" style="padding-right:42px;"
-                            autocomplete="new-password" />
-                        <button type="button" id="adminVerifyToggle" tabindex="-1"
-                            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:0;">
-                            <i class="fas fa-eye" id="adminVerifyToggleIcon"></i>
-                        </button>
-                    </div>
-                    <div id="adminVerifyError" style="display:none;margin-top:8px;color:#ef4444;font-size:0.82rem;">
+                <p class="admin-verify-copy">Please type your account password to continue.</p>
+                <div class="form-group admin-verify-group">
+                    <label class="form-label" for="adminVerifyPassword">Admin Password <span
+                            class="required">*</span></label>
+                    <input type="password" id="adminVerifyPassword" class="form-input"
+                        autocomplete="current-password" placeholder="Enter your account password" />
+                    <div id="adminVerifyError" class="admin-verify-error">
                         <i class="fas fa-exclamation-circle"></i> <span id="adminVerifyErrorText">Incorrect password.
                             Please try again.</span>
                     </div>
@@ -347,8 +343,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="cancelAdminVerifyBtn">Cancel</button>
-                <button class="btn btn-primary" id="confirmAdminVerifyBtn"><i class="fas fa-unlock"></i>
-                    Confirm</button>
+                <button class="btn btn-primary" id="confirmAdminVerifyBtn">Continue</button>
             </div>
         </div>
     </div>
@@ -371,7 +366,7 @@
                     staff_management_title: 'Staff Management - AlliTrack Admin',
                     staff_management: 'Staff Management',
                     staff_management_description: 'Manage staff accounts, and permissions',
-                    search_staff: 'Search staff by name, email...',
+                    search_staff: 'Search staff...',
                     add_staff: 'Add Staff',
                     delete_selected: 'Delete Selected',
                     refresh: 'Refresh',
@@ -420,7 +415,7 @@
                     staff_management_title: 'Pamamahala ng Staff - AlliTrack Admin',
                     staff_management: 'Pamamahala ng Staff',
                     staff_management_description: 'Pamahalaan ang mga staff account, tungkulin, at pahintulot',
-                    search_staff: 'Maghanap ng staff sa pangalan, email...',
+                    search_staff: 'Maghanap ng staff...',
                     add_staff: 'Magdagdag ng Staff',
                     delete_selected: 'I-delete ang Napili',
                     refresh: 'I-refresh',
@@ -575,6 +570,7 @@
                 toast.classList.add('show');
                 setTimeout(() => toast.classList.remove('show'), 3000);
             }
+            window.showToast = showToast;
 
             // Load and render staff table
             // Load and render staff table
@@ -791,6 +787,7 @@
                         const nameParts = name.split(' ');
                         const firstName = nameParts[0];
                         const lastName = nameParts.slice(1).join(' ');
+                        // Identity Type is intentionally omitted for Admin and Technician users.
                         response = await fetch(`${API_BASE_URL}/api/auth/admin/update-user`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -803,6 +800,7 @@
                         });
                     } else {
                         // CREATE new staff
+                        // Identity Type is intentionally omitted for Admin and Technician users.
                         response = await fetch(`${API_BASE_URL}/api/auth/admin/create-user`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -813,7 +811,12 @@
                     const result = await response.json();
 
                     if (response.ok) {
-                        showToast(editingStaffId ? 'Account updated!' : 'Staff created! Default password: Password2026!', 'success');
+                        showToast(
+                            editingStaffId
+                                ? 'Account updated!'
+                                : (result.message || 'Staff created. Temporary password was sent by email.'),
+                            'success'
+                        );
                         closeFormModal();
                         fetchRealStaff();
                     } else {
@@ -954,6 +957,39 @@
                 return span;
             }
 
+            function keepStaffSearchBarEmpty() {
+                const search = document.getElementById('staffSearch');
+                if (!search) return;
+
+                const clearSearch = () => {
+                    search.value = '';
+                    search.setAttribute('value', '');
+                };
+
+                const clearPendingSearch = () => {
+                    if (search.classList.contains('autofill-pending')) clearSearch();
+                };
+
+                const enableSearch = () => {
+                    clearPendingSearch();
+                    search.removeAttribute('readonly');
+                    search.classList.remove('autofill-pending');
+                };
+
+                clearSearch();
+                setTimeout(clearPendingSearch, 100);
+                setTimeout(clearPendingSearch, 500);
+                setTimeout(enableSearch, 650);
+            }
+
+            function activateStaffSearch() {
+                const search = document.getElementById('staffSearch');
+                if (!search) return;
+                search.value = '';
+                search.removeAttribute('readonly');
+                search.classList.remove('autofill-pending');
+            }
+
             // ---------- EVENT LISTENERS ----------
             function setupEventListeners() {
                 // Filters (FIXED: Removed roleFilter listeners)
@@ -979,10 +1015,12 @@
 
                 // Search debounce
                 let timeout;
-                document.getElementById('staffSearch').addEventListener('input', function () {
+                const staffSearch = document.getElementById('staffSearch');
+                staffSearch.addEventListener('input', function () {
                     clearTimeout(timeout);
                     timeout = setTimeout(() => { currentPage = 1; loadStaff(); }, 300);
                 });
+                staffSearch.addEventListener('focus', activateStaffSearch);
                 // Pagination
                 document.getElementById('pageSizeSelect').addEventListener('change', function (e) {
                     itemsPerPage = parseInt(e.target.value);
@@ -1090,6 +1128,7 @@
                     applyTranslations(lang);
                 } else applyTranslations('en');
 
+                keepStaffSearchBarEmpty();
                 setupAccountDropdown();
                 setupEventListeners();
                 setupMenuToggle();
@@ -1099,17 +1138,34 @@
             });
             // ---------- ADMIN PASSWORD VERIFICATION GATE ----------
             let _adminVerifyCallback = null;
+            const ADMIN_REAUTH_STORAGE_KEY = 'adminVerifiedUntil';
+            const ADMIN_REAUTH_WINDOW_MS = 5 * 60 * 1000;
+
+            function isAdminVerificationFresh() {
+                const verifiedUntil = Number(sessionStorage.getItem(ADMIN_REAUTH_STORAGE_KEY) || 0);
+                return Number.isFinite(verifiedUntil) && verifiedUntil > Date.now();
+            }
+
+            function rememberAdminVerification() {
+                sessionStorage.setItem(ADMIN_REAUTH_STORAGE_KEY, String(Date.now() + ADMIN_REAUTH_WINDOW_MS));
+            }
 
             function requireAdminVerify(callback) {
+                if (isAdminVerificationFresh()) {
+                    if (typeof callback === 'function') callback();
+                    return;
+                }
+
                 _adminVerifyCallback = callback;
                 const modal = document.getElementById('adminVerifyModal');
                 const input = document.getElementById('adminVerifyPassword');
                 const err = document.getElementById('adminVerifyError');
                 const btn = document.getElementById('confirmAdminVerifyBtn');
                 input.value = '';
+                input.type = 'password';
                 err.style.display = 'none';
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-unlock"></i> Confirm';
+                btn.textContent = 'Continue';
                 modal.classList.add('show');
                 setTimeout(() => input.focus(), 80);
             }
@@ -1126,40 +1182,40 @@
                 const btn = document.getElementById('confirmAdminVerifyBtn');
 
                 if (!password) {
-                    err.style.display = 'block';
+                    err.style.display = 'flex';
                     errText.textContent = 'Password is required.';
                     return;
                 }
 
-                const email = document.getElementById('userEmail')?.textContent?.trim() || '';
                 btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying…';
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
                 err.style.display = 'none';
 
                 try {
-                    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    const response = await fetch(`${API_BASE_URL}/api/auth/admin/verify-password`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, password })
+                        body: JSON.stringify({ password })
                     });
 
                     if (response.ok) {
+                        rememberAdminVerification();
                         document.getElementById('adminVerifyModal').classList.remove('show');
                         const cb = _adminVerifyCallback;
                         _adminVerifyCallback = null;
                         if (typeof cb === 'function') cb();
                     } else {
-                        err.style.display = 'block';
+                        err.style.display = 'flex';
                         errText.textContent = 'Incorrect password. Please try again.';
                         btn.disabled = false;
-                        btn.innerHTML = '<i class="fas fa-unlock"></i> Confirm';
+                        btn.textContent = 'Continue';
                         document.getElementById('adminVerifyPassword').focus();
                     }
                 } catch (error) {
-                    err.style.display = 'block';
+                    err.style.display = 'flex';
                     errText.textContent = 'Could not reach the server. Please try again.';
                     btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-unlock"></i> Confirm';
+                    btn.textContent = 'Continue';
                     console.error('Admin verify error:', error);
                 }
             }
@@ -1170,17 +1226,6 @@
             document.getElementById('confirmAdminVerifyBtn').addEventListener('click', submitAdminVerify);
             document.getElementById('adminVerifyPassword').addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') submitAdminVerify();
-            });
-            document.getElementById('adminVerifyToggle').addEventListener('click', function () {
-                const input = document.getElementById('adminVerifyPassword');
-                const icon = document.getElementById('adminVerifyToggleIcon');
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.className = 'fas fa-eye-slash';
-                } else {
-                    input.type = 'password';
-                    icon.className = 'fas fa-eye';
-                }
             });
             document.getElementById('adminVerifyModal').addEventListener('click', function (e) {
                 if (e.target === this) closeAdminVerifyModal();
@@ -1232,8 +1277,9 @@
                 document.getElementById('resetPwdModal').classList.remove('show');
 
                 if (response.ok) {
-                    if (typeof showToast === 'function') showToast(result.message || 'Password reset successfully', 'success');
-                    else alert("✅ " + (result.message || 'Password reset successfully'));
+                    const message = result.message || 'Password reset. Temporary password was sent by email.';
+                    if (typeof showToast === 'function') showToast(message, 'success');
+                    else alert(message);
                 } else {
                     if (typeof showToast === 'function') showToast('Failed: ' + (result.message || 'Unknown error'), 'error');
                     else alert("❌ Failed: " + result.message);
@@ -1260,3 +1306,4 @@
 </body>
 
 </html>
+

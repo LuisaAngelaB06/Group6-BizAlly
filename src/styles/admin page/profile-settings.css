@@ -1732,8 +1732,7 @@ select.form-input {
     background-color: var(--bg-2);
 }
 
-.form-actions,
-.password-actions {
+.form-actions {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
@@ -1754,10 +1753,69 @@ select.form-input {
 }
 
 .toast {
+    position: fixed;
+    right: 28px;
+    top: 88px;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 320px;
+    max-width: 440px;
+    padding: 14px 16px;
     background: var(--surface);
     color: var(--text);
     border: 1px solid var(--border-bright);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius-sm);
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.35;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px);
+    transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.success {
+    border-left-color: #22c55e;
+}
+
+.toast.error {
+    border-left-color: #ef4444;
+}
+
+.toast::before {
+    content: none !important;
+    display: none !important;
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper .form-input {
+    padding-right: 42px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    color: var(--text-3);
+    cursor: pointer;
+    transition: color 0.18s var(--ease);
+}
+
+.toggle-password:hover {
+    color: var(--accent);
 }
 
 .account-menu .arrow {
@@ -1780,8 +1838,7 @@ select.form-input {
     }
 
     .form-actions,
-    .photo-actions,
-    .password-actions {
+    .photo-actions {
         justify-content: stretch;
         flex-direction: column;
     }

@@ -448,30 +448,22 @@ html.light-theme {
 .toast.success::before {
     content: "\2713" !important;
     color: var(--green) !important;
+    display: inline-block !important;
     font-weight: 800 !important;
+    margin-right: 2px !important;
 }
 
 .toast.error::before {
     content: "\2717" !important;
     color: var(--red) !important;
+    display: inline-block !important;
     font-weight: 800 !important;
+    margin-right: 2px !important;
 }
 
 .toast.info::before {
-    content: "i" !important;
-    width: 18px !important;
-    height: 18px !important;
-    border-radius: 50% !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    background: rgba(59, 123, 255, 0.16) !important;
-    color: var(--accent) !important;
-    font-family: Georgia, serif !important;
-    font-size: 0.8rem !important;
-    font-weight: 700 !important;
-    line-height: 1 !important;
-    flex: 0 0 18px !important;
+    content: none !important;
+    display: none !important;
 }
 
 @media (max-width: 900px) {

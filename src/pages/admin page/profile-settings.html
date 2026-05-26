@@ -209,7 +209,7 @@
                                         Please enter your last name</div>
                                 </div>
 
-                                <div class="form-group full-width">
+                                <div class="form-group">
                                     <label class="form-label" for="email">
                                         <span data-translate="email_address">Email Address</span> <span
                                             class="required">*</span>
@@ -230,37 +230,6 @@
                                     <div class="form-hint" data-translate="optional">Optional</div>
                                 </div>
 
-                                <div class="form-group">
-                                    <label class="form-label" for="department">
-                                        <i class="fas fa-building"></i> <span
-                                            data-translate="department">Department</span>
-                                    </label>
-                                    <select id="department" class="form-input">
-                                        <option value="" data-translate="select_department">Select Department
-                                        </option>
-                                        <option value="it" data-translate="it_department">IT Department</option>
-                                        <option value="hr" data-translate="hr_department">Human Resources
-                                        </option>
-                                        <option value="finance" data-translate="finance_department">Finance
-                                        </option>
-                                        <option value="operations" data-translate="operations_department">
-                                            Operations</option>
-                                        <option value="marketing" data-translate="marketing_department">
-                                            Marketing</option>
-                                        <option value="sales" data-translate="sales_department">Sales</option>
-                                        <option value="support" data-translate="support_department">Customer
-                                            Support</option>
-                                        <option value="other" data-translate="other_department">Other</option>
-                                    </select>
-                                    <div class="form-hint" data-translate="optional">Optional</div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label" for="role">
-                                        <i class="fas fa-user-shield"></i> <span data-translate="role">Role</span>
-                                    </label>
-                                    <input type="text" id="role" class="form-input" value="Administrator" readonly />
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -280,13 +249,17 @@
 
                         <div class="profile-form">
                             <div class="form-grid">
-                                <div class="form-group">
+                                <div class="form-group" style="grid-column: span 2;">
                                     <label class="form-label" for="currentPassword">
                                         <span data-translate="current_password">Current Password</span> <span
                                             class="required">*</span>
                                     </label>
-                                    <input type="password" id="currentPassword" class="form-input"
-                                        placeholder="Enter current password" />
+                                    <div class="password-wrapper">
+                                        <input type="password" id="currentPassword" class="form-input"
+                                            placeholder="Enter current password" />
+                                        <i class="fas fa-eye toggle-password"
+                                            onclick="togglePassword('currentPassword', this)"></i>
+                                    </div>
                                     <div class="form-error" id="currentPasswordError"
                                         data-translate="enter_current_password">Please enter your current
                                         password</div>
@@ -297,8 +270,12 @@
                                         <span data-translate="new_password">New Password</span> <span
                                             class="required">*</span>
                                     </label>
-                                    <input type="password" id="newPassword" class="form-input"
-                                        placeholder="Enter new password" />
+                                    <div class="password-wrapper">
+                                        <input type="password" id="newPassword" class="form-input"
+                                            placeholder="Enter new password" />
+                                        <i class="fas fa-eye toggle-password"
+                                            onclick="togglePassword('newPassword', this)"></i>
+                                    </div>
                                     <div class="password-strength" id="passwordStrength">
                                         <div class="strength-bar">
                                             <div class="strength-fill"></div>
@@ -315,22 +292,26 @@
                                         <span data-translate="confirm_password">Confirm Password</span> <span
                                             class="required">*</span>
                                     </label>
-                                    <input type="password" id="confirmPassword" class="form-input"
-                                        placeholder="Confirm new password" />
+                                    <div class="password-wrapper">
+                                        <input type="password" id="confirmPassword" class="form-input"
+                                            placeholder="Confirm new password" />
+                                        <i class="fas fa-eye toggle-password"
+                                            onclick="togglePassword('confirmPassword', this)"></i>
+                                    </div>
                                     <div class="form-error" id="confirmPasswordError"
                                         data-translate="passwords_not_match">Passwords do not match</div>
                                 </div>
                             </div>
 
-                            <div class="form-hint">
+                            <div class="form-hint" style="margin-top: 10px;">
                                 <i class="fas fa-info-circle"></i> <span data-translate="password_requirements">Password
                                     must be at least 8
                                     characters long and include uppercase, lowercase, numbers, and special
                                     characters.</span>
                             </div>
-                            <div class="password-actions">
-                                <button type="button" class="btn btn-primary" id="updatePasswordBtn">
-                                    <i class="fas fa-key"></i> <span data-translate="change_password">Change
+                            <div class="form-actions" style="margin-top: 15px;">
+                                <button type="button" class="btn btn-secondary" id="updatePasswordBtn">
+                                    <i class="fas fa-key"></i> <span data-translate="update_password">Update
                                         Password</span>
                                 </button>
                             </div>
@@ -447,17 +428,6 @@
                 'email_address': 'Email Address',
                 'enter_valid_email': 'Please enter a valid email address',
                 'phone_number': 'Phone Number',
-                'department': 'Department',
-                'select_department': 'Select Department',
-                'it_department': 'IT Department',
-                'hr_department': 'Human Resources',
-                'finance_department': 'Finance',
-                'operations_department': 'Operations',
-                'marketing_department': 'Marketing',
-                'sales_department': 'Sales',
-                'support_department': 'Customer Support',
-                'other_department': 'Other',
-                'role': 'Role',
                 'optional': 'Optional',
                 'change_password': 'Change Password',
                 'update_password_security': 'Update your password to keep your account secure',
@@ -468,6 +438,7 @@
                 'confirm_password': 'Confirm Password',
                 'passwords_not_match': 'Passwords do not match',
                 'password_strength': 'Password strength',
+                'update_password': 'Update Password',
                 'weak_password': 'Weak password',
                 'medium_strength': 'Medium strength',
                 'strong_password': 'Strong password',
@@ -513,17 +484,6 @@
                 'email_address': 'Email',
                 'enter_valid_email': 'Ilagay ang tamang email',
                 'phone_number': 'Telepono',
-                'department': 'Department',
-                'select_department': 'Pumili ng Department',
-                'it_department': 'IT Department',
-                'hr_department': 'Human Resources',
-                'finance_department': 'Finance',
-                'operations_department': 'Operations',
-                'marketing_department': 'Marketing',
-                'sales_department': 'Sales',
-                'support_department': 'Customer Support',
-                'other_department': 'Iba Pa',
-                'role': 'Tungkulin',
                 'optional': 'Opsyonal',
                 'change_password': 'Palitan ang Password',
                 'update_password_security': 'I-update ang password',
@@ -534,6 +494,7 @@
                 'confirm_password': 'Kumpirmahin ang Password',
                 'passwords_not_match': 'Hindi magkatugma ang password',
                 'password_strength': 'Lakas ng Password',
+                'update_password': 'I-update ang Password',
                 'weak_password': 'Mahinang password',
                 'medium_strength': 'Katamtamang lakas',
                 'strong_password': 'Malakas na password',
@@ -645,6 +606,21 @@
             applyTranslations(e.detail.language);
         });
 
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            } else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+
         // Load saved profile data
         function loadProfileData() {
             if (!window.userDataManager) {
@@ -664,14 +640,6 @@
             document.getElementById('lastName').value = userData.lastName || userData.name?.split(' ').slice(1).join(' ') || 'User';
             document.getElementById('email').value = userData.email || '';
             document.getElementById('phone').value = userData.phone || '';
-
-            // Set department dropdown value
-            const departmentSelect = document.getElementById('department');
-            if (departmentSelect && userData.department) {
-                departmentSelect.value = userData.department;
-            }
-
-            document.getElementById('role').value = userData.role || 'Administrator';
 
             // Update profile photo if exists
             const profilePicture = window.userDataManager.getProfilePicture();
@@ -933,9 +901,7 @@
                     lastName: document.getElementById('lastName').value,
                     name: `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`.trim(),
                     email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    department: document.getElementById('department').value,
-                    role: document.getElementById('role').value
+                    phone: document.getElementById('phone').value
                 };
 
                 if (profileImage && profileImage.style.display === 'block') {
@@ -966,7 +932,6 @@
                 let firstName = 'Admin';
                 let lastName = 'User';
                 let email = userData.email || '';
-                let role = userData.role || 'Administrator';
 
                 if (userData.name) {
                     const nameParts = userData.name.split(' ');
@@ -978,8 +943,6 @@
                 document.getElementById('lastName').value = lastName;
                 document.getElementById('email').value = email;
                 document.getElementById('phone').value = '';
-                document.getElementById('department').value = '';
-                document.getElementById('role').value = role;
 
                 const currentPassword = document.getElementById('currentPassword');
                 const newPassword = document.getElementById('newPassword');
@@ -1034,6 +997,10 @@
             }, 3000);
         }
 
+        function showPasswordMessage(message, type = 'success') {
+            showToast(message, type);
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
 
             // --- 1. PUT REAL DATA IN THE TEXT BOXES ---
@@ -1068,18 +1035,18 @@
                     const confirmPassword = document.getElementById("confirmPassword").value;
 
                     if (!oldPassword || !newPassword || !confirmPassword) {
-                        alert("Please fill in all password fields.");
+                        showPasswordMessage("Please fill in all password fields.", "error");
                         return;
                     }
 
                     if (newPassword !== confirmPassword) {
-                        alert("Your new passwords do not match!");
+                        showPasswordMessage("Your new passwords do not match.", "error");
                         return;
                     }
 
                     const userDataStr = localStorage.getItem("userData");
                     if (!userDataStr) {
-                        alert("You must be logged in to do this.");
+                        showPasswordMessage("You must be logged in to do this.", "error");
                         return;
                     }
                     const userData = JSON.parse(userDataStr);
@@ -1089,29 +1056,35 @@
                     updatePasswordBtn.disabled = true;
 
                     try {
-                        const response = await fetch("http://127.0.0.1:5000/api/user/change-password", {
+                        const passwordApiBaseUrl = (window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost")
+                            ? "http://127.0.0.1:5000"
+                            : "https://group6-bizally.onrender.com";
+                        const response = await fetch(`${passwordApiBaseUrl}/api/auth/user/change-password`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
-                                user_id: userData.user_id,
+                                user_id: userData.user_id || userData.User_ID || userData.UserId || userData.id,
                                 old_password: oldPassword,
                                 new_password: newPassword
                             })
                         });
 
-                        const result = await response.json();
+                        const result = await response.json().catch(() => ({
+                            status: "error",
+                            message: "Server returned an invalid response."
+                        }));
 
                         if (response.ok && result.status === "success") {
-                            alert("✅ Success! " + result.message);
+                            showPasswordMessage(result.message || "Password updated successfully.", "success");
                             document.getElementById("currentPassword").value = "";
                             document.getElementById("newPassword").value = "";
                             document.getElementById("confirmPassword").value = "";
                         } else {
-                            alert("❌ Failed: " + result.message);
+                            showPasswordMessage(result.message || "Password update failed.", "error");
                         }
                     } catch (error) {
                         console.error("Change Password Error:", error);
-                        alert("Unable to connect to the server. Please try again later.");
+                        showPasswordMessage("Unable to connect to the server. Please try again later.", "error");
                     } finally {
                         updatePasswordBtn.innerHTML = originalText;
                         updatePasswordBtn.disabled = false;
@@ -1160,3 +1133,4 @@
 </body>
 
 </html>
+

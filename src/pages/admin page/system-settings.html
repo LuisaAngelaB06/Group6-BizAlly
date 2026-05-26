@@ -361,7 +361,12 @@
     </script>
 
     <script>
-        const ADMIN_PASSWORD_VERIFY_ENDPOINT = '/api/admin/verify-password';
+        const ADMIN_API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
+            ? 'http://127.0.0.1:5000'
+            : '';
+        const ADMIN_PASSWORD_VERIFY_ENDPOINT = `${ADMIN_API_BASE_URL}/api/auth/admin/verify-password`;
+        const ADMIN_REAUTH_STORAGE_KEY = 'adminVerifiedUntil';
+        const ADMIN_REAUTH_WINDOW_MS = 5 * 60 * 1000;
         let pendingAdminAction = null;
 
         const translations = {
@@ -634,6 +639,14 @@
 
         function requestAdminPassword(action) {
             pendingAdminAction = action;
+
+            if (isAdminVerificationFresh()) {
+                pendingAdminAction = null;
+                if (action === 'saveSettings') saveSystemSettings();
+                if (action === 'discardSettings') resetSettings();
+                return;
+            }
+
             const messages = {
                 saveSettings: 'Type your account password before saving settings.',
                 discardSettings: 'Type your account password before discarding changes.'
@@ -663,12 +676,29 @@
 
         async function confirmClearSystemLogs() {
             const password = document.getElementById('clearLogsPassword').value;
+            if (isAdminVerificationFresh()) {
+                clearSystemLogs();
+                return;
+            }
             if (await verifyAdminPassword(password)) clearSystemLogs();
         }
 
         async function confirmResetDatabase() {
             const password = document.getElementById('resetDatabasePassword').value;
+            if (isAdminVerificationFresh()) {
+                resetDatabase();
+                return;
+            }
             if (await verifyAdminPassword(password)) resetDatabase();
+        }
+
+        function isAdminVerificationFresh() {
+            const verifiedUntil = Number(sessionStorage.getItem(ADMIN_REAUTH_STORAGE_KEY) || 0);
+            return Number.isFinite(verifiedUntil) && verifiedUntil > Date.now();
+        }
+
+        function rememberAdminVerification() {
+            sessionStorage.setItem(ADMIN_REAUTH_STORAGE_KEY, String(Date.now() + ADMIN_REAUTH_WINDOW_MS));
         }
 
         async function verifyAdminPassword(password) {
@@ -691,7 +721,9 @@
                 }
 
                 const result = await response.json().catch(() => ({}));
-                return result.success !== false && result.valid !== false;
+                const verified = result.success !== false && result.valid !== false;
+                if (verified) rememberAdminVerification();
+                return verified;
             } catch (error) {
                 console.error('Password verification failed:', error);
                 showToast('Could not verify password. Please check the backend API.', 'error');
