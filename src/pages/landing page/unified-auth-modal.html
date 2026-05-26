@@ -351,6 +351,7 @@
             const ADMIN_EMAIL_DOMAIN = '@allitrack.com';
             const USER_DASHBOARD_PATH = '/user/dashboard';
             const ADMIN_DASHBOARD_PATH = '/admin/dashboard';
+            const TECHNICIAN_CONSOLE_PATH = '/technician/all-tickets.html';
 
             // ========== DOM ELEMENTS ==========
             const tabLogin = document.getElementById('tabLoginBtn');
@@ -497,10 +498,10 @@
 
                 // 3. FIXED: Use CLEAN routes to avoid 404s
                 const redirectPath = role === 'technician'
-                    ? '/admin/all-tickets.html'
+                    ? TECHNICIAN_CONSOLE_PATH
                     : role === 'admin'
-                        ? '/admin/dashboard'
-                        : '/user/dashboard';
+                        ? ADMIN_DASHBOARD_PATH
+                        : USER_DASHBOARD_PATH;
 
                 console.log(`Login successful. Redirecting ${role} to: ${redirectPath}`);
                 window.location.href = redirectPath;
@@ -699,10 +700,10 @@
 
                         window.location.href =
                             userType === "technician"
-                                ? "/admin/all-tickets.html"
+                                ? TECHNICIAN_CONSOLE_PATH
                                 : userType === "admin"
-                                    ? "/admin/dashboard"
-                                    : "/user/dashboard";
+                                    ? ADMIN_DASHBOARD_PATH
+                                    : USER_DASHBOARD_PATH;
                     } else {
                         handleLoginFailure(result.message || "Invalid credentials");
                     }

@@ -53,7 +53,7 @@ if (form) {
 
           window.location.href =
             role === "technician"
-              ? "/admin/all-tickets.html"
+              ? "/technician/all-tickets.html"
               : role === "admin"
                 ? "/admin/dashboard"
                 : "/user/dashboard";

@@ -101,7 +101,11 @@
     const section = getSectionFromPath();
 
     if (!rules.length || (section && !rules.includes(section))) {
-      window.location.replace("/admin/all-tickets.html");
+      window.location.replace(
+        role === "technician"
+          ? "/technician/all-tickets.html"
+          : "/admin/all-tickets.html",
+      );
       return false;
     }
 
@@ -152,6 +156,11 @@
       if (section && !rules.includes(section)) {
         link.hidden = true;
         link.style.display = "none";
+      } else if (getRole() === "technician") {
+        const href = String(link.getAttribute("href") || "");
+        if (href.startsWith("/admin/")) {
+          link.setAttribute("href", href.replace("/admin/", "/technician/"));
+        }
       }
     });
 

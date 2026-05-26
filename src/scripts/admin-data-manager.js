@@ -55,6 +55,7 @@
         ).toLowerCase();
 
         const isTryingAdmin = currentPath.includes('/admin');
+        const isTryingTechnician = currentPath.includes('/technician');
         const isTryingUser = currentPath.includes('/user');
 
         if (isTryingAdmin && role === 'client') {
@@ -62,8 +63,18 @@
             return;
         }
 
+        if (isTryingAdmin && role === 'technician') {
+            redirectTo('/technician/all-tickets.html');
+            return;
+        }
+
+        if (isTryingTechnician && role !== 'technician') {
+            redirectTo(role === 'admin' ? '/admin/dashboard' : '/user/index-user.html');
+            return;
+        }
+
         if (isTryingUser && role !== 'client') {
-            redirectTo('/admin/index-admin.html');
+            redirectTo(role === 'technician' ? '/technician/all-tickets.html' : '/admin/index-admin.html');
         }
     }
 

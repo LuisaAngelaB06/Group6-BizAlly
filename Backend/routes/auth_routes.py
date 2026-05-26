@@ -860,7 +860,7 @@ def google_callback():
 
                 window.location.replace(
                     role === "technician"
-                    ? "/admin/all-tickets.html"
+                    ? "/technician/all-tickets.html"
                     : role === "admin"
                     ? "/admin/dashboard"
                     : "/user/dashboard"

@@ -215,6 +215,19 @@ def serve_assets(filename):
 # =========================
 @app.route("/technician/<path:filename>")
 def technician_pages(filename):
+    technician_aliases = {
+        "all-tickets.html",
+        "announcements.html",
+        "preferences.html",
+        "profile-settings.html",
+    }
+
+    if filename in technician_aliases:
+        return send_from_directory(
+            os.path.join(BASE_DIR, "src/pages/admin page"),
+            filename
+        )
+
     return send_from_directory(
         os.path.join(BASE_DIR, "src/pages/technician page"),
         filename
