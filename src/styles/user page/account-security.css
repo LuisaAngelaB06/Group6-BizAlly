@@ -625,3 +625,32 @@
         align-items: flex-start;
     }
 }
+
+/* ============================================================
+   🌟 ACCOUNT SECURITY - THE REAL FIT-TO-SCREEN FIX
+   ============================================================ */
+
+/* 1. Build a hard wall: Force the card to an exact height so it NEVER pushes the page down */
+.security-card.login-card {
+    display: flex !important;
+    flex-direction: column !important;
+    height: calc(100vh - 210px) !important; /* 🌟 Locks the height. Tweak the 210px if it overlaps the footer */
+    max-height: calc(100vh - 210px) !important; 
+}
+
+/* 2. Allow the inner wrapper to flex safely */
+.login-history {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+}
+
+/* 3. Confine the list inside the hard wall so it scrolls internally */
+.history-list {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    min-height: 0 !important;
+    max-height: none !important; 
+    padding-right: 5px; /* Gives the scrollbar room to breathe */
+}

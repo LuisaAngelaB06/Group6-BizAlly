@@ -5,6 +5,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-translate="all_tickets_page_title">All Tickets — AlliTrack</title>
+    <script>
+        (function() {
+            try {
+                const rawData = localStorage.getItem('userData') || "";
+                // STRICT MATCH: Looks exactly for the JSON key/value pair
+                if (rawData.toLowerCase().includes('"user_type":"technician"') || rawData.toLowerCase().includes('"role":"technician"')) {
+                    document.write('<style>.sidebar-nav a[data-section="dashboard"], .sidebar-nav a[data-section="users"], .sidebar-nav a[data-section="system-settings"], .sidebar-nav a[data-section="analytics"], .sidebar-nav a[data-section="logs"], .nav-group-label[data-translate="system_management"] { display: none !important; }</style>');
+                }
+            } catch(e) {}
+        })();
+    </script>
     <script src="../../scripts/theme.js"></script>
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
@@ -53,7 +64,7 @@
 
         <nav class="sidebar-nav">
             <div class="nav-group-label">OVERVIEW</div>
-            <a href="/admin/index-admin.html" class="nav-item" data-section="dashboard">
+            <a href="/admin/dashboard" class="nav-item" data-section="dashboard">
                 <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
             </a>
 
@@ -61,9 +72,16 @@
             <a href="/admin/all-tickets.html" class="nav-item active" data-section="tickets">
                 <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
             </a>
+            
+            <a href="/admin/notifications.html" class="nav-item" data-section="notifications" id="notificationLink">
+                <i class="fas fa-bell"></i> <span data-translate="notifications">Notifications</span>
+                <span id="notifRedDot" class="red-dot hidden"></span>
+            </a>
+            
             <a href="/admin/staff-management.html" class="nav-item" data-section="users">
                 <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
             </a>
+            
             <a href="/admin/announcements.html" class="nav-item" data-section="announcements">
                 <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
             </a>

@@ -5,6 +5,7 @@
     admin: [
       "dashboard",
       "tickets",
+      "notifications", // 🌟 Whitelists notifications section for Administrators
       "users",
       "announcements",
       "system-settings",
@@ -13,13 +14,15 @@
       "preferences",
       "profile-settings",
     ],
-    technician: ["tickets", "announcements", "preferences", "profile-settings"],
+    // 🌟 Whitelists notifications section for Technicians
+    technician: ["tickets", "notifications", "announcements", "preferences", "profile-settings"],
   };
 
   const PATH_SECTIONS = {
     "index-admin.html": "dashboard",
     dashboard: "dashboard",
     "all-tickets.html": "tickets",
+    "notifications.html": "notifications", // 🌟 Maps filename to clear protectPage guard redirects
     "staff-management.html": "users",
     "announcements.html": "announcements",
     "system-settings.html": "system-settings",
@@ -29,7 +32,6 @@
     "profile-settings.html": "profile-settings",
   };
 
-  // Safely parse JSON from localStorage, returning a fallback value if parsing fails or if the value is invalid
   function safeParseJSON(value, fallback = null) {
     if (!value || value === "undefined" || value === "null") return fallback;
     try {
@@ -40,31 +42,24 @@
     }
   }
 
-  // Retrieve the current user's data from localStorage, returning null if not found or if the data is invalid
   function getUser() {
     return safeParseJSON(localStorage.getItem("userData"), null);
   }
 
-  // Determine the user's role by checking common properties in the user object, defaulting to an empty string if not found
   function getRole() {
     const user = getUser();
     return String(user?.User_Type || user?.user_type || "").toLowerCase();
   }
 
-  // Determine the technician ID from the user object, checking multiple possible property names and defaulting to an empty string if not found
   function getTechnicianId() {
     const user = getUser();
-    return (
-      user?.Technician_ID || user?.technician_id || user?.TechnicianId || ""
-    );
+    return (user?.Technician_ID || user?.technician_id || user?.TechnicianId || "");
   }
 
-  // Get the allowed sections for a given role, defaulting to the current user's role if not provided
   function getRules(role = getRole()) {
     return RULES[role] || [];
   }
 
-  // Generate authentication headers based on the current user's information
   function authHeaders(extraHeaders = {}) {
     const user = getUser();
     const headers = { ...extraHeaders };
@@ -81,14 +76,14 @@
     return headers;
   }
 
-  // Determine the current section based on the URL path
+  // Uses strict matching to prevent folder names from hijacking route identification
   function getSectionFromPath() {
     const path = window.location.pathname.toLowerCase();
-    const match = Object.keys(PATH_SECTIONS).find((key) => path.includes(key));
+    const match = Object.keys(PATH_SECTIONS).find((key) => path.endsWith(key) || path.includes("/" + key));
     return match ? PATH_SECTIONS[match] : null;
   }
 
-  // Redirect to homepage if not logged in, or to default page if lacking permissions
+  // 🌟 PRESERVED: Preserves your active technician subdirectory page guard routing rule options exactly
   function protectPage() {
     const user = getUser();
     if (!user) {
@@ -112,7 +107,6 @@
     return true;
   }
 
-  // Hide group labels if all their items are hidden
   function hideEmptyGroups(nav) {
     const labels = Array.from(nav.querySelectorAll(".nav-group-label"));
 
@@ -121,22 +115,17 @@
       let node = label.nextElementSibling;
 
       while (node && !node.classList.contains("nav-group-label")) {
-        if (
-          node.classList.contains("nav-item") &&
-          node.style.display !== "none" &&
-          !node.hidden
-        ) {
+        if (node.classList.contains("nav-item") && node.style.display !== "none" && !node.hidden) {
           hasVisibleItem = true;
           break;
         }
         node = node.nextElementSibling;
       }
-
       label.hidden = !hasVisibleItem;
     });
   }
 
-  // Show/hide sidebar links based on permissions, and hide group labels if all items are hidden
+  // 🌟 PRESERVED: Preserves your progressive technician /admin/ to /technician/ folder routing rewriter rule exactly
   function renderSidebar() {
     const rules = getRules();
     const nav = document.querySelector(".sidebar-nav");
@@ -146,9 +135,7 @@
       let section = link.dataset.section;
       if (!section) {
         const href = String(link.getAttribute("href") || "").toLowerCase();
-        const match = Object.keys(PATH_SECTIONS).find((key) =>
-          href.includes(key),
-        );
+        const match = Object.keys(PATH_SECTIONS).find((key) => href.includes(key));
         section = match ? PATH_SECTIONS[match] : "";
         if (section) link.dataset.section = section;
       }
@@ -184,11 +171,10 @@
     document
       .querySelectorAll('[data-translate="mobile_block_message"]')
       .forEach((el) => {
-        el.textContent =
-          "Technician console is optimized for larger screens. Please open on a desktop or tablet in landscape mode.";
+        el.textContent = "Technician console is optimized for larger screens. Please open on a desktop or tablet in landscape mode.";
       });
 
-    if (document.title.toLowerCase().includes("admin")) {
+    if (document.title.toLowerCase().includes("admin") && !document.title.toLowerCase().includes("notifications")) {
       document.title = document.title.replace(/admin/gi, "Technician");
     }
   }
@@ -204,19 +190,28 @@
         '[data-translate="all_tickets"], [data-translate="all_tickets_title"]',
       )
       .forEach((el) => {
+        // 🌟 SAFEGUARD: Prevent accidental translation overwrites on notification elements
+        if (el.getAttribute('data-translate') === 'notifications' || el.closest('#notificationLink')) return;
         el.textContent = "Assigned Tickets";
       });
 
+    // 🌟 FIXED TARGETING: Programmatically checks text sections to leave notifications fully alone
     document
-      .querySelectorAll('.nav-item[data-section="tickets"]')
+      .querySelectorAll('.nav-item')
       .forEach((link) => {
-        const span = link.querySelector("span");
-        if (span) span.textContent = "Assigned Tickets";
-        else {
-          const icon = link.querySelector("i");
-          link.innerHTML = "";
-          if (icon) link.appendChild(icon);
-          link.append(" Assigned Tickets");
+        const href = String(link.getAttribute("href") || "").toLowerCase();
+        const section = link.dataset.section || link.getAttribute('data-section') || "";
+
+        if ((section === "tickets") && !href.includes("notifications.html")) {
+          const span = link.querySelector("span");
+          if (span) {
+            span.textContent = "Assigned Tickets";
+          } else {
+            const icon = link.querySelector("i");
+            link.innerHTML = "";
+            if (icon) link.appendChild(icon);
+            link.append(" Assigned Tickets");
+          }
         }
       });
 
@@ -237,20 +232,12 @@
     }
   }
 
-  // Hide or disable ticket management features for technicians, and update descriptions accordingly
   function applyTicketPermissions() {
     if (getRole() !== "technician") return;
 
     relabelAssignedTickets();
 
-    [
-      "#deleteTicketsBtn",
-      "#selectAllTickets",
-      "#editAssignedTo",
-      'label[for="editAssignedTo"]',
-      "#editPriority",
-      'label[for="editPriority"]',
-    ].forEach((selector) => {
+    ["#deleteTicketsBtn", "#selectAllTickets", "#editAssignedTo", 'label[for="editAssignedTo"]', "#editPriority", 'label[for="editPriority"]'].forEach((selector) => {
       document.querySelectorAll(selector).forEach((el) => {
         el.hidden = true;
         el.style.display = "none";
@@ -263,44 +250,32 @@
     });
   }
 
-  // Hide or disable announcement management features for technicians, and update descriptions accordingly
   function applyAnnouncementPermissions() {
     if (getRole() !== "technician") return;
 
     applyConsoleLabels();
 
-    [
-      ".announcement-form-card",
-      "#bulkActionBar",
-      "#deleteConfirmationModal",
-    ].forEach((selector) => {
+    [".announcement-form-card", "#bulkActionBar", "#deleteConfirmationModal"].forEach((selector) => {
       document.querySelectorAll(selector).forEach((el) => {
         el.hidden = true;
         el.style.display = "none";
       });
     });
 
-    document
-      .querySelectorAll(".item-actions, .btn-edit, .btn-delete")
-      .forEach((el) => {
+    document.querySelectorAll(".item-actions, .btn-edit, .btn-delete").forEach((el) => {
         el.hidden = true;
         el.style.display = "none";
       });
 
-    const description = document.querySelector(
-      '[data-translate="announcements_description"]',
-    );
-    if (description)
-      description.textContent = "View support-related announcements";
+    const description = document.querySelector('[data-translate="announcements_description"]');
+    if (description) description.textContent = "View support-related announcements";
   }
 
-  // Determine if authentication headers should be attached based on the request URL, targeting API endpoints
   function shouldAttachHeaders(resource) {
     const url = typeof resource === "string" ? resource : resource?.url || "";
     return url.includes("/api/") || url.startsWith("/api/");
   }
 
-  // Patch the global fetch function to automatically include authentication headers for API requests
   function patchFetch() {
     if (window.__adminRBACFetchPatched) return;
     window.__adminRBACFetchPatched = true;
@@ -329,7 +304,6 @@
     authHeaders,
     protectPage,
     renderSidebar,
-    applyConsoleLabels,
     applyTicketPermissions,
     applyAnnouncementPermissions,
   };
@@ -348,9 +322,11 @@
 
   document.addEventListener("languageChanged", () => {
     setTimeout(applyConsoleLabels, 0);
+    setTimeout(relabelAssignedTickets, 2);
   });
 
   document.addEventListener("languageReloaded", () => {
     setTimeout(applyConsoleLabels, 0);
+    setTimeout(relabelAssignedTickets, 2);
   });
 })();

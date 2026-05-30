@@ -60,8 +60,8 @@
       <div class="nav-group-label" data-translate="support">SUPPORT</div>
       <a href="/user/my-tickets.html" class="nav-item active" data-section="tickets"><i class="fas fa-ticket-alt"></i>
         <span data-translate="my_tickets">My Tickets</span></a>
-      <a href="/user/notifications.html" class="nav-item" data-section="notifications"><i class="fas fa-bell"></i>
-        <span data-translate="notifications">Notifications</span></a>
+      <a href="/user/notifications.html" class="nav-item" data-section="notifications" id="notificationLink"><i class="fas fa-bell"></i>
+        <span data-translate="notifications">Notifications</span><span id="notifRedDot" class="red-dot hidden"></span></a>
       <a href="/user/submit-ticket.html" class="nav-item" data-section="submit-ticket"><i
           class="fas fa-plus-circle"></i>
         <span data-translate="submit_ticket">Submit a Ticket</span></a>
@@ -328,6 +328,18 @@
         timeline_updated: "Last updated",
         timeline_status: "Current status",
         timeline_assignee: "Assigned technician",
+        // Sidebar Navigation Labels
+        dashboard: "Dashboard",
+        my_tickets: "My Tickets",
+        notifications: "Notifications",
+        submit_ticket: "Submit a Ticket",
+        management: "MANAGEMENT",
+        preferences: "Preferences",
+        profile_settings: "Profile Settings",
+        announcements: "Announcements",
+        system: "SYSTEM",
+        account_security: "Account Security",
+        system_information: "Legal Center"
       },
       fil: {
         my_tickets_page_title: "Aking Ticket — AlliTrack",
@@ -399,6 +411,18 @@
         timeline_updated: "Huling update",
         timeline_status: "Kasalukuyang status",
         timeline_assignee: "Naka-assign na technician",
+        // Sidebar Navigation Labels
+        dashboard: "Dashboard ng User",
+        my_tickets: "My Tickets",
+        notifications: "Notifications",
+        submit_ticket: "Submit a Ticket",
+        management: "Manage",
+        preferences: "Settings",
+        profile_settings: "Profile",
+        announcements: "Anunsyo",
+        system: "System",
+        account_security: "Security",
+        system_information: "Info"
       },
     };
 
@@ -451,18 +475,8 @@
       }
     }
     function getDisplayName(user = {}) {
-      const firstName =
-        user.firstName ||
-        user.FirstName ||
-        user.First_Name ||
-        user.first_name ||
-        "";
-      const lastName =
-        user.lastName ||
-        user.LastName ||
-        user.Last_Name ||
-        user.last_name ||
-        "";
+      const firstName = user.firstName || user.FirstName || user.First_Name || user.first_name || "";
+      const lastName = user.lastName || user.LastName || user.Last_Name || user.last_name || "";
       const composedName = `${firstName} ${lastName}`.trim();
       return (
         user.displayName ||
@@ -733,16 +747,40 @@
       );
     }
 
+    // 🌟 RESTORED FILTERING LOGIC WITH EXACT MATCH ROUTING INTERCEPT
     function filterAndSortTickets() {
-      const statusFilter =
-        document.getElementById("statusFilter")?.value || "all";
-      const sortFilter =
-        document.getElementById("sortFilter")?.value || "newest";
-      const priorityFilter =
-        document.getElementById("priorityFilter")?.value || "all";
+      const statusFilter = document.getElementById("statusFilter")?.value || "all";
+      const sortFilter = document.getElementById("sortFilter")?.value || "newest";
+      const priorityFilter = document.getElementById("priorityFilter")?.value || "all";
       const searchText = safeLower(document.getElementById("q")?.value || "");
       let filtered = [...tickets];
 
+      // 🌟 BACKEND DIRECT LINK ROUTING INTERCEPT: Isolate exact ticket ID strictly
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetTicketId = urlParams.get('ticket_id');
+
+      if (targetTicketId) {
+        // Strict check ensures only the exact matching notification ticket renders
+        filtered = filtered.filter(ticket => ticket.Ticket_ID == targetTicketId);
+        
+        // Render a clean reset header above the grid so the user isn't stuck
+        const container = document.getElementById("ticketsContainer");
+        if (container && filtered.length > 0) {
+            // Prepend a professional information bar
+            const infoBar = document.createElement('div');
+            infoBar.id = "routingFilterBanner";
+            infoBar.style = "grid-column: 1/-1; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); padding: 12px 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: #60a5fa; font-size: 0.9rem; font-weight: 500; font-family: 'DM Sans', sans-serif;";
+            infoBar.innerHTML = `
+                <span><i class="fas fa-info-circle"></i> Showing specific ticket isolated from notification link.</span>
+                <a href="#" onclick="clearTicketRouteFilter(event)" style="color: #3b82f6; text-decoration: underline; font-weight: 700;">View All Tickets</a>
+            `;
+            renderTickets(filtered);
+            container.insertBefore(infoBar, container.firstChild);
+            return;
+        }
+      }
+
+      // Apply regular dropdown filters only if not directly processing a single record
       if (statusFilter !== "all")
         filtered = filtered.filter((ticket) => {
           return getStatusClass(ticket.Status_ID || ticket.Status) === statusFilter;
@@ -780,12 +818,26 @@
       renderTickets(filtered);
     }
 
+    // Helper method cleans the URL bar without reloading the browser window
+    function clearTicketRouteFilter(event) {
+        if (event) event.preventDefault();
+        // Clear the query parameter smoothly
+        window.history.pushState({}, document.title, window.location.pathname);
+        // Re-run filter processing to restore all dashboard records seamlessly
+        filterAndSortTickets();
+    }
+
     function renderTickets(ticketList) {
       const container = document.getElementById("ticketsContainer");
       if (!container) return;
+      
+      // Keep routing filter banner element if it exists
+      const banner = document.getElementById("routingFilterBanner");
       container.innerHTML = "";
+      if (banner) container.appendChild(banner);
+
       if (!ticketList.length) {
-        container.innerHTML = `<div class="empty-state"><i class="fas fa-ticket-alt"></i><h3>${t("no_tickets")}</h3><p>${t("try_filters")}</p></div>`;
+        container.innerHTML += `<div class="empty-state"><i class="fas fa-ticket-alt"></i><h3>${t("no_tickets")}</h3><p>${t("try_filters")}</p></div>`;
         return;
       }
       ticketList.forEach((ticket) => {

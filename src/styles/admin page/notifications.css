@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 20px 0 14px;
+  margin: 30px 0 14px;
   color: var(--text-3);
   font-family: var(--font-head);
   font-size: 0.7rem;
@@ -574,6 +574,8 @@
 .toast.error i { color: #ef4444; }
 .toast.info i { color: var(--accent); }
 
+
+
 /* Keyframe Render Cascades */
 @keyframes fadeUp {
   from {
@@ -654,10 +656,34 @@
   padding: 18px 20px !important;
 }
 
+/* 1. Ensure the parent link can hold floating elements */
+.sidebar-nav .nav-item {
+    position: relative; 
+}
+
+/* 2. Style and position the red dot */
+.sidebar-nav .nav-item .red-dot {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%); /* Centers it perfectly vertically */
+    right: 15px; /* Pushes it to the right edge of the button */
+    width: 8px;
+    height: 8px;
+    background-color: #ff4757; /* Bright alert red */
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(255, 71, 87, 0.6); /* Adds a nice glow */
+    z-index: 10;
+}
+
+/* 3. Force it to hide when the 'hidden' class is present */
+.sidebar-nav .nav-item .red-dot.hidden {
+    display: none !important;
+}
+
 .delete-modal-btn {
-      cursor: pointer; /* Fixes the cursor issue */
+      cursor: pointer;
       transition: all 0.2s ease;
-      border-radius: 8px; /* Adds the rounded corners */
+      border-radius: 8px;
       border: none;
     }
     .delete-modal-btn.cancel-btn {
@@ -674,7 +700,7 @@
     }
     .delete-modal-btn.confirm-btn:hover {
       background-color: #ff2a3d;
-      box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3); /* Adds a subtle glow on hover */
+      box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
     }
     .delete-modal-close {
       position: absolute;

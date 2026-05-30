@@ -44,29 +44,13 @@ class PreferencesManager {
                 logout: "Logout",
 
                 // Sections (for preferences page)
-                notificationSettings: "Notification Settings",
-                notificationDescription:
-                    "Manage how and when you receive notifications",
+                themeSettings: "Theme Settings",
+                themeDescription: "Customize your dashboard appearance",
                 languageSettings: "Language Settings",
                 languageDescription:
                     "Set your preferred language for the entire dashboard",
-                themeSettings: "Theme Settings",
-                themeDescription: "Customize your dashboard appearance",
 
                 // Setting items (for preferences page)
-                emailNotifications: "Email Notifications",
-                emailDescription:
-                    "Receive email alerts for ticket updates and system announcements",
-                pushNotifications: "Push Notifications",
-                pushDescription: "Show browser notifications for urgent updates",
-                ticketUpdates: "Ticket Updates",
-                ticketDescription: "Notify me when my tickets are updated or resolved",
-                announcementNotifications: "New Announcements",
-                announcementDescription:
-                    "Notify me about new system announcements and features",
-                weeklyDigest: "Weekly Digest",
-                weeklyDescription: "Send weekly summary of all ticket activities",
-                dashboardLanguage: "Dashboard Language",
                 languageDropdown:
                     "This will change the language across all pages of your dashboard",
                 themeMode: "Theme Mode",

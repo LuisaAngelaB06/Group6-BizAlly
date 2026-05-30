@@ -55,8 +55,8 @@
             <div class="nav-group-label" data-section="support">SUPPORT</div>
             <a href="/user/my-tickets.html" class="nav-item" data-section="tickets"><i class="fas fa-ticket-alt"></i>
                 <span data-section="myTickets">My Tickets</span></a>
-            <a href="/user/notifications.html" class="nav-item" data-section="notifications"><i class="fas fa-bell"></i>
-                <span data-section="notifications">Notifications</span></a>
+            <a href="/user/notifications.html" class="nav-item" data-section="notifications" id="notificationLink"><i class="fas fa-bell"></i>
+                <span data-translate="notifications">Notifications</span><span id="notifRedDot" class="red-dot hidden"></span></a>
             <a href="/user/submit-ticket.html" class="nav-item" data-section="submit-ticket"><i
                     class="fas fa-plus-circle"></i> <span data-section="submitTicket">Submit a Ticket</span></a>
 
@@ -137,10 +137,6 @@
                     <button class="tab-btn" data-tab="language">
                         <i class="fas fa-language"></i>
                         <span data-section="languageTab">Language</span>
-                    </button>
-                    <button class="tab-btn" data-tab="notifications">
-                        <i class="fas fa-bell"></i>
-                        <span data-section="notificationsTab">Notifications</span>
                     </button>
                 </div>
 
@@ -259,113 +255,6 @@
                         </div>
                     </div>
 
-                    <div class="preferences-tab-content" id="notifications-tab">
-                        <div class="preferences-section">
-                            <div class="section-header">
-                                <div class="section-icon"><i class="fas fa-bell"></i></div>
-                                <div>
-                                    <h2 class="section-title" data-section="notificationSettings">Notification Settings
-                                    </h2>
-                                    <p class="section-description" data-section="notificationDescription">Manage how and
-                                        when you receive notifications</p>
-                                </div>
-                            </div>
-
-                            <div class="notification-settings">
-                                <div class="notification-category">
-                                    <h3 class="notification-category-title">
-                                        <i class="fas fa-envelope"></i>
-                                        <span data-section="emailNotifications">Email Notifications</span>
-                                    </h3>
-                                    <div class="notification-items">
-                                        <div class="notification-item">
-                                            <div class="notification-item-content">
-                                                <h4 data-section="ticketUpdates">Ticket Updates</h4>
-                                                <p data-section="ticketDescription">Notify me when my tickets are
-                                                    updated or resolved</p>
-                                            </div>
-                                            <label class="switch">
-                                                <input type="checkbox" id="ticketUpdates" checked>
-                                                <span class="slider"></span>
-                                            </label>
-                                        </div>
-
-                                        <div class="notification-item">
-                                            <div class="notification-item-content">
-                                                <h4 data-section="announcementNotifications">New Announcements</h4>
-                                                <p data-section="announcementDescription">Notify me about new system
-                                                    announcements and features</p>
-                                            </div>
-                                            <label class="switch">
-                                                <input type="checkbox" id="announcementNotifications" checked>
-                                                <span class="slider"></span>
-                                            </label>
-                                        </div>
-
-                                        <div class="notification-item">
-                                            <div class="notification-item-content">
-                                                <h4 data-section="weeklyDigest">Weekly Digest</h4>
-                                                <p data-section="weeklyDescription">Send weekly summary of all ticket
-                                                    activities</p>
-                                            </div>
-                                            <label class="switch">
-                                                <input type="checkbox" id="weeklyDigest">
-                                                <span class="slider"></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="notification-category">
-                                    <h3 class="notification-category-title">
-                                        <i class="fas fa-clock"></i>
-                                        <span data-section="notificationFrequency">Notification Frequency</span>
-                                    </h3>
-                                    <div class="frequency-options">
-                                        <div class="frequency-option">
-                                            <label class="frequency-label">
-                                                <input type="radio" name="frequency" value="realtime" checked>
-                                                <div class="frequency-content">
-                                                    <h4 data-section="realtime">Real-time</h4>
-                                                    <p data-section="realtimeDesc">Receive notifications immediately as
-                                                        they happen</p>
-                                                </div>
-                                            </label>
-                                        </div>
-
-                                        <div class="frequency-option">
-                                            <label class="frequency-label">
-                                                <input type="radio" name="frequency" value="hourly">
-                                                <div class="frequency-content">
-                                                    <h4 data-section="hourlyDigest">Hourly Digest</h4>
-                                                    <p data-section="hourlyDesc">Group notifications and receive them
-                                                        every hour</p>
-                                                </div>
-                                            </label>
-                                        </div>
-
-                                        <div class="frequency-option">
-                                            <label class="frequency-label">
-                                                <input type="radio" name="frequency" value="daily">
-                                                <div class="frequency-content">
-                                                    <h4 data-section="dailyDigest">Daily Digest</h4>
-                                                    <p data-section="dailyDesc">Receive a daily summary of all
-                                                        notifications</p>
-                                                </div>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="preference-help">
-                                <i class="fas fa-info-circle"></i>
-                                <p data-section="notificationHelp">Notification settings will be saved upon clicking
-                                    Save Preferences.</p>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="form-actions">
                         <button type="button" class="btn btn-ghost" id="resetBtn">
                             <i class="fas fa-undo"></i> <span data-section="resetDefaults">Reset to Defaults</span>
@@ -412,9 +301,6 @@
 
             // SETUP LANGUAGE SELECTION
             setupLanguageSelection();
-
-            // SETUP NOTIFICATION CONTROLS
-            setupNotificationControls();
 
             // LOAD SAVED PREFERENCES
             loadSavedPreferences();
@@ -545,27 +431,6 @@
             });
         }
 
-        // ============ NOTIFICATION FUNCTIONS ============
-        function setupNotificationControls() {
-            // Setup toggle switches
-            const switches = document.querySelectorAll('.switch input[type="checkbox"]');
-            switches.forEach(switchEl => {
-                switchEl.addEventListener('change', function () {
-                    // No auto-save - will be saved when clicking Save button
-                    console.log(`Notification ${this.id} changed to: ${this.checked}`);
-                });
-            });
-
-            // Setup frequency options
-            const frequencyRadios = document.querySelectorAll('input[name="frequency"]');
-            frequencyRadios.forEach(radio => {
-                radio.addEventListener('change', function () {
-                    if (this.checked) {
-                        console.log(`Frequency changed to: ${this.value}`);
-                    }
-                });
-            });
-        }
 
         // ============ LOAD SAVED PREFERENCES ============
         function loadSavedPreferences() {
@@ -586,53 +451,6 @@
                 languageRadio.checked = true;
                 languageRadio.closest('.language-card')?.classList.add('selected');
             }
-
-            // Load notification settings from localStorage
-            loadNotificationSettings();
-        }
-
-        function loadNotificationSettings() {
-            const savedSettings = localStorage.getItem('notificationSettings');
-            if (savedSettings) {
-                try {
-                    const settings = JSON.parse(savedSettings);
-
-                    // Load toggle states
-                    const toggleIds = ['ticketUpdates', 'announcementNotifications', 'weeklyDigest', 'pushNotifications', 'soundAlerts'];
-                    toggleIds.forEach(id => {
-                        const input = document.getElementById(id);
-                        if (input && settings[id] !== undefined) {
-                            input.checked = settings[id];
-                        }
-                    });
-
-                    // Load frequency
-                    if (settings.frequency) {
-                        const frequencyRadio = document.querySelector(`input[name="frequency"][value="${settings.frequency}"]`);
-                        if (frequencyRadio) frequencyRadio.checked = true;
-                    }
-                } catch (e) {
-                    console.error('Error loading notification settings:', e);
-                }
-            }
-        }
-
-        // ============ SAVE ALL PREFERENCES ============
-        function saveAllPreferences() {
-            // Save notification settings
-            const notificationSettings = {
-                ticketUpdates: document.getElementById('ticketUpdates')?.checked || false,
-                announcementNotifications: document.getElementById('announcementNotifications')?.checked || false,
-                weeklyDigest: document.getElementById('weeklyDigest')?.checked || false,
-                pushNotifications: document.getElementById('pushNotifications')?.checked || false,
-                soundAlerts: document.getElementById('soundAlerts')?.checked || false,
-                frequency: document.querySelector('input[name="frequency"]:checked')?.value || 'realtime'
-            };
-
-            localStorage.setItem('notificationSettings', JSON.stringify(notificationSettings));
-
-            // Show success message
-            showToast('Preferences saved successfully!', "success");
         }
 
 

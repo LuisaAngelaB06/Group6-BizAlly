@@ -18,6 +18,12 @@ if (typeof window.globalHeartbeatFired === "undefined") {
     profileLastCheckTime: 0,
     profileRetryCount: 0,
     profileMaxRetries: 3,
+
+    // 🌟 Notification system state added cleanly
+    notificationCheckInProgress: false,
+    notificationLastCheckTime: 0,
+    notificationRetryCount: 0,
+    notificationMaxRetries: 3,
   };
 
   // ==========================================
@@ -243,6 +249,85 @@ if (typeof window.globalHeartbeatFired === "undefined") {
   }
 
   // ==========================================
+  // 🌟 ROBUST NOTIFICATION RED DOT CHECKER (GLOBAL)
+  // ==========================================
+  async function checkNewNotifications(isRetry = false) {
+    const userId = extractUserId();
+
+    if (!userId) {
+      console.warn("[RedDot] No user ID found for notification check");
+      return;
+    }
+
+    // Prevent duplicate simultaneous checks
+    if (window.redDotSystemState.notificationCheckInProgress) {
+      console.debug("[RedDot] Notification check already in progress, skipping");
+      return;
+    }
+
+    // Rate limit: don't check more than once per 3 seconds (unless retry)
+    const now = Date.now();
+    if (!isRetry && now - window.redDotSystemState.notificationLastCheckTime < 3000) {
+      console.debug("[RedDot] Notification check rate limited, skipping");
+      return;
+    }
+
+    window.redDotSystemState.notificationCheckInProgress = true;
+    window.redDotSystemState.notificationLastCheckTime = now;
+
+    try {
+      const response = await fetch(buildApiUrl(`/api/notifications/user/${userId}`));
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const notifications = await response.json();
+
+      // Find all matching notification dot instances across your layout sidebar view
+      const notificationDots = document.querySelectorAll("#notifRedDot");
+      
+      // Safe validation supports multiple boolean combinations from database fields cleanly
+      const hasUnread = Array.isArray(notifications) && notifications.some(notif => 
+        notif.unread == true || 
+        notif.unread === 1 || 
+        notif.unread === "true" ||
+        notif.is_read == false ||
+        notif.is_read === 0 ||
+        notif.is_read === "false"
+      );
+
+      notificationDots.forEach(dot => {
+        if (hasUnread) {
+          showRedDot(dot);
+        } else {
+          hideRedDot(dot);
+        }
+      });
+
+      console.log(`[RedDot] Notifications check: ${hasUnread ? "unread items found" : "none"}, updated ${notificationDots.length} dots`);
+
+      // Reset retry count on success
+      window.redDotSystemState.notificationRetryCount = 0;
+    } catch (e) {
+      console.error("[RedDot] Notification check failed:", e.message);
+
+      // Retry backoff logic cascades safely if server experiences downtime
+      if (window.redDotSystemState.notificationRetryCount < window.redDotSystemState.notificationMaxRetries) {
+        window.redDotSystemState.notificationRetryCount++;
+        const backoffMs = Math.min(1000 * Math.pow(2, window.redDotSystemState.notificationRetryCount), 10000);
+        console.log(`[RedDot] Retrying notification check in ${backoffMs}ms (attempt ${window.redDotSystemState.notificationRetryCount})`);
+        setTimeout(() => checkNewNotifications(true), backoffMs);
+      } else {
+        console.warn("[RedDot] Max retries exceeded for notification check");
+        window.redDotSystemState.notificationRetryCount = 0;
+      }
+    } finally {
+      window.redDotSystemState.notificationCheckInProgress = false;
+    }
+  }
+
+  // ==========================================
   // SETUP SOCKET.IO LISTENERS (ROBUST)
   // ==========================================
   function setupAnnouncementSocketListeners() {
@@ -263,6 +348,8 @@ if (typeof window.globalHeartbeatFired === "undefined") {
     window.socket.off("new_announcement");
     window.socket.off("announcement_updated");
     window.socket.off("announcement_deleted");
+    window.socket.off("ticket_updated");
+    window.socket.off("ticket_assigned");
     window.socket.off("connect");
     window.socket.off("disconnect");
 
@@ -287,11 +374,24 @@ if (typeof window.globalHeartbeatFired === "undefined") {
       checkNewAnnouncements();
     });
 
+    // 🌟 REALTIME TICKET STATUS MODIFICATION UPDATES DETECTION CHANNELS
+    window.socket.on("ticket_updated", () => {
+      console.log("[RedDot] Socket event: ticket_updated. Refreshing alerts...");
+      checkNewNotifications();
+    });
+
+    window.socket.on("ticket_assigned", () => {
+      console.log("[RedDot] Socket event: ticket_assigned. Refreshing alerts...");
+      checkNewNotifications();
+    });
+
     // RECONNECTION HANDLER
     window.socket.on("connect", () => {
-      console.log("[RedDot] Socket reconnected, re-checking announcements");
+      console.log("[RedDot] Socket reconnected, re-checking databases...");
       window.redDotSystemState.announcementRetryCount = 0;
+      window.redDotSystemState.notificationRetryCount = 0;
       checkNewAnnouncements();
+      checkNewNotifications();
     });
 
     window.socket.on("disconnect", () => {
@@ -474,6 +574,10 @@ if (typeof window.globalHeartbeatFired === "undefined") {
     console.log("[RedDot] Starting announcement check");
     checkNewAnnouncements();
 
+    // 🌟 Run background alert checker immediately on load across all system dashboards
+    console.log("[RedDot] Starting notification check");
+    checkNewNotifications();
+
     // Start monitoring for Socket.IO availability
     monitorSocketIO();
 
@@ -508,6 +612,7 @@ if (typeof window.globalHeartbeatFired === "undefined") {
     // Reset state for next page load
     window.redDotSystemState.announcementCheckInProgress = false;
     window.redDotSystemState.profileCheckInProgress = false;
+    window.redDotSystemState.notificationCheckInProgress = false;
   });
 }
 
@@ -520,6 +625,10 @@ if (typeof window !== 'undefined') {
 
   window.__redDot_checkAnnouncements = window.__redDot_checkAnnouncements || function () {
     try { return checkNewAnnouncements(); } catch (e) { console.warn('announcement check unavailable', e); }
+  };
+
+  window.__redDot_checkNotifications = window.__redDot_checkNotifications || function () {
+    try { return checkNewNotifications(); } catch (e) { console.warn('notification check unavailable', e); }
   };
 
   window.__redDot_setupSocket = window.__redDot_setupSocket || function () {

@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-translate="notifications_page_title">Notifications — AlliTrack</title>
+    <script>
+        (function() {
+            try {
+                const rawData = localStorage.getItem('userData') || "";
+                // STRICT MATCH: Looks exactly for the JSON key/value pair
+                if (rawData.toLowerCase().includes('"user_type":"technician"') || rawData.toLowerCase().includes('"role":"technician"')) {
+                    document.write('<style>.sidebar-nav a[data-section="dashboard"], .sidebar-nav a[data-section="users"], .sidebar-nav a[data-section="system-settings"], .sidebar-nav a[data-section="analytics"], .sidebar-nav a[data-section="logs"], .nav-group-label[data-translate="system_management"] { display: none !important; }</style>');
+                }
+            } catch(e) {}
+        })();
+    </script>
+    <script src="../../scripts/theme.js"></script>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    
+    <link rel="stylesheet" href="../../styles/admin page/all-tickets.css" />
+    <link rel="stylesheet" href="../../styles/shared/admin-side-head.css" />
+    <link rel="stylesheet" href="../../styles/shared/mobile-restriction.css" />
+    <link rel="stylesheet" href="../../styles/user page/notification.css" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+    
+    <script src="../../scripts/admin-data-manager.js" defer></script>
+    <script src="../../scripts/admin-rbac.js" defer></script>
+    <script src="../../scripts/admin-preference-manager.js" defer></script>
+    <script src="../../scripts/mobile-restriction.js" defer></script>
+</head>
+
+<body>
+    <div class="mobile-block-overlay" id="mobileBlockOverlay">
+        <div class="mobile-block-card">
+            <i class="fas fa-laptop"></i>
+            <h2 data-translate="mobile_restricted">Desktop only</h2>
+            <p data-translate="mobile_block_message">Admin dashboard is optimized for larger screens. Please open on a desktop or tablet in landscape mode.</p>
+            <button class="btn btn-primary" onclick="window.location.href='/'" data-translate="go_back">Back to Home</button>
+        </div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main Sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <img src="../../assets/images/AlliTrack-Icon.png" alt="AlliTrack Logo" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-bolt\'></i>'">
+            </div>
+            <div class="brand-text">
+                <div class="name">AlliTrack</div>
+                <div class="sub">Admin Console</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-group-label">OVERVIEW</div>
+            <a href="/admin/dashboard" class="nav-item" data-section="dashboard">
+                <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
+            </a>
+
+            <div class="nav-group-label" data-translate="ticket_management">OPERATIONS</div>
+            <a href="/admin/all-tickets.html" class="nav-item" data-section="tickets">
+                <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
+            </a>
+            
+            <a href="/admin/notifications.html" class="nav-item active" data-section="notifications" id="notificationLink">
+                <i class="fas fa-bell"></i> <span data-translate="notifications">Notifications</span>
+                <span id="notifRedDot" class="red-dot hidden" style="display: none;"></span>
+            </a>
+            
+            <a href="/admin/staff-management.html" class="nav-item" data-section="users">
+                <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
+            </a>
+            <a href="/admin/announcements.html" class="nav-item" data-section="announcements">
+                <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+            </a>
+
+            <div class="nav-group-label" data-translate="system_management">SYSTEM CONTROL</div>
+            <a href="/admin/system-settings.html" class="nav-item" data-section="system-settings">
+                <i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span>
+            </a>
+            <a href="/admin/system-analytics.html" class="nav-item" data-section="analytics">
+                <i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span>
+            </a>
+            <a href="/admin/system-logs.html" class="nav-item" data-section="logs">
+                <i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span>
+            </a>
+
+            <div class="nav-group-label" data-translate="admin_tools">PERSONAL SETTINGS</div>
+            <a href="/admin/preferences.html" class="nav-item" data-section="preferences">
+                <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
+            </a>
+            <a href="/admin/profile-settings.html" class="nav-item" data-section="profile-settings">
+                <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div>v1.2.0 &mdash; Business Alliance Inc.</div>
+        </div>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" id="menuToggle" aria-label="Open sidebar" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span>Admin</span>
+                <span class="crumb-sep"><i class="fas fa-chevron-right" style="font-size:0.6rem"></i></span>
+                <span class="crumb-current" data-translate="notifications">Notifications</span>
+            </div>
+            <div class="topbar-right">
+                <div class="account-wrap">
+                    <button class="account-btn" id="accountBtn" aria-haspopup="true" aria-expanded="false">
+                        <div class="avatar-btn" id="userAvatar">AD</div>
+                        <div class="account-info">
+                            <div class="a-name" id="userNameDisplay">Admin</div>
+                            <div class="a-email" id="userEmailDisplay"></div>
+                        </div>
+                        <i class="fas fa-chevron-down account-chevron"></i>
+                    </button>
+                    <div class="account-menu" id="accountMenu">
+                        <div class="account-menu-header">
+                            <div class="amh-name" id="menuUserName">Admin</div>
+                            <div class="amh-email" id="menuUserEmail"></div>
+                        </div>
+                        <a href="/admin/profile-settings.html" data-translate="profile">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                        <a href="/admin/preferences.html" data-translate="settings">
+                            <i class="fas fa-cog"></i> Settings
+                        </a>
+                        <a href="#" id="logoutBtn" class="logout" data-translate="logout">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="page-header">
+                <div class="page-title-group">
+                    <div class="eyebrow"><i class="fas fa-bell"></i> <span data-translate="ticket_management">Operations</span></div>
+                    <h1 data-translate="notifications_title">Notifications</h1>
+                    <p class="desc" data-translate="notifications_desc">Track operational updates, incoming assignments, and localized task changes.</p>
+                </div>
+            </div>
+
+            <div class="notifications-stats">
+                <div class="stat-card">
+                    <div class="stat-icon icon-update"><i class="fas fa-bell"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-count" id="totalNotifications">0</div>
+                        <div class="stat-label" data-translate="total_notifications">Total Notifications</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-message"><i class="fas fa-envelope"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-count" id="unreadCount">0</div>
+                        <div class="stat-label" data-translate="unread_notifications">Unread Notifications</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon icon-resolved"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-count" id="ticketUpdates">0</div>
+                        <div class="stat-label" data-translate="ticket_updates">Ticket Updates</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="notifications-toolbar card">
+                <div class="toolbar-search" role="search" aria-label="Search notifications">
+                    <i class="fas fa-search"></i>
+                    <input id="q" type="search" placeholder="Search notifications..." data-translate-placeholder="search_notifications" />
+                </div>
+                <div class="filter-group" aria-label="Notification filters" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <button class="filter-btn active" data-filter="all">
+                        <span data-translate="filter_all">All</span>
+                    </button>
+                    <button class="filter-btn" data-filter="unread">
+                        <span data-translate="filter_unread">Unread</span>
+                    </button>
+                    <button class="filter-btn" data-filter="ticket">
+                        <span data-translate="filter_ticket">Ticket Updates</span>
+                    </button>
+                    <button class="filter-btn" data-filter="system">
+                        <span data-translate="filter_system">System</span>
+                    </button>
+                    
+                    <button class="notification-action-btn primary" id="markAllRead" style="height: 38px; margin-left: 6px;">
+                        <i class="fas fa-check-double"></i> <span data-translate="mark_all_read">Mark All as Read</span>
+                    </button>
+
+                    <div style="display: flex; align-items: center; gap: 12px; margin-left: 10px; border-left: 1px solid var(--border); padding-left: 15px;">
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-2); font-size: 0.9rem; margin: 0;">
+                            <input type="checkbox" id="selectAllCb" onchange="toggleSelectAll(this.checked)" style="width: 16px; height: 16px; cursor: pointer;">
+                            <span>Select All</span>
+                        </label>
+                        
+                        <button class="notification-action-btn" id="deleteSelectedBtn" onclick="deleteSelected()" style="height: 38px; display: none; background: rgba(255, 71, 87, 0.1); color: #ff4757; border: 1px solid rgba(255, 71, 87, 0.2);">
+                            <i class="fas fa-trash"></i> <span>Delete Selected</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-label"></div>
+
+            <div class="notifications-list-container">
+              <div class="notifications-grid" id="notificationsContainer"></div>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            <div>&copy; 2026 Business Alliance Inc.</div>
+            <div>AlliTrack Staff Console &mdash; v1.2.0</div>
+        </footer>
+    </div>
+
+    <div id="notificationModal" class="modal">
+        <div class="announcement-modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Notification Details</h3>
+                <button class="modal-close" onclick="closeNotifModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modalMeta" class="announcement-meta"></div>
+                <div id="modalMessage" class="announcement-message"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn" onclick="closeNotifModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteConfirmModal" class="modal">
+        <div class="announcement-modal" style="max-width: 400px; text-align: center; padding: 10px; position: relative;">
+        <button class="delete-modal-close" onclick="closeDeleteModal()" aria-label="Close">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div class="modal-header" style="border-bottom: none; justify-content: center; padding-bottom: 0; padding-top: 20px;">
+            <div style="background: rgba(255, 71, 87, 0.1); color: #ff4757; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto;">
+            <i class="fas fa-exclamation-triangle"></i>
+            </div>
+        </div>
+        <div class="modal-body" style="padding: 20px;">
+            <h3 style="margin-top: 10px; margin-bottom: 10px; font-size: 1.4rem; color: var(--text-main);">Delete Notification?</h3>
+            <p id="deleteConfirmMessage" style="color: var(--text-2); margin-bottom: 25px; line-height: 1.5;">Are you sure you want to permanently delete this notification? This action cannot be undone.</p>
+            
+            <div style="display: flex; gap: 12px; justify-content: center;">
+            <button class="delete-modal-btn cancel-btn" onclick="closeDeleteModal()" style="flex: 1; padding: 12px; font-weight: 600;">
+                Cancel
+            </button>
+            <button class="delete-modal-btn confirm-btn" onclick="executePendingDelete()" style="flex: 1; padding: 12px; font-weight: 600;">
+                Yes, Delete
+            </button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <script>
+        if (typeof API_BASE_URL === "undefined") {
+            window.API_BASE_URL = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                ? "http://127.0.0.1:5000" : "https://group6-bizally.onrender.com";
+        }
+
+        const translations = {
+            en: {
+                notifications_page_title: "Notifications — AlliTrack",
+                notifications_title: "Notifications",
+                notifications_desc: "Track operational updates, incoming assignments, and localized task changes.",
+                search_notifications: "Search notifications...",
+                filter_all: "All",
+                filter_unread: "Unread",
+                filter_ticket: "Ticket Updates",
+                filter_system: "System",
+                mark_all_read: "Mark All as Read",
+                total_notifications: "Total Notifications",
+                unread_notifications: "Unread Notifications",
+                ticket_updates: "Ticket Updates",
+                no_notifications_found: "No internal notifications found",
+                empty_state_message: "Operational tasks are fully caught up.",
+                mark_as_read: "Mark as Read",
+                view: "View",
+                badge_ticket: "ticket",
+                badge_system: "system",
+                dashboard: "Dashboard",
+                all_tickets: "All Tickets",
+                notifications: "Notifications",
+                ticket_management: "OPERATIONS",
+                profile: "Profile",
+                settings: "Settings",
+                users_management: "Staff Management",
+                logout: "Logout"
+            },
+            fil: {
+                notifications_page_title: "Mga Paalala — AlliTrack",
+                notifications_title: "Mga Paalala",
+                notifications_desc: "Subaybayan ang mga update sa operasyon, mga takdang gawain, at mga lokal na pagbabago.",
+                search_notifications: "Maghanap ng mga paalala...",
+                filter_all: "Lahat",
+                filter_unread: "Hindi pa Nabasa",
+                filter_ticket: "Mga Update",
+                filter_system: "Sistema",
+                mark_all_read: "Markahan Lahat ng Nabasa",
+                total_notifications: "Kabuuang mga Paalala",
+                unread_notifications: "Hindi pa Nababasa",
+                ticket_updates: "Mga Update sa Ticket",
+                no_notifications_found: "Walang nahanap na mga paalala",
+                empty_state_message: "Tapos na ang lahat ng iyong mga gawain.",
+                mark_as_read: "Markahan bilang Nabasa",
+                view: "Tingnan",
+                badge_ticket: "ticket",
+                badge_system: "sistema",
+                dashboard: "Dashboard",
+                all_tickets: "Mga Ticket",
+                notifications: "Mga Paalala",
+                ticket_management: "OPERATIONS",
+                profile: "Profile",
+                settings: "Mga Setting",
+                logout: "Logout"
+            }
+        };
+
+        let allNotifications = [];
+
+        document.addEventListener("DOMContentLoaded", function () {
+            if (window.AdminRBAC?.getUser) {
+                const user = window.AdminRBAC.getUser();
+                if (user) {
+                    if (user.email) {
+                        document.getElementById("userEmailDisplay").textContent = user.email;
+                        document.getElementById("menuUserEmail").textContent = user.email;
+                    }
+                    const name = user.Name || user.name || "Staff Member";
+                    document.getElementById("userNameDisplay").textContent = name;
+                    document.getElementById("menuUserName").textContent = name;
+                    
+                    const avatar = document.getElementById("userAvatar");
+                    if (avatar) {
+                        const parts = name.trim().split(/\s+/);
+                        avatar.textContent = ((parts[0]?.[0] || "A") + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase();
+                    }
+                }
+            }
+
+            if (window.adminPreferenceManager) {
+                const currentLang = window.adminPreferenceManager.getCurrentLanguage() || "en";
+                applyTranslations(currentLang);
+            } else {
+                applyTranslations("en");
+            }
+
+            if (window.ThemeManager) window.ThemeManager.applySavedTheme();
+            setupAccountDropdown();
+            setupMenuToggle();
+            setupLogout();
+            initNotifications();
+            syncMobileOverlay();
+            window.addEventListener("resize", () => setTimeout(syncMobileOverlay, 20));
+        });
+
+        function applyTranslations(language) {
+            const lang = translations[language] ? language : "en";
+            const dict = translations[lang];
+
+            document.querySelectorAll("[data-translate]").forEach((element) => {
+                const key = element.getAttribute("data-translate");
+                if (dict[key]) element.textContent = dict[key];
+            });
+
+            document.querySelectorAll("[data-translate-placeholder]").forEach((element) => {
+                const key = element.getAttribute("data-translate-placeholder");
+                if (dict[key]) element.placeholder = dict[key];
+            });
+
+            if (dict["notifications_page_title"]) document.title = dict["notifications_page_title"];
+            if (allNotifications.length > 0) filterNotifications(getActiveFilter());
+        }
+
+        document.addEventListener("languageChanged", function (e) {
+            applyTranslations(e.detail?.language || "en");
+        });
+
+        function setupLogout() {
+            const logoutBtn = document.getElementById("logoutBtn");
+            if (!logoutBtn) return;
+            logoutBtn.addEventListener("click", function (e) {
+                e.preventDefault();
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = "/";
+            });
+        }
+
+        function formatRelativeTime(dateString) {
+            const date = new Date(dateString);
+            if (Number.isNaN(date.getTime())) return "";
+            const now = new Date();
+            const diffInMs = now - date;
+            const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+            const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+            const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+            if (diffInMinutes < 1) return "Just now";
+            if (diffInMinutes < 60) return `${diffInMinutes} min ago`;
+            if (diffInHours < 24) return `${diffInHours} hr ago`;
+            if (diffInDays === 1) return "Yesterday";
+            if (diffInDays < 7) return `${diffInDays} days ago`;
+            return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+        }
+
+        function updateStats() {
+            const data = Array.isArray(allNotifications) ? allNotifications : [];
+            const total = data.length;
+            const unread = data.filter((n) => n.unread === true || n.unread === "true" || n.is_read === false || n.is_read === 0).length;
+            
+            // 🌟 THE FIX: Update the Guardian's global memory instantly!
+            window.allitrackHasUnread = (unread > 0);
+
+            const ticketUpdates = data.filter((n) => ["ticket-update", "ticket-resolved", "ticket-closed", "new-message"].includes(n.type)).length;
+
+            if (document.getElementById("totalNotifications")) document.getElementById("totalNotifications").textContent = total;
+            if (document.getElementById("unreadCount")) document.getElementById("unreadCount").textContent = unread;
+            if (document.getElementById("ticketUpdates")) document.getElementById("ticketUpdates").textContent = ticketUpdates;
+
+            // 🌟 BULLETPROOF DOT BUILDER
+            function ensureRedDotSurvives() {
+                // Find the notification link, even if the RBAC script changed its ID or layout
+                const navLinks = Array.from(document.querySelectorAll('.sidebar-nav a'));
+                const notifLink = navLinks.find(a => a.href && a.href.includes('notifications.html')) || document.getElementById('notificationLink');
+                
+                if (!notifLink) return;
+
+                let dot = document.getElementById("notifRedDot");
+                if (!dot) {
+                    dot = document.createElement("span");
+                    dot.id = "notifRedDot";
+                    dot.className = "red-dot";
+                    notifLink.appendChild(dot);
+                }
+
+                // Force it to display, and guarantee it stays on the right side of the link
+                dot.style.cssText = unread > 0 ? "display: inline-block !important; position: absolute; right: 15px; margin-top: 2px;" : "display: none !important;";
+                notifLink.style.position = "relative"; 
+            }
+
+            // Run it immediately...
+            ensureRedDotSurvives();
+            
+            // ...and run it again 1 second later to outsmart the RBAC script's delayed loading!
+            setTimeout(ensureRedDotSurvives, 500);
+            setTimeout(ensureRedDotSurvives, 1500);
+        }
+
+        // 🌟 RESTORED: Missing icon helpers for the notification cards
+        function getIconClass(type) {
+            const t = String(type || '').toLowerCase();
+            if (t.includes('ticket') || t.includes('resolved') || t.includes('closed')) return 'icon-update';
+            if (t.includes('message')) return 'icon-message';
+            if (t.includes('system')) return 'icon-system';
+            return 'icon-default';
+        }
+
+        function getIcon(type) {
+            const t = String(type || '').toLowerCase();
+            if (t.includes('ticket') || t.includes('resolved') || t.includes('closed')) return 'fa-ticket-alt';
+            if (t.includes('message')) return 'fa-comment-alt';
+            if (t.includes('system')) return 'fa-exclamation-circle';
+            return 'fa-bell';
+        }
+
+        function renderNotifications(notificationsToRender) {
+            const container = document.getElementById("notificationsContainer");
+            if (!container) return;
+            container.innerHTML = "";
+
+            const currentLang = window.adminPreferenceManager ? window.adminPreferenceManager.getCurrentLanguage() || "en" : "en";
+            const dict = translations[currentLang] || translations["en"];
+
+            if (notificationsToRender.length === 0) {
+                container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-bell-slash"></i>
+                    <h3>${dict["no_notifications_found"]}</h3>
+                    <p>${dict["empty_state_message"]}</p>
+                </div>`;
+                return;
+            }
+
+            notificationsToRender.forEach((notification) => {
+                const card = document.createElement("div");
+                const notifType = notification.type || "ticket-update";
+                
+                const typeLabels = {
+                    'ticket-update': 'Ticket Update',
+                    'new-message': 'New Message',
+                    'ticket-resolved': 'Ticket Resolved',
+                    'ticket-closed': 'Ticket Closed',
+                    'system-alert': 'System Alert'
+                };
+                const cleanDisplayType = typeLabels[notifType] || notifType;
+                const badgeLabel = (notifType === "system-alert" || notifType === "system") ? "system" : "ticket";
+                
+                const isNotifUnread = (notification.unread === true || notification.unread === "true" || notification.is_read === false || notification.is_read === 0);
+                card.className = `notification-card type-${notifType} badge-${badgeLabel} ${isNotifUnread ? "unread" : ""}`;
+
+                let inlineTagsHtml = "";
+                if (notification.product_category || notification.product_brand || notification.concern_type) {
+                    inlineTagsHtml = `
+                    <div class="card-inline-tags" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; margin-bottom: 4px; font-size: 0.74rem; font-family: 'DM Sans', sans-serif;">
+                        ${notification.product_category ? `<span class="badge-ticket" style="padding: 3px 9px; border-radius: 5px;"><i class="fas fa-layer-group" style="margin-right: 4px; opacity: 0.8;"></i>${notification.product_category}</span>` : ''}
+                        ${notification.product_brand ? `<span style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); padding: 3px 9px; border-radius: 5px; color: var(--text-2);"><i class="fas fa-tag" style="margin-right: 4px; opacity: 0.7;"></i>${notification.product_brand}</span>` : ''}
+                    </div>`;
+                }
+
+                let ticketPillHtml = "";
+                if (notification.ticketId) {
+                    ticketPillHtml = `
+                    <div class="ticket-shortcut-pill" onclick="redirectToTicket('${notification.ticketId}', event)">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Ticket Reference: #${notification.ticketId}</span>
+                    </div>`;
+                }
+
+                const cleanFeedMsg = notification.message.replace(/\[[^\]]+\]\s*/g, '');
+                const styledMessage = cleanFeedMsg.replace(/"([^"]+)"/g, '<strong>"$1"</strong>');
+
+                card.style.position = "relative";
+
+                card.innerHTML = `
+                <div style="position: absolute; top: 20px; right: 20px; z-index: 2;">
+                    <input type="checkbox" class="notif-cb" value="${notification.id}" onchange="handleCheckboxSelection()" style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                </div>
+
+                <div class="notification-header" style="padding-right: 40px;">
+                    <div class="notification-type">
+                        <div class="notification-icon ${getIconClass(notifType)}">
+                            <i class="fas ${getIcon(notifType)}"></i>
+                        </div>
+                        <div>
+                            <div class="notification-title">${cleanDisplayType}</div>
+                            <div class="notification-time">${formatRelativeTime(notification.created_at || notification.time)}</div>
+                        </div>
+                    </div>
+                    <div class="notification-badge badge-${badgeLabel}">
+                        ${dict[`badge_${badgeLabel}`] || badgeLabel}
+                    </div>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-message">${styledMessage}</div>
+                    ${inlineTagsHtml} 
+                    ${ticketPillHtml}
+                </div>
+        
+        <div class="notification-actions" style="display: flex; justify-content: flex-end; gap: 8px;">
+            <button class="notification-action-btn" onclick="viewNotification(${notification.id}, event)">
+                <i class="fas fa-eye"></i> ${dict["view"] || "View"}
+            </button>
+            ${isNotifUnread ? `
+                <button class="notification-action-btn primary" onclick="markAsRead(${notification.id}, event)">
+                    <i class="fas fa-check"></i> ${dict["mark_as_read"] || "Mark as Read"}
+                </button>` : ""
+            }
+        </div>`;
+        
+        notificationsContainer.appendChild(card);
+      });
+    }
+
+        function filterNotifications(filter) {
+            let filtered = [...allNotifications];
+            if (filter === "unread") {
+                filtered = filtered.filter((n) => n.unread === true || n.unread === "true" || n.is_read === false || n.is_read === 0);
+            } else if (filter === "ticket") {
+                filtered = filtered.filter((n) => ["ticket-update", "ticket-resolved", "ticket-closed", "new-message"].includes(n.type));
+            } else if (filter === "system") {
+                filtered = filtered.filter((n) => n.type === "system-alert" || n.type === "system");
+            }
+
+            const searchInput = document.getElementById("q");
+            if (searchInput && searchInput.value.trim() !== "") {
+                const term = searchInput.value.toLowerCase();
+                filtered = filtered.filter((n) =>
+                    n.title.toLowerCase().includes(term) ||
+                    n.message.toLowerCase().includes(term) ||
+                    (n.ticketId && String(n.ticketId).toLowerCase().includes(term))
+                );
+            }
+
+            filtered.sort((a, b) => new Date(b.created_at || b.time) - new Date(a.created_at || a.time));
+            renderNotifications(filtered);
+        }
+
+        async function markAsRead(id, event) {
+            if (event) event.stopPropagation();
+            try {
+                const response = await fetch(`${window.API_BASE_URL}/api/notifications/${id}/read`, { method: "PATCH" });
+                if (response.ok) {
+                    const notif = allNotifications.find((n) => n.id === id);
+                    if (notif) { notif.unread = false; notif.is_read = true; }
+                    updateStats();
+                    filterNotifications(getActiveFilter());
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        async function markAllAsRead() {
+            try {
+                const userData = JSON.parse(localStorage.getItem("userData"));
+                // 🌟 FIXED: Ensure mark all as read also uses the correct Admin ID
+                const userId = userData ? (userData.user_id || userData.system_user_id || userData.id || userData.User_ID) : null;
+                
+                if (!userId) return;
+                
+                const response = await fetch(`${window.API_BASE_URL}/api/notifications/read-all?user_id=${userId}`, { method: "POST" });
+                if (response.ok) {
+                    allNotifications.forEach((n) => { n.unread = false; n.is_read = true; });
+                    updateStats();
+                    filterNotifications(getActiveFilter());
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        function viewNotification(id, event) {
+            if (event) event.stopPropagation();
+            const notification = allNotifications.find((n) => n.id === id);
+            if (!notification) return;
+
+            document.getElementById("modalTitle").textContent = notification.title;
+            const cleanModalMsg = notification.message.replace(/\[[^\]]+\]\s*/g, '');
+            const styledMessage = cleanModalMsg.replace(/"([^"]+)"/g, '<strong>"$1"</strong>');
+
+            const typeLabels = {
+                'ticket-update': 'Ticket Update',
+                'new-message': 'New Message',
+                'ticket-resolved': 'Ticket Resolved',
+                'ticket-closed': 'Ticket Closed',
+                'system-alert': 'System Alert'
+            };
+            const cleanDisplayType = typeLabels[notification.type] || notification.type || "Update";
+
+            let modalClassificationHtml = "";
+            if (notification.product_category || notification.product_brand || notification.concern_type) {
+                modalClassificationHtml = `
+                <div class="modal-inline-badges" style="padding-top:12px; border-top:1px solid rgba(255, 255, 255, 0.08); display:flex; gap:8px; flex-wrap:wrap; font-size:0.8rem; font-family:'DM Sans', sans-serif;">
+                    ${notification.product_category ? `<span class="badge-ticket" style="padding:4px 10px; border-radius:6px; font-weight:500;"><strong>Category:</strong> ${notification.product_category}</span>` : ''}
+                    ${notification.product_brand ? `<span style="background:rgba(255, 255, 255, 0.03); border:1px solid var(--border); padding:4px 10px; border-radius:6px; color:var(--text-2);"><strong>Brand:</strong> ${notification.product_brand}</span>` : ''}
+                </div>`;
+            }
+
+            document.getElementById("modalMessage").innerHTML = `<div class="modal-description-text">${styledMessage}</div>${modalClassificationHtml}`;
+            document.getElementById("modalMeta").innerHTML = `
+                <i class="fas fa-tag"></i> <span>${cleanDisplayType}</span>
+                <i class="fas fa-clock" style="margin-left:10px"></i> <span>${formatRelativeTime(notification.created_at || notification.time)}</span>`;
+            
+            document.getElementById("notificationModal").classList.add("show");
+
+            const isUnread = (notification.unread === true || notification.unread === "true" || notification.is_read === false || notification.is_read === 0);
+            if (isUnread) markAsRead(id);
+        }
+
+        function closeNotifModal() { document.getElementById("notificationModal").classList.remove("show"); }
+        function getActiveFilter() { const btn = document.querySelector(".filter-btn.active"); return btn ? btn.getAttribute("data-filter") : "all"; }
+
+        async function initNotifications() {
+            const filterButtons = document.querySelectorAll(".filter-btn");
+            if (filterButtons) {
+                filterButtons.forEach((btn) => {
+                    btn.addEventListener("click", function () {
+                        filterButtons.forEach((b) => b.classList.remove("active"));
+                        this.classList.add("active");
+                        filterNotifications(this.getAttribute("data-filter"));
+                    });
+                });
+            }
+            document.getElementById("markAllRead").addEventListener("click", markAllAsRead);
+            document.getElementById("q").addEventListener("input", () => filterNotifications(getActiveFilter()));
+            await fetchNotifications();
+            setupSocketListeners();
+        }
+
+        async function fetchNotifications() {
+            try {
+                const userData = JSON.parse(localStorage.getItem("userData"));
+                // 🌟 FIXED: Looks for Admin ID just like the Red Dot system does
+                const userId = userData ? (userData.user_id || userData.system_user_id || userData.id || userData.User_ID) : null;
+                
+                if (!userId) return; // Silently aborts if no logged-in user is found
+                
+                const response = await fetch(`${window.API_BASE_URL}/api/notifications/user/${userId}`);
+                allNotifications = await response.json();
+                updateStats();
+                filterNotifications(getActiveFilter());
+            } catch (error) { 
+                console.error("Fetch Error:", error);
+                renderNotifications([]); 
+            }
+        }
+
+        function setupSocketListeners() {
+            if (typeof io === "function") {
+                const socket = io(window.API_BASE_URL);
+                socket.on("ticket_updated", fetchNotifications);
+                socket.on("ticket_assigned", fetchNotifications);
+            }
+        }
+
+        function redirectToTicket(ticketId, event) {
+            if (event) event.stopPropagation();
+            window.location.href = `/admin/all-tickets.html?ticket_id=${ticketId}`;
+        }
+
+        function setupAccountDropdown() {
+            const btn = document.getElementById('accountBtn');
+            const menu = document.getElementById('accountMenu');
+            if (!btn || !menu) return;
+
+            // 🌟 Wipes out conflicting external listeners from admin-data-manager.js
+            const fresh = btn.cloneNode(true);
+            btn.parentNode.replaceChild(fresh, btn);
+
+            fresh.addEventListener('click', e => {
+                e.stopPropagation();
+                e.preventDefault();
+                menu.classList.toggle('show');
+                fresh.setAttribute('aria-expanded', menu.classList.contains('show'));
+            });
+
+            document.addEventListener('click', e => {
+                if (menu.classList.contains('show') &&
+                    !fresh.contains(e.target) && !menu.contains(e.target)) {
+                    menu.classList.remove('show');
+                    fresh.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape' && menu.classList.contains('show')) {
+                    menu.classList.remove('show');
+                    fresh.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            menu.querySelectorAll('a').forEach(a =>
+                a.addEventListener('click', () => {
+                    menu.classList.remove('show');
+                    fresh.setAttribute('aria-expanded', 'false');
+                })
+            );
+        }
+
+        function setupMenuToggle() {
+            const toggle = document.getElementById("menuToggle");
+            const sidebar = document.getElementById("sidebar");
+            if (toggle && sidebar) toggle.addEventListener("click", () => sidebar.classList.toggle("open"));
+        }
+
+        function syncMobileOverlay() {
+            const overlay = document.getElementById("mobileBlockOverlay");
+            if (overlay) overlay.style.display = document.body.classList.contains("mobile-block-active") ? "flex" : "";
+        }
+
+        window.onclick = function (event) {
+            const modal = document.getElementById("notificationModal");
+            if (event.target == modal) closeNotifModal();
+        };
+
+        /* =========================================================================
+       🗑️ NOTIFICATION DELETION ENGINE (WITH CUSTOM MODAL)
+       ========================================================================= */
+
+    let pendingDeleteIds = []; 
+
+    function toggleSelectAll(isChecked) {
+        const checkboxes = document.querySelectorAll('.notif-cb');
+        checkboxes.forEach(cb => cb.checked = isChecked);
+        handleCheckboxSelection();
+    }
+
+    function handleCheckboxSelection() {
+        const checkedBoxes = document.querySelectorAll('.notif-cb:checked');
+        const allBoxes = document.querySelectorAll('.notif-cb');
+        const deleteBtn = document.getElementById('deleteSelectedBtn');
+        const selectAllCb = document.getElementById('selectAllCb');
+
+        if (deleteBtn) {
+            deleteBtn.style.display = checkedBoxes.length > 0 ? 'inline-flex' : 'none';
+        }
+        
+        if (selectAllCb && allBoxes.length > 0) {
+            selectAllCb.checked = checkedBoxes.length === allBoxes.length;
+        }
+    }
+
+    // --- MODAL CONTROLLERS ---
+
+    function openDeleteModal(idsArray, messageText) {
+        pendingDeleteIds = idsArray;
+        document.getElementById('deleteConfirmMessage').textContent = messageText;
+        document.getElementById('deleteConfirmModal').classList.add('show');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteConfirmModal').classList.remove('show');
+        pendingDeleteIds = []; 
+    }
+
+    async function executePendingDelete() {
+        if (pendingDeleteIds.length === 0) return;
+        
+        const idsToProcess = [...pendingDeleteIds]; 
+        closeDeleteModal(); 
+        
+        await executeDelete(idsToProcess);
+    }
+
+    // --- ACTION TRIGGERS ---
+
+    function deleteSingleNotification(id, event) {
+        if (event) event.stopPropagation();
+        openDeleteModal([id], "Are you sure you want to permanently delete this notification? This action cannot be undone.");
+    }
+
+    function deleteSelected() {
+        const checkedBoxes = document.querySelectorAll('.notif-cb:checked');
+        const ids = Array.from(checkedBoxes).map(cb => parseInt(cb.value));
+        
+        if (ids.length === 0) return;
+        openDeleteModal(ids, `Are you sure you want to permanently delete these ${ids.length} selected notifications? This action cannot be undone.`);
+    }
+
+    // --- API EXECUTION ---
+    async function executeDelete(idsArray) {
+        try {
+            // Note: Make sure the URL matches the route prefix your blueprint expects 
+            // (e.g., /api/notifications/delete or /api/tickets/notifications/delete based on your setup)
+            const response = await fetch(`${window.API_BASE_URL}/api/notifications/delete`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ids: idsArray })
+            });
+
+            if (response.ok) {
+                allNotifications = allNotifications.filter(n => !idsArray.includes(n.id));
+                
+                const selectAllCb = document.getElementById('selectAllCb');
+                if (selectAllCb) selectAllCb.checked = false;
+                
+                const deleteBtn = document.getElementById('deleteSelectedBtn');
+                if (deleteBtn) deleteBtn.style.display = 'none';
+
+                updateStats();
+                filterNotifications(getActiveFilter());
+                
+                if (typeof showToast === "function") {
+                    showToast("Notification(s) deleted successfully.", "success");
+                }
+            } else {
+                throw new Error("Server rejected deletion request");
+            }
+        } catch (error) {
+            console.error("Delete Error:", error);
+            if (typeof showToast === "function") {
+                showToast("Failed to delete notification(s).", "error");
+            } else {
+                showToast("An error occurred while attempting to delete notifications.", "error");
+            }
+        }
+    }
+    </script>
+</body>
+
+</html>

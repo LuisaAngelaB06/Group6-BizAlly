@@ -770,3 +770,9 @@ body.mobile-block-active > .main-wrapper {
         text-align: center;
     }
 }
+
+/* 2. Pull the navigation links up */
+.sidebar-nav {
+    margin-top: 3 !important;
+    padding-top: 0 !important;
+}

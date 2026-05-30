@@ -55,8 +55,8 @@
             <div class="nav-group-label" data-translate="support">SUPPORT</div>
             <a href="/user/my-tickets.html" class="nav-item" data-section="tickets"><i class="fas fa-ticket-alt"></i>
                 <span data-translate="my_tickets">My Tickets</span></a>
-            <a href="/user/notifications.html" class="nav-item" data-section="notifications"><i class="fas fa-bell"></i>
-                <span data-translate="notifications">Notifications</span></a>
+            <a href="/user/notifications.html" class="nav-item" data-section="notifications" id="notificationLink"><i class="fas fa-bell"></i>
+                <span data-translate="notifications">Notifications</span><span id="notifRedDot" class="red-dot hidden"></span></a>
             <a href="/user/submit-ticket.html" class="nav-item" data-section="submit-ticket"><i
                     class="fas fa-plus-circle"></i> <span data-translate="submit_ticket">Submit a Ticket</span></a>
 
@@ -129,73 +129,12 @@
                 </div>
             </div>
 
-            <div class="section-label"><span data-translate="security_controls">Security Controls</span></div>
-
             <div class="security-grid dashboard-grid">
-                <section class="card security-card security-settings-card">
-                    <div class="card-head security-card-head">
-                        <h3><i class="fas fa-mobile-alt"></i> <span data-translate="two_factor_auth">Two-Factor
-                                Authentication</span></h3>
-                    </div>
-                    <p class="section-description" data-translate="add_extra_security">Add an extra layer of security
-                        to your account</p>
-
-                    <form id="securityForm" class="security-form">
-                        <div class="two-factor-panel">
-                            <div class="two-factor-copy">
-                                <div class="two-factor-title" data-translate="two_factor_auth_full">Two-Factor
-                                    Authentication (2FA)</div>
-                                <div class="two-factor-description" data-translate="protect_account">Protect your
-                                    account with two-factor authentication. You'll need to enter a verification code
-                                    from
-                                    your authenticator app when signing in.</div>
-                            </div>
-                            <label class="security-toggle" aria-label="Enable two-factor authentication">
-                                <input type="checkbox" id="twoFactorEnabled">
-                                <span class="security-toggle-slider"></span>
-                            </label>
-                        </div>
-
-                        <div class="two-factor-setup" id="twoFactorSetup">
-                            <div class="qr-placeholder">
-                                <i class="fas fa-qrcode"></i>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="verificationCode">
-                                    <span data-translate="verification_code">Verification Code</span>
-                                </label>
-                                <input type="text" id="verificationCode" class="form-input"
-                                    placeholder="Enter 6-digit code" data-translate-placeholder="enter_6_digit_code"
-                                    maxlength="6" inputmode="numeric" />
-                                <div class="form-error" id="verificationCodeError" data-translate="please_enter_valid">
-                                    Please enter a valid verification code</div>
-                            </div>
-                        </div>
-
-                        <div class="success-message" id="successMessage">
-                            <i class="fas fa-check"></i>
-                            <span data-translate="security_updated">Security settings updated successfully!</span>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="button" class="btn btn-ghost" id="resetSecurityBtn">
-                                <i class="fas fa-times"></i> <span data-translate="cancel">Cancel</span>
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> <span data-translate="save_security_settings">Save Security
-                                    Settings</span>
-                            </button>
-                        </div>
-                    </form>
-                </section>
-
                 <section class="card security-card login-card">
                     <div class="card-head security-card-head">
                         <h3><i class="fas fa-history"></i> <span data-translate="login_history">Login History</span>
                         </h3>
                     </div>
-                    <p class="section-description" data-translate="recent_login_activity">Recent login activity on your
-                        account</p>
                     <div class="login-history">
                         <div class="history-list" id="loginHistoryList"></div>
                     </div>

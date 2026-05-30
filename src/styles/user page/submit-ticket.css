@@ -16,7 +16,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
   gap: 24px;
-  align-items: stretch;
+  align-items: start;
 }
 
 /* =========================
@@ -29,7 +29,7 @@
   border-radius: 24px;
   padding: 28px;
   animation: fadeUp 0.5s var(--ease) both;
-  height: 100%;
+  height: auto;
 }
 
 /* MAIN CARD */
@@ -94,6 +94,7 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  height: fit-content;
 }
 
 .form-grid {
@@ -296,18 +297,18 @@ select.form-input option {
   justify-content: center;
 
   font-size: 1.25rem;
-  margin-bottom: 20px;
+  margin-bottom: 2px;
 }
 
 .ticket-side-card h3 {
-  margin: 0 0 10px;
+  margin: 0 0 0px;
   color: var(--text);
   font-size: 1.05rem;
   font-weight: 700;
 }
 
 .ticket-side-card p {
-  margin: 0 0 22px;
+  margin: 0 0 2px;
   color: var(--text-2);
   font-size: 0.9rem;
   line-height: 1.7;
@@ -519,7 +520,7 @@ select.form-input option {
 
   .ticket-main-card,
   .ticket-side-card {
-    padding: 22px;
+    padding: 2px;
   }
 }
 
@@ -556,11 +557,11 @@ body.modal-open {
 
 .ticket-side-card {
   position: relative;
-  min-height: 100%;
+  min-height: auto;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  gap: 22px;
+  gap: 2px;
   overflow: hidden;
 }
 
@@ -827,4 +828,28 @@ body.modal-open {
     width: 100%;
     justify-content: center;
   }
+}
+
+/* ============================================================
+   🌟 BULLETPROOF OVERRIDE: FORCE CARDS TO SHRINK 🌟
+   ============================================================ */
+
+/* 1. Stop the grid columns from matching heights */
+.submit-ticket-content .ticket-shell {
+  align-items: flex-start !important;
+}
+
+/* 2. Force the left card to hug its content and stop stretching empty space */
+.ticket-main-card {
+  height: fit-content !important;
+  min-height: 0 !important;
+  justify-content: flex-start !important;
+}
+
+/* 3. Force the right card to do exactly the same */
+.ticket-side-card {
+  height: fit-content !important;
+  min-height: 0 !important;
+  justify-content: flex-start !important;
+  gap: 18px !important; /* Re-adds the natural spacing between items */
 }

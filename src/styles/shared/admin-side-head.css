@@ -489,3 +489,11 @@ html.light-theme {
         display: none;
     }
 }
+
+
+/* 2. Pull the navigation links up */
+.sidebar-nav {
+    margin-top: 3 !important;
+    padding-top: 0 !important;
+}
+

@@ -49,30 +49,46 @@
 
         <nav class="sidebar-nav">
             <div class="nav-group-label">OVERVIEW</div>
-            <a href="/admin/index-admin.html" class="nav-item" data-section="dashboard"><i
-                    class="fas fa-chart-line"></i> Dashboard</a>
+            <a href="/admin/dashboard" class="nav-item" data-section="dashboard">
+                <i class="fas fa-chart-line"></i> <span data-translate="dashboard">Dashboard</span>
+            </a>
 
-            <div class="nav-group-label">OPERATIONS</div>
-            <a href="/admin/all-tickets.html" class="nav-item" data-section="tickets"><i class="fas fa-ticket-alt"></i>
-                All Tickets</a>
-            <a href="/admin/staff-management.html" class="nav-item" data-section="users"><i class="fas fa-users"></i>
-                Staff Management</a>
-            <a href="/admin/announcements.html" class="nav-item" data-section="announcements"><i
-                    class="fas fa-bullhorn"></i> Announcements</a>
+            <div class="nav-group-label" data-translate="ticket_management">OPERATIONS</div>
+            <a href="/admin/all-tickets.html" class="nav-item" data-section="tickets">
+                <i class="fas fa-ticket-alt"></i> <span data-translate="all_tickets">All Tickets</span>
+            </a>
+            
+            <a href="/admin/notifications.html" class="nav-item" data-section="notifications" id="notificationLink">
+                <i class="fas fa-bell"></i> <span data-translate="notifications">Notifications</span>
+                <span id="notifRedDot" class="red-dot hidden" style="display: none;"></span>
+            </a>
+            
+            <a href="/admin/staff-management.html" class="nav-item" data-section="users">
+                <i class="fas fa-users"></i> <span data-translate="users_management">Staff Management</span>
+            </a>
+            
+            <a href="/admin/announcements.html" class="nav-item" data-section="announcements">
+                <i class="fas fa-bullhorn"></i> <span data-translate="announcements">Announcements</span>
+            </a>
 
-            <div class="nav-group-label">SYSTEM CONTROL</div>
-            <a href="/admin/system-settings.html" class="nav-item active" data-section="system-settings"><i
-                    class="fas fa-cogs"></i> System Settings</a>
-            <a href="/admin/system-analytics.html" class="nav-item" data-section="analytics"><i
-                    class="fas fa-chart-bar"></i> Analytics</a>
-            <a href="/admin/system-logs.html" class="nav-item" data-section="logs"><i class="fas fa-clipboard-list"></i>
-                System Logs</a>
+            <div class="nav-group-label" data-translate="system_management">SYSTEM CONTROL</div>
+            <a href="/admin/system-settings.html" class="nav-item active" data-section="system-settings">
+                <i class="fas fa-cogs"></i> <span data-translate="system_settings">System Settings</span>
+            </a>
+            <a href="/admin/system-analytics.html" class="nav-item" data-section="analytics">
+                <i class="fas fa-chart-bar"></i> <span data-translate="analytics">Analytics</span>
+            </a>
+            <a href="/admin/system-logs.html" class="nav-item" data-section="logs">
+                <i class="fas fa-clipboard-list"></i> <span data-translate="system_logs">System Logs</span>
+            </a>
 
-            <div class="nav-group-label">PERSONAL SETTINGS</div>
-            <a href="/admin/preferences.html" class="nav-item" data-section="preferences"><i
-                    class="fas fa-sliders-h"></i> Preferences</a>
-            <a href="/admin/profile-settings.html" class="nav-item" data-section="profile-settings"><i
-                    class="fas fa-user-cog"></i> Profile Settings</a>
+            <div class="nav-group-label" data-translate="admin_tools">PERSONAL SETTINGS</div>
+            <a href="/admin/preferences.html" class="nav-item" data-section="preferences">
+                <i class="fas fa-sliders-h"></i> <span data-translate="preferences">Preferences</span>
+            </a>
+            <a href="/admin/profile-settings.html" class="nav-item" data-section="profile-settings">
+                <i class="fas fa-user-cog"></i> <span data-translate="profile_settings">Profile Settings</span>
+            </a>
         </nav>
 
         <div class="sidebar-footer">

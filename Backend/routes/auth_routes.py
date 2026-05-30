@@ -15,6 +15,7 @@ import requests
 import secrets
 import string
 from html import escape
+from Backend.routes.utils import log_system_event
 
 from sib_api_v3_sdk.rest import ApiException
 from datetime import datetime, timedelta
@@ -279,14 +280,43 @@ def login():
                 (user["user_id"],),
             )
             conn.commit()
+
+            # 🌟 NEW: Admin Console Audit Log (Success)
+            log_system_event(
+                user_identifier=str(user["user_id"]),
+                action="User Login",
+                log_level="INFO",
+                description="Successfully authenticated and logged into the system."
+            )
+
             return jsonify({"status": "success", "user": safe_user}), 200
 
         _record_login_attempt(cursor, email=email, status="failed")
         conn.commit()
+
+        # 🌟 NEW: Admin Console Audit Log (Failed)
+        log_system_event(
+            user_identifier=email or "Unknown Email",
+            action="Failed Login",
+            log_level="WARNING",
+            description="Attempted login with invalid credentials.",
+            status="Failed"
+        )
+
         return jsonify({"status": "error", "message": "Invalid email or password"}), 401
 
     except Exception as e:
         print(f"Login error: {e}")
+        
+        # 🌟 NEW: Admin Console Audit Log (System Error)
+        log_system_event(
+            user_identifier=email or "System",
+            action="Login System Error",
+            log_level="ERROR",
+            description=str(e),
+            status="Failed"
+        )
+        
         return jsonify({"status": "error", "message": "Database error"}), 500
 
     finally:

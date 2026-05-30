@@ -217,6 +217,7 @@ def serve_assets(filename):
 def technician_pages(filename):
     technician_aliases = {
         "all-tickets.html",
+        "notifications.html",
         "announcements.html",
         "preferences.html",
         "profile-settings.html",
