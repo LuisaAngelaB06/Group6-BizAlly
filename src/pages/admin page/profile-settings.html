@@ -8,7 +8,7 @@
     <script>
         (function() {
             try {
-                const rawData = localStorage.getItem('userData') || "";
+                const rawData = sessionStorage.getItem('userData') || "";
                 // STRICT MATCH: Looks exactly for the JSON key/value pair
                 if (rawData.toLowerCase().includes('"user_type":"technician"') || rawData.toLowerCase().includes('"role":"technician"')) {
                     document.write('<style>.sidebar-nav a[data-section="dashboard"], .sidebar-nav a[data-section="users"], .sidebar-nav a[data-section="system-settings"], .sidebar-nav a[data-section="analytics"], .sidebar-nav a[data-section="logs"], .nav-group-label[data-translate="system_management"] { display: none !important; }</style>');
@@ -246,23 +246,9 @@
                                     <div class="form-error" id="emailError" data-translate="enter_valid_email">
                                         Please enter a valid email address</div>
                                 </div>
-
-                                <div class="form-group">
-                                    <label class="form-label" for="phone">
-                                        <i class="fas fa-phone"></i> <span data-translate="phone_number">Phone
-                                            Number</span>
-                                    </label>
-                                    <input type="tel" id="phone" class="form-input"
-                                        placeholder="Enter your phone number" />
-                                    <div class="form-hint" data-translate="optional">Optional</div>
-                                </div>
-
                             </div>
                             
-                            <div class="form-actions" style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px;">
-                                <button type="button" class="btn btn-secondary" onclick="resetForm()">
-                                    <i class="fas fa-times"></i> <span data-translate="cancel">Cancel</span>
-                                </button>
+                            <div class="form-actions" style="margin-top: 5px; border-top: 1px solid var(--border-color); padding-top: 2px;">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-save"></i> <span data-translate="save_changes">Save Changes</span>
                                 </button>
@@ -656,7 +642,7 @@
             }
 
             const userData = window.userDataManager.getUserData();
-            const rawLoginData = JSON.parse(localStorage.getItem('userData') || '{}');
+            const rawLoginData = JSON.parse(sessionStorage.getItem('userData') || '{}');
             if (!userData.name && rawLoginData.Name) userData.name = rawLoginData.Name;
             if (!userData.email && rawLoginData.Email) userData.email = rawLoginData.Email;
             const profileImage = document.getElementById('profileImage');
@@ -788,13 +774,13 @@
             }
 
             if (window.userDataManager) {
-                const adminProfile = JSON.parse(localStorage.getItem('adminProfile') || '{}');
+                const adminProfile = JSON.parse(sessionStorage.getItem('adminProfile') || '{}');
                 delete adminProfile.photo;
                 delete adminProfile.profilePicture;
                 delete adminProfile.profile_image;
                 delete adminProfile.profileImage;
                 delete adminProfile.avatar;
-                localStorage.setItem('adminProfile', JSON.stringify(adminProfile));
+                sessionStorage.setItem('adminProfile', JSON.stringify(adminProfile));
                 window.userDataManager.dispatchUserDataChanged();
             }
 
@@ -1031,7 +1017,7 @@
         document.addEventListener("DOMContentLoaded", function () {
 
             // --- 1. PUT REAL DATA IN THE TEXT BOXES ---
-            const realUserDataStr = localStorage.getItem("userData");
+            const realUserDataStr = sessionStorage.getItem("userData");
             if (realUserDataStr) {
                 const realUser = JSON.parse(realUserDataStr);
 
@@ -1071,7 +1057,7 @@
                         return;
                     }
 
-                    const userDataStr = localStorage.getItem("userData");
+                    const userDataStr = sessionStorage.getItem("userData");
                     if (!userDataStr) {
                         showPasswordMessage("You must be logged in to do this.", "error");
                         return;

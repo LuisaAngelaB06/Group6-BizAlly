@@ -37,13 +37,13 @@
     try {
       return JSON.parse(value);
     } catch (error) {
-      console.warn("Invalid userData in localStorage:", error);
+      console.warn("Invalid userData in sessionStorage:", error);
       return fallback;
     }
   }
 
   function getUser() {
-    return safeParseJSON(localStorage.getItem("userData"), null);
+    return safeParseJSON(sessionStorage.getItem("userData"), null);
   }
 
   function getRole() {
@@ -345,7 +345,7 @@
                 ? "http://127.0.0.1:5000"
                 : "https://group6-bizally.onrender.com";
                 
-            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            const userData = JSON.parse(sessionStorage.getItem('userData') || '{}');
             const userId = userData.user_id || userData.User_ID || userData.id;
 
             if (!userId) return;
@@ -396,18 +396,96 @@
     }
 
     function executeAutoLogout() {
-        localStorage.removeItem("userData");
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("Technician_ID");
+        sessionStorage.removeItem("userData");
+        sessionStorage.removeItem("authToken");
+        sessionStorage.removeItem("Technician_ID");
         
         // Leave the message for the landing page popup
-        localStorage.setItem("show_timeout_modal", "true");
+        sessionStorage.setItem("show_timeout_modal", "true");
         
         // Force redirect to the root landing page
         window.location.replace("/"); 
     }
 
-    if (localStorage.getItem("userData")) {
+    if (sessionStorage.getItem("userData")) {
         loadTimeoutSetting();
     }
+})();
+
+// ==========================================
+// 🛡️ ALLITRACK SESSION SENTINEL
+// ==========================================
+(function() {
+    // 1. Get the current user's role from local storage
+    const userDataStr = sessionStorage.getItem('userData');
+    if (!userDataStr) return; // If they aren't logged in, do nothing
+
+    const userData = JSON.parse(userDataStr);
+    // Normalize the role (defaulting to 'client' if missing)
+    const role = (userData.user_type || userData.role || 'client').toLowerCase();
+
+    // 2. Configure Timers
+    const IDLE_TIMEOUT = 15 * 60 * 1000; // 15 minutes in milliseconds
+    const WARNING_TIME = 1 * 60 * 1000;  // 1 minute warning
+    
+    let logoutTimer;
+    let warningTimer;
+
+    // 3. The Executioner: Wipes data and kicks to login
+    function performLogout() {
+        console.log("🔒 Session Expired: Logging out.");
+        sessionStorage.removeItem('userData');
+        sessionStorage.removeItem('authToken');
+        sessionStorage.clear();
+        window.location.replace('/login');
+    }
+
+    // 4. The Warning Modal (Technicians Only)
+    function showWarningModal() {
+        if (!document.getElementById('session-warning-modal')) {
+            const modal = document.createElement('div');
+            modal.id = 'session-warning-modal';
+            modal.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; display:flex; align-items:center; justify-content:center;";
+            modal.innerHTML = `
+                <div style="background:white; padding:25px; border-radius:8px; text-align:center; max-width:320px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: 'Segoe UI', Tahoma, sans-serif;">
+                    <h3 style="margin-top:0; color:#1e293b;">Session Expiring</h3>
+                    <p style="color:#475569; margin-bottom:20px;">You have been inactive. Your session will end in 1 minute to protect your account.</p>
+                    <button id="extend-session-btn" style="background:#2563eb; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Keep Working</button>
+                </div>`;
+            document.body.appendChild(modal);
+
+            // Clicking the button hides the modal and resets the timers
+            document.getElementById('extend-session-btn').addEventListener('click', () => {
+                modal.style.display = 'none';
+                resetTimers();
+            });
+        } else {
+            document.getElementById('session-warning-modal').style.display = 'flex';
+        }
+    }
+
+    // 5. The Reset Engine
+    function resetTimers() {
+        clearTimeout(logoutTimer);
+        clearTimeout(warningTimer);
+
+        // Hide modal if they start moving again before clicking the button
+        const modal = document.getElementById('session-warning-modal');
+        if (modal) modal.style.display = 'none';
+
+        // Set the hard limit for everyone
+        logoutTimer = setTimeout(performLogout, IDLE_TIMEOUT);
+
+        // 🌟 CONDITIONAL LOGIC: Only trigger the warning if they are a technician
+        if (role === 'technician') {
+            warningTimer = setTimeout(showWarningModal, IDLE_TIMEOUT - WARNING_TIME);
+        }
+    }
+
+    // 6. Watch for user activity
+    const events = ['mousemove', 'keydown', 'mousedown', 'touchstart', 'scroll'];
+    events.forEach(evt => document.addEventListener(evt, resetTimers, true));
+
+    // Initialize timers immediately on page load
+    resetTimers();
 })();

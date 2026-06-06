@@ -40,7 +40,7 @@ if (form) {
 
         // 1. STANDARD LOGIN SUCCESS
         if (result.status === "success") {
-          localStorage.setItem("userData", JSON.stringify(result.user));
+          sessionStorage.setItem("userData", JSON.stringify(result.user));
           const role = (result.user.User_Type || result.user.user_type || result.user.role || "").toLowerCase();
           window.location.href = role === "technician" ? "/technician/all-tickets.html" : role === "admin" ? "/admin/dashboard" : "/user/dashboard";
           return;

@@ -321,20 +321,18 @@
     </div><!-- /.modal-fixed -->
 
     <script>
-        // 1. Show the modal on the landing page if kicked out
         document.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('show_timeout_modal') === 'true') {
+            if (sessionStorage.getItem('show_timeout_modal') === 'true') {
                 const timeoutModal = document.getElementById('timeoutModalOverlay');
                 if (timeoutModal) {
                     timeoutModal.style.display = 'flex';
                 }
-                localStorage.removeItem('show_timeout_modal');
+                sessionStorage.removeItem('show_timeout_modal');
             }
         });
 
-        // 2. When they click "Understood", prep the red text and send them to /login
         function handleUnderstoodClick() {
-            localStorage.setItem('show_timeout_text', 'true');
+            sessionStorage.setItem('show_timeout_text', 'true');
             window.location.href = '/login'; 
         }
     </script>
@@ -579,8 +577,8 @@
 
             function handleLoginSuccess(userData) {
                 // 1. Save the data
-                localStorage.setItem('userData', JSON.stringify(userData));
-                localStorage.setItem('authToken', 'simulated_token_' + Date.now());
+                sessionStorage.setItem('userData', JSON.stringify(userData));
+                sessionStorage.setItem('authToken', 'simulated_token_' + Date.now());
 
                 // 2. FIXED: Use 'userData' directly
                 const role = (
@@ -831,7 +829,7 @@
 
                     // 🌟 3. NORMAL SUCCESSFUL LOGIN
                     if (response.ok && result.status === "success") {
-                        localStorage.setItem("userData", JSON.stringify(result.user));
+                        sessionStorage.setItem("userData", JSON.stringify(result.user));
 
                         const userType = (
                             result.user.User_Type ||
@@ -980,7 +978,7 @@
             function init() {
                 
                 // 🌟 ONLY check for the red text message coming from the landing page
-                if (localStorage.getItem('show_timeout_text') === 'true') {
+                if (sessionStorage.getItem('show_timeout_text') === 'true') {
                     const errEl = document.getElementById('loginGeneralError');
                     if (errEl) {
                         errEl.style.display = 'block';
@@ -989,7 +987,7 @@
                     }
                     
                     // Destroy the message so it doesn't stay if they refresh!
-                    localStorage.removeItem('show_timeout_text');
+                    sessionStorage.removeItem('show_timeout_text');
                 }
 
                 // Tab switching
@@ -1099,9 +1097,9 @@
 
                 // Social login handlers
                 function continueWithGoogle() {
-                    localStorage.removeItem("userData");
-                    localStorage.removeItem("authToken");
-                    localStorage.removeItem("Technician_ID");
+                    sessionStorage.removeItem("userData");
+                    sessionStorage.removeItem("authToken");
+                    sessionStorage.removeItem("Technician_ID");
 
                     showLoading('Connecting to Google...');
 
@@ -1319,7 +1317,7 @@
                             }
 
                             if (loginRes.ok && result.status === "success") {
-                                localStorage.setItem("userData", JSON.stringify(result.user));
+                                sessionStorage.setItem("userData", JSON.stringify(result.user));
                                 const userType = (result.user.User_Type || result.user.user_type || "client").toLowerCase();
                                 window.location.replace(userType === "technician" ? "/technician/all-tickets.html" : "/admin/dashboard");
                             } else {
@@ -1350,8 +1348,8 @@
 
                                 if (signupRes.ok) {
                                     const signupResult = await signupRes.json();
-                                    localStorage.setItem("userData", JSON.stringify(signupResult.user));
-                                    localStorage.setItem("authToken", "registered");
+                                    sessionStorage.setItem("userData", JSON.stringify(signupResult.user));
+                                    sessionStorage.setItem("authToken", "registered");
                                     hideLoading();
                                     window.clearPendingSignup();
                                     window.location.replace("/user/dashboard");

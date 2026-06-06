@@ -1031,8 +1031,8 @@ def google_callback():
                     try {{
                         const user = JSON.parse(atob("{safe_user_b64}"));
 
-                        localStorage.setItem("userData", JSON.stringify(user));
-                        localStorage.setItem("authToken", "google_login");
+                        sessionStorage.setItem("userData", JSON.stringify(user));
+                        sessionStorage.setItem("authToken", "google_login");
 
                 const role = (
                     user.User_Type ||
