@@ -315,13 +315,13 @@
                 if (timeoutModal) {
                     timeoutModal.style.display = 'flex';
                 }
-                localStorage.removeItem('show_timeout_modal');
+                sessionStorage.removeItem('show_timeout_modal');
             }
         });
 
         function handleUnderstoodClick() {
             // Leave a message for the login page to show the red text
-            localStorage.setItem('show_timeout_text', 'true');
+            sessionStorage.setItem('show_timeout_text', 'true');
             // Send them to the login screen
             window.location.href = '/login'; 
         }

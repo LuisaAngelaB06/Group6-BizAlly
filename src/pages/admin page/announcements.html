@@ -283,7 +283,7 @@
                 ? "http://127.0.0.1:5000"
                 : "https://group6-bizally.onrender.com";
 
-        const socket = io(SOCKET_BASE_URL);
+        const socket = io(SOCKET_BASE_URL, { transports: ["websocket"] });
 
         const translations = {
             en: {
@@ -984,7 +984,7 @@
             freshBtn.style.cursor = "pointer";
         }
         function getCurrentAdminIdentifier() {
-            const userData = safeParseJSON(localStorage.getItem("userData"));
+            const userData = safeParseJSON(sessionStorage.getItem("userData"));
             const adminProfile = safeParseJSON(localStorage.getItem("adminProfile"));
             const user = { ...userData, ...adminProfile };
 

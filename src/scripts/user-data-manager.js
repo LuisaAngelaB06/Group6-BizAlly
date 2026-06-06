@@ -30,7 +30,7 @@ if (typeof window.globalHeartbeatFired === "undefined") {
   // HELPER: Extract user ID from multiple possible fields
   // ==========================================
   function extractUserId() {
-    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
     return userData.user_id || userData.id || userData.User_ID || userData.Customer_ID;
   }
 
@@ -78,7 +78,7 @@ if (typeof window.globalHeartbeatFired === "undefined") {
   // PROFILE COMPLETENESS CHECK (GLOBAL)
   // ==========================================
   async function checkProfileCompleteness() {
-    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
     const userId = extractUserId();
 
     if (!userId) {
@@ -460,7 +460,7 @@ if (typeof window.globalHeartbeatFired === "undefined") {
     }
 
     submitTicketLink.addEventListener("click", function (e) {
-      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+      const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
       const isComplete = userData.is_profile_complete === true;
 
       if (!isComplete) {

@@ -469,7 +469,7 @@
       if (window.userDataManager?.getUserData)
         return window.userDataManager.getUserData();
       try {
-        return JSON.parse(localStorage.getItem("userData") || "{}");
+        return JSON.parse(sessionStorage.getItem("userData") || "{}");
       } catch {
         return {};
       }
@@ -707,7 +707,7 @@
     }
 
     async function fetchMyTicketsFromDatabase() {
-      const userDataStr = localStorage.getItem("userData");
+      const userDataStr = sessionStorage.getItem("userData");
       if (!userDataStr) return [];
       const userData = JSON.parse(userDataStr);
       const userId =

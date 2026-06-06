@@ -830,6 +830,7 @@
                     // 🌟 3. NORMAL SUCCESSFUL LOGIN
                     if (response.ok && result.status === "success") {
                         sessionStorage.setItem("userData", JSON.stringify(result.user));
+                        sessionStorage.setItem("authToken", "verified");
 
                         const userType = (
                             result.user.User_Type ||
@@ -1318,6 +1319,8 @@
 
                             if (loginRes.ok && result.status === "success") {
                                 sessionStorage.setItem("userData", JSON.stringify(result.user));
+                                sessionStorage.setItem("authToken", "verified");
+                                
                                 const userType = (result.user.User_Type || result.user.user_type || "client").toLowerCase();
                                 window.location.replace(userType === "technician" ? "/technician/all-tickets.html" : "/admin/dashboard");
                             } else {

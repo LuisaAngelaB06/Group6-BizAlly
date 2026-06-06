@@ -1496,7 +1496,7 @@
         function setupTicketSocketListeners() {
             if (typeof io !== 'function') return;
 
-            const socket = io(API_BASE_URL);
+            const socket = io(API_BASE_URL, { transports: ["websocket"] });
             socket.on('ticket_updated', fetchTicketsFromAPI);
             socket.on('ticket_assigned', fetchTicketsFromAPI);
         }

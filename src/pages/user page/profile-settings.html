@@ -388,7 +388,7 @@
         }
 
         // Global variable for this page
-        let userData = JSON.parse(localStorage.getItem("userData") || "{}");
+        let userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
 
         // Account Dropdown Functionality - FIXED VERSION
         function setupAccountDropdown() {
@@ -740,8 +740,8 @@
                     e.stopPropagation();
 
                     // Clear user data from localStorage
-                    localStorage.removeItem('userData');
-                    localStorage.removeItem('userProfile');
+                    sessionStorage.removeItem('userData');
+                    sessionStorage.removeItem('userProfile');
                     localStorage.removeItem('userTickets');
                     localStorage.removeItem('preferredLanguage');
 
@@ -841,7 +841,7 @@
                 document.getElementById('profileInitials').style.display = 'none';
 
                 // Auto-save instantly
-                const userDataStr = localStorage.getItem("userData");
+                const userDataStr = sessionStorage.getItem("userData");
                 if (userDataStr) {
                     const userData = JSON.parse(userDataStr);
                     await autoSavePhoto(userData.user_id, compressedBase64);
@@ -861,7 +861,7 @@
                 updateProfileInitials();
             }
 
-            const userDataStr = localStorage.getItem("userData");
+            const userDataStr = sessionStorage.getItem("userData");
             if (userDataStr) {
                 const userData = JSON.parse(userDataStr);
                 // CHANGE: Send the default string instead of null[cite: 3]
@@ -995,7 +995,7 @@
 
         async function saveProfile() {
             try {
-                const userData = JSON.parse(localStorage.getItem("userData"));
+                const userData = JSON.parse(sessionStorage.getItem("userData"));
                 if (!userData) { console.error("No user data in localStorage"); return; }
 
                 const getVal = (id) => {
@@ -1153,7 +1153,7 @@
                     }
 
                     // 2. Grab the logged-in User's ID from local storage
-                    const userDataStr = localStorage.getItem("userData");
+                    const userDataStr = sessionStorage.getItem("userData");
                     if (!userDataStr) {
                         showToast("You must be logged in to do this.", "error");
                         return;
@@ -1202,7 +1202,7 @@
 
         // 1. Handle the Persona Toggle
         function isStaffConsoleUser() {
-            const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+            const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
             const role = String(userData.User_Type || userData.user_type || userData.role || "").toLowerCase();
             return role === "admin" || role === "technician";
         }
@@ -1278,7 +1278,7 @@
             initPasswordStrength();
 
             // 2. Load data from the database (Real-time sync)
-            const userDataStr = localStorage.getItem("userData");
+            const userDataStr = sessionStorage.getItem("userData");
             if (userDataStr) {
                 const userData = JSON.parse(userDataStr);
                 // Fill read-only account info
@@ -1336,9 +1336,9 @@
 
                 if (response.ok) {
                     // 1. Update the 'userData' key for this page
-                    let userData = JSON.parse(localStorage.getItem("userData") || '{}');
+                    let userData = JSON.parse(sessionStorage.getItem("userData") || '{}');
                     userData.profile_pic_url = (photoBase64 === 'default-avatar.png') ? null : photoBase64;
-                    localStorage.setItem("userData", JSON.stringify(userData));
+                    sessionStorage.setItem("userData", JSON.stringify(userData));
 
                     // 2. THE CRITICAL SYNC: Update the 'userProfile' key used by UserDataManager
                     // This ensures the mini-profile header updates correctly
@@ -1371,7 +1371,7 @@
             if (headerAv) {
                 if (isDefault) {
                     // Put initials back instead of a broken <img> tag
-                    const userData = JSON.parse(localStorage.getItem("userData"));
+                    const userData = JSON.parse(sessionStorage.getItem("userData"));
                     headerAv.textContent = userData?.Name ? userData.Name.charAt(0).toUpperCase() : 'U';
                 } else {
                     // Inject the real Base64 image
@@ -1396,7 +1396,7 @@
             const headerAv = document.getElementById('userAvatar');
             if (headerAv) {
                 if (isDefault) {
-                    const userData = JSON.parse(localStorage.getItem("userData"));
+                    const userData = JSON.parse(sessionStorage.getItem("userData"));
                     headerAv.textContent = userData?.Name?.charAt(0).toUpperCase() || 'U';
                 } else {
                     headerAv.innerHTML = `<img src="${photoUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
@@ -1407,7 +1407,7 @@
 
         // Refactored shell compatibility: keep topbar account labels synced with existing profile data.
         document.addEventListener('DOMContentLoaded', function () {
-            const current = JSON.parsesessionStorage.getItem('userData') || '{}');
+            const current = JSON.parse(sessionStorage.getItem('userData') || '{}');
             const name = current.Name || current.fullName || current.name || 'User';
             const email = current.Email || current.email || '';
             ['userNameDisplay', 'menuUserName', 'userName'].forEach(id => {

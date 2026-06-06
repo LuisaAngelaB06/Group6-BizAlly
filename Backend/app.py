@@ -16,14 +16,14 @@ app = Flask(__name__, static_folder="static", static_url_path="/static")
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-change-this")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
-# 🌟 REPLACE THE OLD CORS(app) WITH THIS SPECIFIC CONFIGURATION
-CORS(app, resources={r"/api/*": {
+# 🌟 THE CORS FIX: Unlock the whole app so Socket.IO can breathe!
+CORS(app, resources={r"/*": {
     "origins": [
         "http://127.0.0.1:5500", 
         "http://localhost:5500", 
         "https://group6-bizally.onrender.com"
     ],
-    "allow_headers": ["Content-Type", "X-User-ID", "X-User-Role", "X-Technician-ID"]
+    "allow_headers": ["Content-Type", "X-User-ID", "X-User-Role", "X-Technician-ID", "Authorization"]
 }})
 
 BASE_BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))

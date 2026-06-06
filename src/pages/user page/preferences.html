@@ -332,8 +332,8 @@
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', function (e) {
                     e.preventDefault();
-                    localStorage.removeItem('userData');
-                    localStorage.removeItem('userProfile');
+                    sessionStorage.removeItem('userData');
+                    sessionStorage.removeItem('userProfile');
                     localStorage.removeItem('dashboardLanguage');
                     localStorage.removeItem('notificationSettings');
                     window.location.href = '/';

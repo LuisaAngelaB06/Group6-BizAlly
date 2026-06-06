@@ -266,7 +266,7 @@
 
         // Keep the existing database/API connection and Socket.IO endpoint.
         if (typeof socket === "undefined") {
-            window.socket = io(getSocketServerUrl());
+            window.socket = io(getSocketServerUrl(), { transports: ["websocket"] });
         }
 
         // Account Dropdown Functionality - FIXED
@@ -588,9 +588,9 @@
                 logoutBtn.addEventListener("click", function (e) {
                     e.preventDefault();
 
-                    // Clear user data from localStorage
-                    localStorage.removeItem("userData");
-                    localStorage.removeItem("userProfile");
+                    // Clear user data from sessionStorage
+                    sessionStorage.removeItem("userData");
+                    sessionStorage.removeItem("userProfile");
 
                     // Redirect to login page
                     window.location.href = "/";
@@ -602,7 +602,7 @@
         let announcementListenersReady = false;
 
         async function initAnnouncements() {
-            const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+            const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
             const userId =
                 userData.user_id ||
                 userData.id ||
@@ -1067,7 +1067,7 @@
 
         // Mark announcement as read
         async function markAsRead(id) {
-            const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+            const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
             const userId =
                 userData.user_id ||
                 userData.id ||

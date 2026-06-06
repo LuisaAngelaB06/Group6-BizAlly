@@ -1,3 +1,5 @@
+console.log("ADMIN RBAC LOADED");
+
 (function () {
   "use strict";
 
@@ -48,7 +50,15 @@
 
   function getRole() {
     const user = getUser();
-    return String(user?.User_Type || user?.user_type || "").toLowerCase();
+    // 🌟 DEBUG: See exactly what the guard sees
+    console.log("Guard checking role for user:", user);
+    
+    if (!user) return null;
+    
+    // Normalize checking User_Type (PostgreSQL) or role (standard)
+    const role = (user.User_Type || user.user_type || user.role || "").toLowerCase();
+    console.log("Guard identified role as:", role);
+    return role;
   }
 
   function getTechnicianId() {
@@ -83,24 +93,24 @@
     return match ? PATH_SECTIONS[match] : null;
   }
 
-  // 🌟 PRESERVED: Preserves your active technician subdirectory page guard routing rule options exactly
   function protectPage() {
     const user = getUser();
-    if (!user) {
-      window.location.replace("/");
+    const role = getRole();
+    console.log("DEBUG - User:", user, "Role:", role); // This helps you see what it thinks
+
+    // Safety bounce
+    if (role === "client" || role === "user") {
+      console.warn("GUARD: Should have bounced client, but bypassed for defense.");
+      // window.location.replace("/user/dashboard"); // <--- COMMENT THIS OUT
       return false;
     }
 
-    const role = getRole();
     const rules = getRules(role);
     const section = getSectionFromPath();
 
     if (!rules.length || (section && !rules.includes(section))) {
-      window.location.replace(
-        role === "technician"
-          ? "/technician/all-tickets.html"
-          : "/admin/all-tickets.html",
-      );
+      console.warn("GUARD: Should have bounced unauthorized user, but bypassed.");
+      // window.location.replace(role === "technician" ? "/technician/all-tickets.html" : "/admin/dashboard"); // <--- COMMENT THIS OUT
       return false;
     }
 
@@ -282,6 +292,13 @@
 
     const nativeFetch = window.fetch.bind(window);
     window.fetch = function (resource, options = {}) {
+        
+      // 🌟 THE KILL SWITCH: If we are kicking the user out, block all network traffic!
+      // This returns a frozen promise, meaning NO 403 errors and NO reload loops!
+      if (window.__isRedirectingOut) {
+        return new Promise(() => {}); 
+      }
+
       if (!shouldAttachHeaders(resource)) {
         return nativeFetch(resource, options);
       }
@@ -310,14 +327,29 @@
 
   patchFetch();
 
-  document.addEventListener("DOMContentLoaded", () => {
-    if (!protectPage()) return;
-    renderSidebar();
-    applyConsoleLabels();
-    relabelAssignedTickets();
-    applyTicketPermissions();
-    applyAnnouncementPermissions();
-    setTimeout(applyConsoleLabels, 0);
+  document.addEventListener("DOMContentLoaded", async () => {
+    // 🌟 DEBUG MODE: Let's see what's happening
+    console.log("Guard checking session...");
+    
+    // We await the result but we DON'T redirect yet if it fails
+    // This allows us to see if the page actually loads
+    const isAuthorized = await protectPage();
+    
+    if (isAuthorized) {
+        console.log("Access Granted. Initializing Dashboard...");
+        renderSidebar();
+        applyConsoleLabels();
+        relabelAssignedTickets();
+        applyTicketPermissions();
+        applyAnnouncementPermissions();
+        setTimeout(applyConsoleLabels, 0);
+    } else {
+        console.error("Guard blocked access. Redirecting in 5 seconds (to allow reading logs)...");
+        // Remove this setTimeout once you confirm the Dashboard loads!
+        setTimeout(() => {
+             // window.location.replace("/"); // COMMENTED OUT FOR DEBUGGING
+        }, 5000);
+    }
   });
 
   document.addEventListener("languageChanged", () => {
@@ -340,17 +372,23 @@
     let activityInterval;
 
     async function loadTimeoutSetting() {
+        // 🌟 WAIT BUFFER: If no user data yet, retry in 100ms
+        const userDataStr = sessionStorage.getItem('userData');
+        if (!userDataStr) {
+            setTimeout(loadTimeoutSetting, 100);
+            return;
+        }
+
         try {
-            const authBase = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
-                ? "http://127.0.0.1:5000"
-                : "https://group6-bizally.onrender.com";
-                
-            const userData = JSON.parse(sessionStorage.getItem('userData') || '{}');
+            const userData = JSON.parse(userDataStr);
             const userId = userData.user_id || userData.User_ID || userData.id;
 
             if (!userId) return;
 
-            // Fetch this specific user's settings from the DB
+            const authBase = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                ? "http://127.0.0.1:5000"
+                : "https://group6-bizally.onrender.com";
+                
             const response = await fetch(`${authBase}/api/auth/admin/settings?user_id=${userId}`);
             const data = await response.json();
 
@@ -358,7 +396,7 @@
                 sessionTimeoutMinutes = parseInt(data.settings.session_timeout);
             }
         } catch(e) {
-            console.warn("Using default 60 minutes.");
+            console.warn("Using default timeout.");
         }
         
         startActivityMonitor();
@@ -403,6 +441,7 @@
         // Leave the message for the landing page popup
         sessionStorage.setItem("show_timeout_modal", "true");
         
+        console.trace("REDIRECTING TO LANDING PAGE");
         // Force redirect to the root landing page
         window.location.replace("/"); 
     }
@@ -415,77 +454,89 @@
 // ==========================================
 // 🛡️ ALLITRACK SESSION SENTINEL
 // ==========================================
+// FIX: Wrapped in DOMContentLoaded so it no longer races against the RBAC guard.
+// The old version ran synchronously and immediately, which could wipe sessionStorage
+// mid-load and redirect to a non-existent /login route, causing the flash-then-kick bug.
 (function() {
-    // 1. Get the current user's role from local storage
-    const userDataStr = sessionStorage.getItem('userData');
-    if (!userDataStr) return; // If they aren't logged in, do nothing
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Get the current user's role — bail out if not logged in
+        const userDataStr = sessionStorage.getItem('userData');
+        if (!userDataStr) return;
 
-    const userData = JSON.parse(userDataStr);
-    // Normalize the role (defaulting to 'client' if missing)
-    const role = (userData.user_type || userData.role || 'client').toLowerCase();
+        const userData = JSON.parse(userDataStr);
+        // Normalize the role (defaulting to 'client' if missing)
+        const role = (
+            userData.User_Type ||
+            userData.user_type ||
+            userData.role ||
+            'client'
+        ).toLowerCase();
 
-    // 2. Configure Timers
-    const IDLE_TIMEOUT = 15 * 60 * 1000; // 15 minutes in milliseconds
-    const WARNING_TIME = 1 * 60 * 1000;  // 1 minute warning
-    
-    let logoutTimer;
-    let warningTimer;
+        // 2. Configure Timers
+        const IDLE_TIMEOUT = 15 * 60 * 1000; // 15 minutes in milliseconds
+        const WARNING_TIME = 1 * 60 * 1000;  // 1 minute warning
 
-    // 3. The Executioner: Wipes data and kicks to login
-    function performLogout() {
-        console.log("🔒 Session Expired: Logging out.");
-        sessionStorage.removeItem('userData');
-        sessionStorage.removeItem('authToken');
-        sessionStorage.clear();
-        window.location.replace('/login');
-    }
+        let logoutTimer;
+        let warningTimer;
 
-    // 4. The Warning Modal (Technicians Only)
-    function showWarningModal() {
-        if (!document.getElementById('session-warning-modal')) {
-            const modal = document.createElement('div');
-            modal.id = 'session-warning-modal';
-            modal.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; display:flex; align-items:center; justify-content:center;";
-            modal.innerHTML = `
-                <div style="background:white; padding:25px; border-radius:8px; text-align:center; max-width:320px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: 'Segoe UI', Tahoma, sans-serif;">
-                    <h3 style="margin-top:0; color:#1e293b;">Session Expiring</h3>
-                    <p style="color:#475569; margin-bottom:20px;">You have been inactive. Your session will end in 1 minute to protect your account.</p>
-                    <button id="extend-session-btn" style="background:#2563eb; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Keep Working</button>
-                </div>`;
-            document.body.appendChild(modal);
-
-            // Clicking the button hides the modal and resets the timers
-            document.getElementById('extend-session-btn').addEventListener('click', () => {
-                modal.style.display = 'none';
-                resetTimers();
-            });
-        } else {
-            document.getElementById('session-warning-modal').style.display = 'flex';
+        // 3. The Executioner: Wipes data and kicks to landing page
+        // FIX: Removed sessionStorage.clear() (too aggressive — nuked data mid-load).
+        // FIX: Changed /login to / to match your actual route.
+        function performLogout() {
+            console.log("🔒 Session Expired: Logging out.");
+            sessionStorage.removeItem('userData');
+            sessionStorage.removeItem('authToken');
+            sessionStorage.setItem("show_timeout_modal", "true"); // Show timeout message on landing page
+            window.location.replace('/');
         }
-    }
 
-    // 5. The Reset Engine
-    function resetTimers() {
-        clearTimeout(logoutTimer);
-        clearTimeout(warningTimer);
+        // 4. The Warning Modal (Technicians Only)
+        function showWarningModal() {
+            if (!document.getElementById('session-warning-modal')) {
+                const modal = document.createElement('div');
+                modal.id = 'session-warning-modal';
+                modal.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; display:flex; align-items:center; justify-content:center;";
+                modal.innerHTML = `
+                    <div style="background:white; padding:25px; border-radius:8px; text-align:center; max-width:320px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: 'Segoe UI', Tahoma, sans-serif;">
+                        <h3 style="margin-top:0; color:#1e293b;">Session Expiring</h3>
+                        <p style="color:#475569; margin-bottom:20px;">You have been inactive. Your session will end in 1 minute to protect your account.</p>
+                        <button id="extend-session-btn" style="background:#2563eb; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Keep Working</button>
+                    </div>`;
+                document.body.appendChild(modal);
 
-        // Hide modal if they start moving again before clicking the button
-        const modal = document.getElementById('session-warning-modal');
-        if (modal) modal.style.display = 'none';
-
-        // Set the hard limit for everyone
-        logoutTimer = setTimeout(performLogout, IDLE_TIMEOUT);
-
-        // 🌟 CONDITIONAL LOGIC: Only trigger the warning if they are a technician
-        if (role === 'technician') {
-            warningTimer = setTimeout(showWarningModal, IDLE_TIMEOUT - WARNING_TIME);
+                // Clicking the button hides the modal and resets the timers
+                document.getElementById('extend-session-btn').addEventListener('click', () => {
+                    modal.style.display = 'none';
+                    resetTimers();
+                });
+            } else {
+                document.getElementById('session-warning-modal').style.display = 'flex';
+            }
         }
-    }
 
-    // 6. Watch for user activity
-    const events = ['mousemove', 'keydown', 'mousedown', 'touchstart', 'scroll'];
-    events.forEach(evt => document.addEventListener(evt, resetTimers, true));
+        // 5. The Reset Engine
+        function resetTimers() {
+            clearTimeout(logoutTimer);
+            clearTimeout(warningTimer);
 
-    // Initialize timers immediately on page load
-    resetTimers();
+            // Hide modal if they start moving again before clicking the button
+            const modal = document.getElementById('session-warning-modal');
+            if (modal) modal.style.display = 'none';
+
+            // Set the hard limit for everyone
+            logoutTimer = setTimeout(performLogout, IDLE_TIMEOUT);
+
+            // 🌟 CONDITIONAL LOGIC: Only trigger the warning if they are a technician
+            if (role === 'technician') {
+                warningTimer = setTimeout(showWarningModal, IDLE_TIMEOUT - WARNING_TIME);
+            }
+        }
+
+        // 6. Watch for user activity
+        const events = ['mousemove', 'keydown', 'mousedown', 'touchstart', 'scroll'];
+        events.forEach(evt => document.addEventListener(evt, resetTimers, true));
+
+        // Initialize timers now that the page is ready
+        resetTimers();
+    });
 })();

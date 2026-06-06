@@ -619,7 +619,7 @@
 
         async function markAllAsRead() {
             try {
-                const userData = JSON.parse(localStorage.getItem("userData"));
+                const userData = JSON.parse(sessionStorage.getItem("userData"));
                 // 🌟 FIXED: Ensure mark all as read also uses the correct Admin ID
                 const userId = userData ? (userData.user_id || userData.system_user_id || userData.id || userData.User_ID) : null;
                 
@@ -694,7 +694,7 @@
 
         async function fetchNotifications() {
             try {
-                const userData = JSON.parse(localStorage.getItem("userData"));
+                const userData = JSON.parse(sessionStorage.getItem("userData"));
                 // 🌟 FIXED: Looks for Admin ID just like the Red Dot system does
                 const userId = userData ? (userData.user_id || userData.system_user_id || userData.id || userData.User_ID) : null;
                 
@@ -712,7 +712,7 @@
 
         function setupSocketListeners() {
             if (typeof io === "function") {
-                const socket = io(window.API_BASE_URL);
+                const socket = io(window.API_BASE_URL, { transports: ["websocket"] });
                 socket.on("ticket_updated", fetchNotifications);
                 socket.on("ticket_assigned", fetchNotifications);
             }

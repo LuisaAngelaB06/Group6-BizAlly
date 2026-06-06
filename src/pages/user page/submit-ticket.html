@@ -724,7 +724,7 @@
       if (newTicketButton) {
         newTicketButton.addEventListener("click", function (event) {
           const userData = JSON.parse(
-            localStorage.getItem("userData") || "{}",
+            sessionStorage.getItem("userData") || "{}",
           );
           if (!userData.is_profile_complete) {
             event.preventDefault();
@@ -805,7 +805,7 @@
       const form = document.getElementById("ticketForm");
       const confirmBtn = document.getElementById("confirmSubmitBtn");
       const values = getTicketFormValues();
-      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+      const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
 
       if (!userData.user_id) {
         showToast("Session expired. Please log in again.", "error");
@@ -984,8 +984,8 @@
       logoutBtn.addEventListener("click", function (e) {
         e.preventDefault();
 
-        localStorage.removeItem("userData");
-        localStorage.removeItem("userProfile");
+        sessionStorage.removeItem("userData");
+        sessionStorage.removeItem("userProfile");
         localStorage.removeItem("userTickets");
         localStorage.removeItem("preferredLanguage");
         localStorage.removeItem("dashboardLanguage");

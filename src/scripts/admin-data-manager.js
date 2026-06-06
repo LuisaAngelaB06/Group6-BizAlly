@@ -32,7 +32,7 @@
 
     function enforceRouteAccess() {
         const currentPath = window.location.pathname.toLowerCase();
-        const userData = safeParseJSON(localStorage.getItem(STORAGE_KEYS.userData), null);
+        const userData = safeParseJSON(sessionStorage.getItem(STORAGE_KEYS.userData), null);
 
         const isPublic =
             currentPath === '/' ||
@@ -371,7 +371,7 @@ window.adminRedDotState = {
 };
 
 function extractAdminId() {
-    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
     const id = userData.user_id || userData.id || userData.User_ID || userData.system_user_id || userData.UserId;
     console.log("🔍 [X-RAY] Extracted ID:", id, "from userData:", userData);
     return id;

@@ -642,7 +642,7 @@
 
     async function markAllAsRead() {
       try {
-        const userData = JSON.parse(localStorage.getItem("userData"));
+        const userData = JSON.parse(sessionStorage.getItem("userData"));
         if (!userData || !userData.user_id) return;
 
         const response = await fetch(`${window.API_BASE_URL}/api/notifications/read-all?user_id=${userData.user_id}`, {
@@ -749,7 +749,7 @@
 
     async function fetchNotifications() {
       try {
-        const userData = JSON.parse(localStorage.getItem("userData"));
+        const userData = JSON.parse(sessionStorage.getItem("userData"));
         if (!userData || !userData.user_id) return;
 
         const response = await fetch(`${window.API_BASE_URL}/api/notifications/user/${userData.user_id}`, {
@@ -773,7 +773,7 @@
 
     function getCurrentUser() {
       if (window.userDataManager?.getUserData) return window.userDataManager.getUserData();
-      try { return JSON.parse(localStorage.getItem("userData") || "{}"); } catch { return {}; }
+      try { return JSON.parse(sessionStorage.getItem("userData") || "{}"); } catch { return {}; }
     }
 
     function getDisplayName(user = {}) {

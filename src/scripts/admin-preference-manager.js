@@ -945,8 +945,9 @@ class PreferencesManager {
                 e.preventDefault();
                 console.log('Logout clicked');
                 
-                // Clear user data from localStorage
-                localStorage.removeItem('userData');
+                // Clear user data from sessionStorage and localStorage
+                sessionStorage.removeItem('userData');
+                sessionStorage.removeItem('userProfile');
                 localStorage.removeItem('dashboardLanguage');
                 localStorage.removeItem('notificationSettings');
                 localStorage.removeItem('accessibilitySettings');
