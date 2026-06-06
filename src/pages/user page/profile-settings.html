@@ -1407,7 +1407,7 @@
 
         // Refactored shell compatibility: keep topbar account labels synced with existing profile data.
         document.addEventListener('DOMContentLoaded', function () {
-            const current = JSON.parse(localStorage.getItem('userData') || '{}');
+            const current = JSON.parsesessionStorage.getItem('userData') || '{}');
             const name = current.Name || current.fullName || current.name || 'User';
             const email = current.Email || current.email || '';
             ['userNameDisplay', 'menuUserName', 'userName'].forEach(id => {

@@ -532,7 +532,7 @@
             ? "http://127.0.0.1:5000"
             : "https://group6-bizally.onrender.com";
 
-        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        const userData = JSON.parse(sessionStorage.getItem('userData') || '{}');
         const currentUserId = userData.user_id || userData.User_ID || userData.id || userData.ID;
 
         // Admin Re-auth Constants (From your original code!)

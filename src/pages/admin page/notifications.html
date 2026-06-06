@@ -8,7 +8,7 @@
     <script>
         (function() {
             try {
-                const rawData = localStorage.getItem('userData') || "";
+                const rawData = sessionStorage.getItem('userData') || "";
                 // STRICT MATCH: Looks exactly for the JSON key/value pair
                 if (rawData.toLowerCase().includes('"user_type":"technician"') || rawData.toLowerCase().includes('"role":"technician"')) {
                     document.write('<style>.sidebar-nav a[data-section="dashboard"], .sidebar-nav a[data-section="users"], .sidebar-nav a[data-section="system-settings"], .sidebar-nav a[data-section="analytics"], .sidebar-nav a[data-section="logs"], .nav-group-label[data-translate="system_management"] { display: none !important; }</style>');

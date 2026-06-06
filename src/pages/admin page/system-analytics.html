@@ -452,7 +452,7 @@
 
         function authHeaders() {
             let user = {};
-            try { user = JSON.parse(localStorage.getItem('userData') || '{}'); } catch (error) { user = {}; }
+            try { user = JSON.parse(sessionStorage.getItem('userData') || '{}'); } catch (error) { user = {}; }
             const userId = user.user_id || user.User_ID || user.UserId || '';
             const role = user.User_Type || user.user_type || user.role || 'admin';
             const technicianId = user.Technician_ID || user.technician_id || '';
