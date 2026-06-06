@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 
 <head>
@@ -11,7 +11,8 @@
                 const rawData = localStorage.getItem('userData') || "";
                 // STRICT MATCH: Looks exactly for the JSON key/value pair
                 if (rawData.toLowerCase().includes('"user_type":"technician"') || rawData.toLowerCase().includes('"role":"technician"')) {
-                    document.write('<style>.sidebar-nav a[data-section="dashboard"], .sidebar-nav a[data-section="users"], .sidebar-nav a[data-section="system-settings"], .sidebar-nav a[data-section="analytics"], .sidebar-nav a[data-section="logs"], .nav-group-label[data-translate="system_management"] { display: none !important; }</style>');
+                    // 🌟 THE FIX: Added `button[data-tab="notifications"]` to the hidden list!
+                    document.write('<style>.sidebar-nav a[data-section="dashboard"], .sidebar-nav a[data-section="users"], .sidebar-nav a[data-section="system-settings"], .sidebar-nav a[data-section="analytics"], .sidebar-nav a[data-section="logs"], .nav-group-label[data-translate="system_management"], button[data-tab="notifications"] { display: none !important; }</style>');
                 }
             } catch(e) {}
         })();
@@ -161,10 +162,6 @@
                     <i class="fas fa-language"></i>
                     <span data-translate="language">Language</span>
                 </button>
-                <button class="tab-btn" data-tab="notifications">
-                    <i class="fas fa-bell"></i>
-                    <span data-translate="notifications">Notifications</span>
-                </button>
             </div>
 
             <div class="preferences-content">
@@ -285,24 +282,21 @@
                                             <h4 data-translate="new_ticket_emails">New Ticket Emails</h4>
                                             <p data-translate="new_ticket_emails_desc">Receive email when a new ticket
                                                 is created</p>
-                                        </div><label class="switch"><input type="checkbox" id="emailNewTickets"
-                                                checked><span class="slider"></span></label>
+                                        </div><label class="switch"><input type="checkbox" id="emailNewTickets"><span class="slider"></span></label>
                                     </div>
                                     <div class="notification-item">
                                         <div class="notification-item-content">
                                             <h4 data-translate="ticket_updates">Ticket Updates</h4>
                                             <p data-translate="ticket_updates_desc">Email notifications when tickets
                                                 you're assigned to are updated</p>
-                                        </div><label class="switch"><input type="checkbox" id="emailTicketUpdates"
-                                                checked><span class="slider"></span></label>
+                                        </div><label class="switch"><input type="checkbox" id="emailTicketUpdates"><span class="slider"></span></label>
                                     </div>
                                     <div class="notification-item">
                                         <div class="notification-item-content">
                                             <h4 data-translate="daily_digest">Daily Digest</h4>
                                             <p data-translate="daily_digest_desc">Daily summary of ticket activity and
                                                 statistics</p>
-                                        </div><label class="switch"><input type="checkbox" id="emailDailyDigest"><span
-                                                class="slider"></span></label>
+                                        </div><label class="switch"><input type="checkbox" id="emailDailyDigest"><span class="slider"></span></label>
                                     </div>
                                 </div>
                             </div>
@@ -448,9 +442,6 @@
 
             // Setup language selection
             setupLanguageSelection();
-
-            // Setup notification controls
-            setupNotificationControls();
 
             // Setup account dropdown
             setupAccountDropdown();
@@ -652,88 +643,110 @@
             });
         }
 
-        // Setup notification controls
+        // ==========================================
+        // 🌟 DATABASE-CONNECTED NOTIFICATIONS
+        // ==========================================
         function setupNotificationControls() {
             // Setup toggle switches
             const switches = document.querySelectorAll('.switch input[type="checkbox"]');
             switches.forEach(switchEl => {
-                switchEl.addEventListener('change', function () {
+                switchEl.addEventListener('change', async function () {
                     const settingId = this.id;
                     const value = this.checked;
-
-                    // Save to localStorage
-                    if (window.preferencesManager && typeof window.preferencesManager.saveNotificationSetting === 'function') {
-                        window.preferencesManager.saveNotificationSetting(settingId, value);
-                    } else {
-                        localStorage.setItem(`notification_${settingId}`, String(value));
-                    }
-
-                    showToast('Notification setting updated', 'success');
+                    await saveNotificationToDB(settingId, value);
                 });
             });
 
-            // Setup frequency options
+            // Setup frequency radio buttons
             const frequencyRadios = document.querySelectorAll('input[name="frequency"]');
             frequencyRadios.forEach(radio => {
-                radio.addEventListener('change', function () {
+                radio.addEventListener('change', async function () {
                     if (this.checked) {
-                        const value = this.value;
-
-                        // Save to localStorage
-                        if (window.preferencesManager && typeof window.preferencesManager.saveNotificationSetting === 'function') {
-                            window.preferencesManager.saveNotificationSetting('notificationFrequency', value);
-                        } else {
-                            localStorage.setItem('notification_notificationFrequency', value);
-                        }
-
-                        showToast('Notification frequency updated', 'success');
+                        await saveNotificationToDB('frequency', this.value);
                     }
                 });
             });
 
-            // Load saved notification settings
+            // Load saved settings from Database on page load
             loadNotificationSettings();
         }
 
-        function loadNotificationSettings() {
-            if (!window.preferencesManager) return;
+        async function saveNotificationToDB(key, value) {
+            try {
+                const authBase = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                    ? "http://127.0.0.1:5000"
+                    : "https://group6-bizally.onrender.com";
 
-            // Load toggle settings
-            const settings = [
-                'emailNewTickets', 'emailTicketUpdates', 'emailDailyDigest',
-                'appNewTickets', 'appMentions', 'appSounds'
-            ];
+                // Create JSON payload dynamically
+                const payload = {};
+                payload[key] = value;
 
-            settings.forEach(settingId => {
-                // 🌟 ADD THIS CHECK: Verify the function exists before calling it
-                const manager = window.preferencesManager;
-                let savedValue = null;
+                const response = await fetch(`${authBase}/api/auth/admin/settings/notifications`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                });
 
-                if (manager && typeof manager.getNotificationSetting === 'function') {
-                    savedValue = manager.getNotificationSetting(settingId);
-                } else {
-                    console.warn(`⚠️ Method 'getNotificationSetting' is missing on preferencesManager for: ${settingId}`);
-                    // Fallback: Try to get from localStorage directly if manager is broken
-                    savedValue = localStorage.getItem(`notification_${settingId}`);
-                }
-
-                const input = document.getElementById(settingId);
-                if (input && savedValue !== null) {
-                    input.checked = savedValue === 'true' || savedValue === true;
-                }
-            });
-
-            // Load frequency setting
-            let frequency = 'realtime';
-            const manager = window.preferencesManager;
-            if (manager && typeof manager.getNotificationSetting === 'function') {
-                frequency = manager.getNotificationSetting('notificationFrequency') || frequency;
-            } else {
-                frequency = localStorage.getItem('notification_notificationFrequency') || frequency;
+                if (!response.ok) throw new Error("Failed to save to database");
+                showToast('Notification setting updated', 'success');
+            } catch (error) {
+                console.error(error);
+                showToast('Failed to update setting', 'error');
             }
-            const frequencyRadio = document.querySelector(`input[name="frequency"][value="${frequency}"]`);
-            if (frequencyRadio) {
-                frequencyRadio.checked = true;
+        }
+
+        async function loadNotificationSettings() {
+            // 🌟 1. HIDE THE CONTENT TO PREVENT FLASHING
+            const prefContent = document.querySelector('.preferences-content');
+            if (prefContent) {
+                prefContent.style.opacity = '0';
+                prefContent.style.transition = 'opacity 0.2s ease-in-out';
+            }
+
+            try {
+                const authBase = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                    ? "http://127.0.0.1:5000"
+                    : "https://group6-bizally.onrender.com";
+                    
+                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                const userId = userData.user_id || userData.User_ID || userData.id;
+
+                if (!userId) return;
+
+                const response = await fetch(`${authBase}/api/auth/admin/settings?user_id=${userId}`);
+                const data = await response.json();
+
+                if (data.status === 'success' && data.settings) {
+                    const settings = data.settings;
+                    
+                    // Wire the Toggles (If DB says false, stay false. If undefined, default to true)
+                    const newTicketEl = document.getElementById('emailNewTickets');
+                    if (newTicketEl) {
+                        newTicketEl.checked = settings[`notif_new_ticket_${userId}`] !== "false";
+                    }
+                    
+                    const updateEl = document.getElementById('emailTicketUpdates');
+                    if (updateEl) {
+                        updateEl.checked = settings[`notif_ticket_update_${userId}`] !== "false";
+                    }
+                    
+                    const digestEl = document.getElementById('emailDailyDigest');
+                    if (digestEl) {
+                        digestEl.checked = settings[`notif_daily_digest_${userId}`] !== "false";
+                    }
+
+                    const freq = settings[`notif_frequency_${userId}`] || 'realtime';
+                    const freqRadio = document.querySelector(`input[name="frequency"][value="${freq}"]`);
+                    if (freqRadio) freqRadio.checked = true;
+                }
+            } catch (error) {
+                console.error("Failed to load notifications from DB:", error);
+            } finally {
+                // 🌟 2. FADE THE CONTENT BACK IN NOW THAT IT'S ACCURATE
+                if (prefContent) {
+                    prefContent.style.opacity = '1';
+                }
             }
         }
 

@@ -1284,3 +1284,53 @@ input:checked + .slider::before { transform: translateX(26px); }
     .preference-item .switch, .danger-action button, .form-actions button { align-self: flex-end; }
     .form-actions button { width: 100%; }
 }
+
+
+        /* 🌟 NEW: Imported Modal Styles for the Maintenance Confirmation */
+        .announcement-modal {
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            animation: modalPop 0.2s ease-out;
+        }
+        .delete-modal-btn {
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            border-radius: 8px; 
+            border: none;
+        }
+        .delete-modal-btn.cancel-btn {
+            background-color: var(--bg-3, #f1f5f9);
+            color: var(--text-main, #334155);
+            border: 1px solid var(--border, #e2e8f0);
+        }
+        .delete-modal-btn.cancel-btn:hover {
+            background-color: var(--border, #e2e8f0);
+        }
+        .delete-modal-btn.confirm-btn {
+            background-color: #ff4757;
+            color: white;
+        }
+        .delete-modal-btn.confirm-btn:hover {
+            background-color: #ff2a3d;
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+        }
+        .delete-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-2, #64748b);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .delete-modal-close:hover {
+            color: var(--text-main, #1e293b);
+        }
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }

@@ -3,6 +3,7 @@ from Backend.database import get_connection
 from psycopg2.extras import RealDictCursor
 from Backend.socketio_instance import socketio
 from Backend.routes.rbac import get_current_user, role_required
+from Backend.routes.utils import log_system_event
 
 announcement_bp = Blueprint("announcements", __name__)
 
@@ -50,6 +51,19 @@ def create_announcement():
         ))
 
         conn.commit()
+
+        # 🌟 NEW: Audit Log for Creation
+        current_user = get_current_user()
+        user_id = current_user.get("user_id") if current_user else data.get("admin_id", "System")
+        
+        log_system_event(
+            user_identifier=str(user_id),
+            category="Announcements",
+            action="Announcement Published",
+            log_level="INFO",
+            description=f"Published a new announcement: {data.get('title')}"
+        )
+
         socketio.emit("new_announcement", {
             "status": "created",
             "target_audience": target_audience
@@ -58,6 +72,7 @@ def create_announcement():
     
 
     except Exception as e:
+        conn.rollback()
         return jsonify({"status": "error", "message": str(e)}), 500
 
     finally:
@@ -106,6 +121,19 @@ def update_announcement():
         ))
 
         conn.commit()
+
+        # 🌟 NEW: Audit Log for Editing
+        current_user = get_current_user()
+        user_id = current_user.get("user_id") if current_user else "System"
+
+        log_system_event(
+            user_identifier=str(user_id),
+            category="Announcements",
+            action="Announcement Edited",
+            log_level="INFO",
+            description=f"Updated announcement ID #{ann_id}: {data.get('title')}"
+        )
+
         socketio.emit("announcement_updated", {
             "status": "updated",
             "target_audience": target_audience
@@ -113,6 +141,7 @@ def update_announcement():
         return jsonify({"status": "success"}), 200
 
     except Exception as e:
+        conn.rollback()
         return jsonify({"status": "error", "message": str(e)}), 500
 
     finally:
@@ -246,21 +275,33 @@ def mark_as_read():
     user_id = data.get('user_id')
     announcement_id = data.get('announcement_id')
 
-
     conn = get_connection()
     cursor = conn.cursor()
-
+    
     try:
+        # Insert the read receipt
         cursor.execute("""
             INSERT INTO announcement_reads (user_id, announcement_id)
             VALUES (%s, %s)
             ON CONFLICT (user_id, announcement_id) DO NOTHING
-        """, (data.get("user_id"), data.get("announcement_id")))
+        """, (user_id, announcement_id))
 
         conn.commit()
+
+        # 🌟 LOG IT: Record that the user viewed the announcement
+        from Backend.routes.utils import log_system_event
+        log_system_event(
+            user_identifier=str(user_id),
+            category="Announcements",
+            action="Announcement Read",
+            log_level="INFO",
+            description=f"User read announcement #{announcement_id}."
+        )
+
         return jsonify({"status": "success"}), 200
 
     except Exception as e:
+        conn.rollback()
         return jsonify({"status": "error", "message": str(e)}), 500
 
     finally:
@@ -286,6 +327,18 @@ def delete_announcement():
         cursor.execute("DELETE FROM announcements WHERE announcement_id = %s", (ann_id,))
         conn.commit()
 
+        # 🌟 NEW: Audit Log for Deletion
+        current_user = get_current_user()
+        user_id = current_user.get("user_id") if current_user else "System"
+
+        log_system_event(
+            user_identifier=str(user_id),
+            category="Announcements",
+            action="Announcement Deleted",
+            log_level="WARNING",
+            description=f"Deleted announcement ID #{ann_id}"
+        )
+
         socketio.emit("announcement_deleted", {
             "status": "deleted",
             "announcement_id": ann_id
@@ -294,6 +347,7 @@ def delete_announcement():
         return jsonify({"status": "success"}), 200
 
     except Exception as e:
+        conn.rollback()
         return jsonify({"status": "error", "message": str(e)}), 500
 
     finally:

@@ -129,6 +129,8 @@
                         </div>
                         <p id="modalPasswordError" class="error-text"></p>
 
+                        <p id="loginGeneralError" class="error-text" style="text-align:center; margin-top:-5px;"></p>
+
                         <button class="login-btn" id="modalLoginBtn" type="submit" disabled>
                             Get Started
                         </button>
@@ -229,6 +231,8 @@
                             </div>
                             <p id="modalTermsError" class="error-text"></p>
                         </div>
+                        
+                        <p id="signupGeneralError" class="error-text" style="text-align:center; margin-top:-5px;"></p>
 
                         <button class="signup-btn" id="modalSignupBtn" type="submit" disabled>
                             Create Account
@@ -272,18 +276,12 @@
 
                     <form id="modalOtpForm" novalidate>
                         <div class="otp-inputs" role="group" aria-label="One-time password">
-                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp1"
-                                autocomplete="one-time-code" aria-label="Digit 1">
-                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp2"
-                                aria-label="Digit 2">
-                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp3"
-                                aria-label="Digit 3">
-                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp4"
-                                aria-label="Digit 4">
-                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp5"
-                                aria-label="Digit 5">
-                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp6"
-                                aria-label="Digit 6">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp1" autocomplete="off" aria-label="Digit 1">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp2" autocomplete="off" aria-label="Digit 2">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp3" autocomplete="off" aria-label="Digit 3">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp4" autocomplete="off" aria-label="Digit 4">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp5" autocomplete="off" aria-label="Digit 5">
+                            <input class="otp-box" type="text" maxlength="1" inputmode="numeric" id="otp6" autocomplete="off" aria-label="Digit 6">
                         </div>
                         <p id="modalOtpError" class="error-text" style="text-align:center;"></p>
 
@@ -322,11 +320,25 @@
 
     </div><!-- /.modal-fixed -->
 
+    <script>
+        // 1. Show the modal on the landing page if kicked out
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('show_timeout_modal') === 'true') {
+                const timeoutModal = document.getElementById('timeoutModalOverlay');
+                if (timeoutModal) {
+                    timeoutModal.style.display = 'flex';
+                }
+                localStorage.removeItem('show_timeout_modal');
+            }
+        });
 
-    <!-- ══════════════════════════════════════════════════════════
-         ORIGINAL SCRIPTS — UNTOUCHED
-    ══════════════════════════════════════════════════════════ -->
-    <!-- ── GLOBAL UTILITIES (shared by all scripts) ── -->
+        // 2. When they click "Understood", prep the red text and send them to /login
+        function handleUnderstoodClick() {
+            localStorage.setItem('show_timeout_text', 'true');
+            window.location.href = '/login'; 
+        }
+    </script>
+
     <script>
         // These must live in global scope so both the main script and the OTP
         // script can call them without a ReferenceError.
@@ -344,6 +356,88 @@
     </script>
 
     <script>
+
+        let lockoutInterval;
+
+        function startAccurateCountdown(remainingSeconds, errorElement, inputsToDisable, btnToDisable) {
+            // Clear any previous timers
+            if (lockoutInterval) clearInterval(lockoutInterval);
+
+            // Freeze the inputs
+            if (inputsToDisable) inputsToDisable.forEach(input => { if (input) input.disabled = true; });
+            if (btnToDisable) btnToDisable.disabled = true;
+
+            // HIDE the normal 2:00 minute timer so they don't overlap
+            const otpTimerDiv = document.querySelector('.otp-timer');
+            if (otpTimerDiv) otpTimerDiv.style.visibility = 'hidden';
+            if (typeof countdownTimer !== 'undefined') clearInterval(countdownTimer);
+
+            // Calculate exact unlock time
+            const unlockTime = new Date().getTime() + (remainingSeconds * 1000);
+
+            function updateTimer() {
+                const now = new Date().getTime();
+                const distance = unlockTime - now;
+
+                // 🌟 IF TIME IS UP...
+                if (distance <= 0) {
+                    clearInterval(lockoutInterval);
+
+                    // 🎯 SCENARIO A: WE ARE ON THE OTP SCREEN
+                    // We check if the button we disabled was the OTP Verify button
+                    if (btnToDisable && btnToDisable.id === 'modalOtpBtn') {
+                        if (errorElement) {
+                            errorElement.style.display = "block";
+                            errorElement.style.color = "#ef4444";
+                            errorElement.textContent = "Code expired. Please request a new one.";
+                        }
+                        
+                        // KEEP inputs and verify button DISABLED!
+                        if (inputsToDisable) inputsToDisable.forEach(input => { if (input) input.disabled = true; });
+                        btnToDisable.disabled = true;
+
+                        // ONLY ENABLE the Resend button
+                        const resendBtn = document.getElementById('otpResendBtn');
+                        if (resendBtn) resendBtn.disabled = false;
+
+                        // Show the normal timer UI but force it to 0:00
+                        if (otpTimerDiv) {
+                            otpTimerDiv.style.visibility = 'visible';
+                            const countdownSpan = document.getElementById('otpCountdown');
+                            if (countdownSpan) countdownSpan.textContent = "0:00";
+                        }
+                        return; // Stop here!
+                    }
+
+                    // 🎯 SCENARIO B: WE ARE ON THE LOGIN SCREEN
+                    if (errorElement) {
+                        errorElement.textContent = "";
+                        errorElement.style.display = "none";
+                    }
+                    // Safely unlock the email and password fields
+                    if (inputsToDisable) inputsToDisable.forEach(input => { if (input) input.disabled = false; });
+                    if (btnToDisable) btnToDisable.disabled = false;
+                    
+                    return;
+                }
+
+                // Math for Minutes and Seconds
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                // Force the red text and live countdown onto the screen
+                if (errorElement) {
+                    errorElement.style.display = "block";
+                    errorElement.style.color = "#ef4444"; 
+                    errorElement.textContent = `Account locked. Try again in ${formattedTime}`;
+                }
+            }
+
+            updateTimer(); 
+            lockoutInterval = setInterval(updateTimer, 1000); 
+        }
+
         (function () {
             "use strict";
 
@@ -510,12 +604,26 @@
             function handleLoginFailure(errorMessage) {
                 hideLoading();
                 modalLoginBtn.disabled = false;
-                alert(`Login failed: ${errorMessage}`);
+                
+                // 🌟 FIXED: Push error to UI instead of alert()
+                const errEl = document.getElementById('loginGeneralError');
+                if (errEl) errEl.textContent = errorMessage;
+                
                 console.error('Login error:', errorMessage);
             }
 
             // ========== LOGIN VALIDATION ==========
             function validateLoginForm(forceShowErrors = false) {
+                // 🌟 THE FIX: Instantly clear the lockout timer/text if they edit the fields!
+                if (typeof lockoutInterval !== 'undefined' && lockoutInterval) {
+                    clearInterval(lockoutInterval);
+                }
+                const genErr = document.getElementById('loginGeneralError');
+                if (genErr && genErr.textContent.includes('locked')) {
+                    genErr.textContent = '';
+                    genErr.style.display = 'none';
+                }
+
                 let valid = true;
                 const emailVal = loginEmail.value.trim();
                 const passVal = loginPass.value.trim();
@@ -538,6 +646,7 @@
                     setFieldError(loginPass, loginPassError, '', false);
                 }
 
+                // 🌟 This automatically re-enables the Get Started button!
                 modalLoginBtn.disabled = !valid;
                 return valid;
             }
@@ -671,6 +780,10 @@
                 const emailValue = loginEmail.value.trim();
                 const passwordValue = loginPass.value.trim();
 
+                if (typeof lockoutInterval !== 'undefined' && lockoutInterval) {
+                    clearInterval(lockoutInterval);
+                }
+
                 showLoading('Logging in...');
                 modalLoginBtn.disabled = true;
 
@@ -688,6 +801,35 @@
 
                     const result = await response.json();
 
+                    // 🌟 1. BULLETPROOF LOCKOUT INTERCEPT 
+                    if (!response.ok && response.status === 403) {
+                        hideLoading();
+                        const errEl = document.getElementById('loginGeneralError');
+                        const seconds = result.remaining_seconds || 900; 
+                        
+                        // 🌟 Pass modalLoginBtn so it DISABLES the button! 
+                        startAccurateCountdown(seconds, errEl, null, modalLoginBtn); 
+                        return; 
+                    }
+
+                    // 🌟 2. THE 2FA INTERCEPT! 🌟
+                    if (response.ok && result.status === "2fa_required") {
+                        hideLoading();
+                        
+                        // 🌟 CLEAR the timer/error so "Back to log in" is perfectly clean!
+                        if (typeof lockoutInterval !== 'undefined' && lockoutInterval) clearInterval(lockoutInterval);
+                        const errEl = document.getElementById('loginGeneralError');
+                        if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+
+                        window.isLogin2FA = true;
+                        window.pending2FAEmail = result.email;
+                        if (typeof window.showOtpPanel === 'function') {
+                            window.showOtpPanel(result.email);
+                        }
+                        return; 
+                    }
+
+                    // 🌟 3. NORMAL SUCCESSFUL LOGIN
                     if (response.ok && result.status === "success") {
                         localStorage.setItem("userData", JSON.stringify(result.user));
 
@@ -809,7 +951,10 @@
                 } catch (error) {
                     hideLoading();
                     signupBtn.disabled = false;
-                    alert(`Error: ${error.message}`);
+                    
+                    // 🌟 FIXED: Push error to UI instead of alert()
+                    const errEl = document.getElementById('signupGeneralError');
+                    if (errEl) errEl.textContent = error.message || "An error occurred.";
                 }
             }
 
@@ -833,6 +978,20 @@
 
             // ========== INITIALIZATION ==========
             function init() {
+                
+                // 🌟 ONLY check for the red text message coming from the landing page
+                if (localStorage.getItem('show_timeout_text') === 'true') {
+                    const errEl = document.getElementById('loginGeneralError');
+                    if (errEl) {
+                        errEl.style.display = 'block';
+                        errEl.style.color = '#ef4444'; 
+                        errEl.textContent = "Session expired. Please log in again.";
+                    }
+                    
+                    // Destroy the message so it doesn't stay if they refresh!
+                    localStorage.removeItem('show_timeout_text');
+                }
+
                 // Tab switching
                 tabLogin.addEventListener('click', activateLogin);
                 tabSignup.addEventListener('click', activateSignup);
@@ -986,10 +1145,19 @@
             const otpBoxes = Array.from(document.querySelectorAll('.otp-box'));
             const tabSwitch = document.querySelector('.tab-switch');
 
-            let countdownTimer = null;
-
             function showOtpPanel(email) {
                 if (otpEmailDisp && email) otpEmailDisp.textContent = email;
+
+                const title = document.querySelector('#otpFormContainer .form-title');
+                
+                if (window.isLogin2FA) {
+                    if (title) title.textContent = "Two-Factor Authentication";
+                    if (otpBackBtn) otpBackBtn.innerHTML = '<i class="fas fa-arrow-left" style="font-size:.7rem;"></i>&nbsp;Back to log in';
+                } else {
+                    if (title) title.textContent = "Check your inbox";
+                    if (otpBackBtn) otpBackBtn.innerHTML = '<i class="fas fa-arrow-left" style="font-size:.7rem;"></i>&nbsp;Back to sign up';
+                }
+
                 document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
                 otpContainer.classList.add('active');
                 if (tabSwitch) tabSwitch.style.visibility = 'hidden';
@@ -997,18 +1165,39 @@
                 startCountdown(120);
             }
 
+            // 🌟 The Bulletproof Routing
             function hideOtpPanel() {
+                if (!otpContainer.classList.contains('active')) return; 
+
                 otpContainer.classList.remove('active');
-                document.getElementById('signupFormContainer').classList.add('active');
+                
+                if (window.isLogin2FA) {
+                    document.getElementById('loginFormContainer').classList.add('active');
+                    document.getElementById('signupFormContainer').classList.remove('active');
+                    document.getElementById('tabLoginBtn').classList.add('active');
+                    document.getElementById('tabSignupBtn').classList.remove('active');
+                } else {
+                    document.getElementById('signupFormContainer').classList.add('active');
+                    document.getElementById('loginFormContainer').classList.remove('active');
+                    document.getElementById('tabSignupBtn').classList.add('active');
+                    document.getElementById('tabLoginBtn').classList.remove('active');
+                }
+                
                 if (tabSwitch) tabSwitch.style.visibility = '';
                 resetOtp();
+                
+                window.isLogin2FA = false; 
+                window.pending2FAEmail = null;
             }
 
+            // 🌟 RESTORED: The Auto-Focus & Paste Logic!
             otpBoxes.forEach((box, idx) => {
                 box.addEventListener('input', function () {
                     const val = this.value.replace(/\D/g, '');
                     this.value = val.slice(-1);
                     this.classList.toggle('filled', this.value !== '');
+                    
+                    // Jumps to the next box!
                     if (this.value && idx < otpBoxes.length - 1) otpBoxes[idx + 1].focus();
                     checkOtpComplete();
                 });
@@ -1042,23 +1231,36 @@
             function checkOtpComplete() { if (otpBtn) otpBtn.disabled = getOtpValue().length !== 6; }
 
             function resetOtp() {
-                otpBoxes.forEach(b => { b.value = ''; b.classList.remove('filled', 'error-input'); });
+                otpBoxes.forEach(b => { 
+                    b.value = ''; 
+                    b.classList.remove('filled', 'error-input'); 
+                    b.disabled = false;
+                });
                 if (otpBtn) otpBtn.disabled = true;
                 if (otpError) otpError.textContent = '';
                 clearInterval(countdownTimer);
             }
 
+            let countdownTimer = null;
             function startCountdown(seconds) {
                 clearInterval(countdownTimer);
                 if (otpResendBtn) otpResendBtn.disabled = true;
+                
+                otpBoxes.forEach(b => b.disabled = false);
+
                 let remaining = seconds;
                 function tick() {
                     const m = Math.floor(remaining / 60);
                     const s = remaining % 60;
                     if (otpCountdown) otpCountdown.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+                    
                     if (remaining <= 0) {
                         clearInterval(countdownTimer);
                         if (otpResendBtn) otpResendBtn.disabled = false;
+                        
+                        if (otpBtn) otpBtn.disabled = true;
+                        otpBoxes.forEach(b => b.disabled = true);
+                        if (otpError) otpError.textContent = "Code expired. Please request a new one.";
                     }
                     remaining--;
                 }
@@ -1069,15 +1271,26 @@
             if (otpForm) {
                 otpForm.addEventListener('submit', async function (e) {
                     e.preventDefault();
-
-                    const code = getOtpValue(); // Function that joins the 6 boxes
-                    // Crucial: Use the window-level helper we defined
-                    const pending = typeof window.getPendingSignup === 'function' ? window.getPendingSignup() : null;
-
-                    if (!pending || !pending.email) {
-                        alert("Verification data missing. Please try signing up again.");
-                        hideOtpPanel();
-                        return;
+                    const code = getOtpValue(); 
+                    
+                    let targetEmail = null;
+                    if (window.isLogin2FA) {
+                        targetEmail = window.pending2FAEmail;
+                        if (!targetEmail) {
+                            hideOtpPanel();
+                            const errEl = document.getElementById('loginGeneralError');
+                            if (errEl) errEl.textContent = "Session lost. Please log in again.";
+                            return;
+                        }
+                    } else {
+                        const pending = typeof window.getPendingSignup === 'function' ? window.getPendingSignup() : null;
+                        if (!pending || !pending.email) {
+                            hideOtpPanel();
+                            const errEl = document.getElementById('signupGeneralError');
+                            if (errEl) errEl.textContent = "Verification data missing. Please try signing up again.";
+                            return;
+                        }
+                        targetEmail = pending.email;
                     }
 
                     showLoading('Verifying code...');
@@ -1088,61 +1301,80 @@
                             ? "http://127.0.0.1:5000"
                             : "https://group6-bizally.onrender.com";
 
-                        // 1. VERIFY OTP
-                        const verifyRes = await fetch(`${authBase}/api/auth/verify-otp`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ email: pending.email, otp: code })
-                        });
-
-                        const verifyResult = await verifyRes.json();
-
-                        if (verifyRes.ok) {
-                            // 2. SIGNUP (Now create the actual Postgres record)
-                            const signupRes = await fetch(`${authBase}/api/auth/signup`, {
+                        if (window.isLogin2FA) {
+                            const loginRes = await fetch(`${authBase}/api/auth/verify-2fa-login`, {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    firstName: pending.firstName,
-                                    lastName: pending.lastName,
-                                    email: pending.email,
-                                    password: pending.password
-                                })
+                                body: JSON.stringify({ email: targetEmail, otp: code })
+                            });
+                            
+                            const result = await loginRes.json();
+                            
+                            // 🌟 THIS IS WHAT WAS MISSING! INTERCEPT THE LOCKOUT 🌟
+                            if (!loginRes.ok && loginRes.status === 403 && result.remaining_seconds) {
+                                hideLoading();
+                                startAccurateCountdown(result.remaining_seconds, otpError, otpBoxes, otpBtn);
+                                if (otpResendBtn) otpResendBtn.disabled = true;
+                                return; // Stop execution!
+                            }
+
+                            if (loginRes.ok && result.status === "success") {
+                                localStorage.setItem("userData", JSON.stringify(result.user));
+                                const userType = (result.user.User_Type || result.user.user_type || "client").toLowerCase();
+                                window.location.replace(userType === "technician" ? "/technician/all-tickets.html" : "/admin/dashboard");
+                            } else {
+                                throw new Error(result.message || "Invalid 2FA code");
+                            }
+
+                        } else {
+                            const verifyRes = await fetch(`${authBase}/api/auth/verify-otp`, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ email: targetEmail, otp: code })
                             });
 
-                            if (signupRes.ok) {
-                                const signupResult = await signupRes.json();
-                                const user = signupResult.user;
+                            const verifyResult = await verifyRes.json();
 
-                                // Store session exactly like login does
-                                localStorage.setItem("userData", JSON.stringify(user));
-                                localStorage.setItem("authToken", "registered");
+                            if (verifyRes.ok) {
+                                const pending = window.getPendingSignup();
+                                const signupRes = await fetch(`${authBase}/api/auth/signup`, {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                        firstName: pending.firstName,
+                                        lastName: pending.lastName,
+                                        email: pending.email,
+                                        password: pending.password
+                                    })
+                                });
 
-                                hideLoading();
-                                window.clearPendingSignup();
-
-                                // All new signups are 'client' — go straight to user dashboard
-                                window.location.replace("/user/dashboard");
+                                if (signupRes.ok) {
+                                    const signupResult = await signupRes.json();
+                                    localStorage.setItem("userData", JSON.stringify(signupResult.user));
+                                    localStorage.setItem("authToken", "registered");
+                                    hideLoading();
+                                    window.clearPendingSignup();
+                                    window.location.replace("/user/dashboard");
+                                } else {
+                                    const errorData = await signupRes.json();
+                                    throw new Error(errorData.message || "Final registration failed");
+                                }
                             } else {
-                                const errorData = await signupRes.json();
-                                throw new Error(errorData.message || "Final registration failed");
+                                throw new Error(verifyResult.message || "Invalid or expired code");
                             }
-                        } else {
-                            throw new Error(verifyResult.message || "Invalid or expired code");
                         }
                     } catch (error) {
                         hideLoading();
-                        otpError.textContent = error.message;
-                        otpBtn.disabled = false;
+                        if (otpError) otpError.textContent = error.message;
                     }
                 });
             }
 
             if (otpResendBtn) {
                 otpResendBtn.addEventListener('click', async function () {
-                    const pending = typeof window.getPendingSignup === 'function'
-                        ? window.getPendingSignup() : null;
-                    if (!pending) return;
+                    let targetEmail = window.isLogin2FA ? window.pending2FAEmail : (typeof window.getPendingSignup === 'function' ? window.getPendingSignup()?.email : null);
+                    
+                    if (!targetEmail) return;
 
                     otpResendBtn.disabled = true;
                     if (otpError) otpError.textContent = '';
@@ -1153,24 +1385,33 @@
                             ? "http://127.0.0.1:5000"
                             : "https://group6-bizally.onrender.com";
 
-                        // CALL THE REAL BACKEND
                         const response = await fetch(`${authBase}/api/auth/resend-otp`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ email: pending.email })
+                            body: JSON.stringify({ email: targetEmail })
                         });
+
+                        const result = await response.json(); 
+
+                        // 🌟 THIS IS WHAT WAS MISSING! INTERCEPT THE LOCKOUT 🌟
+                        if (!response.ok && response.status === 403 && result.remaining_seconds) {
+                            hideLoading();
+                            startAccurateCountdown(result.remaining_seconds, otpError, otpBoxes, otpBtn);
+                            if (otpResendBtn) otpResendBtn.disabled = true;
+                            return; // Stop execution!
+                        }
 
                         if (response.ok) {
                             hideLoading();
                             resetOtp();
                             startCountdown(120);
                         } else {
-                            throw new Error("Failed to resend code");
+                            throw new Error(result.message || "Failed to resend code");
                         }
                     } catch (error) {
                         hideLoading();
                         otpResendBtn.disabled = false;
-                        alert(error.message);
+                        if (otpError) otpError.textContent = error.message;
                     }
                 });
             }
@@ -1179,9 +1420,6 @@
                 otpBackBtn.addEventListener('click', function (e) {
                     e.preventDefault();
                     hideOtpPanel();
-
-                    document.getElementById('tabSignupBtn').classList.add('active');
-                    document.getElementById('tabLoginBtn').classList.remove('active');
                 });
             }
 
@@ -1192,7 +1430,7 @@
     </script>
 
     <script src="/static/js/api.js?v=2"></script>
-    <script src="/static/js/login.js?v=2"></script>
+    <!-- <script src="/static/js/login.js?v=2"></script> -->
 </body>
 
 </html>

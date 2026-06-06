@@ -46,6 +46,17 @@ def create_contact_message():
         )
         contact_message_id = cursor.fetchone()[0]
         conn.commit()
+        
+        # 🌟 LOG IT: Record that a public contact message was received
+        from Backend.routes.utils import log_system_event
+        log_system_event(
+            user_identifier=email,  # We use their email since they might be a guest
+            category="External Communications",
+            action="Contact Form Submitted",
+            log_level="INFO",
+            description=f"Received a new contact message from {name} regarding '{subject}'."
+        )
+
         try:
             send_contact_notification({
                 "name": name,
@@ -56,6 +67,7 @@ def create_contact_message():
         except Exception as e:
             print(f"Contact Email Notification Error: {e}")
             return _json_error("Message saved, but email notification failed", 500)
+            
         return jsonify({
             "status": "success",
             "message": "Message sent successfully",

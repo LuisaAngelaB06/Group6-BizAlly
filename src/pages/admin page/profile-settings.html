@@ -169,7 +169,7 @@
                         </div>
 
                         <div class="profile-photo-section">
-                            <div class="profile-photo" id="profilePhoto">
+                            <div class="profile-photo" id="profilePhoto" onclick="document.getElementById('photoUpload').click()" style="cursor: pointer;" title="Click to upload photo">
                                 <div id="profileInitials">A</div>
                                 <img id="profileImage" style="display: none;" alt="Profile Photo">
                                 <div class="profile-photo-overlay">
@@ -258,6 +258,16 @@
                                 </div>
 
                             </div>
+                            
+                            <div class="form-actions" style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+                                <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                    <i class="fas fa-times"></i> <span data-translate="cancel">Cancel</span>
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> <span data-translate="save_changes">Save Changes</span>
+                                </button>
+                            </div>
+
                         </div>
                     </div>
 
@@ -343,16 +353,6 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Form Actions -->
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
-                            <i class="fas fa-times"></i> <span data-translate="cancel">Cancel</span>
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> <span data-translate="save_changes">Save Changes</span>
-                        </button>
                     </div>
                 </form>
             </div>

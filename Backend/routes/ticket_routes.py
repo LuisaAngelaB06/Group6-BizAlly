@@ -246,11 +246,10 @@ def create_ticket():
         except Exception as client_err:
             print(f"Submitting client notification generation failure: {client_err}")
 
-        # 🌟 TRIGGER 2: ADMIN BROADCAST ALERTS
+        # 🌟 TRIGGER 2: ADMIN BROADCAST ALERTS (Guaranteed Delivery)
         try:
             from Backend.routes.utils import send_allitrack_alert
             
-            # 🌟 FIXED: Wrapped "system_user" in double quotes to bypass the Postgres keyword trap!
             cursor.execute("""SELECT * FROM "system_user" WHERE LOWER(user_type) LIKE '%admin%'""")
             admin_rows = cursor.fetchall()
             
@@ -258,11 +257,12 @@ def create_ticket():
             
             for admin_row in admin_rows:
                 admin_user_id = admin_row.get("system_user_id") or admin_row.get("id") or admin_row.get("user_id")
+                
                 if admin_user_id:
+                    # 🌟 UNCONDITIONAL DELIVERY: All Admins receive this alert!
                     send_allitrack_alert(admin_user_id, 'New Ticket Filed', admin_msg, 'ticket-update', ticket_id, 'Open')
                     
         except Exception as admin_alert_err:
-            conn.rollback()
             print(f"System admin broadcast routing error: {admin_alert_err}")
 
         # 🌟 SYNC CATEGORIES: FIXED THE VARCHAR vs INTEGER MISMATCH
@@ -305,7 +305,8 @@ def create_ticket():
 
         # 🌟 2. Call the logger using the name we just found!
         log_system_event(
-            user_identifier=str(user_id),  # This MUST be the ID number (e.g., 72)
+            user_identifier=str(user_id),  
+            category="Ticket Management",  # 🌟 NEW
             action="Ticket Creation",
             log_level="INFO",
             description=f"Successfully created ticket #{ticket_id}"
@@ -346,10 +347,27 @@ def delete_ticket(ticket_id):
     try:
         cursor.execute("DELETE FROM ticket WHERE ticket_id = %s RETURNING ticket_id", (ticket_id,))
         deleted = cursor.fetchone()
-        conn.commit()
+        
         if not deleted:
             return _json_error("Ticket not found", 404)
+            
+        conn.commit()
+
+        # 🌟 LOG IT: Record the permanent deletion of a ticket
+        from flask import g
+        current_user = getattr(g, "current_user", None) or get_current_user()
+        admin_id = current_user.get("user_id") if current_user else "System"
+
+        log_system_event(
+            user_identifier=str(admin_id),
+            category="Ticket Management",
+            action="Ticket Deleted",
+            log_level="CRITICAL",
+            description=f"Administrator permanently deleted Ticket #{ticket_id} from the database."
+        )
+
         return jsonify({"status": "success", "message": "Ticket deleted successfully"}), 200
+        
     except Exception as e:
         conn.rollback()
         print(f"Delete Ticket Error: {e}")
@@ -431,12 +449,17 @@ def update_ticket(ticket_id):
         return _json_error("Database connection failed")
 
     try:
-        # 1. PRE-QUERY: Fetch existing fields to know if status/assignments changed
-        cursor.execute("SELECT user_id, concern_title, status_id, technician_id FROM ticket WHERE ticket_id = %s", (ticket_id,))
+        cursor.execute("SELECT user_id, concern_title, status_id, technician_id, priority, resolution_details FROM ticket WHERE ticket_id = %s", (ticket_id,))
         ticket_meta = cursor.fetchone()
         
         old_status_id = ticket_meta.get("status_id") if ticket_meta else None
         old_technician_id = ticket_meta.get("technician_id") if ticket_meta else None
+        old_priority = ticket_meta.get("priority") if ticket_meta else None
+        old_resolution = ticket_meta.get("resolution_details") if ticket_meta else None
+
+        # 🌟 NEW: The Admin Lockout!
+        if old_status_id == 4:
+            return _json_error("This ticket has been cancelled by the client and can no longer be modified.", 403)
 
         # 2. CORE UPDATE: Apply modifications based on user role
         if is_technician(current_user):
@@ -505,6 +528,71 @@ def update_ticket(ticket_id):
         # 🌟 ARCHITECTURE FIX: Commit the ticket FIRST before handling notifications!
         conn.commit()
 
+        # ==========================================
+        # 🌟 NEW: SMART AUDIT LOGGING ENGINE
+        # Compares old vs new data to log exact actions
+        # ==========================================
+        try:
+            from Backend.routes.utils import log_system_event
+            current_user_id = current_user.get("user_id") or "System"
+
+            # 1. Check for Status Changes
+            if status_id and str(status_id) != str(old_status_id):
+                status_text = STATUS_LABELS.get(status_id, str(status_id))
+                
+                action_name = "Ticket Status Changed"
+                if "resolved" in status_text.lower():
+                    action_name = "Ticket Resolved"
+                elif "closed" in status_text.lower():
+                    action_name = "Ticket Closed"
+                # 🌟 NEW: Added the Cancel trigger!
+                elif "cancel" in status_text.lower(): 
+                    action_name = "Cancel Ticket"
+                    
+                log_system_event(
+                    user_identifier=str(current_user_id), 
+                    category="Ticket Management",
+                    action=action_name,
+                    log_level="INFO",
+                    description=f"Ticket #{ticket_id} status updated to {status_text}."
+                )
+
+            # 2. Check for Priority Changes (Admins Only usually)
+            if priority and str(priority) != str(old_priority):
+                log_system_event(
+                    user_identifier=str(current_user_id),
+                    category="Ticket Management",
+                    action="Ticket Priority Updated",
+                    log_level="WARNING",
+                    description=f"Ticket #{ticket_id} priority changed to {priority}."
+                )
+
+            # 3. Check for Technician Assignments
+            if technician_id and str(technician_id) != str(old_technician_id):
+                action_name = "Ticket Reassigned" if old_technician_id else "Ticket Assigned"
+                log_system_event(
+                    user_identifier=str(current_user_id),
+                    category="Ticket Management",
+                    action=action_name,
+                    log_level="INFO",
+                    description=f"Ticket #{ticket_id} {action_name.lower()} to Technician ID {technician_id}."
+                )
+
+            # 4. Check for Resolution Details Updates
+            if resolution_details and str(resolution_details) != str(old_resolution):
+                log_system_event(
+                    user_identifier=str(current_user_id),
+                    category="Ticket Management",
+                    action="Ticket Resolution",
+                    log_level="INFO",
+                    description=f"Resolution details added/updated for Ticket #{ticket_id}."
+                )
+                
+        except Exception as log_err:
+            print(f"⚠️ Failed to process smart ticket logs: {log_err}")
+
+        # ==========================================
+
         # 4. NOTIFICATION ENGINE
         if ticket_meta:
             import re
@@ -544,7 +632,6 @@ def update_ticket(ticket_id):
 
                 # Case 3: Technician updates ticket -> Broadcast to Admins
                 if is_technician(current_user) and status_id != old_status_id:
-                    # 🌟 FIXED: Wrapped "system_user" in double quotes to bypass the Postgres keyword trap!
                     cursor.execute("""SELECT * FROM "system_user" WHERE LOWER(user_type) LIKE '%admin%'""")
                     admin_rows = cursor.fetchall()
                     
@@ -556,7 +643,6 @@ def update_ticket(ticket_id):
                         if admin_user_id:
                             send_allitrack_alert(admin_user_id, 'Technician Ticket Status Updated', admin_update_msg, 'ticket-update', ticket_id, status_text)
 
-            # 🌟 This is the block that went missing! It closes the "try" for Staff & Admin Routing
             except Exception as staff_err:
                 print(f"Staff routing error: {staff_err}")
 
@@ -847,3 +933,102 @@ def get_system_logs():
     except Exception as e:
         print(f"Error fetching logs: {e}")
         return jsonify({"error": "Failed to fetch system logs"}), 500
+
+# ==========================================
+# CLIENT: CANCEL TICKET
+# ==========================================
+@ticket_bp.route("/tickets/<int:ticket_id>/cancel", methods=["PATCH", "PUT"])
+def cancel_ticket(ticket_id):
+    data = request.get_json(silent=True) or {}
+    user_id = data.get("user_id")
+
+    if not user_id:
+        return _json_error("Unauthorized: Missing user ID", 401)
+
+    conn, cursor = _get_cursor()
+    if not conn:
+        return _json_error("Database connection failed")
+
+    try:
+        # 🌟 UPGRADED PRE-QUERY: Grab title and technician for the notifications!
+        cursor.execute("SELECT user_id, status_id, concern_title, technician_id FROM ticket WHERE ticket_id = %s", (ticket_id,))
+        ticket_meta = cursor.fetchone()
+
+        if not ticket_meta:
+            return _json_error("Ticket not found", 404)
+            
+        if str(ticket_meta["user_id"]) != str(user_id):
+            return _json_error("You do not have permission to cancel this ticket.", 403)
+            
+        current_status = ticket_meta["status_id"]
+        
+        if current_status == 4:
+            return _json_error("Ticket is already cancelled.", 400)
+            
+        if current_status != 1: 
+            return _json_error("This ticket is already being processed or resolved. It can no longer be cancelled.", 400)
+
+        # Execute Cancel
+        cursor.execute(
+            """
+            UPDATE ticket
+            SET status_id = 4,
+                last_updated = CURRENT_TIMESTAMP
+            WHERE ticket_id = %s
+            """,
+            (ticket_id,)
+        )
+        conn.commit()
+
+        # Audit Log
+        from Backend.routes.utils import log_system_event, send_allitrack_alert
+        log_system_event(
+            user_identifier=str(user_id), 
+            category="Ticket Management",
+            action="Cancel Ticket",
+            log_level="INFO",
+            description=f"Client cancelled their own ticket #{ticket_id}."
+        )
+
+        # ==========================================
+        # 🌟 NEW: NOTIFICATION ENGINE & WEBSOCKETS
+        # ==========================================
+        try:
+            import re
+            clean_title = re.sub(r'^\[.*?\]\s*', '', ticket_meta.get('concern_title', ''))
+
+            # 1. Alert all Admins
+            cursor.execute("""SELECT * FROM "system_user" WHERE LOWER(user_type) LIKE '%admin%'""")
+            admin_rows = cursor.fetchall()
+            admin_msg = f"Ticket #{ticket_id} (\"{clean_title}\") has been cancelled by the client."
+            for admin_row in admin_rows:
+                admin_id = admin_row.get("system_user_id") or admin_row.get("id") or admin_row.get("user_id")
+                if admin_id:
+                    send_allitrack_alert(admin_id, 'Ticket Cancelled by Client', admin_msg, 'ticket-update', ticket_id, 'Closed')
+
+            # 2. Alert Technician (if one was somehow assigned while it was still 'Open')
+            tech_id = ticket_meta.get("technician_id")
+            if tech_id:
+                cursor.execute('SELECT user_id FROM technician WHERE technician_id = %s', (tech_id,))
+                tech_row = cursor.fetchone()
+                if tech_row and tech_row.get("user_id"):
+                    tech_msg = f"Ticket #{ticket_id} (\"{clean_title}\") assigned to you was cancelled by the client."
+                    send_allitrack_alert(tech_row["user_id"], 'Assigned Ticket Cancelled', tech_msg, 'ticket-update', ticket_id, 'Closed')
+
+            # 3. Trigger Real-Time Frontend Update
+            from Backend.socketio_instance import socketio
+            socketio.emit("ticket_updated", {"ticket_id": ticket_id})
+
+        except Exception as notif_err:
+            print(f"Cancel notifications error: {notif_err}")
+        # ==========================================
+
+        return jsonify({"status": "success", "message": "Ticket successfully cancelled."}), 200
+
+    except Exception as e:
+        conn.rollback()
+        print(f"Cancel Ticket Error: {e}")
+        return _json_error("Failed to cancel ticket")
+    finally:
+        cursor.close()
+        conn.close()

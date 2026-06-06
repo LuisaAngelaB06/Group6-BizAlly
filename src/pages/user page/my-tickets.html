@@ -926,10 +926,18 @@
                                 <i class="fas fa-timeline"></i>
                                 <span>${escapeHTML(t("track_updates"))}</span>
                             </button>
-                            <button class="ticket-action-btn ticket-action-danger" type="button" data-action="cancel-ticket" data-ticket-id="${escapeHTML(ticketId)}">
-                                <i class="fas fa-ban"></i>
-                                <span>${escapeHTML(t("cancel_ticket"))}</span>
-                            </button>
+                            
+                            ${statusClass === 'closed' ? `
+                                <button class="ticket-action-btn" style="opacity: 0.5; cursor: not-allowed;" type="button" disabled>
+                                    <i class="fas fa-ban"></i>
+                                    <span>Cancelled</span>
+                                </button>
+                            ` : `
+                                <button class="ticket-action-btn ticket-action-danger" type="button" data-action="cancel-ticket" data-ticket-id="${escapeHTML(ticketId)}">
+                                    <i class="fas fa-ban"></i>
+                                    <span>${escapeHTML(t("cancel_ticket"))}</span>
+                                </button>
+                            `}
                         </div>
                     </div>`;
         container.appendChild(card);
@@ -1063,24 +1071,29 @@
       const ticket = findTicket(ticketId);
       if (!ticket || !(await confirmCancelTicket(ticketId))) return;
 
+      // 🌟 NEW: Grab the current user's ID securely from your existing helper function
+      const user = getCurrentUser();
+      const userId = user.user_id || user.User_ID || user.id || user.ID || user.client_id;
+
       const previousHtml = button.innerHTML;
       button.disabled = true;
       button.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Closing...</span>';
+      
       try {
-        const response = await fetch(`${API_BASE_URL}/api/tickets/${normalizeTicketId(ticketId)}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            Status_ID: 4,
-            Priority: ticket.Priority || "Medium",
-            Technician_ID: ticket.Technician_ID || null,
-            Resolution_Details: ticket.Resolution_Details || "",
-            Product_Category: ticket.Product_Category || null,
-            Product_Brand: ticket.Product_Brand || null,
-            Concern_Type: ticket.Concern_Type || null,
-          }),
+        const response = await fetch(`${API_BASE_URL}/api/tickets/${normalizeTicketId(ticketId)}/cancel`, {
+          method: "PATCH",
+          headers: { 
+              "Content-Type": "application/json" 
+          },
+          // 🌟 FIXED: Send the user's ID exactly how your create_ticket route expects it!
+          body: JSON.stringify({ user_id: userId })
         });
-        if (!response.ok) throw new Error(`Cancel failed: ${response.status}`);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Cancel failed: ${response.status}`);
+        }
+        
         showToast(t("ticket_cancelled"), "success");
         await loadTickets();
       } catch (error) {

@@ -577,6 +577,22 @@ def quickfix_feedback_export():
         fmt = (request.args.get('format') or 'csv').lower()
         rows = _quickfix_report_rows(cursor)
         filename = f"AlliTrack_QuickFixFeedback_{datetime.utcnow().strftime('%Y%m%d')}"
+
+        # 🌟 LOG THE DATA EXPORT
+        from flask import g
+        from Backend.routes.utils import log_system_event
+        from Backend.routes.rbac import get_current_user
+        current_user = getattr(g, "current_user", None) or get_current_user()
+        admin_id = current_user.get("user_id") if current_user else "System"
+
+        log_system_event(
+            user_identifier=str(admin_id),
+            category="Analytics & Reports",
+            action="Data Exported",
+            log_level="WARNING",
+            description=f"Administrator exported Quick Fix Feedback data as {fmt.upper()}."
+        )
+
         if fmt == 'xlsx':
             return _xlsx_response(rows, filename)
         if fmt == 'pdf':
@@ -1125,6 +1141,22 @@ def export_report(category):
     fmt = (request.args.get("format") or "csv").lower()
     rows = _rows_for_report(category)
     filename = f"AlliTrack_{category}_{datetime.utcnow().strftime('%Y%m%d')}"
+
+    # 🌟 LOG THE DATA EXPORT
+    from flask import g
+    from Backend.routes.utils import log_system_event
+    from Backend.routes.rbac import get_current_user
+    current_user = getattr(g, "current_user", None) or get_current_user()
+    admin_id = current_user.get("user_id") if current_user else "System"
+
+    log_system_event(
+        user_identifier=str(admin_id),
+        category="Analytics & Reports",
+        action="Data Exported",
+        log_level="WARNING",
+        description=f"Administrator exported the {category.replace('-', ' ').title()} report as {fmt.upper()}."
+    )
+
     if fmt == "xlsx":
         return _xlsx_response(rows, filename)
     if fmt == "pdf":

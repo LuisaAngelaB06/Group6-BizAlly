@@ -1,56 +1,96 @@
 import os
 import threading
+import requests  # 🌟 CRITICAL FIX: Needed for IP lookups
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 from Backend.database import get_connection
 from Backend.extensions import db
 from sqlalchemy import text
-from flask import request
-
+from flask import request, has_request_context  # 🌟 CRITICAL FIX: Needed to prevent crashes
 from dotenv import load_dotenv
+
 # Go up 2 levels (utils.py -> routes -> Backend Folder)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) 
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
-def send_allitrack_alert(user_id, title, message, n_type, ticket_id, status_label="Awaiting Review"):
-    """
-    Unified alert system: Logs an in-app notification and dispatches 
-    transactional emails via Brevo USING BACKGROUND THREADS to eliminate UI lag.
-    """
+# ==========================================
+# 🌟 ADVANCED TRACKERS TRANSPLANTED FROM AUTH
+# ==========================================
+def _client_ip():
+    forwarded = request.headers.get("X-Forwarded-For", "")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.headers.get("X-Real-IP") or request.remote_addr or "Unknown IP"
+
+def _device_from_user_agent(user_agent):
+    ua = (user_agent or "").lower()
+    browser = "Browser"
+    if "edg/" in ua: browser = "Microsoft Edge"
+    elif "chrome/" in ua and "chromium" not in ua: browser = "Chrome"
+    elif "firefox/" in ua: browser = "Firefox"
+    elif "safari/" in ua and "chrome/" not in ua: browser = "Safari"
+
+    os_name = "Unknown Device"
+    if "windows" in ua: os_name = "Windows"
+    elif "mac os" in ua or "macintosh" in ua: os_name = "macOS"
+    elif "android" in ua: os_name = "Android"
+    elif "iphone" in ua or "ipad" in ua: os_name = "iOS"
+    elif "linux" in ua: os_name = "Linux"
+    return f"{browser} on {os_name}"
+
+def _location_from_ip(ip_address):
+    if not ip_address or ip_address in {"127.0.0.1", "localhost", "::1", "Unknown IP"}:
+        return "Localhost"
+    if ip_address.startswith(("10.", "192.168.", "172.")):
+        return "Local Network"
     
-    # 🌟 NEW: We wrap your exact logic inside a nested function
+    try:
+        r = requests.get(f"https://ipinfo.io/{ip_address}/json", timeout=3)
+        data = r.json()
+        if "city" in data and "country" in data:
+            parts = [p for p in [data.get("city"), data.get("region"), data.get("country")] if p]
+            if parts: return ", ".join(parts)
+    except Exception:
+        pass
+        
+    try:
+        response = requests.get(f"http://ip-api.com/json/{ip_address}?fields=status,country,regionName,city", timeout=3)
+        data = response.json()
+        if data.get("status") == "success":
+            parts = [data.get("city"), data.get("regionName"), data.get("country")]
+            location = ", ".join([part for part in parts if part])
+            return location or "Unknown Location"
+    except Exception:
+        pass
+        
+    return "Unknown Location"
+
+# ==========================================
+# 🌟 EMAIL ALERT SYSTEM
+# ==========================================
+def send_allitrack_alert(user_id, title, message, n_type, ticket_id, status_label="Awaiting Review"):
     def _background_task():
-        # 🔍 SAFE CONSOLE DEBUGGER
         api_key = os.environ.get('BREVO_API_KEY')
-        if api_key:
-            pass # Suppressed the print statement to keep your terminal clean
+        if not api_key:
+            return
 
         conn = get_connection()
         if not conn:
-            print("Utils Error: Database connection failed")
             return
 
         cursor = conn.cursor()
         try:
-            # 1. Look up user details AND their role dynamically
-            cursor.execute(
-                'SELECT email, first_name, last_name, user_type FROM "system_user" WHERE user_id = %s',
-                (user_id,)
-            )
+            cursor.execute('SELECT email, first_name, last_name, user_type FROM "system_user" WHERE user_id = %s', (user_id,))
             user_row = cursor.fetchone()
             if not user_row:
-                print(f"Utils Error: User ID {user_id} not found. Aborting alert.")
                 return
 
             user_email = user_row[0] if isinstance(user_row, tuple) else user_row.get("email")
             f_name = user_row[1] if isinstance(user_row, tuple) else user_row.get("first_name") or ""
             l_name = user_row[2] if isinstance(user_row, tuple) else user_row.get("last_name") or ""
             user_full_name = f"{f_name} {l_name}".strip() or "AlliTrack User"
-            
-            # Extract role to conditionally format the email
             user_role = str(user_row[3] if isinstance(user_row, tuple) else (user_row.get("user_type") or "client")).lower()
 
-            # 2. Save Notification to the PostgreSQL Dashboard Table
             cursor.execute(
                 """
                 INSERT INTO notifications (user_id, title, message, type, ticket_id, unread, created_at)
@@ -59,24 +99,19 @@ def send_allitrack_alert(user_id, title, message, n_type, ticket_id, status_labe
                 (user_id, title, message, n_type, ticket_id)
             )
             conn.commit()
-            print(f"In-app notification logged successfully for Ticket #{ticket_id}")
-
-        except Exception as db_err:
-            print(f"Database Notification Logging Failure: {db_err}")
+        except Exception:
             conn.rollback()
             return
         finally:
             cursor.close()
             conn.close()
 
-        # 3. Process Labels for the Brevo Email Header Configuration
         display_title = title
         if "Ticket Status Updated" in title:
             display_title = "Ticket Status Updated"
         elif "Ticket Submission Confirmed" in title:
             display_title = "Ticket Submission Confirmed"
 
-        # 🌟 DYNAMIC EMAIL ROUTING
         client_processing_footer = ""
         dashboard_link = "https://group6-bizally.onrender.com/user/notifications.html"
 
@@ -87,7 +122,6 @@ def send_allitrack_alert(user_id, title, message, n_type, ticket_id, status_labe
         elif user_role == 'technician':
             dashboard_link = "https://group6-bizally.onrender.com/technician/all-tickets.html" 
 
-        # 4. Trigger Brevo Email Dispatch Engine
         configuration = sib_api_v3_sdk.Configuration()
         configuration.api_key['api-key'] = api_key 
         api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
@@ -133,67 +167,63 @@ def send_allitrack_alert(user_id, title, message, n_type, ticket_id, status_labe
 
         try:
             api_instance.send_transac_email(send_smtp_email)
-            print(f"Brevo email alert successfully sent to {user_email}")
         except ApiException as e:
             print(f"Brevo delivery engine failed to send message: {e}")
+            log_system_event(
+                user_identifier=str(user_id),
+                category="System",
+                action="Email Delivery Failed",
+                log_level="ERROR",
+                description=f"Brevo failed to send '{display_title}' to {user_email}.",
+                status="Failed"
+            )
 
-    # 🌟 NEW: Spin up a thread to run the function in the background
     thread = threading.Thread(target=_background_task)
     thread.start()
 
-def log_system_event(user_identifier, action, log_level="INFO", description=None, status="Completed"):
+# ==========================================
+# 🌟 UPGRADED SYSTEM LOGGER
+# ==========================================
+def log_system_event(user_identifier, action, category="System", log_level="INFO", description=None, status="Completed"):
     try:
-        ip_address = None
+        ip_address = "Unknown"
         browser = "Unknown"
         device = "Unknown"
-        location = "Localhost" # 🌟 Set a default so it never says "-"
+        location = "Localhost"
 
-        if request:
-            ip_address = request.remote_addr
+        # Safe execution: Only pull IP data if triggered by a web request!
+        if has_request_context():
+            ip_address = _client_ip()
             raw_ua = request.headers.get('User-Agent', '')
+            
+            full_device_string = _device_from_user_agent(raw_ua)
+            if " on " in full_device_string:
+                browser, device = full_device_string.split(" on ", 1)
+            else:
+                browser = full_device_string
+                device = "Unknown"
 
-            # Mini-Parser: Browser
-            if "Edg" in raw_ua: browser = "Microsoft Edge"
-            elif "Chrome" in raw_ua: browser = "Google Chrome"
-            elif "Firefox" in raw_ua: browser = "Mozilla Firefox"
-            elif "Safari" in raw_ua and "Chrome" not in raw_ua: browser = "Apple Safari"
-            else: browser = request.user_agent.browser or "Unknown"
+            location = _location_from_ip(ip_address)
 
-            # Mini-Parser: Device
-            if "Windows" in raw_ua: device = "Windows PC"
-            elif "Macintosh" in raw_ua or "Mac OS" in raw_ua: device = "Mac Desktop"
-            elif "Linux" in raw_ua: device = "Linux PC"
-            elif "Android" in raw_ua: device = "Android Mobile"
-            elif "iPhone" in raw_ua or "iPad" in raw_ua: device = "iOS Mobile"
-            else: device = request.user_agent.platform or "Unknown"
+        conn = get_connection()
+        if not conn:
+            return
 
-            # Mini-Parser: Location
-            country = request.headers.get('CF-IPCountry') or request.headers.get('X-Vercel-IP-Country')
-            city = request.headers.get('X-Vercel-IP-City')
-
-            if city and country: location = f"{city}, {country}"
-            elif country: location = country
-
-        # 🌟 FIXED: Added "location" to the columns and values!
-        query = text("""
+        cursor = conn.cursor()
+        cursor.execute(
+            """
             INSERT INTO system_logs 
-            (log_level, user_identifier, action, description, status, ip_address, browser, device, location) 
-            VALUES 
-            (:log_level, :user_identifier, :action, :description, :status, :ip_address, :browser, :device, :location)
-        """)
-
-        db.session.execute(query, {
-            "log_level": log_level,
-            "user_identifier": str(user_identifier),
-            "action": action,
-            "description": description,
-            "status": status,
-            "ip_address": ip_address,
-            "browser": browser,
-            "device": device,
-            "location": location  # 🌟 Passed the variable here!
-        })
-        db.session.commit()
+            (log_level, category, user_identifier, action, description, status, ip_address, browser, device, location) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """,
+            (log_level, category, str(user_identifier), action, description, status, ip_address, browser, device, location)
+        )
+        conn.commit()
         
     except Exception as e:
         print(f"⚠️ Failed to write system log: {e}")
+    finally:
+        if 'cursor' in locals() and cursor:
+            cursor.close()
+        if 'conn' in locals() and conn:
+            conn.close()

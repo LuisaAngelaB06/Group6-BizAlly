@@ -330,3 +330,84 @@
     setTimeout(relabelAssignedTickets, 2);
   });
 })();
+
+// ==========================================
+// 🕒 GLOBAL IDLE SESSION MONITOR (PRODUCTION)
+// ==========================================
+(function() {
+    let sessionTimeoutMinutes = 60; // Default to 60 minutes if DB fails
+    let lastActivityTime = Date.now();
+    let activityInterval;
+
+    async function loadTimeoutSetting() {
+        try {
+            const authBase = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                ? "http://127.0.0.1:5000"
+                : "https://group6-bizally.onrender.com";
+                
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            const userId = userData.user_id || userData.User_ID || userData.id;
+
+            if (!userId) return;
+
+            // Fetch this specific user's settings from the DB
+            const response = await fetch(`${authBase}/api/auth/admin/settings?user_id=${userId}`);
+            const data = await response.json();
+
+            if (data.status === 'success' && data.settings.session_timeout) {
+                sessionTimeoutMinutes = parseInt(data.settings.session_timeout);
+            }
+        } catch(e) {
+            console.warn("Using default 60 minutes.");
+        }
+        
+        startActivityMonitor();
+    }
+
+    function updateActivity() {
+        const currentTime = Date.now();
+        const elapsedMinutes = (currentTime - lastActivityTime) / 1000 / 60;
+
+        // Sleep/Wake Fix: Kick them out if time is already up!
+        if (elapsedMinutes >= sessionTimeoutMinutes) {
+            executeAutoLogout();
+            return;
+        }
+        lastActivityTime = currentTime;
+    }
+
+    function startActivityMonitor() {
+        const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+        events.forEach(evt => {
+            document.addEventListener(evt, updateActivity, { passive: true });
+        });
+
+        // ✅ PRODUCTION MODE: Check the clock every 10 seconds (10000ms)
+        activityInterval = setInterval(() => {
+            const currentTime = Date.now();
+            const elapsedMinutes = (currentTime - lastActivityTime) / 1000 / 60;
+
+            // ✅ PRODUCTION MODE: Enforce the personal DB setting
+            if (elapsedMinutes >= sessionTimeoutMinutes) {
+                clearInterval(activityInterval);
+                executeAutoLogout();
+            }
+        }, 10000); 
+    }
+
+    function executeAutoLogout() {
+        localStorage.removeItem("userData");
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("Technician_ID");
+        
+        // Leave the message for the landing page popup
+        localStorage.setItem("show_timeout_modal", "true");
+        
+        // Force redirect to the root landing page
+        window.location.replace("/"); 
+    }
+
+    if (localStorage.getItem("userData")) {
+        loadTimeoutSetting();
+    }
+})();

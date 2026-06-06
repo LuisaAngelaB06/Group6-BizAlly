@@ -166,27 +166,9 @@
                             <div class="preference-item">
                                 <div class="preference-content">
                                     <h3 data-translate="enable_two_factor">Enable Two-Factor Authentication</h3>
-                                    <p data-translate="two_factor_description">Require 2FA for all admin accounts</p>
+                                    <p data-translate="two_factor_description">Require 2FA for your admin account</p>
                                 </div>
-                                <label class="switch"><input checked="" id="twoFactorAuth" type="checkbox" /><span
-                                        class="slider"></span></label>
-                            </div>
-                            <div class="preference-item">
-                                <div class="preference-content">
-                                    <h3 data-translate="enable_email_notifications">Enable Email Notifications</h3>
-                                    <p data-translate="email_notifications_description">Send email notifications for
-                                        system events</p>
-                                </div>
-                                <label class="switch"><input checked="" id="emailNotifications" type="checkbox" /><span
-                                        class="slider"></span></label>
-                            </div>
-                            <div class="preference-item">
-                                <div class="preference-content">
-                                    <h3 data-translate="enable_auto_backup">Enable Automatic Backups</h3>
-                                    <p data-translate="auto_backup_description">Automatically backup system data daily
-                                    </p>
-                                </div>
-                                <label class="switch"><input checked="" id="autoBackup" type="checkbox" /><span
+                                <label class="switch"><input id="twoFactorAuth" type="checkbox" /><span
                                         class="slider"></span></label>
                             </div>
                         </div>
@@ -250,13 +232,6 @@
                                     onclick="showModal('resetDatabaseModal')" type="button">Reset Database</button>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn btn-secondary" onclick="requestAdminPassword('discardSettings')"
-                            type="button"><i class="fas fa-times"></i> <span data-translate="discard_changes">Discard
-                                Changes</span></button>
-                        <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> <span
-                                data-translate="save_settings">Save Settings</span></button>
                     </div>
                 </form>
             </div>
@@ -322,6 +297,66 @@
         </div>
     </div>
 
+    <div id="maintenanceConfirmModal" class="modal">
+        <div class="announcement-modal" style="max-width: 400px; text-align: center; padding: 10px; position: relative;">
+            
+            <button class="delete-modal-close" onclick="closeModal('maintenanceConfirmModal')" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="modal-header" style="border-bottom: none; justify-content: center; padding-bottom: 0; padding-top: 20px;">
+                <div style="background: rgba(255, 71, 87, 0.1); color: #ff4757; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+            </div>
+            
+            <div class="modal-body" style="padding: 20px;">
+                <h3 id="maintenanceModalTitle" style="margin-top: 10px; margin-bottom: 10px; font-size: 1.4rem; color: var(--text-main);">Enable Maintenance Mode?</h3>
+                <p id="maintenanceModalText" style="color: var(--text-2); margin-bottom: 25px; line-height: 1.5;">Are you sure you want to lock out all non-admin users? This action will prevent clients and technicians from logging in.</p>
+                
+                <div style="display: flex; gap: 12px; justify-content: center;">
+                    <button class="delete-modal-btn cancel-btn" onclick="closeModal('maintenanceConfirmModal')" style="flex: 1; padding: 12px; font-weight: 600;">
+                        Cancel
+                    </button>
+                    <button id="confirmMaintenanceBtn" class="delete-modal-btn confirm-btn" style="flex: 1; padding: 12px; font-weight: 600;">
+                        Yes, Enable
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <div id="tfaConfirmModal" class="modal">
+        <div class="announcement-modal" style="max-width: 400px; text-align: center; padding: 10px; position: relative;">
+            
+            <button class="delete-modal-close" onclick="closeModal('tfaConfirmModal')" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="modal-header" style="border-bottom: none; justify-content: center; padding-bottom: 0; padding-top: 20px;">
+                <div style="background: rgba(37, 99, 235, 0.1); color: #2563eb; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto;">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+            </div>
+            
+            <div class="modal-body" style="padding: 20px;">
+                <h3 id="tfaModalTitle" style="margin-top: 10px; margin-bottom: 10px; font-size: 1.4rem; color: var(--text-main);">Modify Security Settings?</h3>
+                <p id="tfaModalText" style="color: var(--text-2); margin-bottom: 25px; line-height: 1.5;">Are you sure you want to change this setting?</p>
+                
+                <div style="display: flex; gap: 12px; justify-content: center;">
+                    <button class="delete-modal-btn cancel-btn" onclick="closeModal('tfaConfirmModal')" style="flex: 1; padding: 12px; font-weight: 600; display: flex; justify-content: center; align-items: center;">
+                        Cancel
+                    </button>
+                    <button id="confirmTfaBtn" class="btn btn-primary" style="flex: 1; padding: 12px; font-weight: 600; display: flex; justify-content: center; align-items: center;">
+                        Yes, Confirm
+                    </button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
     <div class="modal" id="adminPasswordModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -344,7 +379,6 @@
             </div>
         </div>
     </div>
-
 
     <script>
         function setupMenuToggle() {
@@ -377,14 +411,6 @@
     </script>
 
     <script>
-        const ADMIN_API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')
-            ? 'http://127.0.0.1:5000'
-            : '';
-        const ADMIN_PASSWORD_VERIFY_ENDPOINT = `${ADMIN_API_BASE_URL}/api/auth/admin/verify-password`;
-        const ADMIN_REAUTH_STORAGE_KEY = 'adminVerifiedUntil';
-        const ADMIN_REAUTH_WINDOW_MS = 5 * 60 * 1000;
-        let pendingAdminAction = null;
-
         const translations = {
             en: {
                 mobile_restricted: 'Desktop only',
@@ -414,7 +440,7 @@
                 enable_maintenance_mode: 'Enable Maintenance Mode',
                 maintenance_mode_description: 'Temporarily disable system access for non-admin users',
                 enable_two_factor: 'Enable Two-Factor Authentication',
-                two_factor_description: 'Require 2FA for all admin accounts',
+                two_factor_description: 'Require 2FA for your admin account',
                 enable_email_notifications: 'Enable Email Notifications',
                 email_notifications_description: 'Send email notifications for system events',
                 enable_auto_backup: 'Enable Automatic Backups',
@@ -467,7 +493,7 @@
                 enable_maintenance_mode: 'I-enable ang Maintenance Mode',
                 maintenance_mode_description: 'Pansamantalang i-disable ang access ng non-admin users',
                 enable_two_factor: 'I-enable ang Two-Factor Authentication',
-                two_factor_description: 'Kailangan ang 2FA para sa lahat ng admin accounts',
+                two_factor_description: 'Kailangan ang 2FA para sa iyong admin account', // 🌟 FIXED
                 enable_email_notifications: 'I-enable ang Email Notifications',
                 email_notifications_description: 'Magpadala ng email notifications para sa system events',
                 enable_auto_backup: 'I-enable ang Automatic Backups',
@@ -494,29 +520,229 @@
             }
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
+        // ==========================================
+        // 🌟 GLOBAL VARIABLES & API SETUP
+        // ==========================================
+        let isMaintenanceActive = false;
+        let intendedMaintenanceState = false;
+        let isTfaActive = false;
+        let intendedTfaState = false;
+
+        const authBase = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+            ? "http://127.0.0.1:5000"
+            : "https://group6-bizally.onrender.com";
+
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        const currentUserId = userData.user_id || userData.User_ID || userData.id || userData.ID;
+
+        // Admin Re-auth Constants (From your original code!)
+        const ADMIN_REAUTH_STORAGE_KEY = 'admin_reauth_valid_until';
+        const ADMIN_REAUTH_WINDOW_MS = 15 * 60 * 1000;
+        const ADMIN_PASSWORD_VERIFY_ENDPOINT = `${authBase}/api/auth/verify-password`; 
+        let pendingAdminAction = null;
+
+
+        // ==========================================
+        // 🌟 INITIALIZATION (With Anti-Flash Loading State)
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', async () => {
             createToast();
             keepSearchBarEmpty();
             initializePreferences();
-            loadSystemSettings();
-            function autoSaveToggles() {
-                const toggleIds = ['maintenanceMode', 'twoFactorAuth', 'emailNotifications', 'autoBackup'];
-
-                toggleIds.forEach(id => {
-                    document.getElementById(id).addEventListener('change', function () {
-                        const savedSettings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
-                        savedSettings[id] = this.checked;
-                        localStorage.setItem('systemSettings', JSON.stringify(savedSettings));
-                        showToast(`Setting saved.`, 'success');
-                    });
-                });
-            }
-            autoSaveToggles();
-            initForm();
             setupAccountDropdown();
             initModals();
+
+            // 1. 🌟 HIDE THE SETTINGS IMMEDIATELY TO PREVENT FLASHING!
+            const settingsForm = document.querySelector('.settings-container');
+            if (settingsForm) {
+                settingsForm.style.opacity = '0';
+                settingsForm.style.transition = 'opacity 0.2s ease-in-out';
+                settingsForm.style.pointerEvents = 'none';
+            }
+
+            if (currentUserId && currentUserId !== "undefined") {
+                try {
+                    const response = await fetch(`${authBase}/api/auth/admin/settings?user_id=${currentUserId}&t=${Date.now()}`, {
+                        method: "GET",
+                        credentials: "include",
+                        cache: "no-store"
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        const settings = result.settings || {};
+
+                        const maintenanceEl = document.getElementById('maintenanceMode');
+                        if (maintenanceEl) {
+                            isMaintenanceActive = String(settings.maintenance_mode).toLowerCase() === "true";
+                            maintenanceEl.checked = isMaintenanceActive;
+                        }
+
+                        const tfaEl = document.getElementById('twoFactorAuth');
+                        if (tfaEl) {
+                            isTfaActive = String(settings.two_factor_auth).toLowerCase() === "true";
+                            tfaEl.checked = isTfaActive;
+                        }
+
+                        // 🌟 STEP 3: Load the Session Timeout from the database!
+                        const timeoutEl = document.getElementById('sessionTimeout');
+                        if (timeoutEl) {
+                            // If the DB has a value, use it. Otherwise default to "60"
+                            timeoutEl.value = settings.session_timeout || "60";
+                        }
+                    }
+                } catch (error) {
+                    console.error("Failed to load settings from server:", error);
+                } finally {
+                    // 2. 🌟 FADE THE SETTINGS BACK IN ONCE TOGGLES ARE PERFECT!
+                    if (settingsForm) {
+                        settingsForm.style.opacity = '1';
+                        settingsForm.style.pointerEvents = 'auto';
+                    }
+                }
+            } else {
+                // If no user ID, just show the form anyway
+                if (settingsForm) {
+                    settingsForm.style.opacity = '1';
+                    settingsForm.style.pointerEvents = 'auto';
+                }
+            }
         });
 
+        
+
+
+        // ==========================================
+        // 🛠️ MAINTENANCE MODE LOGIC (Real-time Save)
+        // ==========================================
+        const maintenanceModeBtn = document.getElementById('maintenanceMode');
+        if (maintenanceModeBtn) {
+            maintenanceModeBtn.addEventListener('click', function(e) {
+                e.preventDefault(); 
+                intendedMaintenanceState = !isMaintenanceActive; 
+                
+                const title = document.getElementById('maintenanceModalTitle');
+                const text = document.getElementById('maintenanceModalText');
+                const btn = document.getElementById('confirmMaintenanceBtn');
+                
+                if (intendedMaintenanceState) {
+                    title.textContent = "Enable Maintenance Mode?";
+                    text.textContent = "Are you sure you want to lock out all non-admin users?";
+                    btn.textContent = "Yes, Enable";
+                    btn.className = "delete-modal-btn confirm-btn"; 
+                } else {
+                    title.textContent = "Disable Maintenance Mode?";
+                    text.textContent = "Are you sure you want to open the system back up?";
+                    btn.textContent = "Yes, Disable";
+                    btn.className = "btn btn-primary"; 
+                }
+                
+                showModal('maintenanceConfirmModal');
+            });
+        }
+
+        const confirmMaintenanceBtn = document.getElementById('confirmMaintenanceBtn');
+        if (confirmMaintenanceBtn) {
+            confirmMaintenanceBtn.addEventListener('click', async function() {
+                const btn = this;
+                const originalText = btn.textContent;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                try {
+                    const response = await fetch(`${authBase}/api/auth/admin/settings/maintenance`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify({ maintenance_mode: String(intendedMaintenanceState) })
+                    });
+
+                    if (!response.ok) throw new Error("Failed to update.");
+
+                    isMaintenanceActive = intendedMaintenanceState;
+                    document.getElementById('maintenanceMode').checked = isMaintenanceActive;
+                    
+                    closeModal('maintenanceConfirmModal');
+                    showToast(`Maintenance mode is now ${isMaintenanceActive ? 'ON' : 'OFF'}`, 'success');
+                } catch (error) {
+                    console.error(error);
+                    showToast('Error updating maintenance mode.', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
+            });
+        }
+
+
+        // ==========================================
+        // 🛠️ 2FA MODE LOGIC (Real-time Save)
+        // ==========================================
+        const tfaToggleBtn = document.getElementById('twoFactorAuth');
+        if (tfaToggleBtn) {
+            tfaToggleBtn.addEventListener('click', function(e) {
+                e.preventDefault(); 
+                intendedTfaState = !isTfaActive; 
+                
+                const title = document.getElementById('tfaModalTitle');
+                const text = document.getElementById('tfaModalText');
+                const btn = document.getElementById('confirmTfaBtn');
+                
+                if (intendedTfaState) {
+                    title.textContent = "Enable Two-Factor Authentication?";
+                    text.textContent = "This will require your Admin account to verify login with an emailed 6-digit code.";
+                    btn.textContent = "Yes, Enable 2FA";
+                    btn.className = "btn btn-primary"; 
+                } else {
+                    title.textContent = "Disable Two-Factor Authentication?";
+                    text.textContent = "Warning: Disabling 2FA makes your account vulnerable to breaches. Are you sure?";
+                    btn.textContent = "Yes, Disable 2FA";
+                    btn.className = "delete-modal-btn confirm-btn"; 
+                }
+                
+                showModal('tfaConfirmModal');
+            });
+        }
+
+        const confirmTfaBtn = document.getElementById('confirmTfaBtn');
+        if (confirmTfaBtn) {
+            confirmTfaBtn.addEventListener('click', async function() {
+                const btn = this;
+                btn.disabled = true;
+                
+                showToast('Updating security settings...', 'info');
+
+                try {
+                    const response = await fetch(`${authBase}/api/auth/admin/settings/2fa`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify({ 
+                            two_factor_auth: String(intendedTfaState),
+                            user_id: currentUserId 
+                        })
+                    });
+
+                    if (response.ok) {
+                        isTfaActive = intendedTfaState;
+                        document.getElementById('twoFactorAuth').checked = isTfaActive;
+                        closeModal('tfaConfirmModal');
+                        showToast(isTfaActive ? '2FA Enabled Successfully.' : '2FA Disabled.', 'success');
+                    } else {
+                        throw new Error("Failed to save");
+                    }
+                } catch (error) {
+                    console.error(error);
+                    showToast('Failed to update 2FA setting.', 'error');
+                } finally {
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        // ==========================================
+        // 🛡️ ORIGINAL UI & SECURITY FUNCTIONS (PRESERVED)
+        // ==========================================
         function createToast() {
             if (document.getElementById('toast')) return;
             const toast = document.createElement('div');
@@ -533,6 +759,7 @@
             setTimeout(() => { searchInput.value = ''; }, 100);
             setTimeout(() => { searchInput.value = ''; }, 500);
         }
+
         function initializePreferences() {
             if (!window.preferencesManager) {
                 applyTranslations('en');
@@ -542,10 +769,9 @@
             applyTranslations(window.preferencesManager.getCurrentLanguage() || 'en');
         }
 
-
-
         function applyTranslations(language) {
-            const dict = translations[language] || translations.en;
+            const dict = typeof translations !== 'undefined' ? (translations[language] || translations.en) : null;
+            if (!dict) return;
 
             document.querySelectorAll('[data-translate]').forEach((element) => {
                 const key = element.getAttribute('data-translate');
@@ -557,26 +783,9 @@
                 if (dict[key]) element.placeholder = dict[key];
             });
 
-            document.title = dict.system_settings_page_title;
+            if (dict.system_settings_page_title) document.title = dict.system_settings_page_title;
         }
 
-        function loadSystemSettings() {
-            const savedSettings = JSON.parse(localStorage.getItem('systemSettings') || '{}');
-            document.getElementById('maintenanceMode').checked = savedSettings.maintenanceMode || false;
-            document.getElementById('twoFactorAuth').checked = savedSettings.twoFactorAuth !== false;
-            document.getElementById('emailNotifications').checked = savedSettings.emailNotifications !== false;
-            document.getElementById('autoBackup').checked = savedSettings.autoBackup !== false;
-            document.getElementById('sessionTimeout').value = savedSettings.sessionTimeout || '60';
-            document.getElementById('passwordPolicy').value = savedSettings.passwordPolicy || 'medium';
-            document.getElementById('maxLoginAttempts').value = savedSettings.maxLoginAttempts || '5';
-        }
-
-        function initForm() {
-            document.getElementById('systemSettingsForm').addEventListener('submit', (event) => {
-                event.preventDefault();
-                requestAdminPassword('saveSettings');
-            });
-        }
         function setupAccountDropdown() {
             const accountBtn = document.getElementById('accountBtn');
             const accountMenu = document.getElementById('accountMenu');
@@ -589,7 +798,6 @@
             newBtn.addEventListener('click', (event) => {
                 event.preventDefault();
                 event.stopPropagation();
-
                 const isOpen = accountMenu.classList.toggle('show');
                 newBtn.setAttribute('aria-expanded', String(isOpen));
             });
@@ -658,13 +866,11 @@
 
             if (isAdminVerificationFresh()) {
                 pendingAdminAction = null;
-                if (action === 'saveSettings') saveSystemSettings();
-                if (action === 'discardSettings') resetSettings();
+                if (action === 'discardSettings') resetSettings(); // Just in case you still need this for local states
                 return;
             }
 
             const messages = {
-                saveSettings: 'Type your account password before saving settings.',
                 discardSettings: 'Type your account password before discarding changes.'
             };
 
@@ -686,7 +892,6 @@
             const action = pendingAdminAction;
             closeAdminPasswordModal();
 
-            if (action === 'saveSettings') saveSystemSettings();
             if (action === 'discardSettings') resetSettings();
         }
 
@@ -747,51 +952,55 @@
             }
         }
 
-        function saveSystemSettings() {
-            const settings = {
-                maintenanceMode: document.getElementById('maintenanceMode').checked,
-                twoFactorAuth: document.getElementById('twoFactorAuth').checked,
-                emailNotifications: document.getElementById('emailNotifications').checked,
-                autoBackup: document.getElementById('autoBackup').checked,
-                sessionTimeout: document.getElementById('sessionTimeout').value,
-                passwordPolicy: document.getElementById('passwordPolicy').value,
-                maxLoginAttempts: document.getElementById('maxLoginAttempts').value,
-                lastUpdated: new Date().toISOString()
-            };
+        async function clearSystemLogs() {
+            showToast('Clearing logs...', 'info');
+            try {
+                const response = await fetch(`${authBase}/api/auth/admin/settings/clear-logs`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message);
 
-            localStorage.setItem('systemSettings', JSON.stringify(settings));
-            showToast('System settings saved successfully.', 'success');
+                closeModal('clearLogsModal');
+                showToast('All system logs cleared successfully.', 'success');
+                
+            } catch (error) {
+                console.error(error);
+                showToast('Failed to clear logs.', 'error');
+            }
         }
 
-        function resetSettings() {
-            document.getElementById('systemSettingsForm').reset();
-            document.getElementById('maintenanceMode').checked = false;
-            document.getElementById('twoFactorAuth').checked = true;
-            document.getElementById('emailNotifications').checked = true;
-            document.getElementById('autoBackup').checked = true;
-            document.getElementById('sessionTimeout').value = '60';
-            document.getElementById('passwordPolicy').value = 'medium';
-            document.getElementById('maxLoginAttempts').value = '5';
-            showToast('Settings reset to defaults.', 'success');
-        }
+        async function resetDatabase() {
+            showToast('Resetting database...', 'info');
+            try {
+                const response = await fetch(`${authBase}/api/auth/admin/settings/reset-database`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message);
 
-        function clearSystemLogs() {
-            localStorage.removeItem('systemLogs');
-            localStorage.removeItem('auditTrail');
-            localStorage.removeItem('errorLogs');
-            closeModal('clearLogsModal');
-            showToast('All system logs cleared successfully.', 'success');
-        }
+                // Clear the browser storage (keeping only essential preferences)
+                const keysToKeep = ['preferredTheme', 'preferredLanguage', 'userData'];
+                Object.keys(localStorage).forEach((key) => {
+                    if (!keysToKeep.includes(key)) localStorage.removeItem(key);
+                });
 
-        function resetDatabase() {
-            const keysToKeep = ['preferredTheme', 'preferredLanguage'];
-            Object.keys(localStorage).forEach((key) => {
-                if (!keysToKeep.includes(key)) localStorage.removeItem(key);
-            });
-
-            closeModal('resetDatabaseModal');
-            showToast('Database reset to factory defaults.', 'success');
-            setTimeout(() => window.location.reload(), 1000);
+                closeModal('resetDatabaseModal');
+                showToast('Database reset to factory defaults.', 'success');
+                
+                // Refresh the page after 1.5 seconds so they see the fresh state
+                setTimeout(() => window.location.reload(), 1500);
+                
+            } catch (error) {
+                console.error(error);
+                showToast('Failed to reset database.', 'error');
+            }
         }
 
         function showToast(message, type = 'success') {
@@ -801,6 +1010,46 @@
             toast.textContent = message;
             toast.className = `toast ${type} show`;
             setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // ==========================================
+        // 🌟 SAVE SESSION TIMEOUT (WITH TOAST)
+        // ==========================================
+        const timeoutDropdown = document.getElementById('sessionTimeout');
+        
+        if (timeoutDropdown) {
+            timeoutDropdown.addEventListener('change', async function() {
+                const newValue = this.value;
+                
+                // Show a quick info toast while saving
+                showToast('Saving timeout...', 'info'); 
+
+                try {
+                    const authBase = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+                        ? "http://127.0.0.1:5000"
+                        : "https://group6-bizally.onrender.com";
+
+                    const response = await fetch(`${authBase}/api/auth/admin/settings/timeout`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ session_timeout: newValue })
+                    });
+
+                    const result = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(result.message || "Failed to save setting");
+                    }
+                    
+                    // 🌟 FIRE THE SUCCESS TOAST
+                    showToast(`Session timeout saved: ${newValue} minutes.`, 'success');
+
+                } catch (error) {
+                    console.error("Timeout Error:", error);
+                    // 🌟 FIRE THE ERROR TOAST
+                    showToast('Failed to save session timeout.', 'error');
+                }
+            });
         }
     </script>
 </body>

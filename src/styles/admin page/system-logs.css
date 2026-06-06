@@ -1293,3 +1293,18 @@ body {
         width: 100%;
     }
 }
+
+.log-level.critical {
+    background-color: rgba(239, 68, 68, 0.1); /* Light Red background */
+    color: #ef4444; /* Bright Red text */
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+.log-level.critical i::before {
+    content: "\f071"; /* FontAwesome triangle warning icon */
+}
+
+.badge-critical {
+    background-color: rgba(239, 68, 68, 0.1); /* Light Red background */
+    color: #ef4444; /* Bright Red text */
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}

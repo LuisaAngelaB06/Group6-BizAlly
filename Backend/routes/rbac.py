@@ -71,12 +71,36 @@ def role_required(*roles):
         @wraps(view_func)
         def wrapper(*args, **kwargs):
             user = get_current_user()
+            
+            # 🌟 SCENARIO 1: They aren't even logged in!
             if not user:
+                from Backend.routes.utils import log_system_event
+                # Try to grab the ID they attempted with, or default to their IP address
+                attempted_id = request.headers.get("X-User-ID") or request.remote_addr or "Unknown"
+                
+                log_system_event(
+                    user_identifier=str(attempted_id),
+                    category="Security",
+                    action="Unauthorized Access Attempt",
+                    log_level="WARNING",
+                    description=f"Blocked unauthenticated request to restricted route: {request.path}"
+                )
                 return jsonify({"status": "error", "message": "Authentication required"}), 401
 
+            # 🌟 SCENARIO 2: They are logged in, but don't have the right role!
             if user["user_type"] not in allowed_roles:
+                from Backend.routes.utils import log_system_event
+                
+                log_system_event(
+                    user_identifier=str(user["user_id"]),
+                    category="Security",
+                    action="Forbidden Access Attempt",
+                    log_level="WARNING",
+                    description=f"User (Role: {user['user_type']}) attempted to breach restricted route: {request.path}"
+                )
                 return jsonify({"status": "error", "message": "Forbidden"}), 403
 
+            # If they pass both checks, let them through normally (No log needed)
             return view_func(*args, **kwargs)
 
         return wrapper

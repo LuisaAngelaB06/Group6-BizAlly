@@ -548,8 +548,12 @@
 
             const safeLevel = String(log.log_level || '').toLowerCase();
             let levelBadge = `<span class="badge badge-info"><i class="fas fa-info-circle"></i> Info</span>`;
+            
             if (safeLevel === 'warning') levelBadge = '<span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> Warning</span>';
             if (safeLevel === 'error') levelBadge = '<span class="badge badge-error"><i class="fas fa-times-circle"></i> Error</span>';
+            
+            // 🌟 ADD THIS NEW LINE:
+            if (safeLevel === 'critical') levelBadge = '<span class="badge badge-critical"><i class="fas fa-exclamation-circle"></i> Critical</span>';
 
             // Format date nicely
             const dateObj = new Date(log.created_at);
@@ -600,8 +604,8 @@
                             ${log.log_level}
                         </span>
                     </div>
-                    
-                   <div class="detail-item">
+                
+                    <div class="detail-item">
                         <span class="detail-label">User ID:</span>
                         <span class="detail-value">${log.user_identifier}</span>
                     </div>
@@ -610,7 +614,13 @@
                         <span class="detail-label">User Name:</span>
                         <span class="detail-value">${log.full_name}</span>
                     </div>
-                </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Category:</span>
+                        <span class="detail-value" style="font-weight: 600; color: var(--accent-color, #4facfe);">
+                            ${log.category || 'System'}
+                        </span>
+                    </div>
             </div>
             
             <div class="detail-section">

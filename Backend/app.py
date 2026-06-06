@@ -9,9 +9,12 @@ from Backend.socketio_instance import socketio
 from Backend.routes.auth_routes import init_oauth
 from Backend.routes.auth_routes import auth_bp
 from Backend.routes.routing import routing_bp
+from Backend.routes.system_routes import system_bp
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key-change-this")
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # 🌟 REPLACE THE OLD CORS(app) WITH THIS SPECIFIC CONFIGURATION
 CORS(app, resources={r"/api/*": {
@@ -34,6 +37,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 app.register_blueprint(announcement_bp, url_prefix="/api")
 app.register_blueprint(routing_bp, url_prefix="/api")  
+app.register_blueprint(system_bp, url_prefix="/api")
 init_oauth(app)
 socketio.init_app(app)
 register_routes(app)

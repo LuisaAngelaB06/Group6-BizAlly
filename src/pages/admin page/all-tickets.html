@@ -1250,12 +1250,18 @@
                         Technician_ID: newAssignedTo || null,
                         Resolution_Details: newResolution
                     };
+                    
                 const response = await fetch(`${API_BASE_URL}/api/tickets/${t.id.replace('TKT-', '')}`, {
                     method: 'PUT',
                     headers: getAdminAuthHeaders({ 'Content-Type': 'application/json' }),
                     body: JSON.stringify(payload)
                 });
-                if (!response.ok) throw new Error(`Save failed with status ${response.status}`);
+                
+                // 🌟 FIXED: Read the JSON error message sent from your Python Bouncer!
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({})); 
+                    throw new Error(errorData.message || errorData.error || `Save failed with status ${response.status}`);
+                }
 
                 t.status = newStatus;
                 t.resolution = newResolution;
@@ -1271,9 +1277,12 @@
                 closeEditModal();
                 loadTickets();
                 showToast(getDict().ticket_saved || 'Ticket saved successfully', 'success');
+                
             } catch (err) {
                 console.error('Error saving ticket:', err);
-                showToast(getDict().error_saving || 'Error saving ticket', 'error');
+                
+                // 🌟 FIXED: Display the exact error message in the Toast!
+                showToast(err.message || getDict().error_saving || 'Error saving ticket', 'error');
             }
         }
 

@@ -20,6 +20,8 @@ from Backend.routes.utils import log_system_event
 from sib_api_v3_sdk.rest import ApiException
 from datetime import datetime, timedelta
 from Backend.routes.rbac import role_required
+from Backend.routes.rbac import get_current_user, is_admin, is_technician, role_required
+
 
 
 
@@ -66,45 +68,60 @@ def _location_from_ip(ip_address):
     if not ip_address or ip_address in {"127.0.0.1", "localhost", "::1", "Unknown IP"}:
         return "Localhost"
 
-    # Private/local network ranges cannot be geolocated.
-    if (
-        ip_address.startswith("10.") or
-        ip_address.startswith("192.168.") or
-        ip_address.startswith("172.16.") or
-        ip_address.startswith("172.17.") or
-        ip_address.startswith("172.18.") or
-        ip_address.startswith("172.19.") or
-        ip_address.startswith("172.20.") or
-        ip_address.startswith("172.21.") or
-        ip_address.startswith("172.22.") or
-        ip_address.startswith("172.23.") or
-        ip_address.startswith("172.24.") or
-        ip_address.startswith("172.25.") or
-        ip_address.startswith("172.26.") or
-        ip_address.startswith("172.27.") or
-        ip_address.startswith("172.28.") or
-        ip_address.startswith("172.29.") or
-        ip_address.startswith("172.30.") or
-        ip_address.startswith("172.31.")
-    ):
+    # Skip local networks
+    if ip_address.startswith(("10.", "192.168.", "172.")):
         return "Local Network"
 
+    # 🌟 FIXED: Use IPInfo as Primary for accurate City/Region tracking
     try:
-        response = requests.get(
-            f"http://ip-api.com/json/{ip_address}?fields=status,country,regionName,city",
-            timeout=3,
-        )
-        data = response.json()
+        r = requests.get(f"https://ipinfo.io/{ip_address}/json", timeout=3)
+        data = r.json()
+        if "city" in data and "country" in data:
+            parts = [p for p in [data.get("city"), data.get("region"), data.get("country")] if p]
+            if parts:
+                return ", ".join(parts)
+    except Exception:
+        pass
 
+    # Fallback to old API if primary fails
+    try:
+        response = requests.get(f"http://ip-api.com/json/{ip_address}?fields=status,country,regionName,city", timeout=3)
+        data = response.json()
         if data.get("status") == "success":
             parts = [data.get("city"), data.get("regionName"), data.get("country")]
             location = ", ".join([part for part in parts if part])
             return location or "Unknown Location"
-
-    except Exception as geo_error:
-        print(f"IP geolocation failed: {geo_error}")
+    except Exception:
+        pass
 
     return "Unknown Location"
+
+
+def _send_lockout_email(email, name, location):
+    """Silently alert the user that their account was locked due to brute force."""
+    try:
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key['api-key'] = os.getenv("BREVO_API_KEY")
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            sender={"name": "AlliTrack Security", "email": "noreply.allitrack@gmail.com"},
+            to=[{"email": email, "name": name}],
+            subject="Security Alert: Account Temporarily Locked",
+            html_content=f"""
+                <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee;">
+                    <h2 style="color: #ef4444; margin-top: 0;">Security Alert</h2>
+                    <p>Hello {name},</p>
+                    <p>A failed login attempt just locked your AlliTrack account.</p>
+                    <p><strong>Approximate Location:</strong> {location}</p>
+                    <p>If this was you, please wait 15 minutes to try again.</p>
+                    <p>If this was not you, someone is trying to guess your password. We recommend changing your password once you regain access.</p>
+                </div>
+            """
+        )
+        api_instance.send_transac_email(send_smtp_email)
+    except Exception as e:
+        print(f"Lockout Email Error: {e}")
 
 
 def _record_login_attempt(cursor, user_id=None, email=None, status="success"):
@@ -233,7 +250,10 @@ auth_bp = Blueprint("auth", __name__)
 oauth = OAuth()
 
 # ==========================================
-# 1. LOGIN (FINAL MERGED)
+# 1. LOGIN (FINAL MERGED + SOFT LOCK + SECONDS)
+# ==========================================
+# ==========================================
+# 1. LOGIN (FINAL MERGED + SOFT LOCK + SECONDS)
 # ==========================================
 @auth_bp.route("/login", methods=["POST"])
 def login():
@@ -252,77 +272,155 @@ def login():
         cursor.execute(query, (email,))
         user = cursor.fetchone()
 
-        if user and check_password_hash(user["password_hash"], password):
-            full_name = f"{user['first_name']} {user['last_name'] or ''}".strip()
+        if user:
+            # 🌟 1. CHECK LOCKOUT FIRST (Calculates Exact Seconds)
+            cursor.execute('SELECT EXTRACT(EPOCH FROM (locked_until - NOW())) AS remaining_seconds FROM "system_user" WHERE user_id = %s AND locked_until > NOW()', (user["user_id"],))
+            lock_data = cursor.fetchone()
+            if lock_data and lock_data["remaining_seconds"] is not None and lock_data["remaining_seconds"] > 0:
+                return jsonify({
+                    "status": "error", 
+                    "message": "Account locked.", 
+                    "remaining_seconds": int(lock_data["remaining_seconds"])
+                }), 403
 
-            safe_user = {
-                "user_id": user["user_id"],
-                "Username": user["username"],
-                "Name": full_name,
-                "Email": user["email"],
-                "User_Type": user["user_type"],
-                "is_profile_complete": user.get("is_profile_complete", False),
-                "profile_pic_url": user.get("profile_pic_url"),
-                "Technician_ID": None
-            }
+            # 🌟 2. PASSWORD CHECK
+            if check_password_hash(user["password_hash"], password):
+                
+                # --- MAINTENANCE BOUNCER ---
+                user_role = (user["user_type"] or "client").lower()
+                if "admin" not in user_role:
+                    try:
+                        cursor.execute("SELECT setting_value FROM system_settings WHERE setting_key = 'maintenance_mode'")
+                        maintenance_setting = cursor.fetchone()
+                        if maintenance_setting and maintenance_setting["setting_value"] == "true":
+                            return jsonify({"status": "error", "message": "The system is currently undergoing scheduled maintenance. Please try again later."}), 503 
+                    except Exception:
+                        pass 
 
-            # Technician lookup
-            if user["user_type"] in ["admin", "technician"]:
-                tech_query = "SELECT Technician_ID FROM technician WHERE user_id = %s"
-                cursor.execute(tech_query, (user["user_id"],))
-                tech = cursor.fetchone()
-                if tech:
-                    safe_user["Technician_ID"] = tech["technician_id"]
+                # --- 2FA ENFORCEMENT ---
+                if user_role == "admin":
+                    try:
+                        u_id = user["user_id"]
+                        cursor.execute("SELECT setting_value FROM system_settings WHERE setting_key = %s", (f"2fa_user_{u_id}",))
+                        tfa_setting = cursor.fetchone()
+                        is_tfa_enabled = True if (tfa_setting and tfa_setting["setting_value"] == "true") else False
+                    except Exception:
+                        is_tfa_enabled = False 
+                    
+                    if is_tfa_enabled:
+                        otp = str(random.randint(100000, 999999))
+                        cursor.execute("DELETE FROM otp_verifications WHERE email = %s", (email,))
+                        cursor.execute("INSERT INTO otp_verifications (email, otp_code, expires_at) VALUES (%s, %s, NOW() + INTERVAL '2 minutes')", (email, otp))
+                        conn.commit()
+                        
+                        try:
+                            configuration = sib_api_v3_sdk.Configuration()
+                            configuration.api_key['api-key'] = os.getenv("BREVO_API_KEY")
+                            api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+                            
+                            send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+                                sender={"name": "AlliTrack Security", "email": "noreply.allitrack@gmail.com"},
+                                to=[{"email": email}],
+                                subject="AlliTrack Admin 2FA Code",
+                                html_content=f"""
+                                    <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee;">
+                                        <h2>Admin Authentication</h2>
+                                        <p>Your 2FA login code for AlliTrack is:</p>
+                                        <h1 style="color: #4f46e5;">{otp}</h1>
+                                        <p>This code expires in 2 minutes.</p>
+                                    </div>
+                                """
+                            )
+                            api_instance.send_transac_email(send_smtp_email)
+                        except Exception as e:
+                            print(f"2FA Email Error: {e}")
+                            
+                        return jsonify({"status": "2fa_required", "email": email}), 200
 
-            _record_login_attempt(cursor, user_id=user["user_id"], email=user["email"], status="success")
-            cursor.execute(
-                'UPDATE "system_user" SET last_login = CURRENT_TIMESTAMP WHERE user_id = %s',
-                (user["user_id"],),
-            )
-            conn.commit()
+                # 🌟 SUCCESSFUL LOGIN: CLEAR STRIKES
+                cursor.execute('UPDATE "system_user" SET failed_attempts = 0, locked_until = NULL WHERE user_id = %s', (user["user_id"],))
 
-            # 🌟 NEW: Admin Console Audit Log (Success)
-            log_system_event(
-                user_identifier=str(user["user_id"]),
-                action="User Login",
-                log_level="INFO",
-                description="Successfully authenticated and logged into the system."
-            )
+                # --- SAFE USER CREATION ---
+                full_name = f"{user['first_name']} {user['last_name'] or ''}".strip()
+                safe_user = {
+                    "user_id": user["user_id"],
+                    "Username": user["username"],
+                    "Name": full_name,
+                    "Email": user["email"],
+                    "User_Type": user["user_type"],
+                    "is_profile_complete": user.get("is_profile_complete", False),
+                    "profile_pic_url": user.get("profile_pic_url"),
+                    "Technician_ID": None
+                }
 
-            return jsonify({"status": "success", "user": safe_user}), 200
+                if user["user_type"] in ["admin", "technician"]:
+                    cursor.execute("SELECT Technician_ID FROM technician WHERE user_id = %s", (user["user_id"],))
+                    tech = cursor.fetchone()
+                    if tech:
+                        safe_user["Technician_ID"] = tech["technician_id"]
 
+                _record_login_attempt(cursor, user_id=user["user_id"], email=user["email"], status="success")
+                cursor.execute('UPDATE "system_user" SET last_login = CURRENT_TIMESTAMP WHERE user_id = %s', (user["user_id"],))
+                conn.commit()
+
+                log_system_event(
+                    user_identifier=str(user["user_id"]), 
+                    category="Authentication", 
+                    action="User Login", 
+                    log_level="INFO", 
+                    description="Successfully authenticated and logged into the system."
+                )
+                return jsonify({"status": "success", "user": safe_user}), 200
+                
+            else:
+                # 🌟 3. WRONG PASSWORD (4TH STRIKE TRIGGER)
+                cursor.execute('UPDATE "system_user" SET failed_attempts = COALESCE(failed_attempts, 0) + 1 WHERE user_id = %s RETURNING failed_attempts', (user["user_id"],))
+                attempts = cursor.fetchone()["failed_attempts"]
+                
+                if attempts >= 4:
+                    # SIMPLIFIED: Just do the lock, no complex RETURNING math needed
+                    cursor.execute('UPDATE "system_user" SET failed_attempts = 0, locked_until = NOW() + INTERVAL \'15 minutes\' WHERE user_id = %s', (user["user_id"],))
+                    conn.commit()
+                    
+                    ip_address = _client_ip()
+                    location = _location_from_ip(ip_address)
+                    _send_lockout_email(user["email"], user.get("first_name", "User"), location)
+                    
+                    log_system_event(
+                        user_identifier=str(user["user_id"]), 
+                        category="Security", 
+                        action="Account Locked", 
+                        log_level="CRITICAL", 
+                        description=f"Account locked for 15 minutes due to 4 failed password attempts."
+                    )
+                    
+                    # HARDCODED 900 SECONDS = 100% RELIABILITY
+                    return jsonify({
+                        "status": "error", 
+                        "message": "Account locked.", 
+                        "remaining_seconds": 900 
+                    }), 403
+
+        # (If user doesn't exist or under 4 strikes)
         _record_login_attempt(cursor, email=email, status="failed")
         conn.commit()
 
-        # 🌟 NEW: Admin Console Audit Log (Failed)
         log_system_event(
-            user_identifier=email or "Unknown Email",
-            action="Failed Login",
-            log_level="WARNING",
-            description="Attempted login with invalid credentials.",
+            user_identifier=email or "Unknown", 
+            category="Authentication",
+            action="Failed Login", 
+            log_level="WARNING", 
+            description="Attempted login with invalid credentials.", 
             status="Failed"
         )
-
         return jsonify({"status": "error", "message": "Invalid email or password"}), 401
 
     except Exception as e:
         print(f"Login error: {e}")
-        
-        # 🌟 NEW: Admin Console Audit Log (System Error)
-        log_system_event(
-            user_identifier=email or "System",
-            action="Login System Error",
-            log_level="ERROR",
-            description=str(e),
-            status="Failed"
-        )
-        
         return jsonify({"status": "error", "message": "Database error"}), 500
-
     finally:
         cursor.close()
         conn.close()
-
 
 # ==========================================
 # LOGIN HISTORY
@@ -411,6 +509,15 @@ def signup():
         )
         new_user = cursor.fetchone()
         conn.commit()
+
+        # 🌟 NEW: Audit Log for Standard Registration
+        log_system_event(
+            user_identifier=str(new_user["user_id"]),
+            category="User Management",
+            action="User Registered",
+            log_level="INFO",
+            description=f"New client account registered for {email}."
+        )
 
         full_name = f"{new_user['first_name']} {new_user['last_name'] or ''}".strip()
 
@@ -579,6 +686,17 @@ def change_password():
             (hashed, user_id)
         )
         conn.commit()
+        
+        # 🌟 LOG IT
+        from Backend.routes.utils import log_system_event
+        log_system_event(
+            user_identifier=str(user_id),
+            category="User Management",
+            action="Password Changed",
+            log_level="INFO",
+            description="User successfully changed their password."
+        )
+        
         return jsonify({"status": "success", "message": "Password updated successfully"}), 200
 
     except Exception as e:
@@ -653,6 +771,20 @@ def admin_delete_users():
         for uid in user_ids:
             cursor.execute('DELETE FROM "system_user" WHERE user_id = %s', (uid,))
         conn.commit()
+
+        # 🌟 LOG IT: Record the permanent deletion of accounts
+        current_user = getattr(g, "current_user", None) or get_current_user()
+        admin_id = current_user.get("user_id") if current_user else "System"
+        from Backend.routes.utils import log_system_event
+
+        for uid in user_ids:
+            log_system_event(
+                user_identifier=str(admin_id),
+                category="User Management",
+                action="Account Deleted",
+                log_level="CRITICAL",
+                description=f"Administrator permanently deleted user account ID: {uid}."
+            )
 
         return jsonify({"status": "success", "message": "Users deleted"}), 200
 
@@ -756,6 +888,18 @@ def admin_update_user():
                 technician_id = cursor.fetchone()["technician_id"]
 
         conn.commit()
+        
+        # 🌟 LOG IT
+        current_user = getattr(g, "current_user", None) or get_current_user()
+        admin_id = current_user.get("user_id") if current_user else "System"
+        from Backend.routes.utils import log_system_event
+        log_system_event(
+            user_identifier=str(admin_id),
+            category="User Management",
+            action="Staff Updated",
+            log_level="WARNING",
+            description=f"Administrator updated profile/status for User ID {target_user_id}."
+        )
 
         return jsonify({
             "status": "success",
@@ -845,6 +989,15 @@ def google_callback():
                 )
                 user = cursor.fetchone()
                 conn.commit()
+
+                # 🌟 NEW: Audit Log for Google Registration
+                log_system_event(
+                    user_identifier=str(user["user_id"]),
+                    category="User Management",
+                    action="User Registered",
+                    log_level="INFO",
+                    description=f"New account created via Google OAuth for {email}."
+                )
 
             full_name = f"{user['first_name']} {user['last_name'] or ''}".strip()
 
@@ -1098,7 +1251,7 @@ def send_otp():
         return jsonify({"status": "error", "message": "Email is required"}), 400
 
     otp = str(random.randint(100000, 999999))
-    expiry = datetime.now() + timedelta(minutes=10)
+    expiry = datetime.now() + timedelta(minutes=2)
 
     conn = get_connection()
     if not conn:
@@ -1112,8 +1265,9 @@ def send_otp():
              return jsonify({"status": "error", "message": "Email already exists"}), 400
 
         # 2. Save OTP to PostgreSQL
-        query = "INSERT INTO otp_verifications (email, otp_code, expires_at) VALUES (%s, %s, %s)"
-        cursor.execute(query, (email, otp, expiry))
+        # 🌟 FIXED: Let PostgreSQL do the time math!
+        query = "INSERT INTO otp_verifications (email, otp_code, expires_at) VALUES (%s, %s, NOW() + INTERVAL '2 minutes')"
+        cursor.execute(query, (email, otp))
         conn.commit()
 
         # 3. BREVO CONFIGURATION
@@ -1132,7 +1286,7 @@ def send_otp():
                     <h2>Verify your account</h2>
                     <p>Use the following code to complete your signup for AlliTrack:</p>
                     <h1 style="color: #4f46e5;">{otp}</h1>
-                    <p>This code expires in 10 minutes.</p>
+                    <p>This code expires in 2 minutes.</p> 
                 </div>
             """
         )
@@ -1196,7 +1350,7 @@ def verify_otp():
 
 
 # ==========================================
-# 12. RESEND OTP
+# 12. RESEND OTP (WITH SECONDS & LOCKOUT)
 # ==========================================
 @auth_bp.route("/resend-otp", methods=["POST"])
 def resend_otp():
@@ -1207,25 +1361,30 @@ def resend_otp():
         return jsonify({"status": "error", "message": "Email is required"}), 400
 
     otp = str(random.randint(100000, 999999))
-    expiry = datetime.now() + timedelta(minutes=10)
-
+    
     conn = get_connection()
     if not conn:
         return jsonify({"status": "error", "message": "Database connection failed"}), 500
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor) 
     try:
+        # 🌟 1. CHECK LOCKOUT FIRST 
+        cursor.execute('SELECT EXTRACT(EPOCH FROM (locked_until - NOW())) AS remaining_seconds FROM "system_user" WHERE LOWER(email) = LOWER(%s) AND locked_until > NOW()', (email,))
+        lock_data = cursor.fetchone()
+        if lock_data and lock_data["remaining_seconds"] > 0:
+            return jsonify({
+                "status": "error", 
+                "message": "Account locked.", 
+                "remaining_seconds": int(lock_data["remaining_seconds"])
+            }), 403
+
         # Delete any old OTPs for this email first
         cursor.execute("DELETE FROM otp_verifications WHERE email = %s", (email,))
 
         # Insert fresh OTP
-        cursor.execute(
-            "INSERT INTO otp_verifications (email, otp_code, expires_at) VALUES (%s, %s, %s)",
-            (email, otp, expiry)
-        )
+        cursor.execute("INSERT INTO otp_verifications (email, otp_code, expires_at) VALUES (%s, %s, NOW() + INTERVAL '2 minutes')", (email, otp))
         conn.commit()
 
-        # Brevo — same config as send_otp
         configuration = sib_api_v3_sdk.Configuration()
         configuration.api_key['api-key'] = os.getenv("BREVO_API_KEY")
         api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
@@ -1239,7 +1398,7 @@ def resend_otp():
                     <h2>New verification code</h2>
                     <p>Here's your new code for AlliTrack:</p>
                     <h1 style="color: #4f46e5;">{otp}</h1>
-                    <p>This code expires in 10 minutes.</p>
+                    <p>This code expires in 2 minutes.</p>
                 </div>
             """
         )
@@ -1318,6 +1477,15 @@ def admin_create_user():
         )
         conn.commit()
 
+        # 🌟 NEW: Audit Log for Admin Adding Staff
+        log_system_event(
+            user_identifier=str(new_user["user_id"]), 
+            category="User Management",
+            action="Add Staff",
+            log_level="INFO",
+            description=f"Created a new {user_type} account for {email}."
+        )
+
         return jsonify({
             "status": "success",
             "message": f"Staff created. Temporary password was sent to {email}.",
@@ -1337,6 +1505,468 @@ def admin_create_user():
         print(f"Create staff error: {e}")
         return jsonify({"status": "error", "message": "Database error"}), 500
 
+    finally:
+        cursor.close()
+        conn.close()
+
+# ==========================================
+# 14. SYSTEM SETTINGS (MAINTENANCE)
+# ==========================================
+@auth_bp.route("/admin/settings", methods=["GET"])
+@role_required("admin")
+def get_settings():
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        # Auto-create the table and insert default value if it doesn't exist
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS system_settings (
+                setting_key VARCHAR(50) PRIMARY KEY,
+                setting_value VARCHAR(255) NOT NULL,
+                last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+        cursor.execute("""
+            INSERT INTO system_settings (setting_key, setting_value) 
+            VALUES ('maintenance_mode', 'false') 
+            ON CONFLICT (setting_key) DO NOTHING;
+        """)
+
+        cursor.execute("""
+            INSERT INTO system_settings (setting_key, setting_value)
+            VALUES ('two_factor_auth', 'true')
+            ON CONFLICT (setting_key) DO NOTHING;
+        """)
+        
+        cursor.execute("SELECT setting_key, setting_value FROM system_settings")
+        settings = {row[0]: row[1] for row in cursor.fetchall()}
+
+        user_id = request.args.get("user_id")
+
+        if user_id:
+            user_key = f"2fa_user_{user_id}"
+
+            if user_key in settings:
+                settings["two_factor_auth"] = settings[user_key]
+            else:
+                settings["two_factor_auth"] = "false"
+
+        return jsonify({
+            "status": "success",
+            "settings": settings
+        }), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@auth_bp.route("/admin/settings/maintenance", methods=["POST"])
+@role_required("admin")
+def toggle_maintenance():
+    data = request.get_json() or {}
+    is_active = str(data.get("maintenance_mode", "false")).lower()
+    
+    current_user = getattr(g, "current_user", None) or get_current_user()
+    user_id = current_user.get("user_id") if current_user else "System"
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute(
+            """
+            UPDATE system_settings 
+            SET setting_value = %s, last_updated = CURRENT_TIMESTAMP 
+            WHERE setting_key = 'maintenance_mode'
+            """,
+            (is_active,)
+        )
+        conn.commit()
+
+        # 🌟 THE LOGS: Dynamic leveling based on the action
+        if is_active == "true":
+            log_system_event(
+                user_identifier=str(user_id),
+                category="System Settings",
+                action="Maintenance Mode Enabled",
+                log_level="CRITICAL",
+                description="Administrator activated system-wide Maintenance Mode."
+            )
+        else:
+            log_system_event(
+                user_identifier=str(user_id),
+                category="System Settings",
+                action="Maintenance Mode Disabled",
+                log_level="INFO",
+                description="Administrator deactivated Maintenance Mode."
+            )
+
+        return jsonify({"status": "success", "message": f"Maintenance mode set to {is_active}"}), 200
+
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# ==========================================
+# 🌟 VERIFY 2FA LOGIN (WITH SECONDS & LOCKOUT)
+# ==========================================
+@auth_bp.route("/verify-2fa-login", methods=["POST"])
+def verify_2fa_login():
+    data = request.json
+    email = data.get("email")
+    otp_code = data.get("otp")
+
+    if not email or not otp_code:
+        return jsonify({"status": "error", "message": "Email and OTP are required"}), 400
+
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        cursor.execute('SELECT * FROM "system_user" WHERE LOWER(Email) = LOWER(%s)', (email,))
+        user = cursor.fetchone()
+        
+        if not user:
+            return jsonify({"status": "error", "message": "User not found"}), 404
+
+        # 🌟 1. CHECK LOCKOUT FIRST 
+        cursor.execute('SELECT EXTRACT(EPOCH FROM (locked_until - NOW())) AS remaining_seconds FROM "system_user" WHERE user_id = %s AND locked_until > NOW()', (user["user_id"],))
+        lock_data = cursor.fetchone()
+        if lock_data and lock_data["remaining_seconds"] > 0:
+            return jsonify({
+                "status": "error", 
+                "message": "Account locked.",
+                "remaining_seconds": int(lock_data["remaining_seconds"])
+            }), 403
+
+        # 2. VERIFY THE OTP
+        cursor.execute("SELECT * FROM otp_verifications WHERE email = %s AND otp_code = %s AND expires_at > NOW()", (email, otp_code))
+        
+        if not cursor.fetchone():
+            # 🌟 3. WRONG OTP (4TH STRIKE TRIGGER)
+            cursor.execute('UPDATE "system_user" SET failed_attempts = COALESCE(failed_attempts, 0) + 1 WHERE user_id = %s RETURNING failed_attempts', (user["user_id"],))
+            attempts = cursor.fetchone()["failed_attempts"]
+            
+            if attempts >= 4:
+                cursor.execute('UPDATE "system_user" SET failed_attempts = 0, locked_until = NOW() + INTERVAL \'15 minutes\' WHERE user_id = %s RETURNING EXTRACT(EPOCH FROM (locked_until - NOW())) AS remaining_seconds', (user["user_id"],))
+                new_lock = cursor.fetchone()
+                conn.commit()
+                
+                ip_address = _client_ip()
+                location = _location_from_ip(ip_address)
+                _send_lockout_email(user["email"], user.get("first_name", "User"), location)
+                
+                log_system_event(
+                    user_identifier=str(user["user_id"]), 
+                    category="Security", 
+                    action="Account Locked", 
+                    log_level="CRITICAL", 
+                    description=f"Account locked for 15 minutes due to 4 failed 2FA attempts."
+                )
+                
+                return jsonify({
+                    "status": "error", 
+                    "message": "Account locked.", 
+                    "remaining_seconds": int(new_lock["remaining_seconds"])
+                }), 403
+
+            log_system_event(
+                user_identifier=str(user["user_id"]), 
+                category="Security", 
+                action="2FA Login Failed", 
+                log_level="WARNING", 
+                description="Failed 2FA verification attempt. Invalid or expired code entered."
+            )
+            conn.commit()
+            return jsonify({"status": "error", "message": "Invalid or expired code"}), 400
+
+        # 🌟 CORRECT OTP: CLEAR STRIKES AND LOG IN
+        cursor.execute("DELETE FROM otp_verifications WHERE email = %s", (email,))
+        cursor.execute('UPDATE "system_user" SET failed_attempts = 0, locked_until = NULL WHERE user_id = %s', (user["user_id"],))
+        
+        full_name = f"{user['first_name']} {user['last_name'] or ''}".strip()
+        safe_user = {
+            "user_id": user["user_id"],
+            "Username": user["username"],
+            "Name": full_name,
+            "Email": user["email"],
+            "User_Type": user["user_type"],
+            "is_profile_complete": user.get("is_profile_complete", False),
+            "profile_pic_url": user.get("profile_pic_url"),
+            "Technician_ID": None
+        }
+
+        if user["user_type"] in ["admin", "technician"]:
+            cursor.execute("SELECT Technician_ID FROM technician WHERE user_id = %s", (user["user_id"],))
+            tech = cursor.fetchone()
+            if tech:
+                safe_user["Technician_ID"] = tech["technician_id"]
+
+        _record_login_attempt(cursor, user_id=user["user_id"], email=user["email"], status="success")
+        cursor.execute('UPDATE "system_user" SET last_login = CURRENT_TIMESTAMP WHERE user_id = %s', (user["user_id"],))
+        conn.commit()
+
+        log_system_event(
+            user_identifier=str(user["user_id"]), 
+            category="Authentication", 
+            action="2FA Login Success", 
+            log_level="INFO", 
+            description="Successfully authenticated via 2FA."
+        )
+        return jsonify({"status": "success", "user": safe_user}), 200
+
+    except Exception as e:
+        print(f"2FA verify error: {e}")
+        return jsonify({"status": "error", "message": "Internal server error"}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# ==========================================
+# 🌟 GET ALL SYSTEM SETTINGS (Unified & Clean)
+# ==========================================
+@auth_bp.route("/admin/settings", methods=["GET"])
+def get_system_settings():
+    user_id = str(request.args.get("user_id"))
+    
+    conn = get_connection()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        cursor.execute("SELECT setting_key, setting_value FROM system_settings")
+        settings = cursor.fetchall()
+        settings_dict = {row["setting_key"]: row["setting_value"] for row in settings}
+        
+        # 🌟 FIXED: Strictly default 2FA to FALSE and Timeout to 60 for all new accounts!
+        settings_dict["two_factor_auth"] = "false" 
+        settings_dict["session_timeout"] = "60" # Default fallback
+        
+        # Override with the user's personal setting if they have interacted with it before
+        if user_id and user_id not in ["undefined", "null", "None", ""]:
+            # 1. Check Personal 2FA
+            user_2fa_key = f"2fa_user_{user_id}"
+            if user_2fa_key in settings_dict:
+                settings_dict["two_factor_auth"] = str(settings_dict[user_2fa_key]).lower()
+            
+            # 2. 🌟 NEW: Check Personal Session Timeout
+            user_timeout_key = f"session_timeout_{user_id}"
+            if user_timeout_key in settings_dict:
+                settings_dict["session_timeout"] = str(settings_dict[user_timeout_key])
+                
+        return jsonify({"status": "success", "settings": settings_dict}), 200
+    except Exception as e:
+        print(f"Error fetching settings: {e}")
+        return jsonify({"status": "error", "message": "Failed to fetch settings"}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# ==========================================
+# 🌟 SAVE 2FA SETTING
+# ==========================================
+@auth_bp.route("/admin/settings/2fa", methods=["POST"])
+@role_required("admin")
+def toggle_2fa():
+    data = request.get_json() or {}
+
+    is_active = str(data.get("two_factor_auth", "false")).lower()
+    user_id = str(data.get("user_id"))
+    
+    # 🌟 FIXED: Strictly block "undefined" ghost IDs from cluttering the database!
+    if not user_id or user_id in ["undefined", "null", "None", ""]:
+        return jsonify({"status": "error", "message": "Valid User ID is required"}), 400
+        
+    setting_key = f"2fa_user_{user_id}"
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            """
+            INSERT INTO system_settings (setting_key, setting_value) 
+            VALUES (%s, %s)
+            ON CONFLICT (setting_key) DO UPDATE 
+            SET setting_value = EXCLUDED.setting_value, last_updated = CURRENT_TIMESTAMP
+            """,
+            (setting_key, is_active)
+        )
+        conn.commit()
+        return jsonify({"status": "success"}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# ==========================================
+# 🌟 GET ALL SYSTEM LOGS
+# ==========================================
+@auth_bp.route("/admin/system-logs", methods=["GET"])
+def get_system_logs():
+    conn = get_connection()
+    if not conn:
+        return jsonify({"status": "error", "message": "Database connection failed"}), 500
+
+    # RealDictCursor ensures we get JSON-friendly dictionaries back
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        # Fetch the 200 most recent logs
+        cursor.execute("SELECT * FROM system_logs ORDER BY timestamp DESC LIMIT 200")
+        logs = cursor.fetchall()
+        
+        # Format the timestamps nicely for the frontend
+        for log in logs:
+            if log.get("timestamp"):
+                log["formatted_time"] = log["timestamp"].strftime("%b %d, %Y - %I:%M %p")
+                
+        return jsonify({"status": "success", "logs": logs}), 200
+        
+    except Exception as e:
+        print(f"Log fetch error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# ==========================================
+# 🌟 SAVE SESSION TIMEOUT (PER-USER)
+# ==========================================
+@auth_bp.route("/admin/settings/timeout", methods=["POST"])
+@role_required("admin")
+def update_session_timeout():
+    data = request.get_json() or {}
+    timeout_value = str(data.get("session_timeout", "60")).strip()  # Default to 60 if not provided
+
+    # Security check: Ensure they only send valid minute options
+    allowed_values = ["1", "15", "30", "60", "120", "240"]
+    if timeout_value not in allowed_values:
+        timeout_value = "15"
+
+    current_user = getattr(g, "current_user", None) or get_current_user()
+    user_id = current_user.get("user_id") if current_user else None
+
+    if not user_id:
+        return jsonify({"status": "error", "message": "User ID required"}), 400
+
+    # 🌟 SAVES ONLY FOR THIS SPECIFIC USER
+    setting_key = f"session_timeout_{user_id}"
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute(
+            """
+            INSERT INTO system_settings (setting_key, setting_value) 
+            VALUES (%s, %s)
+            ON CONFLICT (setting_key) DO UPDATE 
+            SET setting_value = EXCLUDED.setting_value, last_updated = CURRENT_TIMESTAMP
+            """,
+            (setting_key, timeout_value)
+        )
+        conn.commit()
+
+        log_system_event(
+            user_identifier=str(user_id),
+            category="System Settings",
+            action="Session Timeout Updated",
+            log_level="WARNING",
+            description=f"User updated their personal session timeout to {timeout_value} minutes."
+        )
+
+        return jsonify({"status": "success", "message": f"Timeout set to {timeout_value} minutes"}), 200
+
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# ==========================================
+# ⚠️ DANGER ZONE: CLEAR LOGS
+# ==========================================
+@auth_bp.route("/admin/settings/clear-logs", methods=["POST"])
+@role_required("admin")
+def clear_all_logs():
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        # Instantly wipe all rows from the system_logs table and reset the ID counter
+        cursor.execute("TRUNCATE TABLE system_logs RESTART IDENTITY;")
+        conn.commit()
+
+        # Log the fact that the logs were cleared (starts the new log table cleanly!)
+        current_user = getattr(g, "current_user", None) or get_current_user()
+        admin_id = current_user.get("user_id") if current_user else "System"
+        
+        log_system_event(
+            user_identifier=str(admin_id),
+            category="System Settings",
+            action="Logs Cleared",
+            log_level="CRITICAL",
+            description="Administrator permanently deleted all system logs and audit trails."
+        )
+
+        return jsonify({"status": "success", "message": "All system logs have been permanently deleted."}), 200
+        
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# ==========================================
+# ⚠️ DANGER ZONE: RESET DATABASE
+# ==========================================
+@auth_bp.route("/admin/settings/reset-database", methods=["POST"])
+@role_required("admin")
+def reset_database():
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        # 1. Wipe standard utility tables
+        cursor.execute("TRUNCATE TABLE system_logs RESTART IDENTITY CASCADE;")
+        cursor.execute("TRUNCATE TABLE login_history RESTART IDENTITY CASCADE;")
+        cursor.execute("TRUNCATE TABLE otp_verifications RESTART IDENTITY CASCADE;")
+        
+        # 2. Reset System Settings to absolute defaults
+        cursor.execute("TRUNCATE TABLE system_settings RESTART IDENTITY CASCADE;")
+        cursor.execute(
+            """
+            INSERT INTO system_settings (setting_key, setting_value) 
+            VALUES ('maintenance_mode', 'false'), ('two_factor_auth', 'false')
+            """
+        )
+
+        # 3. Wipe all users EXCEPT the admin performing the reset so you aren't locked out!
+        current_user = getattr(g, "current_user", None) or get_current_user()
+        admin_id = current_user.get("user_id") if current_user else None
+        
+        if admin_id:
+            cursor.execute('DELETE FROM "system_user" WHERE user_id != %s', (admin_id,))
+
+        conn.commit()
+
+        # 4. Leave a single footprint
+        log_system_event(
+            user_identifier=str(admin_id),
+            category="System Settings",
+            action="Factory Reset",
+            log_level="CRITICAL",
+            description="Administrator performed a factory reset. All non-admin data wiped."
+        )
+
+        return jsonify({"status": "success", "message": "Database reset to factory defaults."}), 200
+        
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"status": "error", "message": str(e)}), 500
     finally:
         cursor.close()
         conn.close()
