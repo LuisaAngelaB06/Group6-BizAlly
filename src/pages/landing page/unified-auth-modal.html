@@ -578,6 +578,7 @@
             function handleLoginSuccess(userData) {
                 // 1. Save the data
                 sessionStorage.setItem('userData', JSON.stringify(userData));
+                sessionStorage.setItem('loginTime', Date.now());
                 sessionStorage.setItem('authToken', 'simulated_token_' + Date.now());
 
                 // 2. FIXED: Use 'userData' directly

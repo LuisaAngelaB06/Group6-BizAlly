@@ -19,7 +19,7 @@
         try {
             return JSON.parse(value);
         } catch (error) {
-            console.warn('Invalid JSON in localStorage:', error);
+            console.warn('Invalid JSON in sessionStorage:', error);
             return fallback;
         }
     }
@@ -86,8 +86,8 @@
         }
 
         getUserData() {
-            const userData = safeParseJSON(localStorage.getItem(this.userDataKey));
-            const adminProfile = safeParseJSON(localStorage.getItem(this.adminProfileKey));
+            const userData = safeParseJSON(sessionStorage.getItem(this.userDataKey));
+            const adminProfile = safeParseJSON(sessionStorage.getItem(this.adminProfileKey));
 
             const adminProfileName = [
                 adminProfile.firstName,
@@ -150,20 +150,20 @@
         }
 
         updateUserData(updates = {}) {
-            const currentData = safeParseJSON(localStorage.getItem(this.userDataKey));
+            const currentData = safeParseJSON(sessionStorage.getItem(this.userDataKey));
             const updatedData = { ...currentData, ...updates };
 
-            localStorage.setItem(this.userDataKey, JSON.stringify(updatedData));
+            sessionStorage.setItem(this.userDataKey, JSON.stringify(updatedData));
             this.dispatchUserDataChanged();
 
             return updatedData;
         }
 
         updateUserProfile(updates = {}) {
-            const currentProfile = safeParseJSON(localStorage.getItem(this.adminProfileKey));
+            const currentProfile = safeParseJSON(sessionStorage.getItem(this.adminProfileKey));
             const updatedProfile = { ...currentProfile, ...updates };
 
-            localStorage.setItem(this.adminProfileKey, JSON.stringify(updatedProfile));
+            sessionStorage.setItem(this.adminProfileKey, JSON.stringify(updatedProfile));
             this.dispatchUserDataChanged();
 
             return updatedProfile;
@@ -324,10 +324,11 @@
             button.addEventListener('click', (event) => {
                 event.preventDefault();
 
-                localStorage.removeItem(STORAGE_KEYS.userData);
-                localStorage.removeItem(STORAGE_KEYS.adminProfile);
-                localStorage.removeItem(STORAGE_KEYS.adminPreferences);
-                localStorage.removeItem(STORAGE_KEYS.preferredLanguage);
+                sessionStorage.removeItem(STORAGE_KEYS.userData);
+                sessionStorage.removeItem(STORAGE_KEYS.adminProfile);
+                sessionStorage.removeItem(STORAGE_KEYS.adminPreferences);
+                sessionStorage.removeItem(STORAGE_KEYS.preferredLanguage);
+                sessionStorage.removeItem('loginTime');
 
                 window.location.href = '/';
             });

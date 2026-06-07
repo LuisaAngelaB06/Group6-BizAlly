@@ -491,10 +491,16 @@
 
       if (notificationsToRender.length === 0) {
         notificationsContainer.innerHTML = `
-        <div class="empty-state">
-            <i class="fas fa-bell-slash"></i>
-            <h3>${dict["no_notifications_found"]}</h3>
-            <p>${dict["empty_state_message"]}</p>
+        <div class="empty-state" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 1rem; text-align: center;">
+          <div style="background: rgba(255, 255, 255, 0.03); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; border: 1px solid var(--border);">
+            <i class="fas fa-bell-slash" style="font-size: 2.5rem; color: var(--text-3); opacity: 0.7;"></i>
+          </div>
+          <h3 style="margin-bottom: 0.5rem; color: var(--text-main); font-size: 1.25rem; font-weight: 600;">
+            ${dict["no_notifications_found"] || "No notifications found"}
+          </h3>
+          <p style="color: var(--text-2); font-size: 0.95rem; max-width: 300px;">
+            ${dict["empty_state_message"] || "Try adjusting your filters or check back later."}
+          </p>
         </div>`;
         return;
       }

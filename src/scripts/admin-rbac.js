@@ -327,9 +327,44 @@ console.log("ADMIN RBAC LOADED");
 
   patchFetch();
 
+  // ==========================================
+  // ⏰ LOGIN TIMESTAMP CHECK (Technician & User only)
+  // Admins are excluded — they have their own DB-driven session timeout in System Settings.
+  // This guards against the browser restoring a stale session after a shutdown/long absence.
+  // ==========================================
+  function checkLoginExpiry() {
+    const role = getRole();
+
+    // Skip entirely for admins — their timeout is handled by the Idle Session Monitor + DB setting
+    if (!role || role === 'admin') return;
+
+    const loginTime = parseInt(sessionStorage.getItem('loginTime') || '0', 10);
+
+    // If there's no loginTime stamp at all, set it now (first load after this deploy)
+    if (!loginTime) {
+      sessionStorage.setItem('loginTime', Date.now());
+      return;
+    }
+
+    const ONE_HOUR = 60 * 60 * 1000;
+    const elapsed = Date.now() - loginTime;
+
+    if (elapsed > ONE_HOUR) {
+      console.warn(`Session expired for ${role}: logged in ${Math.round(elapsed / 60000)} minutes ago.`);
+      sessionStorage.removeItem('userData');
+      sessionStorage.removeItem('authToken');
+      sessionStorage.removeItem('loginTime');
+      sessionStorage.setItem('show_timeout_modal', 'true');
+      window.location.replace('/');
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", async () => {
     // 🌟 DEBUG MODE: Let's see what's happening
     console.log("Guard checking session...");
+
+    // Check if the session is too old before anything else runs
+    checkLoginExpiry();
     
     // We await the result but we DON'T redirect yet if it fails
     // This allows us to see if the page actually loads
