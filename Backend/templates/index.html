@@ -309,8 +309,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Wait for the silent message from the RBAC script
-            if (localStorage.getItem('show_timeout_modal') === 'true') {
+            // Check the flag set by admin-rbac.js on session expiry
+            if (sessionStorage.getItem('show_timeout_modal') === 'true') {
                 const timeoutModal = document.getElementById('timeoutModalOverlay');
                 if (timeoutModal) {
                     timeoutModal.style.display = 'flex';
@@ -323,7 +323,7 @@
             // Leave a message for the login page to show the red text
             sessionStorage.setItem('show_timeout_text', 'true');
             // Send them to the login screen
-            window.location.href = '/login'; 
+            window.location.href = '/login';
         }
     </script>
 </body>
