@@ -641,3 +641,55 @@ if (typeof window !== 'undefined') {
     try { return extractUserId(); } catch (e) { console.warn('extractUserId unavailable', e); }
   };
 }
+
+// ==========================================
+// 🕒 UNIVERSAL IDLE SESSION MONITOR (TEST MODE)
+// ==========================================
+(function() {
+    const sessionTimeoutMinutes = 60; 
+    let lastActivityTime = Date.now();
+    let activityInterval;
+
+    function updateActivity() {
+        const currentTime = Date.now();
+        const elapsedMinutes = (currentTime - lastActivityTime) / 1000 / 60;
+        if (elapsedMinutes >= sessionTimeoutMinutes) {
+            executeAutoLogout();
+            return;
+        }
+        lastActivityTime = currentTime;
+    }
+
+    function startActivityMonitor() {
+        const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
+        events.forEach(evt => {
+            document.addEventListener(evt, updateActivity, { passive: true });
+        });
+
+        // Check the clock every 5 seconds for precise testing
+        activityInterval = setInterval(() => {
+            const currentTime = Date.now();
+            const elapsedMinutes = (currentTime - lastActivityTime) / 1000 / 60;
+            if (elapsedMinutes >= sessionTimeoutMinutes) {
+                clearInterval(activityInterval);
+                executeAutoLogout();
+            }
+        }, 30000); 
+    }
+
+    function executeAutoLogout() {
+        sessionStorage.removeItem("userData");
+        sessionStorage.removeItem("authToken");
+        sessionStorage.removeItem("Technician_ID");
+        
+        // 🌟 Trigger the red text on the login page!
+        sessionStorage.setItem("show_timeout_modal", "true");
+        
+        window.location.replace("/"); 
+    }
+
+    // Start monitor if logged in
+    if (sessionStorage.getItem("userData")) {
+        startActivityMonitor();
+    }
+})();

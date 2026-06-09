@@ -1043,6 +1043,21 @@ body {
     border-bottom: 0;
 }
 
+.logs-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.logs-table thead th {
+    /* Uses your dynamic theme variables instead of hardcoded dark colors */
+    background-color: var(--bg-card, #ffffff); 
+    color: var(--text-main, #475569);
+    border-bottom: 2px solid var(--border, #e2e8f0);
+    opacity: 1 !important;
+    backdrop-filter: none;
+}
+
 .badge {
     display: inline-flex;
     align-items: center;

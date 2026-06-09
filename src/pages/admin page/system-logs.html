@@ -514,21 +514,75 @@
             if (dict['system_logs_page_title']) document.title = dict['system_logs_page_title'];
         }
 
-        // 🌟 FIXED: New function to filter and render real DB data
+        // 🌟 FIXED: Full-featured real-time filter engine matching levels, timeframes, and text search!
         function filterAndRenderLogs() {
             const logsTableBody = document.querySelector('#logsTable tbody');
             const emptyState = document.getElementById('emptyState');
             if (!logsTableBody) return;
             logsTableBody.innerHTML = '';
 
+            // Get live filter values from the interface
             const logLevel = document.getElementById('logLevel').value.toLowerCase();
-            
-            // Filter real data
+            const timeRange = document.getElementById('timeRange').value;
+            const searchTerm = (document.getElementById('q')?.value || '').toLowerCase().trim();
+
+            const now = new Date();
+            const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const startOfYesterday = new Date(startOfToday.getTime() - 24 * 60 * 60 * 1000);
+
+            // Filter raw data arrays
             currentFilteredLogs = allLogs.filter(log => {
-                if (logLevel !== 'all' && String(log.log_level).toLowerCase() !== logLevel) return false;
+                // 1️⃣ Log Level Filter
+                const safeLevel = String(log.log_level || '').toLowerCase();
+                if (logLevel !== 'all' && safeLevel !== logLevel) {
+                    // Let critical logs display when filtering for errors
+                    if (logLevel === 'error' && safeLevel === 'critical') {
+                        // Allow it to pass
+                    } else {
+                        return false;
+                    }
+                }
+
+                // 2️⃣ Time Range Filter
+                const logDate = new Date(log.created_at);
+                if (!isNaN(logDate.getTime())) {
+                    if (timeRange === 'today') {
+                        if (logDate < startOfToday) return false;
+                    } else if (timeRange === 'yesterday') {
+                        if (logDate < startOfYesterday || logDate >= startOfToday) return false;
+                    } else if (timeRange === 'week') {
+                        const sevenDaysAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+                        if (logDate.getTime() < sevenDaysAgo) return false;
+                    } else if (timeRange === 'month') {
+                        const thirtyDaysAgo = now.getTime() - 30 * 24 * 60 * 60 * 1000;
+                        if (logDate.getTime() < thirtyDaysAgo) return false;
+                    }
+                }
+
+                // 3️⃣ Global Search Input Filter
+                if (searchTerm) {
+                    const matchesSearch = [
+                        log.id,
+                        log.full_name,
+                        log.user_identifier,
+                        log.action,
+                        log.description,
+                        log.table_name,
+                        log.category,
+                        log.status,
+                        log.ip_address
+                    ].some(val => String(val || '').toLowerCase().includes(searchTerm));
+
+                    if (!matchesSearch) return false;
+                }
+
                 return true;
             });
 
+            // Always keep newest logs at the very top
+            currentFilteredLogs.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            // UI Render distribution
             if (currentFilteredLogs.length === 0) {
                 logsTableBody.closest('.logs-table-container').style.display = 'none';
                 emptyState.style.display = 'flex';
@@ -607,19 +661,26 @@
                 
                     <div class="detail-item">
                         <span class="detail-label">User ID:</span>
-                        <span class="detail-value">${log.user_identifier}</span>
+                        <span class="detail-value">${log.user_id}</span>
                     </div>
                     
-                    <div class="detail-item" style="grid-column: span 2;">
-                        <span class="detail-label">User Name:</span>
-                        <span class="detail-value">${log.full_name}</span>
+                    <div class="detail-item">
+                        <span class="detail-label">User Type:</span>
+                        <span class="detail-value" style="font-weight: 600; text-transform: capitalize; color: var(--text-main);">
+                            ${log.user_type || log.role || log.User_Type || 'Unknown'}
+                        </span>
                     </div>
-                    
+
                     <div class="detail-item">
                         <span class="detail-label">Category:</span>
                         <span class="detail-value" style="font-weight: 600; color: var(--accent-color, #4facfe);">
                             ${log.category || 'System'}
                         </span>
+                    </div>
+
+                    <div class="detail-item" style="grid-column: span 2;">
+                        <span class="detail-label">User Name:</span>
+                        <span class="detail-value">${log.full_name}</span>
                     </div>
             </div>
             
@@ -673,7 +734,7 @@
             modal.classList.add('show');
         }
 
-        // 🌟 FIXED: Maps real Supabase columns for Excel Export
+        // 🌟 FIXED: Export matches the Modal exactly ("User ID" and "User Name")
         function exportLogsToExcel() {
             const dict = translations[window.preferencesManager ? window.preferencesManager.getCurrentLanguage() : 'en'] || translations['en'];
             if (currentFilteredLogs.length === 0) {
@@ -684,19 +745,57 @@
 
             const worksheetData = [
                 [
-                    dict['log_id'] || 'Log ID', dict['timestamp'] || 'Timestamp', dict['level'] || 'Level',
-                    dict['user'] || 'User', dict['action'] || 'Action', dict['description'] || 'Description',
-                    dict['ip_address'] || 'IP Address', dict['session_id'] || 'Session ID', dict['browser'] || 'Browser',
-                    dict['device'] || 'Device', dict['location'] || 'Location', dict['duration'] || 'Duration', dict['status'] || 'Status'
+                    dict['log_id'] || 'Log ID', 
+                    'User ID', // 🌟 RENAMED back to User ID
+                    dict['timestamp'] || 'Timestamp', 
+                    dict['level'] || 'Level',
+                    'User Type', 
+                    'User Name', // 🌟 Explicitly User Name
+                    dict['action'] || 'Action', 
+                    dict['description'] || 'Description',
+                    dict['ip_address'] || 'IP Address', 
+                    dict['browser'] || 'Browser'
                 ],
-                ...currentFilteredLogs.map(log => [
-                    log.id, log.created_at, String(log.log_level).toUpperCase(), log.user_identifier, log.action, log.description,
-                    log.ip_address, log.session_id, log.browser, log.device, log.location, log.duration, log.status
-                ])
+                ...currentFilteredLogs.map(log => {
+                    // Smart Role Detection for Google Logins
+                    let displayRole = log.user_type || log.role || log.User_Type;
+                    if (!displayRole && log.action && String(log.action).toLowerCase().includes('google')) {
+                        displayRole = 'Client'; 
+                    }
+                    displayRole = (displayRole || 'Unverified').toUpperCase();
+
+                    return [
+                        log.id, 
+                        log.user_id || '-', // 🌟 Now that Python is sending it, this will perfectly capture the UUID!
+                        new Date(log.created_at).toLocaleString(), 
+                        String(log.log_level).toUpperCase(), 
+                        displayRole, 
+                        log.full_name || log.user_identifier || '-', // User Name or Email
+                        log.action, 
+                        log.description || '-',
+                        log.ip_address || '-', 
+                        log.browser || '-'
+                    ];
+                })
             ];
 
             const workbook = XLSX.utils.book_new();
             const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+            
+            // Adjusted column widths to fit the layout perfectly
+            worksheet['!cols'] = [
+                { wch: 36 }, // Log ID
+                { wch: 28 }, // User ID (Usually an email, so given extra space)
+                { wch: 22 }, // Timestamp
+                { wch: 12 }, // Level
+                { wch: 15 }, // User Type
+                { wch: 25 }, // User Name
+                { wch: 25 }, // Action
+                { wch: 50 }, // Description
+                { wch: 18 }, // IP Address
+                { wch: 20 }  // Browser
+            ];
+
             XLSX.utils.book_append_sheet(workbook, worksheet, 'System Logs');
             const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
             const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -704,7 +803,12 @@
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `AlliTrack_System_Logs_${new Date().toISOString().slice(0, 19).replace(/[:]/g, '-')}.xlsx`;
+            
+            // Localized Date generation
+            const today = new Date();
+            const localDate = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+            a.download = `AlliTrack_Logs_${localDate}.xlsx`; 
+            
             document.body.appendChild(a);
             a.click();
             
@@ -727,6 +831,10 @@
                 clearFiltersBtn.addEventListener('click', function () {
                     document.getElementById('logLevel').value = 'all';
                     document.getElementById('timeRange').value = 'today';
+                    
+                    const searchBar = document.getElementById('q');
+                    if (searchBar) searchBar.value = ''; // 🌟 Clear the search input text field too!
+                    
                     filterAndRenderLogs();
                     showToast('Filters cleared', 'success');
                 });
@@ -735,11 +843,21 @@
             // Refresh logs button
             const refreshBtn = document.getElementById('refreshLogs');
             if (refreshBtn) {
-                refreshBtn.addEventListener('click', function () {
-                    fetchSystemLogs(); // <-- Forces a fresh pull from the database!
-                    const currentLang = window.preferencesManager ?
-                        window.preferencesManager.getCurrentLanguage() : 'en';
-                    const dict = translations[currentLang] || translations['en'];
+                refreshBtn.addEventListener('click', async function () {
+                    const icon = this.querySelector('i');
+                    const dict = translations[window.preferencesManager ? window.preferencesManager.getCurrentLanguage() : 'en'] || translations['en'];
+                    
+                    // Spin the icon and disable the button
+                    if (icon) icon.classList.add('fa-spin');
+                    this.disabled = true;
+
+                    // Pull fresh data from the database
+                    await fetchSystemLogs(); 
+                    
+                    // Stop spinning and re-enable
+                    if (icon) icon.classList.remove('fa-spin');
+                    this.disabled = false;
+                    
                     showToast(dict['logs_refreshed'] || 'Logs refreshed successfully', 'success');
                 });
             }
@@ -752,16 +870,15 @@
                 });
             }
 
-            // Search functionality
+            // 🌟 FIXED: Wire up the text search input directly to your filtering function with a 300ms debounce
             const searchInput = document.getElementById('q');
             let searchTimeout;
             if (searchInput) {
                 searchInput.addEventListener('input', function () {
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => {
-                        // In a real app, this would trigger a search
-                        console.log('Searching for:', this.value);
-                    }, 500);
+                        filterAndRenderLogs(); 
+                    }, 300);
                 });
             }
 

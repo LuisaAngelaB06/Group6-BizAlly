@@ -399,49 +399,46 @@ console.log("ADMIN RBAC LOADED");
 })();
 
 // ==========================================
-// 🕒 GLOBAL IDLE SESSION MONITOR (PRODUCTION)
+// 🕒 UNIVERSAL IDLE SESSION MONITOR (DB SYNCED)
 // ==========================================
 (function() {
-    let sessionTimeoutMinutes = 60; // Default to 60 minutes if DB fails
+    // Default fallback is 60. Will be overwritten by DB if Admin has a custom setting.
+    let sessionTimeoutMinutes = 60; 
     let lastActivityTime = Date.now();
     let activityInterval;
 
-    async function loadTimeoutSetting() {
-        // 🌟 WAIT BUFFER: If no user data yet, retry in 100ms
-        const userDataStr = sessionStorage.getItem('userData');
-        if (!userDataStr) {
-            setTimeout(loadTimeoutSetting, 100);
-            return;
-        }
-
+    async function fetchCustomAdminTimeout() {
         try {
+            const userDataStr = sessionStorage.getItem('userData');
+            if (!userDataStr) return; 
+            
             const userData = JSON.parse(userDataStr);
             const userId = userData.user_id || userData.User_ID || userData.id;
-
-            if (!userId) return;
+            
+            // Only fetch if they are an admin
+            const role = (userData.User_Type || userData.user_type || userData.role || "").toLowerCase();
+            if (role !== 'admin' || !userId) return;
 
             const authBase = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
                 ? "http://127.0.0.1:5000"
                 : "https://group6-bizally.onrender.com";
                 
             const response = await fetch(`${authBase}/api/auth/admin/settings?user_id=${userId}`);
-            const data = await response.json();
-
-            if (data.status === 'success' && data.settings.session_timeout) {
-                sessionTimeoutMinutes = parseInt(data.settings.session_timeout);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.status === 'success' && data.settings && data.settings.session_timeout) {
+                    sessionTimeoutMinutes = parseInt(data.settings.session_timeout);
+                    console.log(`Admin Custom Timeout Applied: ${sessionTimeoutMinutes} minutes`);
+                }
             }
-        } catch(e) {
-            console.warn("Using default timeout.");
+        } catch (e) {
+            console.warn("Could not load custom DB timeout, defaulting to 60 minutes.");
         }
-        
-        startActivityMonitor();
     }
 
     function updateActivity() {
         const currentTime = Date.now();
         const elapsedMinutes = (currentTime - lastActivityTime) / 1000 / 60;
-
-        // Sleep/Wake Fix: Kick them out if time is already up!
         if (elapsedMinutes >= sessionTimeoutMinutes) {
             executeAutoLogout();
             return;
@@ -455,17 +452,15 @@ console.log("ADMIN RBAC LOADED");
             document.addEventListener(evt, updateActivity, { passive: true });
         });
 
-        // ✅ PRODUCTION MODE: Check the clock every 10 seconds (10000ms)
+        // Check the clock every 30 seconds
         activityInterval = setInterval(() => {
             const currentTime = Date.now();
             const elapsedMinutes = (currentTime - lastActivityTime) / 1000 / 60;
-
-            // ✅ PRODUCTION MODE: Enforce the personal DB setting
             if (elapsedMinutes >= sessionTimeoutMinutes) {
                 clearInterval(activityInterval);
                 executeAutoLogout();
             }
-        }, 10000); 
+        }, 30000); 
     }
 
     function executeAutoLogout() {
@@ -473,105 +468,14 @@ console.log("ADMIN RBAC LOADED");
         sessionStorage.removeItem("authToken");
         sessionStorage.removeItem("Technician_ID");
         
-        // Leave the message for the landing page popup
         sessionStorage.setItem("show_timeout_modal", "true");
-        
-        console.trace("REDIRECTING TO LANDING PAGE");
-        // Force redirect to the root landing page
         window.location.replace("/"); 
     }
 
+    // Safely wait for DB fetch, THEN start the monitor
     if (sessionStorage.getItem("userData")) {
-        loadTimeoutSetting();
+        fetchCustomAdminTimeout().finally(() => {
+            startActivityMonitor();
+        });
     }
-})();
-
-// ==========================================
-// 🛡️ ALLITRACK SESSION SENTINEL
-// ==========================================
-// FIX: Wrapped in DOMContentLoaded so it no longer races against the RBAC guard.
-// The old version ran synchronously and immediately, which could wipe sessionStorage
-// mid-load and redirect to a non-existent /login route, causing the flash-then-kick bug.
-(function() {
-    document.addEventListener('DOMContentLoaded', function() {
-        // 1. Get the current user's role — bail out if not logged in
-        const userDataStr = sessionStorage.getItem('userData');
-        if (!userDataStr) return;
-
-        const userData = JSON.parse(userDataStr);
-        // Normalize the role (defaulting to 'client' if missing)
-        const role = (
-            userData.User_Type ||
-            userData.user_type ||
-            userData.role ||
-            'client'
-        ).toLowerCase();
-
-        // 2. Configure Timers
-        const IDLE_TIMEOUT = 15 * 60 * 1000; // 15 minutes in milliseconds
-        const WARNING_TIME = 1 * 60 * 1000;  // 1 minute warning
-
-        let logoutTimer;
-        let warningTimer;
-
-        // 3. The Executioner: Wipes data and kicks to landing page
-        // FIX: Removed sessionStorage.clear() (too aggressive — nuked data mid-load).
-        // FIX: Changed /login to / to match your actual route.
-        function performLogout() {
-            console.log("🔒 Session Expired: Logging out.");
-            sessionStorage.removeItem('userData');
-            sessionStorage.removeItem('authToken');
-            sessionStorage.setItem("show_timeout_modal", "true"); // Show timeout message on landing page
-            window.location.replace('/');
-        }
-
-        // 4. The Warning Modal (Technicians Only)
-        function showWarningModal() {
-            if (!document.getElementById('session-warning-modal')) {
-                const modal = document.createElement('div');
-                modal.id = 'session-warning-modal';
-                modal.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; display:flex; align-items:center; justify-content:center;";
-                modal.innerHTML = `
-                    <div style="background:white; padding:25px; border-radius:8px; text-align:center; max-width:320px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-family: 'Segoe UI', Tahoma, sans-serif;">
-                        <h3 style="margin-top:0; color:#1e293b;">Session Expiring</h3>
-                        <p style="color:#475569; margin-bottom:20px;">You have been inactive. Your session will end in 1 minute to protect your account.</p>
-                        <button id="extend-session-btn" style="background:#2563eb; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">Keep Working</button>
-                    </div>`;
-                document.body.appendChild(modal);
-
-                // Clicking the button hides the modal and resets the timers
-                document.getElementById('extend-session-btn').addEventListener('click', () => {
-                    modal.style.display = 'none';
-                    resetTimers();
-                });
-            } else {
-                document.getElementById('session-warning-modal').style.display = 'flex';
-            }
-        }
-
-        // 5. The Reset Engine
-        function resetTimers() {
-            clearTimeout(logoutTimer);
-            clearTimeout(warningTimer);
-
-            // Hide modal if they start moving again before clicking the button
-            const modal = document.getElementById('session-warning-modal');
-            if (modal) modal.style.display = 'none';
-
-            // Set the hard limit for everyone
-            logoutTimer = setTimeout(performLogout, IDLE_TIMEOUT);
-
-            // 🌟 CONDITIONAL LOGIC: Only trigger the warning if they are a technician
-            if (role === 'technician') {
-                warningTimer = setTimeout(showWarningModal, IDLE_TIMEOUT - WARNING_TIME);
-            }
-        }
-
-        // 6. Watch for user activity
-        const events = ['mousemove', 'keydown', 'mousedown', 'touchstart', 'scroll'];
-        events.forEach(evt => document.addEventListener(evt, resetTimers, true));
-
-        // Initialize timers now that the page is ready
-        resetTimers();
-    });
 })();

@@ -883,15 +883,18 @@ def delete_notifications():
 def get_system_logs():
 
     try:
-        # 🌟 SQL JOIN: Grabs the log AND the user's details at the exact same time
+        # JOIN matches both regular users (by user_id) and Google users (by email)
         query = text("""
             SELECT 
                 sl.*, 
+                su.user_id,
                 su.first_name, 
                 su.last_name, 
                 su.user_type
             FROM system_logs sl
-            LEFT JOIN "system_user" su ON sl.user_identifier = su.user_id::varchar
+            LEFT JOIN "system_user" su 
+                ON sl.user_identifier = su.user_id::varchar
+                OR sl.user_identifier = su.email
             ORDER BY sl.created_at DESC
         """)
 
