@@ -1655,3 +1655,14 @@ body {
         justify-content: center;
     }
 }
+
+/* 🌟 Forces a glowing blue highlight that ignores other table styles */
+@keyframes pulseHighlight {
+    0% { background-color: transparent; }
+    15% { background-color: rgba(59, 130, 246, 0.35) !important; }
+    100% { background-color: transparent; }
+}
+
+.ticket-highlight-pulse {
+    animation: pulseHighlight 4s ease-out !important;
+}

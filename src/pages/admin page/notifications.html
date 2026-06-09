@@ -169,13 +169,6 @@
                         <div class="stat-label" data-translate="unread_notifications">Unread Notifications</div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon icon-resolved"><i class="fas fa-check-circle"></i></div>
-                    <div class="stat-info">
-                        <div class="stat-count" id="ticketUpdates">0</div>
-                        <div class="stat-label" data-translate="ticket_updates">Ticket Updates</div>
-                    </div>
-                </div>
             </div>
 
             <div class="notifications-toolbar card">
@@ -189,12 +182,6 @@
                     </button>
                     <button class="filter-btn" data-filter="unread">
                         <span data-translate="filter_unread">Unread</span>
-                    </button>
-                    <button class="filter-btn" data-filter="ticket">
-                        <span data-translate="filter_ticket">Ticket Updates</span>
-                    </button>
-                    <button class="filter-btn" data-filter="system">
-                        <span data-translate="filter_system">System</span>
                     </button>
                     
                     <button class="notification-action-btn primary" id="markAllRead" style="height: 38px; margin-left: 6px;">
@@ -565,20 +552,20 @@
                     ${ticketPillHtml}
                 </div>
         
-        <div class="notification-actions" style="display: flex; justify-content: flex-end; gap: 8px;">
-            <button class="notification-action-btn" onclick="viewNotification(${notification.id}, event)">
-                <i class="fas fa-eye"></i> ${dict["view"] || "View"}
-            </button>
-            ${isNotifUnread ? `
-                <button class="notification-action-btn primary" onclick="markAsRead(${notification.id}, event)">
-                    <i class="fas fa-check"></i> ${dict["mark_as_read"] || "Mark as Read"}
-                </button>` : ""
-            }
-        </div>`;
-        
-        notificationsContainer.appendChild(card);
-      });
-    }
+                <div class="notification-actions" style="display: flex; justify-content: flex-end; gap: 8px;">
+                    <button class="notification-action-btn" onclick="viewNotification(${notification.id}, event)">
+                        <i class="fas fa-eye"></i> ${dict["view"] || "View"}
+                    </button>
+                    ${isNotifUnread ? `
+                        <button class="notification-action-btn primary" onclick="markAsRead(${notification.id}, event)">
+                            <i class="fas fa-check"></i> ${dict["mark_as_read"] || "Mark as Read"}
+                        </button>` : ""
+                    }
+                </div>`;
+                
+                notificationsContainer.appendChild(card);
+            });
+        }
 
         function filterNotifications(filter) {
             let filtered = [...allNotifications];
@@ -586,8 +573,6 @@
                 filtered = filtered.filter((n) => n.unread === true || n.unread === "true" || n.is_read === false || n.is_read === 0);
             } else if (filter === "ticket") {
                 filtered = filtered.filter((n) => ["ticket-update", "ticket-resolved", "ticket-closed", "new-message"].includes(n.type));
-            } else if (filter === "system") {
-                filtered = filtered.filter((n) => n.type === "system-alert" || n.type === "system");
             }
 
             const searchInput = document.getElementById("q");
@@ -647,8 +632,7 @@
                 'ticket-update': 'Ticket Update',
                 'new-message': 'New Message',
                 'ticket-resolved': 'Ticket Resolved',
-                'ticket-closed': 'Ticket Closed',
-                'system-alert': 'System Alert'
+                'ticket-closed': 'Ticket Closed'
             };
             const cleanDisplayType = typeLabels[notification.type] || notification.type || "Update";
 
@@ -720,7 +704,24 @@
 
         function redirectToTicket(ticketId, event) {
             if (event) event.stopPropagation();
-            window.location.href = `/admin/all-tickets.html?ticket_id=${ticketId}`;
+
+            // 1. Get the user's role
+            const userDataStr = sessionStorage.getItem('userData');
+            let role = "client"; 
+            if (userDataStr) {
+                const userData = JSON.parse(userDataStr);
+                role = (userData.role || userData.User_Type || userData.user_type || "client").toLowerCase();
+            }
+
+            // 2. Default route for your unified Admin/Tech RBAC console
+            let targetUrl = `/admin/all-tickets.html?ticket_id=${ticketId}`;
+            
+            // 3. Only change the route if they are a standard client
+            if (role === "client" || role === "user") {
+                targetUrl = `/user/dashboard?ticket_id=${ticketId}`; 
+            }
+
+            window.location.href = targetUrl;
         }
 
         function setupAccountDropdown() {

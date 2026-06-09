@@ -1632,6 +1632,67 @@
             });
         });
     </script>
+
+    <script>
+        // 🌟 CATCH NOTIFICATION ROUTING: BULLETPROOF HUNTER
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const rawTicketId = urlParams.get('ticket_id') || urlParams.get('open_ticket');
+
+            if (rawTicketId) {
+                // 1. Force the ID to match your table's format (e.g., "123" becomes "TKT-123")
+                const ticketToOpen = rawTicketId.startsWith('TKT-') ? rawTicketId : 'TKT-' + rawTicketId;
+                
+                console.log(`Notification routed us here. Hunting for ticket: ${ticketToOpen}`);
+                
+                let attempts = 0;
+                const maxAttempts = 20; // Waits up to 10 seconds for the database
+
+                const huntInterval = setInterval(() => {
+                    attempts++;
+                    
+                    // 2. Find the row using the checkbox (which correctly has the data-ticket-id attribute in your HTML!)
+                    const targetCheckbox = document.querySelector(`input.ticket-checkbox[data-ticket-id="${ticketToOpen}"]`);
+                    
+                    if (targetCheckbox) {
+                        clearInterval(huntInterval); 
+                        console.log("Ticket found! Executing highlight.");
+
+                        // Get the actual <tr> row
+                        const row = targetCheckbox.closest('tr');
+
+                        // 3. Open the modal using your native built-in function
+                        if (typeof viewTicket === 'function') {
+                            viewTicket(ticketToOpen);
+                        }
+
+                        // 4. Apply the Highlight safely
+                        if (row) {
+                            // Scroll down to center the row on the screen
+                            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            
+                            // Apply the CSS animation class
+                            row.classList.add('ticket-highlight-pulse');
+
+                            // Clean up the class after 4 seconds
+                            setTimeout(() => {
+                                row.classList.remove('ticket-highlight-pulse');
+                            }, 4000);
+                        }
+
+                        // Clean the URL so it doesn't loop if they refresh
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        
+                    } else if (attempts >= maxAttempts) {
+                        // If 10 seconds pass, give up
+                        clearInterval(huntInterval);
+                        console.warn(`Could not find ticket ${ticketToOpen}. It might be filtered out or not loaded.`);
+                    }
+                }, 500); 
+            }
+        });
+    </script>
 </body>
 
 </html>

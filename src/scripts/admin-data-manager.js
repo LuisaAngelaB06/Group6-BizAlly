@@ -478,7 +478,6 @@ async function checkAdminNotifications(isRetry = false) {
 
 document.addEventListener("DOMContentLoaded", () => {
     setTimeout(checkAdminNotifications, 500); 
-    setInterval(checkAdminNotifications, 30000);
 });
 
 // HELPER: Show admin red dot 
