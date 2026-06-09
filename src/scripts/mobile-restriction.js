@@ -10,10 +10,14 @@
         }
 
         const path = window.location.pathname.toLowerCase();
+        
+        // 1. Define all restricted folders
         const isAdminPage = path.includes('/admin') || path.includes('admin%20page') || path.includes('admin page');
         const isUserConsolePage = path.includes('/user') || path.includes('user%20page') || path.includes('user page');
+        const isTechnicianPage = path.includes('/technician') || path.includes('technician%20page') || path.includes('technician page');
 
-        if (!isAdminPage && !isUserConsolePage) {
+        // 2. If the current URL doesn't match ANY of these, remove the block and exit
+        if (!isAdminPage && !isUserConsolePage && !isTechnicianPage) {
             document.body.classList.remove('mobile-block-active');
             return;
         }
