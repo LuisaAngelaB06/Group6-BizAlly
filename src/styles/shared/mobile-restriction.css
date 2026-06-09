@@ -96,3 +96,16 @@ body.mobile-block-active>.main-wrapper {
     transform: none;
     box-shadow: none;
 }
+
+/* 🌟 Force mobile block on all restricted pages, ignoring any RBAC JavaScript overrides */
+@media (max-width: 768px) {
+    #mobileBlockOverlay,
+    .mobile-block-overlay {
+        display: flex !important;
+        z-index: 9999 !important;
+    }
+    
+    body {
+        overflow: hidden !important;
+    }
+}
